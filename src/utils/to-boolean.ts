@@ -10,5 +10,5 @@ export const toBoolean = (input: any): boolean => {
 
     if (input === false) return false;
 
-    return input
+    return true;
 };

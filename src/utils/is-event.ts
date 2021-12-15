@@ -1,4 +1,4 @@
-export const isEvent = (input: string): boolean => {
+export const isEvent = (input: string) => {
 
   if (!input) return false;
 

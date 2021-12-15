@@ -1,5 +1,5 @@
 // TODO: input type
-export const toNumber = (input): number => {
+export const toNumber = (input: any): number => {
 
     // TODO
     if (isNaN(input)) return input;
