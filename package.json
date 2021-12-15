@@ -1,0 +1,70 @@
+{
+  "name": "@htmlplus/element",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Masood Abdolian",
+  "description": "Compiler of HTMLPlus",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./client": "./dist/client/index.js",
+    "./plugins": "./dist/plugins/index.js",
+    "./server": "./dist/server/index.js",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/index.d.ts"
+      ],
+      "client": [
+        "./dist/client/index.d.ts"
+      ],
+      "plugins": [
+        "./dist/plugins/index.d.ts"
+      ],
+      "server": [
+        "./dist/server/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/htmlplus/element.git"
+  },
+  "bugs": {
+    "url": "https://github.com/htmlplus/element/issues"
+  },
+  "homepage": "https://github.com/htmlplus/element#readme",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "build:watch": "tsc -w",
+    "clean": "rimraf dist",
+    "start": "concurrently \"npm run build:watch\" \"nodemon --experimental-specifier-resolution=node dist/dev\""
+  },
+  "dependencies": {
+    "@babel/generator": "^7.16.0",
+    "@babel/parser": "^7.16.4",
+    "@babel/traverse": "^7.16.3",
+    "@babel/types": "^7.16.0",
+    "@types/node": "^16.11.11",
+    "change-case": "^4.1.2",
+    "log-update": "^5.0.0",
+    "sass": "^1.43.4",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2",
+    "uhtml": "^2.7.6"
+  },
+  "devDependencies": {
+    "concurrently": "^6.4.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.0",
+    "rimraf": "^3.0.2"
+  }
+}
