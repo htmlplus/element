@@ -1,5 +1,5 @@
-import { createCompiler } from './compiler.js'
-import * as plugins from './plugins/index.js'
+import { createCompiler } from './compiler/index.js';
+import * as plugins from './plugins/index.js';
 
 const { start, next, finish } = createCompiler(
   plugins.read(),

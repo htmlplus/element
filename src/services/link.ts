@@ -1,4 +1,4 @@
-import { host } from './host.js';
+import { host } from '../helpers/host.js';
 
 const links = new Map<string, any>();
 
@@ -18,6 +18,7 @@ export type LinkConfig = {
   scope?: Function;
 }
 
+// TODO: return type
 export const createLink = (namespace: string) => {
 
   if (links.has(namespace)) return links.get(namespace);

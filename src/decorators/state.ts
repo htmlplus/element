@@ -28,7 +28,7 @@ export function State() {
 
             if (!api?.ready) return;
 
-            api.state(propertyKey, input);
+            api.state(propertyKey as string, input);
         }
 
         Object.defineProperty(target, propertyKey, descriptor);

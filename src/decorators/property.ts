@@ -1,12 +1,7 @@
 import * as Helpers from '../helpers/index.js';
+import { PropertyOptions } from '../types/index.js';
 
-interface Options {
-    // TODO: will be remove
-    mutable?: boolean;
-    reflect?: boolean;
-}
-
-export function Property(options?: Options) {
+export function Property(options?: PropertyOptions) {
 
     return function (target: Object, propertyKey: PropertyKey) {
 
@@ -34,7 +29,7 @@ export function Property(options?: Options) {
 
             if (!api?.ready) return;
 
-            api.property(propertyKey, input, options);
+            api.property(propertyKey as string, input, options);
         }
 
         Object.defineProperty(target, propertyKey, descriptor);

@@ -1,6 +1,1 @@
-export const getEventName = (input: string): string => {
-
-    if (!input) return input;
-
-    return input.substr(2).toLowerCase();
-}
+export const getEventName = (input: string) => input?.slice(2).toLowerCase()

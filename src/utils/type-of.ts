@@ -1,9 +1,10 @@
-// TODO: return type
-export const typeOf = (input: any): string => {
+type types = 'array' | 'boolean' | 'function' | 'number' | 'object' | 'string';
+
+export const typeOf = (input: any): types => {
   return Object
     .prototype
     .toString
     .call(input)
     .replace(/\[|\]|object| /g, '')
-    .toLowerCase();
+    .toLowerCase() as any;
 }

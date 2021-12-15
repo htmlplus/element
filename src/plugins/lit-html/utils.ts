@@ -1,147 +1,147 @@
-import { html as htmlBase, render as renderBase } from 'lit-html';
-import * as CONSTANTS from '../../configs/constants.js';
-import { isServer } from '../../utils/is-server.js';
-import { sync } from '../../utils/sync.js';
-import { toBoolean } from '../../utils/to-boolean.js';
-import { updateAttribute } from '../../utils/update-attribute.js';
+// import { html as htmlBase, render as renderBase } from 'lit-html';
+// import * as CONSTANTS from '../../configs/constants.js';
+// import { isServer } from '../../utils/is-server.js';
+// import { sync } from '../../utils/sync.js';
+// import { toBoolean } from '../../utils/to-boolean.js';
+// import { updateAttribute } from '../../utils/update-attribute.js';
 
-// TODO
-export { htmlBase as html, renderBase as render };
+// // TODO
+// export { htmlBase as html, renderBase as render };
 
-// TODO: input type
-export const define = (name: string, Class: any) => {
+// // TODO: input type
+// export const define = (name: string, Class: any) => {
 
-  if (isServer()) return;
+//   if (isServer()) return;
 
-  customElements.define(name, Class);
-};
+//   customElements.define(name, Class);
+// };
 
-// TODO: input type
-export const proxy = (Class: any) => {
+// // TODO: input type
+// export const proxy = (Class: any) => {
 
-  if (isServer()) return class { };
+//   if (isServer()) return class { };
 
-  let instance, update;
+//   let instance, update;
 
-  const members = Class[CONSTANTS.TOKEN_STATIC_MEMBERS] || [];
+//   const members = Class[CONSTANTS.TOKEN_STATIC_MEMBERS] || [];
 
-  const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
+//   const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
 
-  const getValue = (key, value) => {
+//   const getValue = (key, value) => {
 
-    const [, type] = members.find((property) => property[0] == key);
+//     const [, type] = members.find((property) => property[0] == key);
 
-    switch (type) {
+//     switch (type) {
 
-      case CONSTANTS.TYPE_BOOLEAN:
-        return toBoolean(value);
+//       case CONSTANTS.TYPE_BOOLEAN:
+//         return toBoolean(value);
 
-      case CONSTANTS.TYPE_NUMBER:
-        return parseFloat(value);
+//       case CONSTANTS.TYPE_NUMBER:
+//         return parseFloat(value);
 
-      default:
-        return value;
-    }
-  }
+//       default:
+//         return value;
+//     }
+//   }
 
-  return class extends HTMLElement {
+//   return class extends HTMLElement {
 
-    constructor() {
+//     constructor() {
 
-      super();
+//       super();
 
-      instance = new Class();
+//       instance = new Class();
 
-      instance[CONSTANTS.TOKEN_API] = instance[CONSTANTS.TOKEN_API] || {};
+//       instance[CONSTANTS.TOKEN_API] = instance[CONSTANTS.TOKEN_API] || {};
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = false;
+//       instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = false;
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_HOST] = () => this;
+//       instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_HOST] = () => this;
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_STATE] = () => this.render();
+//       instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_STATE] = () => this.render();
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_PROPERTY] = (name, value, options: any = {}) => {
+//       instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_PROPERTY] = (name, value, options: any = {}) => {
 
-        const raw = this.getAttribute(name);
+//         const raw = this.getAttribute(name);
 
-        const parsed = getValue(name, raw);
+//         const parsed = getValue(name, raw);
 
-        if (parsed === value) return;
+//         if (parsed === value) return;
 
-        if (options.reflect)
-          updateAttribute(this, name, value);
+//         if (options.reflect)
+//           updateAttribute(this, name, value);
 
-        this.render();
-      }
+//         this.render();
+//       }
 
-      for (const [key, type] of members) {
+//       for (const [key, type] of members) {
 
-        let get, set;
+//         let get, set;
 
-        if (type === CONSTANTS.TYPE_FUNCTION) {
-          get = () => instance[key].bind(instance);
-        }
-        else {
-          get = () => instance[key];
-          set = (value) => instance[key] = value;
-        }
+//         if (type === CONSTANTS.TYPE_FUNCTION) {
+//           get = () => instance[key].bind(instance);
+//         }
+//         else {
+//           get = () => instance[key];
+//           set = (value) => instance[key] = value;
+//         }
 
-        Object.defineProperty(this, key, { get, set })
-      }
+//         Object.defineProperty(this, key, { get, set })
+//       }
 
-      this.attachShadow({ mode: 'open' });
-    }
+//       this.attachShadow({ mode: 'open' });
+//     }
 
-    static get observedAttributes() {
-      return members
-        .filter(([, type]) => type != CONSTANTS.TYPE_FUNCTION)
-        .map(([key]) => key);
-    }
+//     static get observedAttributes() {
+//       return members
+//         .filter(([, type]) => type != CONSTANTS.TYPE_FUNCTION)
+//         .map(([key]) => key);
+//     }
 
-    attributeChangedCallback(name, prev, next) {
+//     attributeChangedCallback(name, prev, next) {
 
-      instance[name] = getValue(name, next);
+//       instance[name] = getValue(name, next);
 
-      if (!instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY]) return;
+//       if (!instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY]) return;
 
-      this.render();
-    }
+//       this.render();
+//     }
 
-    connectedCallback() {
+//     connectedCallback() {
 
-      update = sync(this, {});
+//       update = sync(this, {});
 
-      instance[CONSTANTS.TOKEN_LIFECYCLE_MOUNT] && instance[CONSTANTS.TOKEN_LIFECYCLE_MOUNT]();
+//       instance[CONSTANTS.TOKEN_LIFECYCLE_MOUNT] && instance[CONSTANTS.TOKEN_LIFECYCLE_MOUNT]();
 
-      this.render();
+//       this.render();
 
-      instance[CONSTANTS.TOKEN_LIFECYCLE_READY] && instance[CONSTANTS.TOKEN_LIFECYCLE_READY]();
+//       instance[CONSTANTS.TOKEN_LIFECYCLE_READY] && instance[CONSTANTS.TOKEN_LIFECYCLE_READY]();
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = true;
-    }
+//       instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = true;
+//     }
 
-    disconnectedCallback() {
-      instance[CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT] && instance[CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT]();
-    }
+//     disconnectedCallback() {
+//       instance[CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT] && instance[CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT]();
+//     }
 
-    render() {
+//     render() {
 
-      // TODO
-      update(instance.attributes || {});
+//       // TODO
+//       update(instance.attributes || {});
 
-      const fn = instance[CONSTANTS.TOKEN_METHOD_RENDER];
+//       const fn = instance[CONSTANTS.TOKEN_METHOD_RENDER];
 
-      if (!fn) return;
+//       if (!fn) return;
 
-      renderBase(
-        this.shadowRoot as any,
-        () => {
+//       renderBase(
+//         this.shadowRoot as any,
+//         () => {
 
-          if (!styles) return fn.apply(instance);
+//           if (!styles) return fn.apply(instance);
 
-          return htmlBase`<style>${styles}</style>${fn.apply(instance)}`;
-        }
-      )
-    }
-  }
-}
+//           return htmlBase`<style>${styles}</style>${fn.apply(instance)}`;
+//         }
+//       )
+//     }
+//   }
+// }

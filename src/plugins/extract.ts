@@ -35,7 +35,7 @@ export const extract = (options: ExtractOptions) => {
 
                 if (
                     ![
-                        CONSTANTS.TOKEN_DECORATOR_COMPONENT,
+                        CONSTANTS.TOKEN_DECORATOR_ELEMENT,
                         CONSTANTS.TOKEN_DECORATOR_METHOD,
                     ].includes(name)
                 ) return;

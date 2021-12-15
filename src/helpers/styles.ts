@@ -1,21 +1,23 @@
 import { paramCase } from 'change-case';
 import { typeOf } from '../utils/type-of.js';
 
-export const styles = (input) => {
+export const styles = (input: any): string => {
 
-    const type = typeOf(input);
+    switch (typeOf(input)) {
 
-    if (type == 'undefined')
-        return input;
+        case 'array':
+            return input.join('; ');
 
-    if (type == 'array')
-        return input.join('; ');
+        case 'object':
+            return Object
+                .keys(input)
+                .map((key) => `${paramCase(key)}: ${input[key]}`)
+                .join('; ');
 
-    if (type != 'object')
-        return input;
+        case 'string':
+            return input;
 
-    return Object
-        .keys(input)
-        .map((key) => `${paramCase(key)}: ${input[key]}`)
-        .join('; ');
+        default:
+            return '';
+    }
 }

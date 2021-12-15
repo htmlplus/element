@@ -1,3 +1,3 @@
-export function Component() {
+export function Element() {
     return function (constructor: Function) { }
 }

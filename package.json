@@ -7,9 +7,10 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./client": "./dist/client/index.js",
-    "./plugins": "./dist/plugins/index.js",
-    "./server": "./dist/server/index.js",
+    "./compiler": "./dist/compiler/index.js",
+    "./decorators": "./dist/decorators/index.js",
+    "./helpers": "./dist/helpers/index.js",
+    "./services": "./dist/services/index.js",
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -17,14 +18,17 @@
       "*": [
         "./dist/index.d.ts"
       ],
-      "client": [
-        "./dist/client/index.d.ts"
+      "compiler": [
+        "./dist/compiler/index.d.ts"
       ],
-      "plugins": [
-        "./dist/plugins/index.d.ts"
+      "decorators": [
+        "./dist/decorators/index.d.ts"
       ],
-      "server": [
-        "./dist/server/index.d.ts"
+      "helpers": [
+        "./dist/helpers/index.d.ts"
+      ],
+      "services": [
+        "./dist/services/index.d.ts"
       ]
     }
   },
@@ -63,6 +67,7 @@
   },
   "devDependencies": {
     "concurrently": "^6.4.0",
+    "lit-html": "^2.0.2",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.0",
     "rimraf": "^3.0.2"

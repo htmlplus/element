@@ -7,7 +7,7 @@ export const TOKEN_API_STATE = 'state';
 
 // decorators
 export const TOKEN_DECORATOR_ATTRIBUTES = 'Attributes';
-export const TOKEN_DECORATOR_COMPONENT = 'Component';
+export const TOKEN_DECORATOR_ELEMENT = 'Element';
 export const TOKEN_DECORATOR_EVENT = 'Event';
 export const TOKEN_DECORATOR_PROPERTY = 'Property';
 export const TOKEN_DECORATOR_STATE = 'State';

@@ -1,15 +1,11 @@
 import { paramCase } from 'change-case';
 import { typeOf } from '../utils/type-of.js';
 
-export const classes = (input, smart?: boolean) => {
-
-    if (typeof input == 'undefined') return input;
+export const classes = (input: any, smart?: boolean) => {
 
     const result: Array<string> = [];
 
-    const type = typeOf(input);
-
-    switch (type) {
+    switch (typeOf(input)) {
 
         case 'array': {
 
