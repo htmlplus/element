@@ -1,7 +1,7 @@
-import { createCompiler } from './compiler/index.js';
+import { compiler } from './compiler/index.js';
 import * as plugins from './plugins/index.js';
 
-const { start, next, finish } = createCompiler(
+const { start, next, finish } = compiler(
   plugins.read(),
   plugins.parse(),
   plugins.validate(),

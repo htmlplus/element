@@ -1,5 +1,10 @@
 export interface PropertyOptions {
-    // TODO: will be remove
-    mutable?: boolean;
+    /**
+     * TODO
+     */
+    attribute?: boolean | string;
+    /**
+     * Whether property value is reflected back to the associated attribute. default is `false`.
+     */
     reflect?: boolean;
 }
