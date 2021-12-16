@@ -2,8 +2,8 @@ import logUpdate from 'log-update';
 import path from 'path';
 import { Context, Plugin } from '../types/index.js';
 
-const log = (namespace: string, message?: string) => {
-  logUpdate(`${new Date().toLocaleTimeString()} [${namespace}] ${message}`);
+const log = (namespace?: string, message?: string) => {
+  logUpdate(`${new Date().toLocaleTimeString()} [@htmlplus/element]${namespace ? `[${namespace}]` : ''} ${message}`);
 }
 
 export const compiler = (...plugins: Array<Plugin>) => {
@@ -14,7 +14,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
 
   const start = async () => {
 
-    console.log(`${new Date().toLocaleTimeString()} Starting.`);
+    console.log(undefined, 'Starting.');
 
     for (const plugin of plugins) {
 
@@ -50,7 +50,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
 
       context = await plugin.next(context, global) || context;
 
-      log(plugin.name, `[${key}] Executed successfully.`);
+      log(`${key}:${plugin.name}`, 'Executed successfully.');
     }
 
     global.contexts[filename] = context;
@@ -69,7 +69,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
       log(plugin.name, 'Finished successfully.');
     }
 
-    console.log(`${new Date().toLocaleTimeString()} Finished.`);
+    log(undefined, 'Finished.');
   }
 
   return {
