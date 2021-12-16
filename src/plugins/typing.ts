@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import { TSTypeAnnotation } from '@babel/types';
 import { pascalCase } from 'change-case';
 import { Context } from '../types/index.js';

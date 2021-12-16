@@ -1,7 +1,7 @@
 import { ClassMethod, ClassProperty } from '@babel/types';
 import { capitalCase, paramCase } from 'change-case';
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 import * as CONSTANTS from '../configs/constants.js';
 import { Context } from '../types/index.js';
 import { hasDecorator, visitor } from '../utils/index.js';

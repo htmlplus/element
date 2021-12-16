@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import { Context } from '../../types/index.js';
 import { print, visitor } from '../../utils/index.js';
 
@@ -6,9 +6,7 @@ import { print, visitor } from '../../utils/index.js';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-export interface UhtmlOptions { }
-
-export const uhtml = (options?: UhtmlOptions) => {
+export const uhtml = () => {
 
   const name = 'uhtml';
 

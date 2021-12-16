@@ -15,7 +15,7 @@ const { start, next, finish } = compiler(
     members: true,
     styles: true,
   }),
-  plugins.LitHtml(),
+  plugins.litHTML(),
   plugins.print()
 );
 

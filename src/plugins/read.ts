@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { Context } from '../types/index.js';
 
 export const read = () => {

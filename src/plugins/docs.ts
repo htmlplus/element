@@ -1,7 +1,7 @@
 import { capitalCase, paramCase } from 'change-case';
-import * as fs from 'fs';
-import * as glob from 'glob';
-import * as path from 'path';
+import fs from 'fs';
+import glob from 'glob';
+import path from 'path';
 import { Context } from '../types/index.js';
 import { getInitializer, getTags, getType, printType } from '../utils/index.js';
 

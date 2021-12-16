@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import * as CONSTANTS from '../configs/constants.js';
 import { Context } from '../types/index.js';
 
