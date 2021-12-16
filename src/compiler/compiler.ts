@@ -14,7 +14,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
 
   const start = async () => {
 
-    console.log(undefined, 'Starting.');
+    log(undefined, 'Starting.');
 
     for (const plugin of plugins) {
 
