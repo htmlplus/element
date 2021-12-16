@@ -1,1 +1,1 @@
-export {}
+export * from './lit-html.js';

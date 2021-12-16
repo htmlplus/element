@@ -1,3 +1,4 @@
+export * from './lit-html/index.js';
 export * from './uhtml/index.js';
 export * from './attach.js';
 export * from './docs.js';
