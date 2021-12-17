@@ -44,7 +44,7 @@ export const extract = (options: ExtractOptions) => {
             }
         });
 
-        context.directory = path.dirname(context.filename);
+        context.directory = path.dirname(context.filename || '');
 
         context.name = context.component?.id?.name || '';
 
@@ -65,36 +65,28 @@ export const extract = (options: ExtractOptions) => {
             context.stylePath = stylePath;
         })();
 
-        context.attributes = context
-            .members
+        context.attributes = (context.members || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_ATTRIBUTES));
 
-        context.events = context
-            .members
+        context.events = (context.members || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_EVENT)) as Array<ClassProperty>;
 
-        context.methods = context
-            .members
+        context.methods = (context.members || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_METHOD)) as Array<ClassMethod>;
 
-        context.properties = context
-            .members
+        context.properties = (context.members || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_PROPERTY)) as Array<ClassProperty>;
 
-        context.states = context
-            .members
+        context.states = (context.members || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_STATE)) as Array<ClassProperty>;
 
-        context.hasMount = context
-            .members
+        context.hasMount = (context.members || [])
             .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_MOUNT);
 
-        context.hasUnmount = context
-            .members
+        context.hasUnmount = (context.members || [])
             .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT);
 
-        context.render = context
-            .members
+        context.render = (context.members || [])
             .find((member) => member['key'].name == CONSTANTS.TOKEN_METHOD_RENDER) as ClassMethod;
 
         additions.forEach((path) => path.remove());

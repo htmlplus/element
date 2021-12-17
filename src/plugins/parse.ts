@@ -10,7 +10,7 @@ export const parse = () => {
         if (!!context.ast) return;
 
         context.ast = parser(
-            context.content,
+            context.content || '',
             {
                 allowImportExportEverywhere: true,
                 plugins: [

@@ -1,32 +1,14 @@
 import t from '@babel/types';
-import { Context } from '../../types/index.js';
-import { print, visitor } from '../../utils/index.js';
-
-// TODO
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { Context } from '../../types/index.js';
+import { print, visitor } from '../../utils/index.js';
 
 export const litHTML = () => {
 
   const name = 'lit-html';
 
   const next = (context: Context) => {
-
-    // TODO
-    // context.ast?.program.body.push(
-    //   t.exportNamedDeclaration(
-    //     t.classDeclaration(
-    //       t.identifier(`Plus${context.name}`),
-    //       t.callExpression(
-    //         t.identifier('proxy'),
-    //         [
-    //           t.identifier(context.name as any)
-    //         ] 
-    //       ),
-    //       t.classBody([]) 
-    //     )
-    //   )
-    // ) 
 
     context.ast?.program.body.unshift(
       t.importDeclaration(
@@ -44,7 +26,6 @@ export const litHTML = () => {
             t.identifier('proxy'),
           )
         ],
-        // TODO
         t.stringLiteral(
           resolve(
             dirname(
@@ -61,15 +42,13 @@ export const litHTML = () => {
         t.callExpression(
           t.identifier('define'),
           [
-            t.stringLiteral(context.tag),
-            // TODO
-            // t.identifier(`Plus${context.name}`),  
+            t.stringLiteral(context.tag || ''),
             t.callExpression(
               t.identifier('proxy'),
               [
                 t.identifier(context.name as any)
               ]
-            ),
+            )
           ]
         )
       )
@@ -131,7 +110,7 @@ export const litHTML = () => {
             )
           )
 
-          path.skip()
+          path.skip();
         }
       }
     })

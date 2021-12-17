@@ -14,9 +14,9 @@ export const typing = (options: TypingOptions) => {
 
     const next = (context: Context) => {
 
-        // TODO
-        const v5 = pascalCase(options.prefix || '') + context.name;
-        const v6 = `HTML${v5}Element`;
+        const className = pascalCase(options.prefix || '') + context.name;
+
+        const elementName = `HTML${className}Element`;
 
         visitor(context.ast as any, {
             Program(path) {
@@ -27,11 +27,11 @@ export const typing = (options: TypingOptions) => {
                             t.tsModuleBlock(
                                 [
                                     t.tsInterfaceDeclaration(
-                                        t.identifier(v6),
+                                        t.identifier(elementName),
                                         null,
                                         [],
                                         t.tsInterfaceBody([
-                                            ...context.properties.map((property) => Object.assign(
+                                            ...(context.properties || []).map((property) => Object.assign(
                                                 t.tSPropertySignature(
                                                     property.key,
                                                     property.typeAnnotation as TSTypeAnnotation
@@ -48,7 +48,7 @@ export const typing = (options: TypingOptions) => {
                                         [
                                             t.variableDeclarator(
                                                 Object.assign(
-                                                    t.identifier(v6),
+                                                    t.identifier(elementName),
                                                     {
                                                         typeAnnotation: t.tSTypeAnnotation(
                                                             t.tSTypeLiteral(
@@ -56,14 +56,14 @@ export const typing = (options: TypingOptions) => {
                                                                     t.tSPropertySignature(
                                                                         t.identifier('prototype'),
                                                                         t.tsTypeAnnotation(
-                                                                            t.tSTypeReference(t.identifier(v6))
+                                                                            t.tSTypeReference(t.identifier(elementName))
                                                                         )
                                                                     ),
                                                                     t.tSConstructSignatureDeclaration(
                                                                         null,
                                                                         [],
                                                                         t.tSTypeAnnotation(
-                                                                            t.tSTypeReference(t.identifier(v6))
+                                                                            t.tSTypeReference(t.identifier(elementName))
                                                                         )
                                                                     )
                                                                 ]
@@ -75,11 +75,11 @@ export const typing = (options: TypingOptions) => {
                                         ]
                                     ),
                                     t.tsInterfaceDeclaration(
-                                        t.identifier(v5),
+                                        t.identifier(className),
                                         null,
                                         [],
                                         t.tsInterfaceBody([
-                                            ...context.properties.map((property) => Object.assign(
+                                            ...(context.properties || []).map((property) => Object.assign(
                                                 t.tSPropertySignature(
                                                     property.key,
                                                     property.typeAnnotation as TSTypeAnnotation
@@ -98,12 +98,12 @@ export const typing = (options: TypingOptions) => {
                                         t.tsInterfaceBody(
                                             [
                                                 t.tSPropertySignature(
-                                                    t.stringLiteral(context.tag),
+                                                    t.stringLiteral(context.tag || ''),
                                                     t.tSTypeAnnotation(
                                                         t.tSIntersectionType(
                                                             [
                                                                 t.tSTypeReference(
-                                                                    t.identifier(v5)
+                                                                    t.identifier(className)
                                                                 )
                                                             ]
                                                         )

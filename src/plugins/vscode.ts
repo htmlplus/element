@@ -26,7 +26,7 @@ export const vscode = (options: VscodeOptions) => {
 
             try {
 
-                const source = path.resolve(context.directory, `${context.key}.md`);
+                const source = path.resolve(context.directory || '', `${context.key}.md`);
 
                 return fs.readFileSync(source, 'utf8');
             }
@@ -53,8 +53,7 @@ export const vscode = (options: VscodeOptions) => {
             return '';
         })();
 
-        const properties = context
-            .properties
+        const properties = (context.properties || [])
             .map((property) => {
 
                 const name = paramCase(property.key['name']);

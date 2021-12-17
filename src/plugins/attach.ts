@@ -32,7 +32,7 @@ export const attach = (options: AttachOptions) => {
           t.identifier(CONSTANTS.TOKEN_STATIC_MEMBERS),
           t.arrayExpression(
             [
-              ...context.properties.map((property) => {
+              ...(context.properties || []).map((property) => {
 
                 const type = (property as any).typeAnnotation?.typeAnnotation?.type;
 
@@ -51,7 +51,7 @@ export const attach = (options: AttachOptions) => {
 
                 return t.arrayExpression(elements);
               }),
-              ...context.methods.map((property) => {
+              ...(context.methods || []).map((property) => {
 
                 const elements: Array<any> = [
                   t.stringLiteral(property.key['name']),

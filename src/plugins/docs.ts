@@ -30,13 +30,13 @@ export const docs = (options: DocsOptions) => {
 
         const experimental = tags.some((tag) => tag.key == 'experimental');
 
-        const externals = fs.existsSync(path.resolve(context.directory, 'externals'));
+        const externals = fs.existsSync(path.resolve(context.directory || '', 'externals'));
 
         const examples = (() => {
 
             const items = [];
 
-            const source = path.join(context.directory, 'examples');
+            const source = path.join(context.directory || '', 'examples');
 
             if (!fs.existsSync(source)) return items;
 
@@ -89,7 +89,7 @@ export const docs = (options: DocsOptions) => {
 
             try {
 
-                const source = path.resolve(context.directory, `${context.key}.md`);
+                const source = path.resolve(context.directory || '', `${context.key}.md`);
 
                 return fs.readFileSync(source, 'utf8');
             }
@@ -116,8 +116,7 @@ export const docs = (options: DocsOptions) => {
             return '';
         })();
 
-        const properties = context
-            .properties
+        const properties = (context.properties || [])
             .map((property) => {
 
                 const tags = getTags(property);
@@ -203,8 +202,7 @@ export const docs = (options: DocsOptions) => {
                 }
             });
 
-        const methods = context
-            .methods
+        const methods = (context.methods || [])
             .map((method) => {
 
                 const tags = getTags(method);
@@ -280,8 +278,7 @@ export const docs = (options: DocsOptions) => {
                 }
             });
 
-        const events = context
-            .events
+        const events = (context.events || [])
             .map((event) => {
 
                 const tags = getTags(event);

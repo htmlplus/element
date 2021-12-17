@@ -33,15 +33,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
     const directory = path.dirname(filename);
 
     let context: Context = {
-      filename,
-      directory,
-      content: '',
-      tag: '',
-      members: [],
-      states: [],
-      properties: [],
-      events: [],
-      methods: [],
+      filename
     }
 
     for (const plugin of plugins) {
