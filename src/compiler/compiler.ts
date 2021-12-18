@@ -45,6 +45,8 @@ export const compiler = (...plugins: Array<Plugin>) => {
       log(`${key}:${plugin.name}`, 'Executed successfully.');
     }
 
+    log(key, 'Executed successfully.');
+
     global.contexts[filename] = context;
 
     return context;
