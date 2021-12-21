@@ -1,8 +1,13 @@
 import { getEventName } from './get-event-name.js';
-import { isEvent } from './is-event.js';
 import { updateAttribute } from './update-attribute.js';
 
 // TODO
+const isEvent = (input: string) => {
+
+    if (!input) return false;
+  
+    return !!input.match(/on[A-Z]\w+/g);
+}
 export const sync = (node: any, prev: any) => (next: any = {}) => {
 
     const prevClass = (prev.class || '').split(' ');
