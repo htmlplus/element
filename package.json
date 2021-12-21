@@ -1,28 +1,19 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "MIT",
   "author": "Masood Abdolian",
   "description": "Compiler of HTMLPlus",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
-  "typings": "dist/index.d.ts",  
+  "typings": "dist/index.d.ts",
   "exports": {
     ".": {
       "default": "./dist/index.js"
     },
     "./compiler": {
       "default": "./dist/compiler/index.js"
-    },
-    "./decorators": {
-      "default": "./dist/decorators/index.js"
-    },
-    "./helpers": {
-      "default": "./dist/helpers/index.js"
-    },
-    "./services": {
-      "default": "./dist/services/index.js"
     }
   },
   "typesVersions": {
@@ -32,15 +23,6 @@
       ],
       "compiler": [
         "./dist/compiler/index.d.ts"
-      ],
-      "decorators": [
-        "./dist/decorators/index.d.ts"
-      ],
-      "helpers": [
-        "./dist/helpers/index.d.ts"
-      ],
-      "services": [
-        "./dist/services/index.d.ts"
       ]
     }
   },
