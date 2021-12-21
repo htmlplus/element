@@ -1,13 +1,10 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "MIT",
   "author": "Masood Abdolian",
   "description": "Compiler of HTMLPlus",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "exports": {
     ".": {
       "default": "./dist/index.js"
