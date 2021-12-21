@@ -1,4 +1,40 @@
-# Element Compiler
+# Create Custom HTML Element
+
+```tsx
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  render() {
+    return <h1>Hi Everybody</h1>
+  }
+}
+
+```
+
+```html
+<plus-my-element></plus-my-element>
+```
+
+```tsx
+import { Element, Property } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  @Property()
+  name?: string = 'Simon';
+
+  render() {
+    return <h1>Hi {this.name}</h1>
+  }
+}
+
+```
+
+```html
+<plus-my-element name="Jan"></plus-my-element>
+```
 
 ```js
 import { compiler } from '@htmlplus/element/compiler';
