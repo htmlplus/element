@@ -14,6 +14,9 @@
     },
     "./compiler": {
       "default": "./dist/compiler/index.js"
+    },
+    "./compiler/plugins": {
+      "default": "./dist/plugins/index.js"
     }
   },
   "typesVersions": {
@@ -23,6 +26,9 @@
       ],
       "compiler": [
         "./dist/compiler/index.d.ts"
+      ],
+      "compiler/plugins": [
+        "./dist/plugins/index.d.ts"
       ]
     }
   },
