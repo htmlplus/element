@@ -15,8 +15,14 @@
     "./compiler": {
       "default": "./dist/compiler/index.js"
     },
-    "./compiler/plugins": {
-      "default": "./dist/plugins/index.js"
+    "./decorators": {
+      "default": "./dist/decorators/index.js"
+    },
+    "./helpers": {
+      "default": "./dist/helpers/index.js"
+    },
+    "./services": {
+      "default": "./dist/services/index.js"
     }
   },
   "typesVersions": {
@@ -27,8 +33,14 @@
       "compiler": [
         "./dist/compiler/index.d.ts"
       ],
-      "compiler/plugins": [
-        "./dist/plugins/index.d.ts"
+      "decorators": [
+        "./dist/decorators/index.d.ts"
+      ],
+      "helpers": [
+        "./dist/helpers/index.d.ts"
+      ],
+      "services": [
+        "./dist/services/index.d.ts"
       ]
     }
   },

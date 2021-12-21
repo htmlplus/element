@@ -6,7 +6,7 @@ const log = (namespace?: string, message?: string) => {
   logUpdate(`${new Date().toLocaleTimeString()} [@htmlplus/element]${namespace ? `[${namespace}]` : ''} ${message}`);
 }
 
-export default (...plugins: Array<Plugin>) => {
+export const compiler = (...plugins: Array<Plugin>) => {
 
   const global = {
     contexts: {}
