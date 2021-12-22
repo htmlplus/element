@@ -6,7 +6,7 @@ export * from './extract.js';
 export * from './parse.js';
 export * from './print.js';
 export * from './read.js';
-export * from './scss.js';
+export * from './sass.js';
 export * from './typing.js';
 export * from './validate.js';
 export * from './vscode.js';
