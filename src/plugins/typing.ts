@@ -111,6 +111,28 @@ export const typing = (options: TypingOptions) => {
                                                 )
                                             ]
                                         )
+                                    ),
+                                    t.exportNamedDeclaration(
+                                        t.tSModuleDeclaration(
+                                            t.identifier('JSX'),
+                                            t.tsModuleBlock([
+                                                t.tsInterfaceDeclaration(
+                                                    t.identifier('IntrinsicElements'),
+                                                    undefined,
+                                                    undefined,
+                                                    t.tsInterfaceBody([
+                                                        t.tsPropertySignature(
+                                                            t.stringLiteral(context.tag || ''),
+                                                            t.tsTypeAnnotation(
+                                                                t.tsTypeReference(
+                                                                    t.identifier(className)
+                                                                )
+                                                            )
+                                                        )
+                                                    ])
+                                                )
+                                            ])
+                                        )
                                     )
                                 ]
                             )
