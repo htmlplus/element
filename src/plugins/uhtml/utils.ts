@@ -22,13 +22,13 @@ export const proxy = (Class: any) => {
 
   let instance, update;
 
-  const members = Class[CONSTANTS.TOKEN_STATIC_MEMBERS] || [];
+  const members = Class[CONSTANTS.TOKEN_STATIC_MEMBERS] || {};
 
   const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
 
   const getValue = (key, value) => {
 
-    const [, type] = members.find((property) => property[0] == key);
+    const [type] = members[key];
 
     switch (type) {
 
@@ -73,28 +73,32 @@ export const proxy = (Class: any) => {
         this.render();
       }
 
-      for (const [key, type] of members) {
+      Object
+        .keys(members)
+        .map((key) => {
 
-        let get, set;
+          const [type] = members[key];
 
-        if (type === CONSTANTS.TYPE_FUNCTION) {
-          get = () => instance[key].bind(instance);
-        }
-        else {
-          get = () => instance[key];
-          set = (value) => instance[key] = value;
-        }
-
-        Object.defineProperty(this, key, { get, set })
-      }
+          let get, set;
+  
+          if (type === CONSTANTS.TYPE_FUNCTION) {
+            get = () => instance[key].bind(instance);
+          }
+          else {
+            get = () => instance[key];
+            set = (value) => instance[key] = value;
+          }
+  
+          Object.defineProperty(this, key, { get, set })
+        })
 
       this.attachShadow({ mode: 'open' });
     }
 
     static get observedAttributes() {
-      return members
-        .filter(([, type]) => type != CONSTANTS.TYPE_FUNCTION)
-        .map(([key]) => key);
+      return Object
+        .keys(members)
+        .filter((key) => members[key][0] != CONSTANTS.TYPE_FUNCTION)
     }
 
     attributeChangedCallback(name, prev, next) {

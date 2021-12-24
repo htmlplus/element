@@ -1,17 +1,33 @@
-import t from '@babel/types';
+import t, { TSTypeAnnotation } from '@babel/types';
+import { pascalCase } from 'change-case';
 import * as CONSTANTS from '../configs/constants.js';
 import { Context } from '../types/index.js';
+import { visitor } from '../utils/index.js';
+
+const defaults: AttachOptions = {
+  dependencies: true,
+  members: true,
+  styles: true,
+  typings: true,
+}
 
 export interface AttachOptions {
+  dependencies?: boolean;
   members?: boolean;
   styles?: boolean;
+  typings?: boolean;
 }
 
 export const attach = (options: AttachOptions) => {
 
+  options = Object.assign({}, defaults, options);
+
   const name = 'attach';
 
   const next = (context: Context) => {
+
+    // TODO
+    if (options.dependencies) { }
 
     if (options.styles && context.styleParsed)
       context.component?.body.body.unshift(
@@ -30,35 +46,55 @@ export const attach = (options: AttachOptions) => {
       context.component?.body.body.unshift(
         t.classProperty(
           t.identifier(CONSTANTS.TOKEN_STATIC_MEMBERS),
-          t.arrayExpression(
+          t.objectExpression(
             [
               ...(context.properties || []).map((property) => {
 
                 const type = (property as any).typeAnnotation?.typeAnnotation?.type;
 
-                const elements: Array<any> = [
-                  t.stringLiteral(property.key['name'])
-                ];
+                const elements: Array<any> = [];
 
-                if (type == 'TSBooleanKeyword')
-                  elements.push(t.stringLiteral(CONSTANTS.TYPE_BOOLEAN));
+                switch (type) {
 
-                if (type == 'TSStringKeyword')
-                  elements.push(t.stringLiteral(CONSTANTS.TYPE_STRING));
+                  case 'TSBooleanKeyword':
+                    elements.push(t.stringLiteral(CONSTANTS.TYPE_BOOLEAN));
+                    break;
 
-                if (type == 'TSNumberKeyword')
-                  elements.push(t.stringLiteral(CONSTANTS.TYPE_NUMBER));
+                  case 'TSStringKeyword':
+                    elements.push(t.stringLiteral(CONSTANTS.TYPE_STRING));
+                    break;
 
-                return t.arrayExpression(elements);
+                  case 'TSNumberKeyword':
+                    elements.push(t.stringLiteral(CONSTANTS.TYPE_NUMBER));
+                    break;
+
+                  default:
+                    elements.push(t.nullLiteral());
+                    break;
+                }
+
+                if (property.value)
+                  elements.push(property.value);
+
+                return t.objectProperty(
+                  t.identifier(
+                    property.key['name']
+                  ), 
+                  t.arrayExpression(elements)
+                )
               }),
               ...(context.methods || []).map((property) => {
 
                 const elements: Array<any> = [
-                  t.stringLiteral(property.key['name']),
                   t.stringLiteral(CONSTANTS.TYPE_FUNCTION)
                 ];
 
-                return t.arrayExpression(elements);
+                return t.objectProperty(
+                  t.identifier(
+                    property.key['name']
+                  ), 
+                  t.arrayExpression(elements)
+                )
               })
             ]
           ),
@@ -68,6 +104,141 @@ export const attach = (options: AttachOptions) => {
           true,
         )
       )
+    }
+
+    if (options.typings) {
+
+      const className = pascalCase(context.tag?.split('-').slice(1).join('-') || '');
+
+      const elementName = `HTML${className}Element`;
+
+      visitor(context.ast as any, {
+          Program(path) {
+              path.node.body.push(
+                  Object.assign(
+                      t.tsModuleDeclaration(
+                          t.identifier('global'),
+                          t.tsModuleBlock(
+                              [
+                                  t.tsInterfaceDeclaration(
+                                      t.identifier(elementName),
+                                      null,
+                                      [],
+                                      t.tsInterfaceBody([
+                                          ...(context.properties || []).map((property) => Object.assign(
+                                              t.tSPropertySignature(
+                                                  property.key,
+                                                  property.typeAnnotation as TSTypeAnnotation
+                                              ),
+                                              {
+                                                  optional: property.optional,
+                                                  leadingComments: property.leadingComments
+                                              }
+                                          ))
+                                      ])
+                                  ),
+                                  t.variableDeclaration(
+                                      'var',
+                                      [
+                                          t.variableDeclarator(
+                                              Object.assign(
+                                                  t.identifier(elementName),
+                                                  {
+                                                      typeAnnotation: t.tSTypeAnnotation(
+                                                          t.tSTypeLiteral(
+                                                              [
+                                                                  t.tSPropertySignature(
+                                                                      t.identifier('prototype'),
+                                                                      t.tsTypeAnnotation(
+                                                                          t.tSTypeReference(t.identifier(elementName))
+                                                                      )
+                                                                  ),
+                                                                  t.tSConstructSignatureDeclaration(
+                                                                      null,
+                                                                      [],
+                                                                      t.tSTypeAnnotation(
+                                                                          t.tSTypeReference(t.identifier(elementName))
+                                                                      )
+                                                                  )
+                                                              ]
+                                                          )
+                                                      )
+                                                  }
+                                              )
+                                          )
+                                      ]
+                                  ),
+                                  t.tsInterfaceDeclaration(
+                                      t.identifier(className),
+                                      null,
+                                      [],
+                                      t.tsInterfaceBody([
+                                          ...(context.properties || []).map((property) => Object.assign(
+                                              t.tSPropertySignature(
+                                                  property.key,
+                                                  property.typeAnnotation as TSTypeAnnotation
+                                              ),
+                                              {
+                                                  optional: property.optional,
+                                                  leadingComments: property.leadingComments
+                                              }
+                                          ))
+                                      ])
+                                  ),
+                                  t.tsInterfaceDeclaration(
+                                      t.identifier('HTMLElementTagNameMap'),
+                                      null,
+                                      [],
+                                      t.tsInterfaceBody(
+                                          [
+                                              t.tSPropertySignature(
+                                                  t.stringLiteral(context.tag || ''),
+                                                  t.tSTypeAnnotation(
+                                                      t.tSIntersectionType(
+                                                          [
+                                                              t.tSTypeReference(
+                                                                  t.identifier(className)
+                                                              )
+                                                          ]
+                                                      )
+                                                  )
+                                              )
+                                          ]
+                                      )
+                                  ),
+                                  t.exportNamedDeclaration(
+                                      t.tSModuleDeclaration(
+                                          t.identifier('JSX'),
+                                          t.tsModuleBlock([
+                                              t.tsInterfaceDeclaration(
+                                                  t.identifier('IntrinsicElements'),
+                                                  undefined,
+                                                  undefined,
+                                                  t.tsInterfaceBody([
+                                                      t.tsPropertySignature(
+                                                          t.stringLiteral(context.tag || ''),
+                                                          t.tsTypeAnnotation(
+                                                              t.tsTypeReference(
+                                                                  t.identifier(className)
+                                                              )
+                                                          )
+                                                      )
+                                                  ])
+                                              )
+                                          ])
+                                      )
+                                  )
+                              ]
+                          )
+                      ),
+                      {
+                          declare: true,
+                          global: true,
+                      }
+                  )
+              )
+          }
+      })
     }
   }
 
