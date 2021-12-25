@@ -1,5 +1,5 @@
 export interface ListenOptions {
-  target?: 'body' | 'document' | 'window';
+  target?: 'host' | 'body' | 'document' | 'window';
   once?: boolean;
   passive?: boolean;
   signal?: AbortSignal;
