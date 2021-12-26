@@ -2,7 +2,7 @@
 
 ## Install
 ```bash
-npm i @htmlplus/element
+npm init @htmlplus/element
 ```
 
 ## First element
