@@ -2,7 +2,7 @@
   "name": "@htmlplus/element",
   "version": "0.0.11",
   "license": "MIT",
-  "author": "Masood Abdolian",
+  "author": "Masood Abdolian <m.abdolian@gmail.com>",
   "description": "Compiler of HTMLPlus",
   "type": "module",
   "exports": {
