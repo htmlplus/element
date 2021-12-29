@@ -1,8 +1,57 @@
 # Create Custom HTML Element
 
+## Table of content
+- [Install](#install)
+- [Start](#start)
+- [First element](#Firstelement)
+- [Decorators](#decorators)
+  - [Element](#element)
+  - [Property](#property)
+  - [Event](#event)
+  - [Method](#method)
+  - [Watch](#watch)
+  - [Listen](#listen)
+  - [State](#state)
+  - [Bind](#bind)
+- [Helpers](#helpers)
+  - [children](#children)
+  - [classes](#classes)
+  - [direction](#direction)
+  - [event](#event)
+  - [event-path](#event-path)
+  - [host](#host)
+  - [is-ltr](#is-ltr)
+  - [is-rtl](#is-rtl)
+  - [is-server](#is-server)
+  - [query](#query)
+  - [slots](#slots)
+  - [styles](#styles)
+  - [to-unit](#to-unit)
+  - [type-of](#type-of)
+- [Services](#services)
+  - [Link](#link)
+- [Compiler](#compiler)
+
 ## Install
+Choose one of the commands.
+
+### With NPM:
 ```bash
 npm init @htmlplus/element@latest
+```
+### With Yarn:
+```bash
+yarn create @htmlplus/element
+```
+### With PNPM:
+```bash
+pnpm create @htmlplus/element
+```
+
+## Start
+```bash
+npm i
+npm start
 ```
 
 ## First element
@@ -22,7 +71,11 @@ export class MyElement {
 <my-element></my-element>
 ```
 
-## Auto tag name
+## Decorators
+TODO
+
+### Element
+TODO
 
 ```tsx
 import { Element } from '@htmlplus/element';
@@ -39,11 +92,12 @@ export class MyElement {
 <my-element></my-element>
 ```
 
-## Property decorator
+### Property
+TODO
 
-Decorator Options:
-- attribute: TODO
-- reflect: TODO
+Options:
+- **attribute**: TODO
+- **reflect**: TODO
 
 ```tsx
 import { Element, Property } from '@htmlplus/element';
@@ -69,42 +123,14 @@ export class MyGreeting {
 </script>
 ```
 
-## Property decorator - reflect
+### Event
+TODO
 
-```tsx
-import { Element, Property } from '@htmlplus/element';
-
-@Element()
-export class MyButton {
-
-  @Property({ reflect: true })
-  disabled?: boolean = true;
-
-  render() {
-    return <button disabled={this.disabled}>
-      <slot />
-    </button>
-  }
-}
-```
-
-```html
-<my-button>Button</my-button>
-
-<style>
-  my-button[disabled] {
-    opacity: 0.5;
-  }
-</style>
-```
-
-## Event decorator
-
-Decorator Options:
-- name: A string custom event name to override the default.
-- bubbles: A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
-- cancelable: A Boolean indicating whether the event is cancelable. default is `false`.
-- composed: A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
+Options:
+- **name**: A string custom event name to override the default.
+- **bubbles**: A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
+- **cancelable**: A Boolean indicating whether the event is cancelable. default is `false`.
+- **composed**: A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
 
 ```tsx
 import { Element, Event, EventEmitter } from '@htmlplus/element';
@@ -133,25 +159,8 @@ export class MyButton {
 </script>
 ```
 
-## Bind decorator
-
-```tsx
-import { Element, Bind } from '@htmlplus/element';
-
-@Element()
-export class MyButton {
-
-  @Bind()
-  onScroll(event) {
-    console.log(event)
-  }
-
-  connectedCallback() {
-    document.addEventListener('scroll', this.onScroll);
-  }
-}
-```
-## Method decorator
+### Method
+TODO
 
 ```tsx
 import { Element, Method } from '@htmlplus/element';
@@ -171,7 +180,8 @@ export class MyDialog {
 </script>
 ```
 
-## Watch decorator
+### Watch
+TODO
 
 ```tsx
 import { Element, Property, Watch } from '@htmlplus/element';
@@ -187,14 +197,15 @@ export class MyElement {
 }
 ```
 
-## Listen decorator
+### Listen
+TODO
 
-Decorator Options:
-  - target: TODO
-  - once: TODO
-  - passive: TODO
-  - signal: TODO
-  - capture: TODO
+Options:
+  - **target**: TODO
+  - **once**: TODO
+  - **passive**: TODO
+  - **signal**: TODO
+  - **capture**: TODO
 
 ```tsx
 import { Element, Listen } from '@htmlplus/element';
@@ -206,7 +217,8 @@ export class MyButton {
 }
 ```
 
-## State decorator
+### State
+TODO
 
 ```tsx
 import { Element, Listen, State } from '@htmlplus/element';
@@ -230,7 +242,103 @@ export class MySwitch {
 }
 ```
 
-# Compiler
+### Bind
+TODO
+
+```tsx
+import { Element, Bind } from '@htmlplus/element';
+
+@Element()
+export class MyButton {
+
+  @Bind()
+  onScroll(event) {
+    console.log(event)
+  }
+
+  connectedCallback() {
+    document.addEventListener('scroll', this.onScroll);
+  }
+}
+```
+
+## Helpers
+TODO
+
+### children
+TODO
+
+```js
+import { Element, children } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  connectedCallback() {
+    console.log(children(this)); // [h1, h2, h3]
+  }
+}
+```
+
+```html
+<my-element>
+  <h1>Child 1</h1>
+  <h2>Child 2</h2>
+  <h3>Child 3</h3>
+</my-element>
+```
+
+### classes
+TODO
+
+### direction
+TODO
+
+### event
+TODO
+
+### event-path
+TODO
+
+### host
+TODO
+
+### is-ltr
+TODO
+
+```js
+import { Element, isLTR } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  connectedCallback() {
+    console.log(isLTR(this));
+  }
+}
+```
+
+### is-rtl
+TODO
+
+### is-server
+TODO
+
+### query
+TODO
+
+### slots
+TODO
+
+### styles
+TODO
+
+### to-unit
+TODO
+
+### type-of
+TODO
+
+## Services
+TODO
 
 ```js
 import compiler from '@htmlplus/element/compiler';
@@ -240,7 +348,8 @@ const { start, next, finish } = compiler(
 );
 ```
 
-# Compiler plugins
+## Compiler plugins
+TODO
 
 ```js
 import compiler, * as plugins from '@htmlplus/element/compiler';
