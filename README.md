@@ -1,4 +1,5 @@
 # Create Custom HTML Element
+TODO
 
 ## Table of content
 - [Install](#install)
@@ -14,20 +15,16 @@
   - [State](#state)
   - [Bind](#bind)
 - [Helpers](#helpers)
-  - [children](#children)
   - [classes](#classes)
   - [direction](#direction)
   - [event](#event)
-  - [event-path](#event-path)
   - [host](#host)
-  - [is-ltr](#is-ltr)
-  - [is-rtl](#is-rtl)
-  - [is-server](#is-server)
+  - [isRTL](#isRtl)
+  - [isServer](#isServer)
   - [query](#query)
   - [slots](#slots)
   - [styles](#styles)
-  - [to-unit](#to-unit)
-  - [type-of](#type-of)
+  - [toUnit](#toUnit)
 - [Services](#services)
   - [Link](#link)
 - [Compiler](#compiler)
@@ -49,12 +46,15 @@ pnpm create @htmlplus/element
 ```
 
 ## Start
+TODO
 ```bash
+cd htmlplus-project
 npm i
 npm start
 ```
 
 ## First element
+TODO
 
 ```tsx
 import { Element } from '@htmlplus/element';
@@ -118,8 +118,7 @@ export class MyGreeting {
 <my-greeting name="Jan" id="element"></my-greeting>
 
 <script>
-  const element = document.getElementById('element');
-  console.log(element.name); // Jan
+  document.getElementById('element').name; // Jan
 </script>
 ```
 
@@ -246,7 +245,7 @@ export class MySwitch {
 TODO
 
 ```tsx
-import { Element, Bind } from '@htmlplus/element';
+import { Bind, Element } from '@htmlplus/element';
 
 @Element()
 export class MyButton {
@@ -265,26 +264,11 @@ export class MyButton {
 ## Helpers
 TODO
 
-### children
-TODO
-
 ```js
-import { Element, children } from '@htmlplus/element';
+import { direction } from '@htmlplus/element';
+import * as Helpers from '@htmlplus/element/helpers';
 
-@Element()
-export class MyElement {
-  connectedCallback() {
-    console.log(children(this)); // [h1, h2, h3]
-  }
-}
-```
-
-```html
-<my-element>
-  <h1>Child 1</h1>
-  <h2>Child 2</h2>
-  <h3>Child 3</h3>
-</my-element>
+direction === Helpers.direction // true
 ```
 
 ### classes
@@ -293,37 +277,109 @@ TODO
 ### direction
 TODO
 
-### event
-TODO
-
-### event-path
-TODO
-
-### host
-TODO
-
-### is-ltr
-TODO
-
 ```js
-import { Element, isLTR } from '@htmlplus/element';
+import { Element, direction } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
   connectedCallback() {
-    console.log(isLTR(this));
+    direction(this); // 'ltr' | 'rtl'
   }
 }
 ```
 
-### is-rtl
+### event
 TODO
 
-### is-server
+Options: TODO
+
+```js
+import { Bind, Element, on, off } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  @Bind()
+  onClick(event) {
+    console.log(event);
+  }
+
+  connectedCallback() {
+    on(window, 'click', this.onClick/*, options*/);
+  }
+
+  disconnectedCallback() {
+    off(window, 'click', this.onClick/*, options*/);
+  }
+}
+```
+
+### host
 TODO
+
+```js
+import { Element, host } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  connectedCallback() {
+    host(this); // <my-element></my-element>
+  }
+}
+```
+
+### isRTL
+TODO
+
+```js
+import { Element, isRTL } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  connectedCallback() {
+    isRTL(this); // false | true
+  }
+}
+```
+
+### isServer
+TODO
+
+```js
+import { Element, isServer } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  connectedCallback() {
+    isServer(this) // false | true
+  }
+}
+```
 
 ### query
 TODO
+
+```js
+import { Element, query } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  connectedCallback() {
+    query(this, 'h1');      // <h1></h1>
+    query(this, '#first');  // <h2></h2>
+    query(this, '.second'); // <h3></h3>
+  }
+
+  render() {
+    <div>
+      <h1></h1>
+      <h2 id="first"></h2>
+      <h3 class="second"></h3>
+    </div>
+  }
+}
+```
 
 ### slots
 TODO
@@ -331,11 +387,30 @@ TODO
 ### styles
 TODO
 
-### to-unit
+### toUnit
 TODO
 
-### type-of
-TODO
+```js
+import { Element, Property, toUnit } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  @Property()
+  width?: string | number;
+  
+  render() {
+    return <div style={`width: ${toUnit(this.width)}`}>
+      <slot />
+    </div>
+  }
+}
+```
+
+```html
+<my-element width="150"  ></my-element> <!-- 150px -->
+<my-element width="150px"></my-element> <!-- 150px -->
+```
 
 ## Services
 TODO
