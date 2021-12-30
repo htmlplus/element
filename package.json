@@ -1,6 +1,6 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "license": "MIT",
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
   "description": "Compiler of HTMLPlus",
