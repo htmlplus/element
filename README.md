@@ -47,6 +47,7 @@ pnpm create @htmlplus/element
 
 ## Start
 TODO
+
 ```bash
 cd htmlplus-project
 npm i
@@ -103,7 +104,7 @@ Options:
 import { Element, Property } from '@htmlplus/element';
 
 @Element()
-export class MyGreeting {
+export class SayGreeting {
 
   @Property()
   name?: string = 'Simon';
@@ -115,10 +116,10 @@ export class MyGreeting {
 ```
 
 ```html
-<my-greeting name="Jan" id="element"></my-greeting>
+<say-greeting name="Jan" id="greeting"></say-greeting>
 
 <script>
-  document.getElementById('element').name; // Jan
+  document.getElementById('greeting').name; // Jan
 </script>
 ```
 
@@ -167,7 +168,9 @@ import { Element, Method } from '@htmlplus/element';
 @Element()
 export class MyDialog {
   @Method()
-  open() { }
+  open() { 
+    /* TODO */
+  }
 }
 ```
 
@@ -212,7 +215,9 @@ import { Element, Listen } from '@htmlplus/element';
 @Element()
 export class MyButton {
   @Listen('click')
-  onClick(event) { }
+  onClick(event) { 
+    /* TODO */
+  }
 }
 ```
 
@@ -386,6 +391,30 @@ TODO
 
 ### styles
 TODO
+
+```js
+import { Element, Property, styles } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  @Property()
+  top?: number = 0;
+
+  get styles() {
+    return styles({
+      top: this.top + 'px',
+      position: 'absolute',
+    })
+  }
+  
+  render() {
+    return <div style={this.styles}>
+      <slot />
+    </div>
+  }
+}
+```
 
 ### toUnit
 TODO
