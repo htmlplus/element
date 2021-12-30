@@ -2,7 +2,6 @@ export * from './api.js';
 export * from './classes.js';
 export * from './direction.js';
 export * from './event.js';
-export * from './event-path.js';
 export * from './host.js';
 export * from './is-rtl.js';
 export * from './is-server.js';
