@@ -51,10 +51,10 @@ export const getType = (file: File, node: any, options) => {
 
                 try {
 
-                    const filename = resolve(directory, path.node.source.value + '.ts');
+                    const filePath = resolve(directory, path.node.source.value + '.ts');
 
                     path.$ast = path.$ast || parse(
-                        fs.readFileSync(filename, 'utf8'),
+                        fs.readFileSync(filePath, 'utf8'),
                         {
                             allowImportExportEverywhere: true,
                             plugins: [
@@ -68,7 +68,7 @@ export const getType = (file: File, node: any, options) => {
                         path.$ast,
                         node,
                         {
-                            directory: dirname(filename),
+                            directory: dirname(filePath),
                         }
                     );
                 }

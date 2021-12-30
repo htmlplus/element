@@ -26,14 +26,14 @@ export default (...plugins: Array<Plugin>) => {
     }
   }
 
-  const next = async (filename: string) => {
+  const next = async (filePath: string) => {
 
-    const key = filename.split(/[\/|\\]/g).pop();
+    const key = filePath.split(/[\/|\\]/g).pop();
 
-    const directory = path.dirname(filename);
+    const directory = path.dirname(filePath);
 
     let context: Context = {
-      filename
+      filePath
     }
 
     for (const plugin of plugins) {
@@ -47,7 +47,7 @@ export default (...plugins: Array<Plugin>) => {
 
     log(key, 'Executed successfully.');
 
-    global.contexts[filename] = context;
+    global.contexts[filePath] = context;
 
     return context;
   }

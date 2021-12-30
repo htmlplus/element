@@ -30,7 +30,7 @@ export const attach = (options: AttachOptions) => {
     if (options.dependencies) { }
 
     if (options.styles && context.styleParsed)
-      context.component?.body.body.unshift(
+      context.class?.body.body.unshift(
         t.classProperty(
           t.identifier(CONSTANTS.TOKEN_STATIC_STYLES),
           t.stringLiteral(context.styleParsed),
@@ -43,12 +43,12 @@ export const attach = (options: AttachOptions) => {
 
     if (options.members) {
 
-      context.component?.body.body.unshift(
+      context.class?.body.body.unshift(
         t.classProperty(
           t.identifier(CONSTANTS.TOKEN_STATIC_MEMBERS),
           t.objectExpression(
             [
-              ...(context.properties || []).map((property) => {
+              ...(context.classProperties || []).map((property) => {
 
                 const type = (property as any).typeAnnotation?.typeAnnotation?.type;
 
@@ -83,7 +83,7 @@ export const attach = (options: AttachOptions) => {
                   t.arrayExpression(elements)
                 )
               }),
-              ...(context.methods || []).map((property) => {
+              ...(context.classMethods || []).map((property) => {
 
                 const elements: Array<any> = [
                   t.stringLiteral(CONSTANTS.TYPE_FUNCTION)
@@ -108,11 +108,11 @@ export const attach = (options: AttachOptions) => {
 
     if (options.typings) {
 
-      const className = pascalCase(context.tag?.split('-').slice(1).join('-') || '');
+      const className = pascalCase(context.componentTag?.split('-').slice(1).join('-') || '');
 
       const elementName = `HTML${className}Element`;
 
-      visitor(context.ast as any, {
+      visitor(context.fileAST as any, {
           Program(path) {
               path.node.body.push(
                   Object.assign(
@@ -125,7 +125,7 @@ export const attach = (options: AttachOptions) => {
                                       null,
                                       [],
                                       t.tsInterfaceBody([
-                                          ...(context.properties || []).map((property) => Object.assign(
+                                          ...(context.classProperties || []).map((property) => Object.assign(
                                               t.tSPropertySignature(
                                                   property.key,
                                                   property.typeAnnotation as TSTypeAnnotation
@@ -173,7 +173,7 @@ export const attach = (options: AttachOptions) => {
                                       null,
                                       [],
                                       t.tsInterfaceBody([
-                                          ...(context.properties || []).map((property) => Object.assign(
+                                          ...(context.classProperties || []).map((property) => Object.assign(
                                               t.tSPropertySignature(
                                                   property.key,
                                                   property.typeAnnotation as TSTypeAnnotation
@@ -192,7 +192,7 @@ export const attach = (options: AttachOptions) => {
                                       t.tsInterfaceBody(
                                           [
                                               t.tSPropertySignature(
-                                                  t.stringLiteral(context.tag || ''),
+                                                  t.stringLiteral(context.componentTag || ''),
                                                   t.tSTypeAnnotation(
                                                       t.tSIntersectionType(
                                                           [
@@ -216,7 +216,7 @@ export const attach = (options: AttachOptions) => {
                                                   undefined,
                                                   t.tsInterfaceBody([
                                                       t.tsPropertySignature(
-                                                          t.stringLiteral(context.tag || ''),
+                                                          t.stringLiteral(context.componentTag || ''),
                                                           t.tsTypeAnnotation(
                                                               t.tsTypeReference(
                                                                   t.identifier(className)

@@ -10,7 +10,7 @@ export const uhtml = () => {
 
   const next = (context: Context) => {
 
-    context.ast?.program.body.unshift(
+    context.fileAST?.program.body.unshift(
       t.importDeclaration(
         [
           t.importSpecifier(
@@ -37,16 +37,16 @@ export const uhtml = () => {
       )
     )
 
-    context.ast?.program.body.push(
+    context.fileAST?.program.body.push(
       t.expressionStatement(
         t.callExpression(
           t.identifier('define'),
           [
-            t.stringLiteral(context.tag || ''),
+            t.stringLiteral(context.componentTag || ''),
             t.callExpression(
               t.identifier('proxy'),
               [
-                t.identifier(context.name as any)
+                t.identifier(context.className as any)
               ]
             )
           ]
@@ -54,7 +54,7 @@ export const uhtml = () => {
       )
     )
 
-    visitor(context.ast as any, {
+    visitor(context.fileAST as any, {
       JSXAttribute(path) {
 
         if (!t.isJSXExpressionContainer(path.node.value)) return;
@@ -85,7 +85,7 @@ export const uhtml = () => {
       ReturnStatement: {
         exit(path) {
 
-          if (path.getFunctionParent(path).node !== context.render) return;
+          if (path.getFunctionParent(path).node !== context.classRender) return;
 
           // TODO 
           const markup = print(path.node.argument)

@@ -7,9 +7,9 @@ export const read = () => {
 
     const next = (context: Context) => {
 
-        if (!!context.content) return;
+        if (!!context.fileContent) return;
 
-        context.content = fs.readFileSync(context.filename || '', 'utf8');
+        context.fileContent = fs.readFileSync(context.filePath || '', 'utf8');
     }
 
     return {

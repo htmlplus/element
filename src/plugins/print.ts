@@ -6,7 +6,7 @@ export const print = () => {
     const name = 'print';
 
     const next = (context: Context) => {
-        context.script = core(context.ast as any);
+        context.script = core(context.fileAST as any);
     }
 
     return {

@@ -24,19 +24,19 @@ export const docs = (options: DocsOptions) => {
 
     const next = (context: Context, global) => {
 
-        const tags = getTags(context.component);
+        const tags = getTags(context.class);
 
         const development = tags.some((tag) => tag.key == 'development');
 
         const experimental = tags.some((tag) => tag.key == 'experimental');
 
-        const externals = fs.existsSync(path.resolve(context.directory || '', 'externals'));
+        const externals = fs.existsSync(path.resolve(context.directoryPath || '', 'externals'));
 
         const examples = (() => {
 
             const items = [];
 
-            const source = path.join(context.directory || '', 'examples');
+            const source = path.join(context.directoryPath || '', 'examples');
 
             if (!fs.existsSync(source)) return items;
 
@@ -89,7 +89,7 @@ export const docs = (options: DocsOptions) => {
 
             try {
 
-                const source = path.resolve(context.directory || '', `${context.key}.md`);
+                const source = path.resolve(context.directoryPath || '', `${context.fileName}.md`);
 
                 return fs.readFileSync(source, 'utf8');
             }
@@ -116,7 +116,7 @@ export const docs = (options: DocsOptions) => {
             return '';
         })();
 
-        const properties = (context.properties || [])
+        const properties = (context.classProperties || [])
             .map((property) => {
 
                 const tags = getTags(property);
@@ -156,10 +156,10 @@ export const docs = (options: DocsOptions) => {
                 const { type, members } = (() => {
 
                     const ast = getType(
-                        context.ast as any,
+                        context.fileAST as any,
                         (property.typeAnnotation || {})['typeAnnotation'],
                         {
-                            directory: context.directory,
+                            directory: context.directoryPath,
                         }
                     )
 
@@ -202,7 +202,7 @@ export const docs = (options: DocsOptions) => {
                 }
             });
 
-        const methods = (context.methods || [])
+        const methods = (context.classMethods || [])
             .map((method) => {
 
                 const tags = getTags(method);
@@ -226,10 +226,10 @@ export const docs = (options: DocsOptions) => {
                 const type = (() => {
                     try {
                         return printType(getType(
-                            context.ast as any,
+                            context.fileAST as any,
                             (method.returnType || {})['typeAnnotation'],
                             {
-                                directory: context.directory,
+                                directory: context.directoryPath,
                             }
                         ));
                     } catch { }
@@ -278,7 +278,7 @@ export const docs = (options: DocsOptions) => {
                 }
             });
 
-        const events = (context.events || [])
+        const events = (context.classEvents || [])
             .map((event) => {
 
                 const tags = getTags(event);
@@ -310,10 +310,10 @@ export const docs = (options: DocsOptions) => {
                 const detail = (() => {
                     try {
                         return printType(getType(
-                            context.ast as any,
+                            context.fileAST as any,
                             (event.typeAnnotation || {})['typeAnnotation'].typeParameters.params[0],
                             {
-                                directory: context.directory,
+                                directory: context.directoryPath,
                             }
                         ))
                     } catch { }
@@ -382,7 +382,7 @@ export const docs = (options: DocsOptions) => {
 
         const group = tags.find((tag) => tag.key == 'group')?.value || null;
 
-        const main = (group && context.key == group) || !group;
+        const main = (group && context.componentKey == group) || !group;
 
         // TODO
         // context.types = (() => {
@@ -390,9 +390,9 @@ export const docs = (options: DocsOptions) => {
         // })();
 
         global.docs.components.push({
-            key: context.key,
-            tag: context.tag,
-            title: context.title,
+            key: context.componentKey,
+            tag: context.componentTag,
+            title: capitalCase(context.componentKey || ''),
             main,
             group,
             development,
@@ -408,7 +408,7 @@ export const docs = (options: DocsOptions) => {
             tags: [],
 
             // TODO
-            source: context.key,
+            source: context.componentKey,
 
             description,
             readme,

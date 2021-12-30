@@ -1,28 +1,41 @@
 import { ClassBody, ClassDeclaration, ClassMethod, ClassProperty, File } from '@babel/types';
 
 export interface Context {
-    ast?: File
-    attributes?: ClassBody['body'];
-    component?: ClassDeclaration;
-    content?: string;
-    directory?: string;
-    events?: Array<ClassProperty>;
-    filename?: string;
-    hasMount?: boolean;
-    hasUnmount?: boolean;
-    key?: string;
-    members?: ClassBody['body'];
-    methods?: Array<ClassMethod>;
-    name?: string;
-    prefix?: string;
-    properties?: Array<ClassProperty>;
-    render?: ClassMethod;
+
+    // TODO
     script?: string;
-    states?: Array<ClassProperty>;
-    style?: string;
+
+    // component
+    componentKey?: string;
+    componentTag?: string;
+
+    // directory
+    directoryName?: string;
+    directoryPath?: string;
+
+    // file
+    fileAST?: File
+    fileContent?: string;
+    fileExtension?: string;
+    fileName?: string;
+    filePath?: string;
+
+    // style
+    styleContent?: string;
     styleDependencies?: Array<string>;
     styleParsed?: string;
     stylePath?: string;
-    tag?: string;
-    title?: string;
+
+    // class
+    class?: ClassDeclaration;
+    classAttributes?: ClassBody['body'];
+    classEvents?: Array<ClassProperty>;
+    classHasMount?: boolean;
+    classHasUnmount?: boolean;
+    classMembers?: ClassBody['body'];
+    classMethods?: Array<ClassMethod>;
+    className?: string;
+    classProperties?: Array<ClassProperty>;
+    classRender?: ClassMethod;
+    classStates?: Array<ClassProperty>;
 }

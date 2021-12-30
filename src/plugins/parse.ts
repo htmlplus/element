@@ -7,10 +7,10 @@ export const parse = () => {
 
     const next = (context: Context) => {
 
-        if (!!context.ast) return;
+        if (!!context.fileAST) return;
 
-        context.ast = parser(
-            context.content || '',
+        context.fileAST = parser(
+            context.fileContent || '',
             {
                 allowImportExportEverywhere: true,
                 plugins: [

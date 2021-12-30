@@ -26,7 +26,7 @@ export const vscode = (options: VscodeOptions) => {
 
             try {
 
-                const source = path.resolve(context.directory || '', `${context.key}.md`);
+                const source = path.resolve(context.directoryPath || '', `${context.fileName}.md`);
 
                 return fs.readFileSync(source, 'utf8');
             }
@@ -53,7 +53,7 @@ export const vscode = (options: VscodeOptions) => {
             return '';
         })();
 
-        const properties = (context.properties || [])
+        const properties = (context.classProperties || [])
             .map((property) => {
 
                 const name = paramCase(property.key['name']);
@@ -69,10 +69,10 @@ export const vscode = (options: VscodeOptions) => {
                 let { members = [] } = (() => {
 
                     const ast = getType(
-                        context.ast as any,
+                        context.fileAST as any,
                         (property.typeAnnotation || {})['typeAnnotation'],
                         {
-                            directory: context.directory,
+                            directory: context.directoryPath,
                         }
                     )
 
@@ -91,7 +91,7 @@ export const vscode = (options: VscodeOptions) => {
             });
 
         global.vscode.tags.push({
-            name: context.key,
+            name: context.componentKey,
             description: {
                 kind: 'markdown',
                 value: description
@@ -100,7 +100,7 @@ export const vscode = (options: VscodeOptions) => {
             references: [
                 {
                     name: 'Source code',
-                    url: `https://github.com/htmlplus/core/tree/main/src/components/${context.key}/${context.key}.tsx`
+                    url: `https://github.com/htmlplus/core/tree/main/src/components/${context.directoryName}/${context.fileName}.tsx`
                 }
             ]
         });

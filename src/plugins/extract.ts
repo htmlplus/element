@@ -18,13 +18,13 @@ export const extract = (options: ExtractOptions) => {
 
         const additions: Array<any> = [];
 
-        visitor(context.ast as any, {
+        visitor(context.fileAST as any, {
             ClassDeclaration: {
                 exit(path) {
 
-                    context.component = path.node;
+                    context.class = path.node;
 
-                    context.members = context.component?.body?.body || [];
+                    context.classMembers = context.class?.body?.body || [];
 
                     path.skip();
                 }
@@ -33,60 +33,60 @@ export const extract = (options: ExtractOptions) => {
 
                 const { name } = path.node.expression.callee;
 
-                if (
-                    ![
-                        CONSTANTS.TOKEN_DECORATOR_ELEMENT,
-                        CONSTANTS.TOKEN_DECORATOR_METHOD,
-                    ].includes(name)
-                ) return;
+                // TODO
+                if (CONSTANTS.TOKEN_DECORATOR_ELEMENT == name) { }
+
+                if (CONSTANTS.TOKEN_DECORATOR_METHOD != name) return;
 
                 additions.push(path);
             }
         });
 
-        context.directory = path.dirname(context.filename || '');
+        context.directoryPath = path.dirname(context.filePath || '');
 
-        context.name = context.component?.id?.name || '';
+        context.directoryName = path.basename(context.directoryPath || '');
 
-        context.prefix = options.prefix || '';
+        context.fileExtension = path.extname(context.filePath || '');
 
-        context.key = paramCase(context.name);
+        context.fileName = path.basename(context.filePath || '', context.fileExtension);
 
-        context.tag = `${options.prefix}-${context.key}`;
+        context.className = context.class?.id?.name || '';
 
-        context.title = capitalCase(context.key);
+        context.componentKey = paramCase(context.className);
+
+        context.componentTag = options.prefix ? `${options.prefix}-${context.componentKey}` : context.componentKey;
 
         (() => {
 
-            const stylePath = path.join(context.directory, `${context.key}.scss`);
+            const stylePath = path.join(context.directoryPath, `${context.fileName}.scss`);
 
             if (!fs.existsSync(stylePath)) return;
 
             context.stylePath = stylePath;
         })();
 
-        context.attributes = (context.members || [])
+        context.classAttributes = (context.classMembers || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_ATTRIBUTES));
 
-        context.events = (context.members || [])
+        context.classEvents = (context.classMembers || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_EVENT)) as Array<ClassProperty>;
 
-        context.methods = (context.members || [])
+        context.classMethods = (context.classMembers || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_METHOD)) as Array<ClassMethod>;
 
-        context.properties = (context.members || [])
+        context.classProperties = (context.classMembers || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_PROPERTY)) as Array<ClassProperty>;
 
-        context.states = (context.members || [])
+        context.classStates = (context.classMembers || [])
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_STATE)) as Array<ClassProperty>;
 
-        context.hasMount = (context.members || [])
+        context.classHasMount = (context.classMembers || [])
             .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_MOUNT);
 
-        context.hasUnmount = (context.members || [])
+        context.classHasUnmount = (context.classMembers || [])
             .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT);
 
-        context.render = (context.members || [])
+        context.classRender = (context.classMembers || [])
             .find((member) => member['key'].name == CONSTANTS.TOKEN_METHOD_RENDER) as ClassMethod;
 
         additions.forEach((path) => path.remove());
