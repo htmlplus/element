@@ -461,9 +461,7 @@ import compiler, * as plugins from '@htmlplus/element/compiler';
 const { start, next, finish } = compiler(
   plugins.read(),
   plugins.parse(),
-  plugins.extract({
-    prefix: 'plus',
-  }),
+  plugins.extract(),
   plugins.attach(),
   plugins.uhtml(),
   plugins.print(),
@@ -475,3 +473,46 @@ const { script } = await next('element.tsx');
 
 await finish();
 ```
+
+## Name
+All examples below produce output `<plus-button></plus-button>`
+
+### 1. Class name with at least 2 syllables
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class PlusButton { }
+```
+
+### 2. Explicitly tag name
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element('plus-button')
+export class Button { }
+```
+
+### 3. With global prefix (recommended)
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class Button { }
+```
+Use `prefix` key in `plus.config.js` file.
+```js
+export default [
+  ...
+  extract({
+    prefix: 'plus',
+  })
+  ...
+]
+```
+
+### 4. Conditional
+TODO

@@ -1,3 +1,4 @@
+import * as t from '@babel/types';
 import { ClassMethod, ClassProperty } from '@babel/types';
 import { capitalCase, paramCase } from 'change-case';
 import fs from 'fs';
@@ -10,7 +11,7 @@ export interface ExtractOptions {
     prefix?: string;
 }
 
-export const extract = (options: ExtractOptions) => {
+export const extract = (options?: ExtractOptions) => {
 
     const name = 'extract';
 
@@ -34,11 +35,43 @@ export const extract = (options: ExtractOptions) => {
                 const { name } = path.node.expression.callee;
 
                 // TODO
-                if (CONSTANTS.TOKEN_DECORATOR_ELEMENT == name) { }
+                if (CONSTANTS.TOKEN_DECORATOR_ELEMENT == name) {
 
-                if (CONSTANTS.TOKEN_DECORATOR_METHOD != name) return;
+                    const [argument] = path.node.expression.arguments;
 
-                additions.push(path);
+                    if (argument) {
+
+                        context.componentTag = argument?.value;
+
+                        return;
+                    }
+
+                    context.componentTag = paramCase(path.parent.id.name);
+
+                    if (options?.prefix)
+                        context.componentTag = options.prefix + '-' + context.componentTag;
+
+                    path.replaceWith(
+                        t.decorator(
+                            t.callExpression(
+                                t.identifier(name),
+                                [
+                                    t.stringLiteral(context.componentTag),
+                                    ...path.node.expression.arguments.slice(1)
+                                ]
+                            )
+                        )
+                    )
+
+                    return;
+                }
+
+                if (CONSTANTS.TOKEN_DECORATOR_METHOD != name) {
+
+                    additions.push(path);
+
+                    return;
+                }
             }
         });
 
@@ -53,8 +86,6 @@ export const extract = (options: ExtractOptions) => {
         context.className = context.class?.id?.name || '';
 
         context.componentKey = paramCase(context.className);
-
-        context.componentTag = options.prefix ? `${options.prefix}-${context.componentKey}` : context.componentKey;
 
         (() => {
 
