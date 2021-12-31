@@ -55,62 +55,68 @@ export const uhtml = () => {
     )
 
     visitor(context.fileAST as any, {
-      JSXAttribute(path) {
-
-        if (!t.isJSXExpressionContainer(path.node.value)) return;
-
-        if (path.node.name.name == 'ref') {
-
-          path.replaceWith(
-            t.jsxAttribute(
-              path.node.name,
-              t.jSXExpressionContainer(
-                t.arrowFunctionExpression(
-                  [
-                    t.identifier('$element')
-                  ],
-                  t.assignmentExpression(
-                    '=',
-                    path.node.value.expression,
-                    t.identifier('$element')
-                  )
-                )
-              )
-            )
-          );
-
-          path.skip();
-        }
-      },
-      ReturnStatement: {
+      JSXAttribute: {
         exit(path) {
 
-          if (path.getFunctionParent(path).node !== context.classRender) return;
+          if (path.node.value?.type == 'JSXExpressionContainer') {
 
-          // TODO 
-          const markup = print(path.node.argument)
-            .replace(/<>/g, '')
-            .replace(/<\/>/g, '')
-            .replace(/\/\*\$\*\//g, '$')
-            .replace(/={/g, '=${');
-
-          path.replaceWith(
-            t.returnStatement(
-              t.taggedTemplateExpression(
-                t.identifier('html'),
-                t.templateLiteral(
-                  [
-                    t.templateElement({
-                      raw: markup
-                    })
-                  ],
-                  []
-                )
+            path.replaceWith(
+              t.jsxIdentifier(
+                print(path.node).replace('={', '=${')
               )
+            );
+
+            path.skip();
+
+            return;
+          }
+        }
+      },
+      JSXElement: {
+        exit(path) {
+
+          if (path.parent.type == 'JSXElement' || path.parent.type == 'JSXFragment') {
+
+            path.replaceWith(
+              t.identifier(print(path.node))
+            );
+
+            return;
+          }
+          else {
+
+            path.replaceWith(
+              t.identifier('html`' + print(path.node) + '`')
+            );
+
+            return;
+          }
+        }
+      },
+      JSXFragment: {
+        exit(path) {
+          path.replaceWith(
+            t.identifier(
+              [
+                'html`',
+                ...path.node.children.map((child) => print(child)),
+                '`',
+              ].join('')
             )
           )
+        }
+      },    
+      JSXExpressionContainer: {
+        exit(path) {
 
-          path.skip();
+          if (path.parent.type == 'JSXElement' || path.parent.type == 'JSXFragment') {
+
+            path.replaceWith(
+              t.identifier('$' + print(path.node))
+            )
+
+            return;
+          }
         }
       }
     })

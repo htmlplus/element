@@ -11,7 +11,7 @@ const { start, next, finish } = compiler(
   // plugins.scss({
   //   includePaths: ["./src/styles"],
   // }),
-  plugins.attach(),
+  plugins.attach({typings: false}),
   plugins.uhtml(),
   plugins.print()
 );
@@ -20,7 +20,7 @@ const { start, next, finish } = compiler(
   await start()
 
   const { script } = await next(
-    'C:\\Users\\Masood\\Desktop\\dev\\packages\\components\\src\\components\\browse\\browse.tsx'
+    'C:\\Users\\Masood\\Desktop\\dev\\packages\\components\\src\\components\\intersection\\intersection.tsx'
     // 'C:\\Users\\RD110\\Desktop\\dev\\packages\\components\\src\\components\\aspect-ratio\\aspect-ratio.tsx'
   )
 
