@@ -26,6 +26,23 @@ export const proxy = (Class: any) => {
 
   const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
 
+  const call = (key: string) => {
+
+    const fn = instance[key];
+
+    if (!fn) return;
+
+    return fn.apply(instance);
+  }
+
+  const getApi = (key: string) => {
+    return instance[CONSTANTS.TOKEN_API][key];
+  };
+
+  const setApi = (key: string, value: any) => {
+    instance[CONSTANTS.TOKEN_API][key] = value;
+  };
+
   const getValue = (key, value) => {
 
     const [type] = members[key];
@@ -53,25 +70,28 @@ export const proxy = (Class: any) => {
 
       instance[CONSTANTS.TOKEN_API] = instance[CONSTANTS.TOKEN_API] || {};
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = false;
+      setApi(CONSTANTS.TOKEN_API_READY, false);
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_HOST] = () => this;
+      setApi(CONSTANTS.TOKEN_API_HOST, () => this);
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_STATE] = () => this.render();
+      setApi(CONSTANTS.TOKEN_API_STATE, () => this.render());
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_PROPERTY] = (name, value, options: any = {}) => {
+      setApi(
+        CONSTANTS.TOKEN_API_PROPERTY,
+        (name, value, options: any = {}) => {
 
-        const raw = this.getAttribute(name);
+          const raw = this.getAttribute(name);
 
-        const parsed = getValue(name, raw);
+          const parsed = getValue(name, raw);
 
-        if (parsed === value) return;
+          if (parsed === value) return;
 
-        if (options.reflect)
-          updateAttribute(this, name, value);
+          if (options.reflect)
+            updateAttribute(this, name, value);
 
-        this.render();
-      }
+          this.render();
+        }
+      );
 
       Object
         .keys(members)
@@ -79,14 +99,15 @@ export const proxy = (Class: any) => {
 
           const [type] = members[key];
 
-          let get, set;
+          let get: any = () => instance[key];
+
+          let set: any = (value) => instance[key] = value;
 
           if (type === CONSTANTS.TYPE_FUNCTION) {
+
             get = () => instance[key].bind(instance);
-          }
-          else {
-            get = () => instance[key];
-            set = (value) => instance[key] = value;
+
+            set = undefined;
           }
 
           Object.defineProperty(this, key, { get, set })
@@ -101,11 +122,13 @@ export const proxy = (Class: any) => {
         .filter((key) => members[key][0] != CONSTANTS.TYPE_FUNCTION)
     }
 
+    adoptedCallback() { }
+
     attributeChangedCallback(name, prev, next) {
 
       instance[name] = getValue(name, next);
 
-      if (!instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY]) return;
+      if (!getApi(CONSTANTS.TOKEN_API_READY)) return;
 
       this.render();
     }
@@ -114,17 +137,17 @@ export const proxy = (Class: any) => {
 
       update = sync(this, {});
 
-      instance[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED] && instance[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED]();
+      call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
 
       this.render();
 
-      instance[CONSTANTS.TOKEN_LIFECYCLE_LOADED] && instance[CONSTANTS.TOKEN_LIFECYCLE_LOADED]();
+      call(CONSTANTS.TOKEN_LIFECYCLE_LOADED);
 
-      instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = true;
+      setApi(CONSTANTS.TOKEN_API_READY, true);
     }
 
     disconnectedCallback() {
-      instance[CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED] && instance[CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED]();
+      call(CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED);
     }
 
     render() {
@@ -132,19 +155,19 @@ export const proxy = (Class: any) => {
       // TODO
       update(instance.attributes || {});
 
-      const fn = instance[CONSTANTS.TOKEN_METHOD_RENDER];
-
       render(
         this.shadowRoot as any,
         () => {
 
-          if (!fn && !styles) return html``;
+          const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
 
-          if (!fn) return html`<style>${styles}</style>`;
+          if (!markup && !styles) return html``;
 
-          if (!styles) return fn.apply(instance);
+          if (!markup) return html`<style>${styles}</style>`;
 
-          return html`<style>${styles}</style>${fn.apply(instance)}`;
+          if (!styles) return markup;
+
+          return html`<style>${styles}</style>${markup}`;
         }
       )
     }
