@@ -114,17 +114,17 @@ export const proxy = (Class: any) => {
 
       update = sync(this, {});
 
-      instance[CONSTANTS.TOKEN_LIFECYCLE_MOUNT] && instance[CONSTANTS.TOKEN_LIFECYCLE_MOUNT]();
+      instance[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED] && instance[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED]();
 
       this.render();
 
-      instance[CONSTANTS.TOKEN_LIFECYCLE_READY] && instance[CONSTANTS.TOKEN_LIFECYCLE_READY]();
+      instance[CONSTANTS.TOKEN_LIFECYCLE_LOADED] && instance[CONSTANTS.TOKEN_LIFECYCLE_LOADED]();
 
       instance[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = true;
     }
 
     disconnectedCallback() {
-      instance[CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT] && instance[CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT]();
+      instance[CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED] && instance[CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED]();
     }
 
     render() {

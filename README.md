@@ -25,8 +25,15 @@ TODO
   - [slots](#slots)
   - [styles](#styles)
   - [toUnit](#toUnit)
+- [Lifecycles](#lifecycles)
+  - [connectedCallback](#connectedCallback)
+  - [disconnectedCallback](#disconnectedCallback)
+  - [loadedCallback](#loadedCallback)
+  - [updateCallback](#updateCallback)
+  - [updatedCallback](#updatedCallback)
 - [Services](#services)
   - [Link](#link)
+- [Name configuration](#NameConfiguration)
 - [Compiler](#compiler)
 
 ## Install
@@ -441,40 +448,29 @@ export class MyElement {
 <my-element width="150px"></my-element> <!-- 150px -->
 ```
 
+## Lifecycles
+TODO
+
+### connectedCallback
+TODO
+
+### disconnectedCallback
+TODO
+
+### loadedCallback
+TODO
+
+### updateCallback
+TODO
+
+### updatedCallback
+TODO
+
+
 ## Services
 TODO
 
-```js
-import compiler from '@htmlplus/element/compiler';
-
-const { start, next, finish } = compiler(
-  ...plugins
-);
-```
-
-## Compiler plugins
-TODO
-
-```js
-import compiler, * as plugins from '@htmlplus/element/compiler';
-
-const { start, next, finish } = compiler(
-  plugins.read(),
-  plugins.parse(),
-  plugins.extract(),
-  plugins.attach(),
-  plugins.uhtml(),
-  plugins.print(),
-);
-
-await start();
-
-const { script } = await next('element.tsx');
-
-await finish();
-```
-
-## Name
+## Name configuration
 All examples below produce output `<plus-button></plus-button>`
 
 ### 1. Class name with at least 2 syllables
@@ -516,3 +512,37 @@ export default [
 
 ### 4. Conditional
 TODO
+
+## Compiler
+TODO
+
+```js
+import compiler from '@htmlplus/element/compiler';
+
+const { start, next, finish } = compiler(
+  ...plugins
+);
+```
+
+## Compiler plugins
+TODO
+
+```js
+import compiler from '@htmlplus/element/compiler';
+import { read, parse, extract, attach, uhtml, print } from '@htmlplus/element/compiler';
+
+const { start, next, finish } = compiler(
+  read(),
+  parse(),
+  extract(),
+  attach(),
+  uhtml(),
+  print(),
+);
+
+await start();
+
+const { script } = await next('element.tsx');
+
+await finish();
+```

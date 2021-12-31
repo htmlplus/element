@@ -112,10 +112,10 @@ export const extract = (options?: ExtractOptions) => {
             .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_STATE)) as Array<ClassProperty>;
 
         context.classHasMount = (context.classMembers || [])
-            .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_MOUNT);
+            .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
 
         context.classHasUnmount = (context.classMembers || [])
-            .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_UNMOUNT);
+            .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED);
 
         context.classRender = (context.classMembers || [])
             .find((member) => member['key'].name == CONSTANTS.TOKEN_METHOD_RENDER) as ClassMethod;
