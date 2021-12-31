@@ -32,7 +32,7 @@ export const extract = (options?: ExtractOptions) => {
             },
             Decorator(path) {
 
-                const { name } = path.node.expression.callee;
+                const name = path.node.expression.callee?.name;
 
                 // TODO
                 if (CONSTANTS.TOKEN_DECORATOR_ELEMENT == name) {
@@ -66,7 +66,7 @@ export const extract = (options?: ExtractOptions) => {
                     return;
                 }
 
-                if (CONSTANTS.TOKEN_DECORATOR_METHOD != name) {
+                if (CONSTANTS.TOKEN_DECORATOR_METHOD == name) {
 
                     additions.push(path);
 
