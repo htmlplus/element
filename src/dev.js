@@ -20,7 +20,7 @@ const { start, next, finish } = compiler(
   await start()
 
   const { script } = await next(
-    'C:\\Users\\Masood\\Desktop\\dev\\packages\\components\\src\\components\\intersection\\intersection.tsx'
+    'C:\\Users\\Masood\\Desktop\\dev\\packages\\components\\src\\components\\scroll-indicator\\scroll-indicator.tsx'
     // 'C:\\Users\\RD110\\Desktop\\dev\\packages\\components\\src\\components\\aspect-ratio\\aspect-ratio.tsx'
   )
 

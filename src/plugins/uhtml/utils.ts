@@ -80,7 +80,7 @@ export const proxy = (Class: any) => {
           const [type] = members[key];
 
           let get, set;
-  
+
           if (type === CONSTANTS.TYPE_FUNCTION) {
             get = () => instance[key].bind(instance);
           }
@@ -88,7 +88,7 @@ export const proxy = (Class: any) => {
             get = () => instance[key];
             set = (value) => instance[key] = value;
           }
-  
+
           Object.defineProperty(this, key, { get, set })
         })
 
@@ -134,11 +134,13 @@ export const proxy = (Class: any) => {
 
       const fn = instance[CONSTANTS.TOKEN_METHOD_RENDER];
 
-      if (!fn) return;
-
       render(
         this.shadowRoot as any,
         () => {
+
+          if (!fn && !styles) return html``;
+
+          if (!fn) return html`<style>${styles}</style>`;
 
           if (!styles) return fn.apply(instance);
 

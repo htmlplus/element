@@ -60,9 +60,29 @@ export const uhtml = () => {
 
           if (path.node.value?.type == 'JSXExpressionContainer') {
 
+            let node = path.node;
+
+            if (path.node.name.name == 'ref') {
+              node = t.jsxAttribute(
+                path.node.name,
+                t.jSXExpressionContainer(
+                  t.arrowFunctionExpression(
+                    [
+                      t.identifier('$element')
+                    ],
+                    t.assignmentExpression(
+                      '=',
+                      path.node.value.expression,
+                      t.identifier('$element')
+                    )
+                  )
+                )
+              )
+            }
+
             path.replaceWith(
               t.jsxIdentifier(
-                print(path.node).replace('={', '=${')
+                print(node).replace('={', '=${')
               )
             );
 
@@ -105,7 +125,7 @@ export const uhtml = () => {
             )
           )
         }
-      },    
+      },
       JSXExpressionContainer: {
         exit(path) {
 
