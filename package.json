@@ -18,6 +18,9 @@
     "./helpers": {
       "default": "./dist/helpers/index.js"
     },
+    "./internal": {
+      "default": "./dist/internal/index.js"
+    },
     "./services": {
       "default": "./dist/services/index.js"
     }
@@ -35,6 +38,9 @@
       ],
       "helpers": [
         "./dist/helpers/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal/index.d.ts"
       ],
       "services": [
         "./dist/services/index.d.ts"
@@ -71,7 +77,6 @@
     "@babel/types": "^7.16.0",
     "@types/node": "^16.11.11",
     "change-case": "^4.1.2",
-    "lit-html": "^2.0.2",
     "log-update": "^5.0.0",
     "sass": "^1.43.4",
     "ts-node": "^10.4.0",

@@ -1,8 +1,6 @@
 import t from '@babel/types';
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { Context } from '../../types/index.js';
-import { print, visitor } from '../../utils/index.js';
+import { Context } from '../types/index.js';
+import { print, visitor } from '../utils/index.js';
 
 export const uhtml = () => {
 
@@ -14,43 +12,11 @@ export const uhtml = () => {
       t.importDeclaration(
         [
           t.importSpecifier(
-            t.identifier('define'),
-            t.identifier('define'),
-          ),
-          t.importSpecifier(
             t.identifier('html'),
             t.identifier('html'),
-          ),
-          t.importSpecifier(
-            t.identifier('proxy'),
-            t.identifier('proxy'),
           )
         ],
-        t.stringLiteral(
-          resolve(
-            dirname(
-              fileURLToPath(import.meta.url)
-            ),
-            'utils.js'
-          )
-        )
-      )
-    )
-
-    context.fileAST?.program.body.push(
-      t.expressionStatement(
-        t.callExpression(
-          t.identifier('define'),
-          [
-            t.stringLiteral(context.componentTag || ''),
-            t.callExpression(
-              t.identifier('proxy'),
-              [
-                t.identifier(context.className as any)
-              ]
-            )
-          ]
-        )
+        t.stringLiteral('@htmlplus/element/internal')
       )
     )
 
