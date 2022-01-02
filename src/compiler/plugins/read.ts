@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Context } from '../types/index.js';
+import { Context } from '../../types/index.js';
 
 export const read = () => {
 

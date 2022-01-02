@@ -1,5 +1,5 @@
 import * as Helpers from '../helpers/index.js';
-import { EventOptions } from '../types/index.js';
+import { EventOptions } from '../../types/index.js';
 
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 

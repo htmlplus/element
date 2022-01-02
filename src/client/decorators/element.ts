@@ -1,9 +1,6 @@
 import { html, render } from 'uhtml';
-import * as CONSTANTS from '../configs/constants.js';
-import { isServer } from '../utils/is-server.js';
-import { sync } from '../utils/sync.js';
-import { toBoolean } from '../utils/to-boolean.js';
-import { updateAttribute } from '../utils/update-attribute.js';
+import * as CONSTANTS from '../../configs/constants.js';
+import { isServer, sync, toBoolean, updateAttribute } from '../utils/index.js';
 
 export function Element(tag?: string) {
   return function (constructor: Function) {

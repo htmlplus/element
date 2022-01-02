@@ -1,5 +1,5 @@
 import t from '@babel/types';
-import { Context } from '../types/index.js';
+import { Context } from '../../types/index.js';
 import { print, visitor } from '../utils/index.js';
 
 export const uhtml = () => {

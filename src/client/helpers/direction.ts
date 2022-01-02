@@ -1,4 +1,4 @@
-import { Direction } from '../types/index.js';
+import { Direction } from '../../types/index.js';
 import { host } from './host.js';
 
 export const direction = (target) => {

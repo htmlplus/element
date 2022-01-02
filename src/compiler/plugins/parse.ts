@@ -1,5 +1,5 @@
 import { parse as parser } from '@babel/parser';
-import { Context } from '../types/index.js';
+import { Context } from '../../types/index.js';
 
 export const parse = () => {
 

@@ -1,5 +1,5 @@
 import * as Helpers from '../helpers/index.js';
-import { PropertyOptions } from '../types/index.js';
+import { PropertyOptions } from '../../types/index.js';
 
 export function Property(options?: PropertyOptions) {
 

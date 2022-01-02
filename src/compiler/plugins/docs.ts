@@ -2,7 +2,7 @@ import { capitalCase, paramCase } from 'change-case';
 import fs from 'fs';
 import glob from 'glob';
 import path from 'path';
-import { Context } from '../types/index.js';
+import { Context } from '../../types/index.js';
 import { getInitializer, getTags, getType, printType } from '../utils/index.js';
 
 export interface DocsOptions {
