@@ -1,13 +1,9 @@
-import { getEventName } from './get-event-name.js';
 import { updateAttribute } from './update-attribute.js';
 
-// TODO
-const isEvent = (input: string) => {
+const getEventName = (input: string) => input?.slice(2).toLowerCase();
 
-    if (!input) return false;
-  
-    return !!input.match(/on[A-Z]\w+/g);
-}
+const isEvent = (input: string) => !!input?.match(/on[A-Z]\w+/g);
+
 export const sync = (node: any, prev: any) => (next: any = {}) => {
 
     const prevClass = (prev.class || '').split(' ');

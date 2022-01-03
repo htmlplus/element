@@ -11,7 +11,8 @@ TODO
   - [Event](#event)
   - [Method](#method)
   - [Watch](#watch)
-  - [Listen](#listen)
+  - [Listen](#listen) (TODO)
+  - [ListenOptions](#listenOptions) (TODO)
   - [State](#state)
   - [Bind](#bind)
 - [Helpers](#helpers)
@@ -22,6 +23,7 @@ TODO
   - [isRTL](#isRtl)
   - [isServer](#isServer)
   - [query](#query)
+  - [queryAll](#queryAll)
   - [slots](#slots)
   - [styles](#styles)
   - [toUnit](#toUnit)
@@ -31,9 +33,14 @@ TODO
   - [loadedCallback](#loadedCallback)
   - [updateCallback](#updateCallback)
   - [updatedCallback](#updatedCallback)
+  - [adoptedCallback](#adoptedCallback)
 - [Services](#services)
   - [Link](#link)
 - [Name configuration](#NameConfiguration)
+  - [Class name with at least 2 syllables](#)
+  - [Explicitly tag name](#)
+  - [With global prefix (recommended)](#)
+  - [Conditional](#)
 - [Compiler](#compiler)
 
 ## Install
@@ -228,6 +235,34 @@ export class MyButton {
 }
 ```
 
+### ListenOptions
+TODO
+
+Options:
+  - **once**: TODO
+  - **passive**: TODO
+  - **signal**: TODO
+  - **capture**: TODO
+
+```tsx
+import { Element, ListenOptions } from '@htmlplus/element';
+
+@Element()
+export class MyButton {
+
+  @ListenOptions({ once: true })
+  onClick(event) { 
+    /* TODO */
+  }
+
+  render() {
+    return <button onClick={this.onClick}>
+      <slot />
+    </button>
+  }
+}
+```
+
 ### State
 TODO
 
@@ -393,6 +428,29 @@ export class MyElement {
 }
 ```
 
+### queryAll
+TODO
+
+```js
+import { Element, queryAll } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  connectedCallback() {
+    queryAll(this, 'div > *'); // [<h1></h1>, <h2></h2>, <h3></h3>]
+  }
+
+  render() {
+    <div>
+      <h1></h1>
+      <h2 id="first"></h2>
+      <h3 class="second"></h3>
+    </div>
+  }
+}
+```
+
 ### slots
 TODO
 
@@ -464,6 +522,9 @@ TODO
 TODO
 
 ### updatedCallback
+TODO
+
+### adoptedCallback
 TODO
 
 

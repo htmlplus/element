@@ -123,7 +123,9 @@ const proxy = (Class: any) => {
         .filter((key) => members[key][0] != CONSTANTS.TYPE_FUNCTION)
     }
 
-    adoptedCallback() { }
+    adoptedCallback() {
+      call(CONSTANTS.TOKEN_LIFECYCLE_ADOPTED);
+    }
 
     attributeChangedCallback(name, prev, next) {
 
