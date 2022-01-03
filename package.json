@@ -22,7 +22,7 @@
       "default": "./dist/runtime/index.js"
     },
     "./services": {
-      "default": "./dist/services/index.js"
+      "default": "./dist/client/services/index.js"
     }
   },
   "typesVersions": {
@@ -43,7 +43,7 @@
         "./dist/runtime/index.d.ts"
       ],
       "services": [
-        "./dist/services/index.d.ts"
+        "./dist/client/services/index.d.ts"
       ]
     }
   },
