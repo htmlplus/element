@@ -18,8 +18,8 @@
     "./helpers": {
       "default": "./dist/client/helpers/index.js"
     },
-    "./internal": {
-      "default": "./dist/internal/index.js"
+    "./runtime": {
+      "default": "./dist/runtime/index.js"
     },
     "./services": {
       "default": "./dist/services/index.js"
@@ -39,8 +39,8 @@
       "helpers": [
         "./dist/client/helpers/index.d.ts"
       ],
-      "internal": [
-        "./dist/internal/index.d.ts"
+      "runtime": [
+        "./dist/runtime/index.d.ts"
       ],
       "services": [
         "./dist/services/index.d.ts"

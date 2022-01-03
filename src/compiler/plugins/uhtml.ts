@@ -16,7 +16,7 @@ export const uhtml = () => {
             t.identifier('html'),
           )
         ],
-        t.stringLiteral('@htmlplus/element/internal')
+        t.stringLiteral('@htmlplus/element/runtime')
       )
     )
 
