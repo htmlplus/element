@@ -329,8 +329,6 @@ export class MyButton {
 
 </details>
 
-<br/>
-
 ## Helpers
 
 TODO
@@ -582,8 +580,6 @@ export class MyElement {
 
 </details>
 
-<br/>
-
 ## Lifecycles
 
 TODO
@@ -630,8 +626,6 @@ TODO
 
 </details>
 
-<br/>
-
 ## Services
 
 TODO
@@ -643,25 +637,9 @@ TODO
 
 </details>
 
-<br/>
-
 ## Tag name configuration
 
 All examples below produce output `<plus-button></plus-button>`
-
-<details>
-  <summary>Class name with at least 2 syllables</summary>
-
-TODO
-
-```js
-import { Element } from '@htmlplus/element';
-
-@Element()
-export class PlusButton {}
-```
-
-</details>
 
 <details>
   <summary>Explicitly tag name</summary>
@@ -673,6 +651,20 @@ import { Element } from '@htmlplus/element';
 
 @Element('plus-button')
 export class Button {}
+```
+
+</details>
+
+<details>
+  <summary>Class name with at least 2 syllables</summary>
+
+TODO
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class PlusButton {}
 ```
 
 </details>
@@ -709,8 +701,6 @@ export default [
 TODO
 
 </details>
-
-<br/>
 
 ## Compiler
 
