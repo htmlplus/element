@@ -1,1 +1,1 @@
-export * from '../utils/is-server.js';
+export { isServer } from '../utils/index.js';
