@@ -1,5 +1,6 @@
 {
   "printWidth": 120,
+  "embeddedLanguageFormatting": "off",
   "trailingComma": "none",
   "tabWidth": 2,
   "semi": true,
