@@ -3,51 +3,48 @@ import { isEvent } from './is-event.js';
 import { updateAttribute } from './update-attribute.js';
 
 // TODO: input type
-export const sync = (node: any, prev: any) => (next: any = {}) => {
-
+export const sync =
+  (node: any, prev: any) =>
+  (next: any = {}) => {
     const prevClass = (prev.class || '').split(' ');
     const nextClass = (next.class || '').split(' ');
 
     const newClass = (node.className || '')
-        .split(' ')
-        .filter((key) => !prevClass.includes(key) && !nextClass.includes(key))
-        .concat(nextClass)
-        .filter((key) => key)
-        .join(' ');
+      .split(' ')
+      .filter((key) => !prevClass.includes(key) && !nextClass.includes(key))
+      .concat(nextClass)
+      .filter((key) => key)
+      .join(' ');
 
     updateAttribute(node, 'class', newClass || undefined);
 
-    if (prev.style || next.style)
-        node.setAttribute('style', next.style || '');
+    if (prev.style || next.style) node.setAttribute('style', next.style || '');
 
     for (const key in prev) {
+      const value = prev[key];
 
-        const value = prev[key];
+      if (!isEvent(key)) continue;
 
-        if (!isEvent(key)) continue;
+      const name = getEventName(key);
 
-        const name = getEventName(key);
-
-        node.removeEventListener(name, value);
+      node.removeEventListener(name, value);
     }
 
     for (const key in next) {
+      const value = next[key];
 
-        const value = next[key];
+      if (['class', 'style'].includes(key)) continue;
 
-        if (['class', 'style'].includes(key)) continue;
+      if (isEvent(key)) {
+        const name = getEventName(key);
 
-        if (isEvent(key)) {
+        node.addEventListener(name, value);
 
-            const name = getEventName(key);
+        continue;
+      }
 
-            node.addEventListener(name, value);
-
-            continue;
-        }
-
-        updateAttribute(node, key, value);
+      updateAttribute(node, key, value);
     }
 
     prev = { ...next };
-};
+  };

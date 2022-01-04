@@ -1,7 +1,9 @@
 # Create Custom HTML Element
+
 TODO
 
 ## Table of content
+
 - [Install](#install)
 - [Start](#start)
 - [First element](#Firstelement)
@@ -44,22 +46,29 @@ TODO
 - [Compiler](#compiler)
 
 ## Install
+
 Choose one of the commands.
 
 ### With NPM:
+
 ```bash
 npm init @htmlplus/element@latest
 ```
+
 ### With Yarn:
+
 ```bash
 yarn create @htmlplus/element
 ```
+
 ### With PNPM:
+
 ```bash
 pnpm create @htmlplus/element
 ```
 
 ## Start
+
 TODO
 
 ```bash
@@ -69,6 +78,7 @@ npm start
 ```
 
 ## First element
+
 TODO
 
 ```tsx
@@ -77,7 +87,7 @@ import { Element } from '@htmlplus/element';
 @Element('my-element')
 export class MyElement {
   render() {
-    return <h1>Hi Everybody</h1>
+    return <h1>Hi Everybody</h1>;
   }
 }
 ```
@@ -87,9 +97,11 @@ export class MyElement {
 ```
 
 ## Decorators
+
 TODO
 
 ### Element
+
 TODO
 
 ```tsx
@@ -98,7 +110,7 @@ import { Element } from '@htmlplus/element';
 @Element()
 export class MyElement {
   render() {
-    return <h1>Hi Everybody</h1>
+    return <h1>Hi Everybody</h1>;
   }
 }
 ```
@@ -108,9 +120,11 @@ export class MyElement {
 ```
 
 ### Property
+
 TODO
 
 Options:
+
 - **attribute**: TODO
 - **reflect**: TODO
 
@@ -119,12 +133,11 @@ import { Element, Property } from '@htmlplus/element';
 
 @Element()
 export class SayGreeting {
-
   @Property()
   name?: string = 'Simon';
 
   render() {
-    return <h1>Hi {this.name}</h1>
+    return <h1>Hi {this.name}</h1>;
   }
 }
 ```
@@ -138,9 +151,11 @@ export class SayGreeting {
 ```
 
 ### Event
+
 TODO
 
 Options:
+
 - **name**: A string custom event name to override the default.
 - **bubbles**: A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
 - **cancelable**: A Boolean indicating whether the event is cancelable. default is `false`.
@@ -151,14 +166,15 @@ import { Element, Event, EventEmitter } from '@htmlplus/element';
 
 @Element()
 export class MyButton {
-
   @Event()
   clicked!: EventEmitter;
 
   render() {
-    return <button onClick={() => this.clicked()}>
-      <slot />
-    </button>
+    return (
+      <button onClick={() => this.clicked()}>
+        <slot />
+      </button>
+    );
   }
 }
 ```
@@ -167,13 +183,12 @@ export class MyButton {
 <my-button id="button">Button</my-button>
 
 <script>
-  document
-    .getElementById('button')
-    .addEventListener('clicked', () => alert('Clicked!'));
+  document.getElementById('button').addEventListener('clicked', () => alert('Clicked!'));
 </script>
 ```
 
 ### Method
+
 TODO
 
 ```tsx
@@ -182,7 +197,7 @@ import { Element, Method } from '@htmlplus/element';
 @Element()
 export class MyDialog {
   @Method()
-  open() { 
+  open() {
     /* TODO */
   }
 }
@@ -197,6 +212,7 @@ export class MyDialog {
 ```
 
 ### Watch
+
 TODO
 
 ```tsx
@@ -204,24 +220,25 @@ import { Element, Property, Watch } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
-
   @Property()
   name?: string;
 
   @Watch('name')
-  watcher(key, newValue, oldValue) { }
+  watcher(key, newValue, oldValue) {}
 }
 ```
 
 ### Listen
+
 TODO
 
 Options:
-  - **target**: TODO
-  - **once**: TODO
-  - **passive**: TODO
-  - **signal**: TODO
-  - **capture**: TODO
+
+- **target**: TODO
+- **once**: TODO
+- **passive**: TODO
+- **signal**: TODO
+- **capture**: TODO
 
 ```tsx
 import { Element, Listen } from '@htmlplus/element';
@@ -229,41 +246,45 @@ import { Element, Listen } from '@htmlplus/element';
 @Element()
 export class MyButton {
   @Listen('click')
-  onClick(event) { 
+  onClick(event) {
     /* TODO */
   }
 }
 ```
 
 ### ListenOptions
+
 TODO
 
 Options:
-  - **once**: TODO
-  - **passive**: TODO
-  - **signal**: TODO
-  - **capture**: TODO
+
+- **once**: TODO
+- **passive**: TODO
+- **signal**: TODO
+- **capture**: TODO
 
 ```tsx
 import { Element, ListenOptions } from '@htmlplus/element';
 
 @Element()
 export class MyButton {
-
   @ListenOptions({ once: true })
-  onClick(event) { 
+  onClick(event) {
     /* TODO */
   }
 
   render() {
-    return <button onClick={this.onClick}>
-      <slot />
-    </button>
+    return (
+      <button onClick={this.onClick}>
+        <slot />
+      </button>
+    );
   }
 }
 ```
 
 ### State
+
 TODO
 
 ```tsx
@@ -271,7 +292,6 @@ import { Element, Listen, State } from '@htmlplus/element';
 
 @Element()
 export class MySwitch {
-
   @State()
   active?: boolean;
 
@@ -281,14 +301,13 @@ export class MySwitch {
   }
 
   render() {
-    return <button>
-      {this.active ? 'On' : 'Off'}
-    </button>;
+    return <button>{this.active ? 'On' : 'Off'}</button>;
   }
 }
 ```
 
 ### Bind
+
 TODO
 
 ```tsx
@@ -296,10 +315,9 @@ import { Bind, Element } from '@htmlplus/element';
 
 @Element()
 export class MyButton {
-
   @Bind()
   onScroll(event) {
-    console.log(event)
+    console.log(event);
   }
 
   connectedCallback() {
@@ -309,19 +327,22 @@ export class MyButton {
 ```
 
 ## Helpers
+
 TODO
 
 ```js
 import { direction } from '@htmlplus/element';
 import * as Helpers from '@htmlplus/element/helpers';
 
-direction === Helpers.direction // true
+direction === Helpers.direction; // true
 ```
 
 ### classes
+
 TODO
 
 ### direction
+
 TODO
 
 ```js
@@ -336,6 +357,7 @@ export class MyElement {
 ```
 
 ### event
+
 TODO
 
 Options: TODO
@@ -345,23 +367,23 @@ import { Bind, Element, on, off } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
-
   @Bind()
   onClick(event) {
     console.log(event);
   }
 
   connectedCallback() {
-    on(window, 'click', this.onClick/*, options*/);
+    on(window, 'click', this.onClick /*, options*/);
   }
 
   disconnectedCallback() {
-    off(window, 'click', this.onClick/*, options*/);
+    off(window, 'click', this.onClick /*, options*/);
   }
 }
 ```
 
 ### host
+
 TODO
 
 ```js
@@ -376,6 +398,7 @@ export class MyElement {
 ```
 
 ### isRTL
+
 TODO
 
 ```js
@@ -390,6 +413,7 @@ export class MyElement {
 ```
 
 ### isServer
+
 TODO
 
 ```js
@@ -398,12 +422,13 @@ import { Element, isServer } from '@htmlplus/element';
 @Element()
 export class MyElement {
   connectedCallback() {
-    isServer(this) // false | true
+    isServer(this); // false | true
   }
 }
 ```
 
 ### query
+
 TODO
 
 ```js
@@ -411,10 +436,9 @@ import { Element, query } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
-
   connectedCallback() {
-    query(this, 'h1');      // <h1></h1>
-    query(this, '#first');  // <h2></h2>
+    query(this, 'h1'); // <h1></h1>
+    query(this, '#first'); // <h2></h2>
     query(this, '.second'); // <h3></h3>
   }
 
@@ -423,12 +447,13 @@ export class MyElement {
       <h1></h1>
       <h2 id="first"></h2>
       <h3 class="second"></h3>
-    </div>
+    </div>;
   }
 }
 ```
 
 ### queryAll
+
 TODO
 
 ```js
@@ -436,7 +461,6 @@ import { Element, queryAll } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
-
   connectedCallback() {
     queryAll(this, 'div > *'); // [<h1></h1>, <h2></h2>, <h3></h3>]
   }
@@ -446,15 +470,17 @@ export class MyElement {
       <h1></h1>
       <h2 id="first"></h2>
       <h3 class="second"></h3>
-    </div>
+    </div>;
   }
 }
 ```
 
 ### slots
+
 TODO
 
 ### styles
+
 TODO
 
 ```js
@@ -472,7 +498,7 @@ export class MyElement {
       position: 'absolute',
     })
   }
-  
+
   render() {
     return <div style={this.styles}>
       <slot />
@@ -482,6 +508,7 @@ export class MyElement {
 ```
 
 ### toUnit
+
 TODO
 
 ```js
@@ -492,7 +519,7 @@ export class MyElement {
 
   @Property()
   width?: string | number;
-  
+
   render() {
     return <div style={`width: ${toUnit(this.width)}`}>
       <slot />
@@ -502,36 +529,46 @@ export class MyElement {
 ```
 
 ```html
-<my-element width="150"  ></my-element> <!-- 150px -->
-<my-element width="150px"></my-element> <!-- 150px -->
+<my-element width="150"></my-element>
+<!-- 150px -->
+<my-element width="150px"></my-element>
+<!-- 150px -->
 ```
 
 ## Lifecycles
+
 TODO
 
 ### connectedCallback
+
 TODO
 
 ### disconnectedCallback
+
 TODO
 
 ### loadedCallback
+
 TODO
 
 ### updateCallback
+
 TODO
 
 ### updatedCallback
+
 TODO
 
 ### adoptedCallback
+
 TODO
 
-
 ## Services
+
 TODO
 
 ## Name configuration
+
 All examples below produce output `<plus-button></plus-button>`
 
 ### 1. Class name with at least 2 syllables
@@ -540,7 +577,7 @@ All examples below produce output `<plus-button></plus-button>`
 import { Element } from '@htmlplus/element';
 
 @Element()
-export class PlusButton { }
+export class PlusButton {}
 ```
 
 ### 2. Explicitly tag name
@@ -549,7 +586,7 @@ export class PlusButton { }
 import { Element } from '@htmlplus/element';
 
 @Element('plus-button')
-export class Button { }
+export class Button {}
 ```
 
 ### 3. With global prefix (recommended)
@@ -558,9 +595,11 @@ export class Button { }
 import { Element } from '@htmlplus/element';
 
 @Element()
-export class Button { }
+export class Button {}
 ```
+
 Use `prefix` key in `plus.config.js` file.
+
 ```js
 export default [
   ...
@@ -572,34 +611,28 @@ export default [
 ```
 
 ### 4. Conditional
+
 TODO
 
 ## Compiler
+
 TODO
 
 ```js
 import compiler from '@htmlplus/element/compiler';
 
-const { start, next, finish } = compiler(
-  ...plugins
-);
+const { start, next, finish } = compiler(...plugins);
 ```
 
 ## Compiler plugins
+
 TODO
 
 ```js
 import compiler from '@htmlplus/element/compiler';
 import { read, parse, extract, attach, uhtml, print } from '@htmlplus/element/compiler';
 
-const { start, next, finish } = compiler(
-  read(),
-  parse(),
-  extract(),
-  attach(),
-  uhtml(),
-  print(),
-);
+const { start, next, finish } = compiler(read(), parse(), extract(), attach(), uhtml(), print());
 
 await start();
 

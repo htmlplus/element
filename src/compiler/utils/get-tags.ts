@@ -1,59 +1,52 @@
 import { Node } from '@babel/types';
 
 export interface Tag {
-    key?: string;
-    value?: string;
+  key?: string;
+  value?: string;
 }
 
 export const getTags = (node?: Node): Array<Tag> => {
+  if (!node) return [];
 
-    if (!node) return [];
+  const tags: Array<Tag> = [];
 
-    const tags: Array<Tag> = [];
+  const lines: Array<string> = [];
 
-    const lines: Array<string> = [];
+  const comments = (node.leadingComments || [])
+    .map((comment) => comment.value)
+    .join('\r\n')
+    .split('\r\n');
 
-    const comments = (node.leadingComments || [])
-        .map((comment) => comment.value)
-        .join('\r\n')
-        .split('\r\n');
+  for (const comment of comments) {
+    let line = comment.trimLeft();
 
-    for (const comment of comments) {
+    if (line.startsWith('*')) line = line.slice(1);
 
-        let line = comment.trimLeft();
+    if (!line) continue;
 
-        if (line.startsWith('*'))
-            line = line.slice(1);
+    const isTag = line.trim().startsWith('@');
 
-        if (!line) continue;
+    if (isTag || !lines.length) lines.push(line);
+    else lines[lines.length - 1] += line;
+  }
 
-        const isTag = line.trim().startsWith('@');
+  for (const line of lines) {
+    let value = line.trim();
 
-        if (isTag || !lines.length)
-            lines.push(line);
-        else
-            lines[lines.length - 1] += line;
+    if (!value.startsWith('@')) {
+      tags.push({ value });
+
+      continue;
     }
 
-    for (const line of lines) {
+    const sections = value.split(' ');
 
-        let value = line.trim();
+    const key = sections[0].slice(1);
 
-        if (!value.startsWith('@')) {
+    value = sections.slice(1).join(' ').trim();
 
-            tags.push({ value });
+    tags.push({ key, value });
+  }
 
-            continue;
-        }
-
-        const sections = value.split(' ');
-
-        const key = sections[0].slice(1);
-
-        value = sections.slice(1).join(' ').trim();
-
-        tags.push({ key, value });
-    }
-
-    return tags;
-}
+  return tags;
+};

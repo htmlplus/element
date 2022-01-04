@@ -2,14 +2,13 @@ import { Expression } from '@babel/types';
 
 // TODO: return type
 export const getInitializer = (node: Expression) => {
+  if (!node) return node;
 
-    if (!node) return node;
+  const value = node;
 
-    const value = node;
+  if (!value) return;
 
-    if (!value) return;
+  const extra = value.extra || {};
 
-    const extra = value.extra || {};
-
-    return extra.raw || value['value'];
-}
+  return extra.raw || value['value'];
+};

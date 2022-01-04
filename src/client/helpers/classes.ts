@@ -2,96 +2,71 @@ import { paramCase } from 'change-case';
 import { typeOf } from '../utils/index.js';
 
 export const classes = (input: any, smart?: boolean) => {
+  const result: Array<string> = [];
 
-    const result: Array<string> = [];
+  switch (typeOf(input)) {
 
-    switch (typeOf(input)) {
+    case 'array': {
+      input.forEach((item) => {
+        const value = classes(item, smart);
+        if (!value) return;
+        result.push(value);
+      });
+      break;
+    }
 
-        case 'array': {
+    case 'object': {
+      const keys = Object.keys(input);
 
-            input.forEach((item) => {
+      for (const key of keys) {
+        const value = input[key];
+        const name = paramCase(key);
+        const type = typeOf(value);
 
-                const value = classes(item, smart);
-
-                if (!value) return;
-
-                result.push(value);
-            });
-
-            break;
+        if (!smart) {
+          if (!value) continue;
+          result.push(name);
+          continue;
         }
 
-        case 'object': {
+        switch (type) {
+          case 'boolean': {
+            if (!value) continue;
+            result.push(`${name}`);
+            break;
+          }
 
-            const keys = Object.keys(input);
+          case 'number': {
+            result.push(`${name}-${value}`);
+            break;
+          }
 
-            for (const key of keys) {
-
-                const value = input[key];
-
-                const name = paramCase(key);
-
-                const type = typeOf(value);
-
-                if (!smart) {
-
-                    if (!value) continue;
-
-                    result.push(name);
-
-                    continue;
-                }
-
-                switch (type) {
-
-                    case 'boolean': {
-
-                        if (!value) continue;
-
-                        result.push(`${name}`);
-
-                        break;
-                    }
-
-                    case 'number': {
-
-                        result.push(`${name}-${value}`);
-
-                        break;
-                    }
-
-                    case 'string': {
-
-                        switch (value) {
-
-                            case '':
-                            case 'true':
-                                result.push(`${name}`);
-                                break;
-
-                            case 'false':
-                                break;
-
-                            default:
-                                result.push(`${name}-${value}`);
-                                break;
-                        }
-
-                        break;
-                    }
-                }
+          case 'string': {
+            switch (value) {
+              case '':
+              case 'true':
+                result.push(`${name}`);
+                break;
+              case 'false':
+                break;
+              default:
+                result.push(`${name}-${value}`);
+                break;
             }
 
             break;
+          }
         }
+      }
 
-        case 'string': {
-
-            result.push(input);
-
-            break;
-        }
+      break;
     }
 
-    return result.join(' ');
-}
+    case 'string': {
+      result.push(input);
+      break;
+    }
+  }
+
+  return result.join(' ');
+};

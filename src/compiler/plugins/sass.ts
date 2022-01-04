@@ -2,28 +2,23 @@ import core, { Options } from 'sass';
 import { Context } from '../../types/index.js';
 
 export const sass = (options?: Options<'sync'>) => {
+  const name = 'sass';
 
-    const name = 'sass';
+  const next = (context: Context) => {
+    if (!context.stylePath) return;
 
-    const next = (context: Context) => {
+    const { css, loadedUrls } = core.compile(context.stylePath, {
+      ...(options || {}),
+      style: 'compressed'
+    });
 
-        if (!context.stylePath) return;
+    context.styleParsed = css.toString();
 
-        const { css, loadedUrls } = core.compile(
-            context.stylePath,
-            {
-                ...(options || {}),
-                style: 'compressed'
-            }
-        );
+    context.styleDependencies = []; // TODO loadedUrls;
+  };
 
-        context.styleParsed = css.toString();
-
-        context.styleDependencies = []; // TODO loadedUrls;
-    }
-
-    return {
-        name,
-        next,
-    }
-}
+  return {
+    name,
+    next
+  };
+};

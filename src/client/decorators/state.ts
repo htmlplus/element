@@ -1,36 +1,33 @@
 import * as Helpers from '../helpers/index.js';
 
 export function State() {
+  return function (target: Object, propertyKey: PropertyKey) {
+    let value;
 
-    return function (target: Object, propertyKey: PropertyKey) {
+    const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey) || {};
 
-        let value;
+    const set = descriptor.set;
 
-        const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey) || {};
+    descriptor.configurable = true;
 
-        const set = descriptor.set;
+    descriptor.get = function () {
+      return value;
+    };
 
-        descriptor.configurable = true;
+    descriptor.set = function (input) {
+      set && set.bind(this)(input);
 
-        descriptor.get = function () {
-            return value;
-        }
+      if (input === value) return;
 
-        descriptor.set = function (input) {
+      value = input;
 
-            set && set.bind(this)(input);
+      const api = Helpers.api(this);
 
-            if (input === value) return;
+      if (!api.ready) return;
 
-            value = input;
+      api.state(propertyKey as string, input);
+    };
 
-            const api = Helpers.api(this);
-
-            if (!api.ready) return;
-
-            api.state(propertyKey as string, input);
-        }
-
-        Object.defineProperty(target, propertyKey, descriptor);
-    }
+    Object.defineProperty(target, propertyKey, descriptor);
+  };
 }

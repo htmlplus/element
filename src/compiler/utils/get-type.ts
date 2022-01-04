@@ -6,96 +6,80 @@ import { visitor } from './visitor.js';
 
 // TODO: return type
 export const getType = (file: File, node: any, options) => {
+  if (!node) return node;
 
-    if (!node) return node;
+  if (node.type != 'TSTypeReference') return node;
 
-    if (node.type != 'TSTypeReference') return node;
+  const { directory } = options;
 
-    const { directory } = options;
+  let result;
 
-    let result;
+  visitor(file, {
+    ClassDeclaration(path) {
+      if (path.node.id.name != node.typeName.name) return;
 
-    visitor(file, {
-        ClassDeclaration(path) {
+      result = path.node;
 
-            if (path.node.id.name != node.typeName.name) return;
+      path.stop();
+    },
+    ImportDeclaration(path) {
+      for (const specifier of path.node.specifiers) {
+        const alias = specifier.local.name;
 
-            result = path.node;
+        if (alias != node.typeName.name) continue;
 
-            path.stop();
-        },
-        ImportDeclaration(path) {
+        let key;
 
-            for (const specifier of path.node.specifiers) {
+        switch (specifier.type) {
+          case 'ImportNamespaceSpecifier':
+            key = '*';
+            break;
 
-                const alias = specifier.local.name;
+          case 'ImportDefaultSpecifier':
+            key = 'default';
+            break;
 
-                if (alias != node.typeName.name) continue;
+          case 'ImportSpecifier':
+            key = specifier.imported.name;
+            break;
+        }
 
-                let key;
+        try {
+          const filePath = resolve(directory, path.node.source.value + '.ts');
 
-                switch (specifier.type) {
+          path.$ast =
+            path.$ast ||
+            parse(fs.readFileSync(filePath, 'utf8'), {
+              allowImportExportEverywhere: true,
+              plugins: ['typescript'],
+              ranges: false
+            });
 
-                    case 'ImportNamespaceSpecifier':
-                        key = '*';
-                        break;
+          result = getType(path.$ast, node, {
+            directory: dirname(filePath)
+          });
+        } catch {}
 
-                    case 'ImportDefaultSpecifier':
-                        key = 'default';
-                        break;
+        path.stop();
 
-                    case 'ImportSpecifier':
-                        key = specifier.imported.name;
-                        break;
-                }
+        break;
+      }
+    },
+    TSInterfaceDeclaration(path) {
+      if (path.node.id.name != node.typeName.name) return;
 
-                try {
+      result = path.node;
 
-                    const filePath = resolve(directory, path.node.source.value + '.ts');
+      path.stop();
+    },
+    TSTypeAliasDeclaration(path) {
+      if (path.node.id.name != node.typeName.name) return;
 
-                    path.$ast = path.$ast || parse(
-                        fs.readFileSync(filePath, 'utf8'),
-                        {
-                            allowImportExportEverywhere: true,
-                            plugins: [
-                                'typescript'
-                            ],
-                            ranges: false,
-                        }
-                    );
+      result = path.node;
 
-                    result = getType(
-                        path.$ast,
-                        node,
-                        {
-                            directory: dirname(filePath),
-                        }
-                    );
-                }
-                catch { }
+      path.stop();
+    }
+  });
 
-                path.stop();
-
-                break;
-            }
-        },
-        TSInterfaceDeclaration(path) {
-
-            if (path.node.id.name != node.typeName.name) return;
-
-            result = path.node;
-
-            path.stop();
-        },
-        TSTypeAliasDeclaration(path) {
-
-            if (path.node.id.name != node.typeName.name) return;
-
-            result = path.node;
-
-            path.stop();
-        },
-    });
-
-    return result || node;
+  return result || node;
 };

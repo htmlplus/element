@@ -2,36 +2,32 @@ import * as Helpers from '../helpers/index.js';
 import { PropertyOptions } from '../../types/index.js';
 
 export function Property(options?: PropertyOptions) {
+  return function (target: Object, propertyKey: PropertyKey) {
+    let value;
+    const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey) || {};
 
-    return function (target: Object, propertyKey: PropertyKey) {
+    const set = descriptor.set;
 
-        let value;
+    descriptor.configurable = true;
 
-        const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey) || {};
+    descriptor.get = function () {
+      return value;
+    };
 
-        const set = descriptor.set;
+    descriptor.set = function (input) {
+      set && set.bind(this)(input);
 
-        descriptor.configurable = true;
+      if (input === value) return;
 
-        descriptor.get = function () {
-            return value;
-        }
+      value = input;
 
-        descriptor.set = function (input) {
+      const api = Helpers.api(this);
 
-            set && set.bind(this)(input);
+      if (!api.ready) return;
 
-            if (input === value) return;
+      api.property(propertyKey as string, input, options);
+    };
 
-            value = input;
-
-            const api = Helpers.api(this);
-
-            if (!api.ready) return;
-
-            api.property(propertyKey as string, input, options);
-        }
-
-        Object.defineProperty(target, propertyKey, descriptor);
-    }
+    Object.defineProperty(target, propertyKey, descriptor);
+  };
 }

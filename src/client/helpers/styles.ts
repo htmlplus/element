@@ -2,22 +2,19 @@ import { paramCase } from 'change-case';
 import { typeOf } from '../utils/index.js';
 
 export const styles = (input: any): string => {
+  switch (typeOf(input)) {
+    case 'array':
+      return input.join('; ');
 
-    switch (typeOf(input)) {
+    case 'object':
+      return Object.keys(input)
+        .map((key) => `${paramCase(key)}: ${input[key]}`)
+        .join('; ');
 
-        case 'array':
-            return input.join('; ');
+    case 'string':
+      return input;
 
-        case 'object':
-            return Object
-                .keys(input)
-                .map((key) => `${paramCase(key)}: ${input[key]}`)
-                .join('; ');
-
-        case 'string':
-            return input;
-
-        default:
-            return '';
-    }
-}
+    default:
+      return '';
+  }
+};

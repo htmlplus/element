@@ -1,33 +1,29 @@
 import * as Helpers from '../helpers/index.js';
 
 export function Watch(...keys: Array<string>) {
+  return function (target: any, propertyKey: PropertyKey) {
+    for (const key of keys) {
+      const descriptor = Object.getOwnPropertyDescriptor(target, key) || {};
 
-    return function (target: any, propertyKey: PropertyKey) {
+      const set = descriptor.set;
 
-        for (const key of keys) {
+      descriptor.configurable = true;
 
-            const descriptor = Object.getOwnPropertyDescriptor(target, key) || {};
+      descriptor.set = function (input) {
+        const value = this[key];
 
-            const set = descriptor.set;
+        set && set.bind(this)(input);
 
-            descriptor.configurable = true;
+        if (input === value) return;
 
-            descriptor.set = function (input) {
+        const api = Helpers.api(this);
 
-                const value = this[key];
+        if (!api.ready) return;
 
-                set && set.bind(this)(input);
+        this[propertyKey](input, value, key);
+      };
 
-                if (input === value) return;
-
-                const api = Helpers.api(this);
-
-                if (!api.ready) return;
-
-                this[propertyKey](input, value, key);
-            }
-
-            Object.defineProperty(target, key, descriptor);
-        }
+      Object.defineProperty(target, key, descriptor);
     }
+  };
 }

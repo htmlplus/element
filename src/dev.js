@@ -6,25 +6,25 @@ const { start, next, finish } = compiler(
   plugins.parse(),
   plugins.validate(),
   plugins.extract({
-    prefix: "plus",
-  }), 
+    prefix: 'plus'
+  }),
   // plugins.scss({
   //   includePaths: ["./src/styles"],
   // }),
-  plugins.attach({typings: false}),
+  plugins.attach({ typings: false }),
   plugins.uhtml(),
   plugins.print()
 );
 
 (async () => {
-  await start()
+  await start();
 
   const { script } = await next(
     'C:\\Users\\Masood\\Desktop\\dev\\packages\\components\\src\\components\\scroll-indicator\\scroll-indicator.tsx'
     // 'C:\\Users\\RD110\\Desktop\\dev\\packages\\components\\src\\components\\aspect-ratio\\aspect-ratio.tsx'
-  )
+  );
 
-  console.log(1111, script)
+  console.log(1111, script);
 
-  await finish()
-})()
+  await finish();
+})();

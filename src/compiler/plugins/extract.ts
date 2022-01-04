@@ -8,123 +8,119 @@ import { Context } from '../../types/index.js';
 import { hasDecorator, visitor } from '../utils/index.js';
 
 export interface ExtractOptions {
-    prefix?: string;
+  prefix?: string;
 }
 
 export const extract = (options?: ExtractOptions) => {
+  const name = 'extract';
 
-    const name = 'extract';
+  const next = (context: Context) => {
+    const additions: Array<any> = [];
 
-    const next = (context: Context) => {
+    visitor(context.fileAST as any, {
+      ClassDeclaration: {
+        exit(path) {
+          context.class = path.node;
 
-        const additions: Array<any> = [];
+          context.classMembers = context.class?.body?.body || [];
 
-        visitor(context.fileAST as any, {
-            ClassDeclaration: {
-                exit(path) {
+          path.skip();
+        }
+      },
+      Decorator(path) {
+        const name = path.node.expression.callee?.name;
 
-                    context.class = path.node;
+        // TODO
+        if (CONSTANTS.TOKEN_DECORATOR_ELEMENT == name) {
+          const [argument] = path.node.expression.arguments;
 
-                    context.classMembers = context.class?.body?.body || [];
+          if (argument) {
+            context.componentTag = argument?.value;
 
-                    path.skip();
-                }
-            },
-            Decorator(path) {
+            return;
+          }
 
-                const name = path.node.expression.callee?.name;
+          context.componentTag = paramCase(path.parent.id.name);
 
-                // TODO
-                if (CONSTANTS.TOKEN_DECORATOR_ELEMENT == name) {
+          if (options?.prefix) context.componentTag = options.prefix + '-' + context.componentTag;
 
-                    const [argument] = path.node.expression.arguments;
+          path.replaceWith(
+            t.decorator(
+              t.callExpression(t.identifier(name), [
+                t.stringLiteral(context.componentTag),
+                ...path.node.expression.arguments.slice(1)
+              ])
+            )
+          );
 
-                    if (argument) {
+          return;
+        }
 
-                        context.componentTag = argument?.value;
+        if (CONSTANTS.TOKEN_DECORATOR_METHOD == name) {
+          additions.push(path);
 
-                        return;
-                    }
+          return;
+        }
+      }
+    });
 
-                    context.componentTag = paramCase(path.parent.id.name);
+    context.directoryPath = path.dirname(context.filePath || '');
 
-                    if (options?.prefix)
-                        context.componentTag = options.prefix + '-' + context.componentTag;
+    context.directoryName = path.basename(context.directoryPath || '');
 
-                    path.replaceWith(
-                        t.decorator(
-                            t.callExpression(
-                                t.identifier(name),
-                                [
-                                    t.stringLiteral(context.componentTag),
-                                    ...path.node.expression.arguments.slice(1)
-                                ]
-                            )
-                        )
-                    )
+    context.fileExtension = path.extname(context.filePath || '');
 
-                    return;
-                }
+    context.fileName = path.basename(context.filePath || '', context.fileExtension);
 
-                if (CONSTANTS.TOKEN_DECORATOR_METHOD == name) {
+    context.className = context.class?.id?.name || '';
 
-                    additions.push(path);
+    context.componentKey = paramCase(context.className);
 
-                    return;
-                }
-            }
-        });
+    (() => {
+      const stylePath = path.join(context.directoryPath, `${context.fileName}.scss`);
 
-        context.directoryPath = path.dirname(context.filePath || '');
+      if (!fs.existsSync(stylePath)) return;
 
-        context.directoryName = path.basename(context.directoryPath || '');
+      context.stylePath = stylePath;
+    })();
 
-        context.fileExtension = path.extname(context.filePath || '');
+    context.classAttributes = (context.classMembers || []).filter((member) =>
+      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_ATTRIBUTES)
+    );
 
-        context.fileName = path.basename(context.filePath || '', context.fileExtension);
+    context.classEvents = (context.classMembers || []).filter((member) =>
+      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_EVENT)
+    ) as Array<ClassProperty>;
 
-        context.className = context.class?.id?.name || '';
+    context.classMethods = (context.classMembers || []).filter((member) =>
+      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_METHOD)
+    ) as Array<ClassMethod>;
 
-        context.componentKey = paramCase(context.className);
+    context.classProperties = (context.classMembers || []).filter((member) =>
+      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_PROPERTY)
+    ) as Array<ClassProperty>;
 
-        (() => {
+    context.classStates = (context.classMembers || []).filter((member) =>
+      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_STATE)
+    ) as Array<ClassProperty>;
 
-            const stylePath = path.join(context.directoryPath, `${context.fileName}.scss`);
+    context.classHasMount = (context.classMembers || []).some(
+      (member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_CONNECTED
+    );
 
-            if (!fs.existsSync(stylePath)) return;
+    context.classHasUnmount = (context.classMembers || []).some(
+      (member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED
+    );
 
-            context.stylePath = stylePath;
-        })();
+    context.classRender = (context.classMembers || []).find(
+      (member) => member['key'].name == CONSTANTS.TOKEN_METHOD_RENDER
+    ) as ClassMethod;
 
-        context.classAttributes = (context.classMembers || [])
-            .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_ATTRIBUTES));
+    additions.forEach((path) => path.remove());
+  };
 
-        context.classEvents = (context.classMembers || [])
-            .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_EVENT)) as Array<ClassProperty>;
-
-        context.classMethods = (context.classMembers || [])
-            .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_METHOD)) as Array<ClassMethod>;
-
-        context.classProperties = (context.classMembers || [])
-            .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_PROPERTY)) as Array<ClassProperty>;
-
-        context.classStates = (context.classMembers || [])
-            .filter((member) => hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_STATE)) as Array<ClassProperty>;
-
-        context.classHasMount = (context.classMembers || [])
-            .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
-
-        context.classHasUnmount = (context.classMembers || [])
-            .some((member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED);
-
-        context.classRender = (context.classMembers || [])
-            .find((member) => member['key'].name == CONSTANTS.TOKEN_METHOD_RENDER) as ClassMethod;
-
-        additions.forEach((path) => path.remove());
-    }
-
-    return {
-        name,
-        next,
-    }
-}
+  return {
+    name,
+    next
+  };
+};

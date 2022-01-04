@@ -4,33 +4,27 @@ import { EventOptions } from '../../types/index.js';
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
 export function Event<T = any>(options: EventOptions = {}) {
+  return function (target: Object, propertyKey: PropertyKey) {
+    const descriptor = {
+      get() {
+        return (data?: T): CustomEvent<T> => {
+          const name = options.name || String(propertyKey);
 
-    return function (target: Object, propertyKey: PropertyKey) {
+          delete options.name;
 
-        const descriptor = {
-            get() {
-                return (data?: T): CustomEvent<T> => {
+          const event = new CustomEvent(name, {
+            ...options,
+            detail: data
+          });
 
-                    const name = options.name || String(propertyKey);
+          // TODO: add global hook
+          Helpers.host(this).dispatchEvent(event);
 
-                    delete options.name;
+          return event;
+        };
+      }
+    };
 
-                    const event = new CustomEvent(
-                        name,
-                        {
-                            ...options,
-                            detail: data
-                        }
-                    )
-
-                    // TODO: add global hook
-                    Helpers.host(this).dispatchEvent(event);
-
-                    return event;
-                }
-            }
-        }
-
-        Object.defineProperty(target, propertyKey, descriptor);
-    }
+    Object.defineProperty(target, propertyKey, descriptor);
+  };
 }

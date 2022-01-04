@@ -4,8 +4,7 @@ import { isServer, parseValue, sync, updateAttribute } from '../utils/index.js';
 
 // TODO: input type
 export const proxy = (Class: any) => {
-
-  if (isServer()) return class { };
+  if (isServer()) return class {};
 
   let instance, update;
 
@@ -14,13 +13,12 @@ export const proxy = (Class: any) => {
   const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
 
   const call = (key: string) => {
-
     const fn = instance[key];
 
     if (!fn) return;
 
     return fn.apply(instance);
-  }
+  };
 
   const get = (key: string) => {
     return instance[CONSTANTS.TOKEN_API][key];
@@ -31,9 +29,7 @@ export const proxy = (Class: any) => {
   };
 
   return class extends HTMLElement {
-
     constructor() {
-
       super();
 
       instance = new Class();
@@ -46,52 +42,41 @@ export const proxy = (Class: any) => {
 
       set(CONSTANTS.TOKEN_API_STATE, () => this.render());
 
-      set(
-        CONSTANTS.TOKEN_API_PROPERTY,
-        (name, value, options: any = {}) => {
+      set(CONSTANTS.TOKEN_API_PROPERTY, (name, value, options: any = {}) => {
+        const raw = this.getAttribute(name);
 
-          const raw = this.getAttribute(name);
+        const [type] = members[name];
 
-          const [type] = members[name];
+        const parsed = parseValue(raw, type);
 
-          const parsed = parseValue(raw, type);
+        if (parsed === value) return;
 
-          if (parsed === value) return;
+        if (options.reflect) updateAttribute(this, name, value);
 
-          if (options.reflect)
-            updateAttribute(this, name, value);
+        this.render();
+      });
 
-          this.render();
+      Object.keys(members).map((key) => {
+        const [type] = members[key];
+
+        let get: any = () => instance[key];
+
+        let set: any = (value) => (instance[key] = value);
+
+        if (type === CONSTANTS.TYPE_FUNCTION) {
+          get = () => instance[key].bind(instance);
+
+          set = undefined;
         }
-      );
 
-      Object
-        .keys(members)
-        .map((key) => {
-
-          const [type] = members[key];
-
-          let get: any = () => instance[key];
-
-          let set: any = (value) => instance[key] = value;
-
-          if (type === CONSTANTS.TYPE_FUNCTION) {
-
-            get = () => instance[key].bind(instance);
-
-            set = undefined;
-          }
-
-          Object.defineProperty(this, key, { get, set })
-        })
+        Object.defineProperty(this, key, { get, set });
+      });
 
       this.attachShadow({ mode: 'open' });
     }
 
     static get observedAttributes() {
-      return Object
-        .keys(members)
-        .filter((key) => members[key][0] != CONSTANTS.TYPE_FUNCTION)
+      return Object.keys(members).filter((key) => members[key][0] != CONSTANTS.TYPE_FUNCTION);
     }
 
     adoptedCallback() {
@@ -99,7 +84,6 @@ export const proxy = (Class: any) => {
     }
 
     attributeChangedCallback(name, prev, next) {
-
       const [type] = members[name];
 
       instance[name] = parseValue(next, type);
@@ -110,7 +94,6 @@ export const proxy = (Class: any) => {
     }
 
     connectedCallback() {
-
       update = sync(this, {});
 
       call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
@@ -127,27 +110,27 @@ export const proxy = (Class: any) => {
     }
 
     render() {
-
       if (isServer()) return;
 
       // TODO
       update(instance.attributes || {});
 
-      render(
-        this.shadowRoot as any,
-        () => {
+      render(this.shadowRoot as any, () => {
+        const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
 
-          const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
+        if (!markup && !styles) return html``;
 
-          if (!markup && !styles) return html``;
+        if (!markup)
+          return html`<style>
+            ${styles}
+          </style>`;
 
-          if (!markup) return html`<style>${styles}</style>`;
+        if (!styles) return markup;
 
-          if (!styles) return markup;
-
-          return html`<style>${styles}</style>${markup}`;
-        },
-      )
+        return html`<style>
+            ${styles}</style
+          >${markup}`;
+      });
     }
-  }
-}
+  };
+};
