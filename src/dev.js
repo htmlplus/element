@@ -1,30 +1,76 @@
+import { createServer } from 'vite';
 import compiler from '../dist/compiler/index.js';
-import * as plugins from '../dist/compiler/index.js';
+import {
+  attach,
+  extract,
+  parse,
+  print,
+  read,
+  uhtml,
+  validate,
+} from '../dist/compiler/index.js';
+
+const content = `
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  render() {
+    return (
+      <h1>hi</h1>
+    )
+  }
+}
+`
 
 const { start, next, finish } = compiler(
-  plugins.read(),
-  plugins.parse(),
-  plugins.validate(),
-  plugins.extract({
-    prefix: 'plus'
+  {
+    name: 'read',
+    next(context) {
+      context.fileContent = content
+    }
+  },
+  parse(),
+  validate(),
+  extract(),
+  attach({
+    typings: false
   }),
-  // plugins.scss({
-  //   includePaths: ["./src/styles"],
-  // }),
-  plugins.attach({ typings: false }),
-  plugins.uhtml(),
-  plugins.print()
+  uhtml(),
+  print(),
 );
 
-(async () => {
-  await start();
+createServer({
+  server: {
+    open: true,
+  },
+  plugins: [
+    {
+      name: 'htmlplus',
+      async buildStart() {
+        await start();
+      },
+      resolveId(id) {
 
-  const { script } = await next(
-    'C:\\Users\\Masood\\Desktop\\dev\\packages\\components\\src\\components\\scroll-indicator\\scroll-indicator.tsx'
-    // 'C:\\Users\\RD110\\Desktop\\dev\\packages\\components\\src\\components\\aspect-ratio\\aspect-ratio.tsx'
-  );
+        if (id == '@htmlplus/element')
+          return '../dist/client/index.js';
 
-  console.log(1111, script);
+        if (id == '@htmlplus/element/runtime')
+          return '../dist/runtime/index.js';
+      },
+      async load(id) {
 
-  await finish();
-})();
+        if (!id.endsWith('bundle.ts')) return;
+
+        const { script } = await next('');
+
+        return script;
+      },
+      async buildEnd() {
+        await finish();
+      }
+    }
+  ]
+})
+  .then((server) => server.listen())
+  .catch((error) => console.log(error));

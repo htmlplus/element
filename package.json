@@ -5,6 +5,13 @@
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
   "description": "Compiler of HTMLPlus",
   "type": "module",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "build:watch": "tsc -w",
+    "clean": "rimraf dist",
+    "start:new": "node src/dev.js",
+    "start": "concurrently \"npm run build:watch\" \"nodemon --experimental-specifier-resolution=node src/dev.js\""
+  },
   "exports": {
     ".": {
       "default": "./dist/client/index.js"
@@ -64,12 +71,6 @@
     "url": "https://github.com/htmlplus/element/issues"
   },
   "homepage": "https://github.com/htmlplus/element#readme",
-  "scripts": {
-    "build": "npm run clean && tsc",
-    "build:watch": "tsc -w",
-    "clean": "rimraf dist",
-    "start": "concurrently \"npm run build:watch\" \"nodemon --experimental-specifier-resolution=node src/dev.js\""
-  },
   "dependencies": {
     "@babel/generator": "^7.16.0",
     "@babel/parser": "^7.16.4",
@@ -84,9 +85,8 @@
     "uhtml": "^2.7.6"
   },
   "devDependencies": {
-    "concurrently": "^6.4.0",
-    "nodemon": "^2.0.15",
     "prettier": "^2.5.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "vite": "^2.7.10"
   }
 }
