@@ -5,19 +5,25 @@ import {
   extract,
   parse,
   print,
-  read,
   uhtml,
   validate,
 } from '../dist/compiler/index.js';
 
 const content = `
-import { Element } from '@htmlplus/element';
+import { Element, slots } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
+  loadedCallback(){
+    
+    console.log(123, slots(this))
+  }
   render() {
     return (
-      <h1>hi</h1>
+      <>
+      <h1><slot/></h1>
+      <h1><slot name="a"/></h1>
+      </>
     )
   }
 }

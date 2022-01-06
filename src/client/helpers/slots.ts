@@ -1,21 +1,17 @@
-import { api } from './api.js';
+import { host } from './host.js';
 
-// TODO
-// export const slots = (target) => api(target).slots();
+type Slots = {
+  [key: string]: Array<Element> | undefined;
+};
 
-// const result = {};
-
-// const element = getElement(this);
-
-// const nodes = Array.from(element.childNodes);
-
-// for (let i = 0; i < nodes.length; i++) {
-
-//   const item = nodes[i];
-
-//   const slot = item['slot'] || 'default';
-
-//   result[slot] = result[slot] || [];
-
-//   result[slot].push(item);
-// }
+export const slots = (target): Slots => {
+  const result = {};
+  host(target)
+    ?.shadowRoot?.querySelectorAll('slot')
+    .forEach((slot) => {
+      const elements = slot.assignedElements();
+      if (!elements.length) return;
+      result[slot.name || 'default'] = elements;
+    });
+  return result;
+};

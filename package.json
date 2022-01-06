@@ -9,8 +9,7 @@
     "build": "npm run clean && tsc",
     "build:watch": "tsc -w",
     "clean": "rimraf dist",
-    "start:new": "node src/dev.js",
-    "start": "concurrently \"npm run build:watch\" \"nodemon --experimental-specifier-resolution=node src/dev.js\""
+    "start": "node src/dev.js"
   },
   "exports": {
     ".": {

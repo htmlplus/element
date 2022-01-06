@@ -91,8 +91,8 @@ TODO
 
 Options:
 
-  - **attribute**: TODO
-  - **reflect**: TODO
+- **attribute**: TODO
+- **reflect**: TODO
 
 ```tsx
 import { Element, Property } from '@htmlplus/element';
@@ -126,10 +126,10 @@ TODO
 
 Options:
 
-  - **name**: A string custom event name to override the default.
-  - **bubbles**: A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
-  - **cancelable**: A Boolean indicating whether the event is cancelable. default is `false`.
-  - **composed**: A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
+- **name**: A string custom event name to override the default.
+- **bubbles**: A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
+- **cancelable**: A Boolean indicating whether the event is cancelable. default is `false`.
+- **composed**: A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
 
 ```tsx
 import { Element, Event, EventEmitter } from '@htmlplus/element';
@@ -512,7 +512,43 @@ export class MyElement {
 <details>
   <summary>slots</summary>
 
-TODO
+```js
+import { Element, Property, slots } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  loadedCallback() {
+    /**
+     * { 
+     *   default: [<h1/>], 
+     *   main:    [<h2/>, <h3/>], 
+     *   empty:   undefined,
+     * }
+     */
+    slots(this)
+  }
+
+  render() {
+    return (
+      <div>
+        <slot />
+        <slot name="main" />
+        <slot name="empty" />
+      </div>
+    )
+  }
+}
+```
+
+```html
+<my-element>
+  <h1></h1>
+  <h2 slot="main"></h2>
+  <h3 slot="main"></h3>
+  <h4 slot="extra"></h4>
+</my-element>
+```
 
 </details>
 
@@ -721,11 +757,11 @@ import compiler from '@htmlplus/element/compiler';
 import { read, parse, extract, attach, uhtml, print } from '@htmlplus/element/compiler';
 
 const { start, next, finish } = compiler(
-  read(), 
-  parse(), 
-  extract(), 
-  attach(), 
-  uhtml(), 
+  read(),
+  parse(),
+  extract(),
+  attach(),
+  uhtml(),
   print(),
 );
 
