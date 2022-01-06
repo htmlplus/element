@@ -9,9 +9,13 @@ export const slots = (target): Slots => {
   host(target)
     ?.shadowRoot?.querySelectorAll('slot')
     .forEach((slot) => {
-      const elements = slot.assignedElements();
-      if (!elements.length) return;
-      result[slot.name || 'default'] = elements;
+      const name = slot.name || 'default';
+      Object.defineProperty(result, name, {
+        get() {
+          const elements = slot.assignedElements();
+          return elements.length ? elements : undefined;
+        }
+      });
     });
   return result;
 };
