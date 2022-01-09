@@ -2,7 +2,6 @@ import { paramCase } from 'change-case';
 
 export const updateAttribute = (node: Element, key: string, value: any): void => {
   key = paramCase(key);
-
   if (value === undefined) {
     node.removeAttribute(key);
   } else if (value === null) {
