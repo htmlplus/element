@@ -1,4 +1,3 @@
-export * from './api.js';
 export * from './classes.js';
 export * from './direction.js';
 export * from './event.js';

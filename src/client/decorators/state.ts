@@ -1,4 +1,4 @@
-import * as Helpers from '../helpers/index.js';
+import * as Utils from '../utils/index.js';
 
 export function State() {
   return function (target: Object, propertyKey: PropertyKey) {
@@ -21,7 +21,7 @@ export function State() {
 
       value = input;
 
-      const api = Helpers.api(this);
+      const api = Utils.api(this);
 
       if (!api.ready) return;
 

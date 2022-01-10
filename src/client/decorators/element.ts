@@ -1,7 +1,7 @@
-import { define, proxy } from '../utils/index.js';
+import { defineElement, proxy } from '../utils/index.js';
 
 export function Element(tag?: string) {
   return function (constructor: Function) {
-    define(tag || '', proxy(constructor));
+    defineElement(tag || '', proxy(constructor));
   };
 }

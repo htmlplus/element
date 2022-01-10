@@ -1,4 +1,4 @@
-import * as Helpers from '../helpers/index.js';
+import * as Utils from '../utils/index.js';
 
 export function Watch(...keys: Array<string>) {
   return function (target: any, propertyKey: PropertyKey) {
@@ -16,7 +16,7 @@ export function Watch(...keys: Array<string>) {
 
         if (input === value) return;
 
-        const api = Helpers.api(this);
+        const api = Utils.api(this);
 
         if (!api.ready) return;
 

@@ -1,5 +1,5 @@
-import * as Helpers from '../helpers/index.js';
 import { PropertyOptions } from '../../types/index.js';
+import * as Utils from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
   return function (target: Object, propertyKey: PropertyKey) {
@@ -21,7 +21,7 @@ export function Property(options?: PropertyOptions) {
 
       value = input;
 
-      const api = Helpers.api(this);
+      const api = Utils.api(this);
 
       if (!api.ready) return;
 
