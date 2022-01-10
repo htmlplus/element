@@ -1,3 +1,4 @@
+export * from './define-property.js';
 export * from './define.js';
 export * from './get-event-name.js';
 export * from './is-event.js';

@@ -519,14 +519,7 @@ import { Element, Property, slots } from '@htmlplus/element';
 export class MyElement {
 
   loadedCallback() {
-    /**
-     * { 
-     *   default: [<h1/>], 
-     *   main:    [<h2/>, <h3/>], 
-     *   empty:   undefined,
-     * }
-     */
-    slots(this)
+    slots(this) // { default: true, main: true, empty: false }
   }
 
   render() {
@@ -545,8 +538,7 @@ export class MyElement {
 <my-element>
   <h1></h1>
   <h2 slot="main"></h2>
-  <h3 slot="main"></h3>
-  <h4 slot="extra"></h4>
+  <h3 slot="extra"></h3>
 </my-element>
 ```
 

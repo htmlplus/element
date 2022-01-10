@@ -1,21 +1,18 @@
-import { host } from './host.js';
+import { queryAll } from './query-all.js';
 
 type Slots = {
-  [key: string]: Array<Element> | undefined;
+  [key: string]: boolean;
 };
 
 export const slots = (target): Slots => {
   const result = {};
-  host(target)
-    ?.shadowRoot?.querySelectorAll('slot')
-    .forEach((slot) => {
-      const name = slot.name || 'default';
-      Object.defineProperty(result, name, {
-        get() {
-          const elements = slot.assignedElements();
-          return elements.length ? elements : undefined;
-        }
-      });
+  queryAll(target, 'slot')?.forEach((slot) => {
+    const name = slot.name || 'default';
+    Object.defineProperty(result, name, {
+      get() {
+        return !!slot.assignedNodes().filter((node) => node.nodeName != '#text' || node.nodeValue?.trim()).length;
+      }
     });
+  });
   return result;
 };
