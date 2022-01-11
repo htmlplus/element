@@ -9,7 +9,7 @@
     "build": "npm run clean && tsc",
     "build:watch": "tsc -w",
     "clean": "rimraf dist",
-    "start": "node src/dev.js"
+    "start": "node src/dev/start.js"
   },
   "exports": {
     ".": {
