@@ -15,15 +15,11 @@ export const extract = (options?: ExtractOptions) => {
   const name = 'extract';
 
   const next = (context: Context) => {
-    const additions: Array<any> = [];
-
     visitor(context.fileAST as any, {
       ClassDeclaration: {
         exit(path) {
           context.class = path.node;
-
           context.classMembers = context.class?.body?.body || [];
-
           path.skip();
         }
       },
@@ -36,7 +32,6 @@ export const extract = (options?: ExtractOptions) => {
 
           if (argument) {
             context.componentTag = argument?.value;
-
             return;
           }
 
@@ -55,24 +50,18 @@ export const extract = (options?: ExtractOptions) => {
 
           return;
         }
-
-        if (CONSTANTS.TOKEN_DECORATOR_METHOD == name) {
-          additions.push(path);
-
-          return;
-        }
       }
     });
 
-    context.directoryPath = path.dirname(context.filePath || '');
+    context.directoryPath = path.dirname(context.filePath!);
 
-    context.directoryName = path.basename(context.directoryPath || '');
+    context.directoryName = path.basename(context.directoryPath!);
 
-    context.fileExtension = path.extname(context.filePath || '');
+    context.fileExtension = path.extname(context.filePath!);
 
-    context.fileName = path.basename(context.filePath || '', context.fileExtension);
+    context.fileName = path.basename(context.filePath!, context.fileExtension);
 
-    context.className = context.class?.id?.name || '';
+    context.className = context.class?.id?.name!;
 
     context.componentKey = paramCase(context.className);
 
@@ -115,8 +104,6 @@ export const extract = (options?: ExtractOptions) => {
     context.classRender = (context.classMembers || []).find(
       (member) => member['key'].name == CONSTANTS.TOKEN_METHOD_RENDER
     ) as ClassMethod;
-
-    additions.forEach((path) => path.remove());
   };
 
   return {

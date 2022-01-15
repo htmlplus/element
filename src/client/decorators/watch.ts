@@ -1,4 +1,5 @@
 import * as Utils from '../utils/index.js';
+import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export function Watch(...keys: Array<string>) {
   return function (target: any, propertyKey: PropertyKey) {
@@ -26,4 +27,8 @@ export function Watch(...keys: Array<string>) {
       Object.defineProperty(target, key, descriptor);
     }
   };
+  function setup(target: Object, propertyKey: PropertyKey) {
+    return {};
+  }
+  return decorator(setup as DecoratorSetup);
 }

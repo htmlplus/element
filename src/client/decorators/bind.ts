@@ -1,21 +1,20 @@
-export function Bind() {
-  return function (target: any, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
-    if (!descriptor || typeof descriptor.value !== 'function')
-      throw new TypeError(`Only methods can be decorated with @bind. <${String(propertyKey)}> is not a method!`);
+import { DecoratorSetup, decorator } from '../utils/index.js';
 
+export function Bind() {
+  function setup(target: Object, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
     return {
+      type: 'method',
       configurable: true,
       get() {
-        const bound = descriptor.value!.bind(this);
-
+        const value = descriptor.value!.bind(this);
         Object.defineProperty(this, propertyKey, {
-          value: bound,
+          value,
           configurable: true,
           writable: true
         });
-
-        return bound;
+        return value;
       }
     };
-  };
+  }
+  return decorator(setup as DecoratorSetup);
 }

@@ -8,8 +8,12 @@
   </head>
 
   <body>
-    <my-element>
+    <my-element id="el">
       <div>123</div>
     </my-element>
+    <script>
+      window.el = el
+      console.log(111111, el)
+    </script>
   </body>
 </html>

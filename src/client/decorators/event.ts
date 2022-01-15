@@ -1,11 +1,12 @@
 import * as Helpers from '../helpers/index.js';
 import { EventOptions } from '../../types/index.js';
+import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
 export function Event<T = any>(options: EventOptions = {}) {
-  return function (target: Object, propertyKey: PropertyKey) {
-    const descriptor = {
+  function setup(target: Object, propertyKey: PropertyKey) {
+    return {
       get() {
         return (data?: T): CustomEvent<T> => {
           const name = options.name || String(propertyKey);
@@ -24,7 +25,6 @@ export function Event<T = any>(options: EventOptions = {}) {
         };
       }
     };
-
-    Object.defineProperty(target, propertyKey, descriptor);
-  };
+  }
+  return decorator(setup as DecoratorSetup);
 }

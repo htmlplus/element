@@ -1,33 +1,39 @@
 import * as Utils from '../utils/index.js';
+import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export function State() {
-  return function (target: Object, propertyKey: PropertyKey) {
+  function setup(target: Object, propertyKey: PropertyKey) {
     let value;
+    return {
+      type: 'property',
+      get() {
+        return value;
+      },
+      set(input) {
+        if (input === value) return;
 
-    const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey) || {};
+        value = input;
 
-    const set = descriptor.set;
+        const api = Utils.api(this);
 
-    descriptor.configurable = true;
+        if (!api.ready) return;
 
-    descriptor.get = function () {
-      return value;
+        api.state(propertyKey as string, input);
+
+        // TODO
+        // this.render();
+      },
+      finisher(host: HTMLElement) {
+        Object.defineProperty(host, propertyKey, {
+          get: () => {
+            return this[propertyKey];
+          },
+          set: (value) => {
+            this[propertyKey] = value;
+          }
+        });
+      }
     };
-
-    descriptor.set = function (input) {
-      set && set.bind(this)(input);
-
-      if (input === value) return;
-
-      value = input;
-
-      const api = Utils.api(this);
-
-      if (!api.ready) return;
-
-      api.state(propertyKey as string, input);
-    };
-
-    Object.defineProperty(target, propertyKey, descriptor);
-  };
+  }
+  return decorator(setup as DecoratorSetup);
 }

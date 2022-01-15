@@ -34,6 +34,9 @@ export const proxy = (Class: any) => {
 
       instance = new Class();
 
+      // TODO
+      (instance.setup || []).map((fn) => fn.bind(instance)(this));
+
       instance[CONSTANTS.TOKEN_API] = instance[CONSTANTS.TOKEN_API] || {};
 
       set(CONSTANTS.TOKEN_API_READY, false);
@@ -54,21 +57,6 @@ export const proxy = (Class: any) => {
         if (options.reflect) updateAttribute(this, name, value);
 
         this.render();
-      });
-
-      Object.keys(members).map((key) => {
-        const [type] = members[key];
-
-        let get: any = () => instance[key];
-
-        let set: any = (value) => (instance[key] = value);
-
-        if (type === CONSTANTS.TYPE_FUNCTION) {
-          get = () => instance[key].bind(instance);
-          set = undefined;
-        }
-
-        Object.defineProperty(this, key, { get, set });
       });
 
       this.attachShadow({ mode: 'open' });

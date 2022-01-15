@@ -6,8 +6,7 @@ export const read = () => {
 
   const next = (context: Context) => {
     if (!!context.fileContent) return;
-
-    context.fileContent = fs.readFileSync(context.filePath || '', 'utf8');
+    context.fileContent = fs.readFileSync(context.filePath!, 'utf8');
   };
 
   return {

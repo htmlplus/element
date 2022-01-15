@@ -1,33 +1,44 @@
 import { PropertyOptions } from '../../types/index.js';
 import * as Utils from '../utils/index.js';
+import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
-  return function (target: Object, propertyKey: PropertyKey) {
+  function setup(target: Object, propertyKey: PropertyKey) {
     let value;
-    const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey) || {};
+    return {
+      get() {
+        return value;
+      },
+      set(input) {
+        if (input === value) return;
 
-    const set = descriptor.set;
+        value = input;
 
-    descriptor.configurable = true;
+        const api = Utils.api(this);
 
-    descriptor.get = function () {
-      return value;
+        if (!api?.ready) return;
+
+        api.property(propertyKey as string, input, options);
+
+        // TODO
+        // const raw = this.getAttribute(name);
+        // const [type] = members[name];
+        // const parsed = parseValue(raw, type);
+        // if (parsed === value) return;
+        // if (options.reflect) updateAttribute(this, name, value);
+        // this.render();
+      },
+      finisher(host: HTMLElement) {
+        Object.defineProperty(host, propertyKey, {
+          get: () => {
+            return this[propertyKey];
+          },
+          set: (value) => {
+            this[propertyKey] = value;
+          }
+        });
+      }
     };
-
-    descriptor.set = function (input) {
-      set && set.bind(this)(input);
-
-      if (input === value) return;
-
-      value = input;
-
-      const api = Utils.api(this);
-
-      if (!api.ready) return;
-
-      api.property(propertyKey as string, input, options);
-    };
-
-    Object.defineProperty(target, propertyKey, descriptor);
-  };
+  }
+  return decorator(setup as DecoratorSetup);
 }

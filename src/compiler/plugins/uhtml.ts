@@ -6,7 +6,7 @@ export const uhtml = () => {
   const name = 'uhtml';
 
   const next = (context: Context) => {
-    context.fileAST?.program.body.unshift(
+    context.fileAST!.program.body.unshift(
       t.importDeclaration(
         [t.importSpecifier(t.identifier('html'), t.identifier('html'))],
         t.stringLiteral('@htmlplus/element/runtime')
@@ -43,11 +43,9 @@ export const uhtml = () => {
         exit(path) {
           if (path.parent.type == 'JSXElement' || path.parent.type == 'JSXFragment') {
             path.replaceWith(t.identifier(print(path.node)));
-
             return;
           } else {
             path.replaceWith(t.identifier('html`' + print(path.node) + '`'));
-
             return;
           }
         }
@@ -61,7 +59,6 @@ export const uhtml = () => {
         exit(path) {
           if (path.parent.type == 'JSXElement' || path.parent.type == 'JSXFragment') {
             path.replaceWith(t.identifier('$' + print(path.node)));
-
             return;
           }
         }

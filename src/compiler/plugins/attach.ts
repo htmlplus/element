@@ -29,7 +29,7 @@ export const attach = (options: AttachOptions) => {
     }
 
     if (options.styles && context.styleParsed)
-      context.class?.body.body.unshift(
+      context.class!.body.body.unshift(
         t.classProperty(
           t.identifier(CONSTANTS.TOKEN_STATIC_STYLES),
           t.stringLiteral(context.styleParsed),
@@ -41,11 +41,11 @@ export const attach = (options: AttachOptions) => {
       );
 
     if (options.members) {
-      context.class?.body.body.unshift(
+      context.class!.body.body.unshift(
         t.classProperty(
           t.identifier(CONSTANTS.TOKEN_STATIC_MEMBERS),
           t.objectExpression([
-            ...(context.classProperties || []).map((property) => {
+            ...context.classProperties!.map((property) => {
               const type = (property as any).typeAnnotation?.typeAnnotation?.type;
 
               const elements: Array<any> = [];
@@ -72,10 +72,9 @@ export const attach = (options: AttachOptions) => {
 
               return t.objectProperty(t.identifier(property.key['name']), t.arrayExpression(elements));
             }),
-            ...(context.classMethods || []).map((property) => {
+            ...context.classMethods!.map((method) => {
               const elements: Array<any> = [t.stringLiteral(CONSTANTS.TYPE_FUNCTION)];
-
-              return t.objectProperty(t.identifier(property.key['name']), t.arrayExpression(elements));
+              return t.objectProperty(t.identifier(method.key['name']), t.arrayExpression(elements));
             })
           ]),
           undefined,
@@ -87,7 +86,7 @@ export const attach = (options: AttachOptions) => {
     }
 
     if (options.typings) {
-      const className = pascalCase(context.componentTag?.split('-').slice(1).join('-') || '');
+      const className = pascalCase(context.componentTag!.split('-').slice(1).join('-'));
 
       const elementName = `HTML${className}Element`;
 
@@ -103,7 +102,7 @@ export const attach = (options: AttachOptions) => {
                     null,
                     [],
                     t.tsInterfaceBody([
-                      ...(context.classProperties || []).map((property) =>
+                      ...context.classProperties!.map((property) =>
                         Object.assign(
                           t.tSPropertySignature(property.key, property.typeAnnotation as TSTypeAnnotation),
                           {
@@ -138,7 +137,7 @@ export const attach = (options: AttachOptions) => {
                     null,
                     [],
                     t.tsInterfaceBody([
-                      ...(context.classProperties || []).map((property) =>
+                      ...context.classProperties!.map((property) =>
                         Object.assign(
                           t.tSPropertySignature(property.key, property.typeAnnotation as TSTypeAnnotation),
                           {
@@ -155,7 +154,7 @@ export const attach = (options: AttachOptions) => {
                     [],
                     t.tsInterfaceBody([
                       t.tSPropertySignature(
-                        t.stringLiteral(context.componentTag || ''),
+                        t.stringLiteral(context.componentTag!),
                         t.tSTypeAnnotation(t.tSIntersectionType([t.tSTypeReference(t.identifier(className))]))
                       )
                     ])
@@ -170,7 +169,7 @@ export const attach = (options: AttachOptions) => {
                           undefined,
                           t.tsInterfaceBody([
                             t.tsPropertySignature(
-                              t.stringLiteral(context.componentTag || ''),
+                              t.stringLiteral(context.componentTag!),
                               t.tsTypeAnnotation(t.tsTypeReference(t.identifier(className)))
                             )
                           ])
