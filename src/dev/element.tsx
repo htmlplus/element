@@ -1,30 +1,57 @@
-import { Element, slots, Method, Property } from '@htmlplus/element';
+import { Bind, Element, Event, EventEmitter, Listen, Method, Property, State, Watch } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
   
-  loadedCallback() {
-    console.log(123, slots(this));
-  }
-
   @Property()
-  p1 = 'ppppp111111111'
+  name?: string = 'Simon';
+
+  @Event()
+  clicked!: EventEmitter;
+
+  @State()
+  active?: boolean;
 
   @Method()
-  ab() {
-    console.log('ab method', this.p1)
+  open() {
+    console.log('@Method', this.name)
+  }
+
+  @Watch('name')
+  watcher(key, newValue, oldValue) {
+    console.log('@Watch', key, newValue, oldValue)
+  }
+
+  @Listen('scroll', { target: 'window' })
+  onClick(event) {
+    console.log('@Listen', event)
+    this.active = !this.active;
+  }
+
+  @Bind()
+  onScroll(event) {
+    console.log(event);
+  }
+
+  handleClick() {
+    // this.clicked()
+    // console.log('handleClick', this.name)
+    // this.active = !this.active;
+  }
+
+  connectedCallback() {
+    // document.addEventListener('scroll', this.onScroll);
+  }
+
+  disconnectedCallback() {
+    // document.removeEventListener('scroll', this.onScroll);
   }
 
   render() {
-    return (
-      <>
-        <h1>
-          <slot /> {this.p1}
-        </h1>
-        <h1>
-          <slot name="a" />
-        </h1>
-      </>
-    );
+    return <>   
+      <button onClick={() => this.handleClick()}>
+        {this.active ? 'On' : 'Off'} {this.name}
+      </button>
+    </>
   }
 }

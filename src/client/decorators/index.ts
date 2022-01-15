@@ -2,7 +2,7 @@ export * from './attributes.js';
 export * from './bind.js';
 export * from './element.js';
 export * from './event.js';
-// export * from './listen.js';
+export * from './listen.js';
 // export * from './listen-options.js';
 export * from './method.js';
 export * from './property.js';

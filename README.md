@@ -324,6 +324,10 @@ export class MyButton {
   connectedCallback() {
     document.addEventListener('scroll', this.onScroll);
   }
+
+  disconnectedCallback() {
+    document.removeEventListener('scroll', this.onScroll);
+  }
 }
 ```
 

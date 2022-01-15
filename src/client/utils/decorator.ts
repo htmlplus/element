@@ -19,6 +19,7 @@ export const decorator = (setup: DecoratorSetup) => {
     Object.defineProperty(target, propertyKey, options);
 
     // TODO
+    if (!options.finisher) return;
     target['setup'] = target['setup'] || [];
     target['setup'].push(options.finisher);
   };

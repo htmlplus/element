@@ -12,8 +12,12 @@
       <div>123</div>
     </my-element>
     <script>
-      window.el = el
-      console.log(111111, el)
+      const el = document.getElementById('el')
+      el.addEventListener('clicked', () => alert('Clicked!'));
+      setTimeout(() => {
+        el.open()
+      }, 200);
     </script>
+    <div style="height: 200vh;"></div>
   </body>
 </html>

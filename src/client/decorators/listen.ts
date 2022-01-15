@@ -1,10 +1,43 @@
 import { ListenOptions } from '../../types/index.js';
-import { DecoratorSetup, decorator } from '../utils/index.js';
+import { host } from '../helpers/index.js';
+import * as CONSTANTS from '../../configs/constants.js';
 
-// TODO
-export function Listen(name: string, options: ListenOptions = {}) {
-  function setup(target: Object, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
-    return {};
-  }
-  return decorator(setup as DecoratorSetup);
+const defaults: ListenOptions = {
+  target: 'host'
+};
+
+export function Listen(name: string, options: ListenOptions = defaults) {
+  return function (target: Object, propertyKey: PropertyKey) {
+    [
+      [CONSTANTS.TOKEN_LIFECYCLE_CONNECTED, 'addEventListener'],
+      [CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED, 'removeEventListener']
+    ].forEach((item) => {
+      const [lifecycle, property] = item;
+
+      const callback = target[lifecycle];
+
+      target[lifecycle] = function () {
+        callback?.();
+
+        let element;
+
+        switch (options.target) {
+          case 'body':
+            element = window.document.body;
+            break;
+          case 'document':
+            element = window.document;
+            break;
+          case 'window':
+            element = window;
+            break;
+          case 'host':
+            element = host(this);
+            break;
+        }
+
+        element[property](name, target[propertyKey], options);
+      };
+    });
+  };
 }
