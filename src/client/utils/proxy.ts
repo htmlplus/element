@@ -10,16 +10,6 @@ export const proxy = (Class: any) => {
 
   const members = Class[CONSTANTS.TOKEN_STATIC_MEMBERS] || {};
 
-  const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
-
-  const call = (key: string) => {
-    const fn = instance[key];
-
-    if (!fn) return;
-
-    return fn.apply(instance);
-  };
-
   const get = (key: string) => {
     return instance[CONSTANTS.TOKEN_API][key];
   };
@@ -67,7 +57,7 @@ export const proxy = (Class: any) => {
     }
 
     adoptedCallback() {
-      call(CONSTANTS.TOKEN_LIFECYCLE_ADOPTED);
+      instance[CONSTANTS.TOKEN_LIFECYCLE_ADOPTED].apply(instance);
     }
 
     attributeChangedCallback(name, prev, next) {
@@ -83,17 +73,17 @@ export const proxy = (Class: any) => {
     connectedCallback() {
       update = sync(this, {});
 
-      call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
+      instance[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED].apply(instance);
 
       this.render();
 
-      call(CONSTANTS.TOKEN_LIFECYCLE_LOADED);
+      instance[CONSTANTS.TOKEN_LIFECYCLE_LOADED].apply(instance);
 
       set(CONSTANTS.TOKEN_API_READY, true);
     }
 
     disconnectedCallback() {
-      call(CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED);
+      instance[CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED].apply(instance);
     }
 
     render() {
@@ -103,20 +93,17 @@ export const proxy = (Class: any) => {
       update(instance.attributes || {});
 
       render(this.shadowRoot as any, () => {
-        const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
+        const markup = instance[CONSTANTS.TOKEN_METHOD_RENDER].apply(instance);
 
-        if (!markup && !styles) return html``;
+        const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
 
-        if (!markup)
-          return html`<style>
-            ${styles}
-          </style>`;
+        if (!styles && !markup) return html``;
 
         if (!styles) return markup;
 
-        return html`<style>
-            ${styles}</style
-          >${markup}`;
+        if (!markup) return html`<style>${styles}</style>`;
+
+        return html`<style>${styles}</style>${markup}`;
       });
     }
   };
