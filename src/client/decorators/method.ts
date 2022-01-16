@@ -1,10 +1,10 @@
 import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export function Method() {
-  function setup(target: Object, propertyKey: PropertyKey) {
+  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
     return {
       type: 'method',
-      finisher(host: HTMLElement) {
+      onReady(host: HTMLElement) {
         Object.defineProperty(host, propertyKey, {
           get: () => {
             return this[propertyKey].bind(this);
@@ -12,6 +12,6 @@ export function Method() {
         });
       }
     };
-  }
-  return decorator(setup as DecoratorSetup);
+  };
+  return decorator(setup);
 }

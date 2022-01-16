@@ -6,7 +6,7 @@ export type DecoratorSetup = (
 
 export type DecoratorSetupReturn = PropertyDescriptor & {
   type?: 'method' | 'property';
-  finisher?(host: HTMLElement): void;
+  onReady?(host: HTMLElement): void;
 };
 
 export const decorator = (setup: DecoratorSetup) => {
@@ -19,8 +19,8 @@ export const decorator = (setup: DecoratorSetup) => {
     Object.defineProperty(target, propertyKey, options);
 
     // TODO
-    if (!options.finisher) return;
+    if (!options.onReady) return;
     target['setup'] = target['setup'] || [];
-    target['setup'].push(options.finisher);
+    target['setup'].push(options.onReady);
   };
 };

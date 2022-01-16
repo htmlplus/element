@@ -3,9 +3,10 @@ import * as Utils from '../utils/index.js';
 import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
-  function setup(target: Object, propertyKey: PropertyKey) {
+  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
     let value;
     return {
+      type: 'property',
       get() {
         return value;
       },
@@ -28,7 +29,7 @@ export function Property(options?: PropertyOptions) {
         // if (options.reflect) updateAttribute(this, name, value);
         // this.render();
       },
-      finisher(host: HTMLElement) {
+      onReady(host: HTMLElement) {
         Object.defineProperty(host, propertyKey, {
           get: () => {
             return this[propertyKey];
@@ -39,6 +40,6 @@ export function Property(options?: PropertyOptions) {
         });
       }
     };
-  }
-  return decorator(setup as DecoratorSetup);
+  };
+  return decorator(setup);
 }

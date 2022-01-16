@@ -5,8 +5,9 @@ import { DecoratorSetup, decorator } from '../utils/index.js';
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
 export function Event<T = any>(options: EventOptions = {}) {
-  function setup(target: Object, propertyKey: PropertyKey) {
+  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
     return {
+      type: 'property',
       get() {
         return (data?: T): CustomEvent<T> => {
           const name = options.name || String(propertyKey);
@@ -25,6 +26,6 @@ export function Event<T = any>(options: EventOptions = {}) {
         };
       }
     };
-  }
-  return decorator(setup as DecoratorSetup);
+  };
+  return decorator(setup);
 }

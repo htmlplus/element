@@ -2,7 +2,7 @@ import * as Utils from '../utils/index.js';
 import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export function State() {
-  function setup(target: Object, propertyKey: PropertyKey) {
+  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
     let value;
     return {
       type: 'property',
@@ -23,7 +23,7 @@ export function State() {
         // TODO
         // this.render();
       },
-      finisher(host: HTMLElement) {
+      onReady(host: HTMLElement) {
         Object.defineProperty(host, propertyKey, {
           get: () => {
             return this[propertyKey];
@@ -34,6 +34,6 @@ export function State() {
         });
       }
     };
-  }
-  return decorator(setup as DecoratorSetup);
+  };
+  return decorator(setup);
 }
