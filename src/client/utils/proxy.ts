@@ -4,7 +4,7 @@ import { isServer, parseValue, sync, updateAttribute } from '../utils/index.js';
 
 // TODO: input type
 export const proxy = (Class: any) => {
-  if (isServer()) return class { };
+  if (isServer()) return class {};
 
   let instance, update;
 
