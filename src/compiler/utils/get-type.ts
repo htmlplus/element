@@ -2,6 +2,7 @@ import { parse } from '@babel/parser';
 import { File } from '@babel/types';
 import fs from 'fs';
 import { dirname, resolve } from 'path';
+
 import { visitor } from './visitor.js';
 
 // TODO: return type

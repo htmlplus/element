@@ -1,4 +1,5 @@
 import { paramCase } from 'change-case';
+
 import { typeOf } from '../utils/index.js';
 
 export const classes = (input: any, smart?: boolean): string => {

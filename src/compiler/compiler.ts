@@ -1,4 +1,5 @@
 import logUpdate from 'log-update';
+
 import { Context, Plugin } from '../types/index.js';
 
 const log = (namespace?: string, message?: string) => {

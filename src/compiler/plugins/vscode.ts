@@ -1,6 +1,7 @@
 import { paramCase } from 'change-case';
 import fs from 'fs';
 import path from 'path';
+
 import { Context } from '../../types/index.js';
 import { getTags, getType, printType } from '../utils/index.js';
 

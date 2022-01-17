@@ -1,4 +1,5 @@
 import { html, render } from 'uhtml';
+
 import * as CONSTANTS from '../../configs/constants.js';
 import { isServer, parseValue, sync, updateAttribute } from '../utils/index.js';
 

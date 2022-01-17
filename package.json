@@ -85,6 +85,7 @@
     "uhtml": "^2.7.6"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
     "prettier": "^2.5.0",
     "rimraf": "^3.0.2",
     "vite": "^2.7.10"

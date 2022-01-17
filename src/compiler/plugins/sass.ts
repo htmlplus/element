@@ -1,4 +1,5 @@
 import core, { Options } from 'sass';
+
 import { Context } from '../../types/index.js';
 
 export const sass = (options?: Options<'sync'>) => {

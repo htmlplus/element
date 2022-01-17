@@ -1,6 +1,6 @@
+import * as CONSTANTS from '../../configs/constants.js';
 import { ListenOptions } from '../../types/index.js';
 import { host } from '../helpers/index.js';
-import * as CONSTANTS from '../../configs/constants.js';
 
 const defaults: ListenOptions = {
   target: 'host'
