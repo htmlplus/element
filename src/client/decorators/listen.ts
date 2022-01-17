@@ -8,11 +8,13 @@ const defaults: ListenOptions = {
 
 export function Listen(name: string, options: ListenOptions = defaults) {
   return function (target: Object, propertyKey: PropertyKey) {
-    [
+    const configs = [
       [CONSTANTS.TOKEN_LIFECYCLE_CONNECTED, 'addEventListener'],
       [CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED, 'removeEventListener']
-    ].forEach((item) => {
-      const [lifecycle, property] = item;
+    ];
+
+    for (const config of configs) {
+      const [lifecycle, property] = config;
 
       const callback = target[lifecycle];
 
@@ -38,6 +40,6 @@ export function Listen(name: string, options: ListenOptions = defaults) {
 
         element[property](name, target[propertyKey], options);
       };
-    });
+    }
   };
 }
