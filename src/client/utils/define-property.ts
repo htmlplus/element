@@ -1,3 +1,1 @@
-export const defineProperty = () => {
-    
-}
+export const defineProperty = () => {};

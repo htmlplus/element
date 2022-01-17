@@ -5,7 +5,6 @@ export const classes = (input: any, smart?: boolean): string => {
   const result: Array<string> = [];
 
   switch (typeOf(input)) {
-
     case 'array': {
       input.forEach((item) => {
         const value = classes(item, smart);

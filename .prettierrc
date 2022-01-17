@@ -1,10 +1,7 @@
 {
-  "printWidth": 120,
-  "embeddedLanguageFormatting": "off",
-  "trailingComma": "none",
-  "tabWidth": 2,
-  "semi": true,
-  "arrowParens": "always",
-  "quoteProps": "consistent",
-  "singleQuote": true
+  'embeddedLanguageFormatting': 'off',
+  'printWidth': 120,
+  'quoteProps': 'consistent',
+  'singleQuote': true,
+  'trailingComma': 'none'
 }

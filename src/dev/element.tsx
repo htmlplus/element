@@ -2,7 +2,6 @@ import { Bind, Element, Event, EventEmitter, Listen, Method, Property, State, Wa
 
 @Element()
 export class MyElement {
-  
   @Property()
   name?: string = 'Simon';
 
@@ -14,17 +13,17 @@ export class MyElement {
 
   @Method()
   open() {
-    console.log('@Method', this.name)
+    console.log('@Method', this.name);
   }
 
   @Watch('name')
   watcher(key, newValue, oldValue) {
-    console.log('@Watch', key, newValue, oldValue)
+    console.log('@Watch', key, newValue, oldValue);
   }
 
   @Listen('scroll', { target: 'window' })
   onClick(event) {
-    console.log('@Listen', event)
+    console.log('@Listen', event);
     this.active = !this.active;
   }
 
@@ -48,10 +47,12 @@ export class MyElement {
   }
 
   render() {
-    return <>   
-      <button onClick={() => this.handleClick()}>
-        {this.active ? 'On' : 'Off'} {this.name}
-      </button>
-    </>
+    return (
+      <>
+        <button onClick={() => this.handleClick()}>
+          {this.active ? 'On' : 'Off'} {this.name}
+        </button>
+      </>
+    );
   }
 }
