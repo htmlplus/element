@@ -22,7 +22,7 @@ export function Property(options?: PropertyOptions) {
         api.property(propertyKey as string, input, options);
 
         // TODO
-        // const raw = this.getAttribute(name);
+        // const raw = Utils.api(this).host().getAttribute(String(propertyKey));
         // const [type] = members[name];
         // const parsed = parseValue(raw, type);
         // if (parsed === value) return;

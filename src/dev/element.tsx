@@ -2,6 +2,7 @@ import { Bind, Element, Event, EventEmitter, Listen, Method, Property, State, Wa
 
 @Element()
 export class MyElement {
+  
   @Property()
   name?: string = 'Simon';
 
