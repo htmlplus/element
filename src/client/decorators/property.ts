@@ -1,6 +1,6 @@
 import { PropertyOptions } from '../../types/index.js';
 import * as Utils from '../utils/index.js';
-import { DecoratorSetup, decorator, parseValue, updateAttribute } from '../utils/index.js';
+import { DecoratorSetup, decorator, defineProperty, parseValue, updateAttribute } from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
   const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
@@ -32,7 +32,7 @@ export function Property(options?: PropertyOptions) {
         // this.render();
       },
       onReady(host: HTMLElement) {
-        Object.defineProperty(host, propertyKey, {
+        defineProperty(host, propertyKey, {
           get: () => {
             return this[propertyKey];
           },

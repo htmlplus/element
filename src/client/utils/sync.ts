@@ -1,5 +1,5 @@
-import { getEventName } from './get-event-name.js';
 import { isEvent } from './is-event.js';
+import { toEvent } from './to-event.js';
 import { updateAttribute } from './update-attribute.js';
 
 // TODO: input type
@@ -25,7 +25,7 @@ export const sync =
 
       if (!isEvent(key)) continue;
 
-      const name = getEventName(key);
+      const name = toEvent(key);
 
       node.removeEventListener(name, value);
     }
@@ -36,7 +36,7 @@ export const sync =
       if (['class', 'style'].includes(key)) continue;
 
       if (isEvent(key)) {
-        const name = getEventName(key);
+        const name = toEvent(key);
 
         node.addEventListener(name, value);
 

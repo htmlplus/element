@@ -1,5 +1,5 @@
 import * as Utils from '../utils/index.js';
-import { DecoratorSetup, decorator } from '../utils/index.js';
+import { DecoratorSetup, decorator, defineProperty } from '../utils/index.js';
 
 export function State() {
   const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
@@ -24,7 +24,7 @@ export function State() {
         // this.render();
       },
       onReady(host: HTMLElement) {
-        Object.defineProperty(host, propertyKey, {
+        defineProperty(host, propertyKey, {
           get: () => {
             return this[propertyKey];
           },

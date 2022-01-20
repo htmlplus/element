@@ -1,1 +1,1 @@
-export const defineProperty = () => {};
+export const defineProperty = Object.defineProperty;
