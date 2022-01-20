@@ -1,6 +1,6 @@
 import { PropertyOptions } from '../../types/index.js';
 import * as Utils from '../utils/index.js';
-import { DecoratorSetup, decorator } from '../utils/index.js';
+import { DecoratorSetup, decorator, parseValue, updateAttribute } from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
   const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
@@ -21,12 +21,14 @@ export function Property(options?: PropertyOptions) {
 
         api.property(propertyKey as string, input, options);
 
+        console.log(11, target);
+
         // TODO
-        // const raw = Utils.api(this).host().getAttribute(String(propertyKey));
-        // const [type] = members[name];
-        // const parsed = parseValue(raw, type);
-        // if (parsed === value) return;
-        // if (options.reflect) updateAttribute(this, name, value);
+        const raw = api.host().getAttribute(String(propertyKey));
+        const [type] = target.constructor['members'][propertyKey];
+        const parsed = parseValue(raw, type);
+        if (parsed === value) return;
+        if (options?.reflect) updateAttribute(api.host(), String(propertyKey), value);
         // this.render();
       },
       onReady(host: HTMLElement) {
