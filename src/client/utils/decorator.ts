@@ -23,6 +23,9 @@ export const decorator = (setup: DecoratorSetup) => {
       case 'method':
         if (isMethod) throw new TypeError(`<${key}> is not a method!`);
         break;
+      case 'property':
+        if (!isMethod) throw new TypeError(`<${key}> is not a property!`);
+        break;
     }
 
     defineProperty(target, propertyKey, options);
