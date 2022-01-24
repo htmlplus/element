@@ -35,8 +35,10 @@ export class MyElement {
   handleClick() {
     // this.clicked()
     // console.log('handleClick', this.name)
-    this.name = Date.now().toString();
     this.active = !this.active;
+    console.log('active', this.active);
+    this.name = Date.now().toString();
+    console.log('name', this.name);
   }
 
   connectedCallback() {

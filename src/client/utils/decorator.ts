@@ -32,7 +32,7 @@ export const decorator = (setup: DecoratorSetup) => {
 
     // TODO
     if (!options.onReady) return;
-    target['setup'] = target['setup'] || [];
+    target['setup'] ??= [];
     target['setup'].push(options.onReady);
   };
 };

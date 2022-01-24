@@ -2,7 +2,7 @@ import { html, render as renderer } from 'uhtml';
 
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { isServer, parseValue, sync, updateAttribute } from '../utils/index.js';
+import { isServer, parseValue, sync } from '../utils/index.js';
 
 // TODO: input type
 export const proxy = (Class: PlusElement) => {
@@ -24,25 +24,43 @@ export const proxy = (Class: PlusElement) => {
     instance[CONSTANTS.TOKEN_API][key] = value;
   };
 
+  // TODO
+  let pending;
   const render = (/*force?: boolean*/) => {
-    console.log(1)
+    console.log('try')
 
-    // TODO
-    update(instance.attributes || {});
+    if (pending) return
 
-    renderer(host.shadowRoot, () => {
-      const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
+    console.log('allow')
 
-      const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
+    pending = new Promise<void>((resolve) => {
+      console.log('render: start')
 
-      if (!styles && !markup) return html``;
+      // TODO
+      update(instance.attributes || {});
 
-      if (!styles) return markup;
+      renderer(host.shadowRoot, () => {
+        console.log('renderer')
 
-      if (!markup) return html`<style>${styles}</style>`;
+        const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
 
-      return html`<style>${styles}</style>${markup}`;
-    });
+        const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
+
+        if (!styles && !markup) return html``;
+
+        if (!styles) return markup;
+
+        if (!markup) return html`<style>${styles}</style>`;
+
+        return html`<style>${styles}</style>${markup}`;
+      });
+      console.log('render: end')
+
+      resolve();
+    }).then(() => {
+      pending = undefined
+      console.log('end')
+    })
   };
 
   return class extends HTMLElement {
@@ -55,7 +73,7 @@ export const proxy = (Class: PlusElement) => {
       instance = new (Class as any)();
 
       // TODO
-      (instance.setup || []).map((fn) => fn.bind(instance)(this));
+      instance.setup?.map((fn) => fn.bind(instance)(this));
 
       instance[CONSTANTS.TOKEN_API] = instance[CONSTANTS.TOKEN_API] || {};
 
