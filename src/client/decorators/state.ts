@@ -1,5 +1,4 @@
-import * as Utils from '../utils/index.js';
-import { DecoratorSetup, decorator, defineProperty } from '../utils/index.js';
+import { DecoratorSetup, api, decorator, defineProperty } from '../utils/index.js';
 
 export function State() {
   const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
@@ -14,14 +13,9 @@ export function State() {
 
         value = input;
 
-        const api = Utils.api(this);
+        if (!api(this)?.ready) return;
 
-        if (!api.ready) return;
-
-        api.state(propertyKey as string, input);
-
-        // TODO
-        // this.render();
+        api(this).render();
       },
       onReady(host: HTMLElement) {
         defineProperty(host, propertyKey, {

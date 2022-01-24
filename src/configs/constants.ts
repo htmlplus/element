@@ -1,9 +1,8 @@
 // apis
 export const TOKEN_API = '$api';
 export const TOKEN_API_HOST = 'host';
-export const TOKEN_API_PROPERTY = 'property';
 export const TOKEN_API_READY = 'ready';
-export const TOKEN_API_STATE = 'state';
+export const TOKEN_API_RENDER = 'render';
 
 // decorators
 export const TOKEN_DECORATOR_ATTRIBUTES = 'Attributes';

@@ -6,7 +6,7 @@ import { isServer, parseValue, sync, updateAttribute } from '../utils/index.js';
 
 // TODO: input type
 export const proxy = (Class: PlusElement) => {
-  if (isServer()) return class {};
+  if (isServer()) return class { };
 
   let host, instance, update;
 
@@ -25,7 +25,7 @@ export const proxy = (Class: PlusElement) => {
   };
 
   const render = (/*force?: boolean*/) => {
-    if (isServer()) return;
+    console.log(1)
 
     // TODO
     update(instance.attributes || {});
@@ -63,21 +63,7 @@ export const proxy = (Class: PlusElement) => {
 
       set(CONSTANTS.TOKEN_API_HOST, () => this);
 
-      set(CONSTANTS.TOKEN_API_STATE, () => render());
-
-      set(CONSTANTS.TOKEN_API_PROPERTY, (name, value, options: any = {}) => {
-        const raw = this.getAttribute(name);
-
-        const [type] = members[name];
-
-        const parsed = parseValue(raw, type);
-
-        if (parsed === value) return;
-
-        if (options.reflect) updateAttribute(this, name, value);
-
-        render();
-      });
+      set(CONSTANTS.TOKEN_API_RENDER, render);
 
       this.attachShadow({ mode: 'open' });
     }

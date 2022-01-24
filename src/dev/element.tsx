@@ -2,7 +2,6 @@ import { Bind, Element, Event, EventEmitter, Listen, Method, Property, State, Wa
 
 @Element()
 export class MyElement {
-  
   @Property()
   name?: string = 'Simon';
 
@@ -10,7 +9,7 @@ export class MyElement {
   clicked!: EventEmitter;
 
   @State()
-  active?: boolean;
+  active?: boolean = false;
 
   @Method()
   open() {
@@ -36,7 +35,8 @@ export class MyElement {
   handleClick() {
     // this.clicked()
     // console.log('handleClick', this.name)
-    // this.active = !this.active;
+    this.name = Date.now().toString();
+    this.active = !this.active;
   }
 
   connectedCallback() {
