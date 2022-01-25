@@ -74,10 +74,6 @@ export const extract = (options?: ExtractOptions) => {
       context.stylePath = stylePath;
     })();
 
-    context.classAttributes = (context.classMembers || []).filter((member) =>
-      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_ATTRIBUTES)
-    );
-
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_EVENT)
     ) as Array<ClassProperty>;

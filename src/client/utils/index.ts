@@ -1,6 +1,7 @@
 export * from './api.js';
 export * from './decorator.js';
 export * from './define-element.js';
+export * from './define-method.js';
 export * from './define-property.js';
 export * from './is-event.js';
 export * from './is-server.js';

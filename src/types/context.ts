@@ -27,7 +27,6 @@ export interface Context {
 
   // class
   class?: ClassDeclaration;
-  classAttributes?: ClassBody['body'];
   classEvents?: Array<ClassProperty>;
   classHasMount?: boolean;
   classHasUnmount?: boolean;

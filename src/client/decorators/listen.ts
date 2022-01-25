@@ -1,6 +1,7 @@
 import * as CONSTANTS from '../../configs/constants.js';
 import { ListenOptions } from '../../types/index.js';
 import { host } from '../helpers/index.js';
+import { defineMethod } from '../utils/index.js';
 
 const defaults: ListenOptions = {
   target: 'host'
@@ -8,38 +9,28 @@ const defaults: ListenOptions = {
 
 export function Listen(name: string, options: ListenOptions = defaults) {
   return function (target: Object, propertyKey: PropertyKey) {
-    const configs = [
-      [CONSTANTS.TOKEN_LIFECYCLE_CONNECTED, 'addEventListener'],
-      [CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED, 'removeEventListener']
-    ];
+    // TODO: types
+    const element = (instance) => {
+      switch (options.target) {
+        case 'body':
+          return window.document.body;
+        case 'document':
+          return window.document;
+        case 'window':
+          return window;
+        case 'host':
+          return host(instance);
+      }
+    };
 
-    for (const config of configs) {
-      const [lifecycle, property] = config;
+    defineMethod(target, CONSTANTS.TOKEN_LIFECYCLE_CONNECTED, function (instance, callback, args) {
+      element(instance)?.addEventListener(name, target[propertyKey], options);
+      return callback?.(...args);
+    });
 
-      const callback = target[lifecycle];
-
-      target[lifecycle] = function () {
-        callback?.();
-
-        let element;
-
-        switch (options.target) {
-          case 'body':
-            element = window.document.body;
-            break;
-          case 'document':
-            element = window.document;
-            break;
-          case 'window':
-            element = window;
-            break;
-          case 'host':
-            element = host(this);
-            break;
-        }
-
-        element[property](name, target[propertyKey], options);
-      };
-    }
+    defineMethod(target, CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED, function (instance, callback, args) {
+      element(instance)?.removeEventListener(name, target[propertyKey], options);
+      return callback?.(...args);
+    });
   };
 }

@@ -5,7 +5,6 @@ export const TOKEN_API_READY = 'ready';
 export const TOKEN_API_RENDER = 'render';
 
 // decorators
-export const TOKEN_DECORATOR_ATTRIBUTES = 'Attributes';
 export const TOKEN_DECORATOR_ELEMENT = 'Element';
 export const TOKEN_DECORATOR_EVENT = 'Event';
 export const TOKEN_DECORATOR_PROPERTY = 'Property';
