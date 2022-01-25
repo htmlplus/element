@@ -17,7 +17,8 @@ const { start, next, finish } = compiler(
 createServer({
   root: 'src/dev',
   server: {
-    open: true
+    open: true,
+    port: 3500
   },
   resolve: {
     alias: {

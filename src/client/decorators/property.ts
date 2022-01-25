@@ -1,8 +1,8 @@
-import { PropertyOptions } from '../../types/index.js';
+import { PlusElement, PropertyOptions } from '../../types/index.js';
 import { DecoratorSetup, api, decorator, defineProperty, parseValue, updateAttribute } from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
-  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
+  const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
     let value;
     return {
       type: 'property',

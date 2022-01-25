@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../configs/constants.js';
-import { ListenOptions } from '../../types/index.js';
+import { ListenOptions, PlusElement } from '../../types/index.js';
 import { host } from '../helpers/index.js';
 import { defineMethod } from '../utils/index.js';
 
@@ -8,7 +8,7 @@ const defaults: ListenOptions = {
 };
 
 export function Listen(name: string, options: ListenOptions = defaults) {
-  return function (target: Object, propertyKey: PropertyKey) {
+  return function (target: PlusElement, propertyKey: PropertyKey) {
     // TODO: types
     const element = (instance) => {
       switch (options.target) {

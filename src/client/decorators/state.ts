@@ -1,7 +1,8 @@
+import { PlusElement } from '../../types/index.js';
 import { DecoratorSetup, api, decorator, defineProperty } from '../utils/index.js';
 
 export function State() {
-  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
+  const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
     let value;
     return {
       type: 'property',

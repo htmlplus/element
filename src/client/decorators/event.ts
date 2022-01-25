@@ -1,11 +1,11 @@
-import { EventOptions } from '../../types/index.js';
+import { EventOptions, PlusElement } from '../../types/index.js';
 import * as Helpers from '../helpers/index.js';
 import { DecoratorSetup, decorator } from '../utils/index.js';
 
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
 export function Event<T = any>(options: EventOptions = {}) {
-  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey) => {
+  const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
     return {
       type: 'property',
       get() {

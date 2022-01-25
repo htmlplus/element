@@ -1,7 +1,8 @@
+import { PlusElement } from '../../types/index.js';
 import { DecoratorSetup, decorator, defineProperty } from '../utils/index.js';
 
 export function Bind() {
-  const setup: DecoratorSetup = (target: Object, propertyKey: PropertyKey, descriptor?: PropertyDescriptor) => {
+  const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey, descriptor?: PropertyDescriptor) => {
     return {
       type: 'method',
       configurable: true,

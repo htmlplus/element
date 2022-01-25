@@ -6,7 +6,7 @@ import { isServer, parseValue } from '../utils/index.js';
 
 // TODO: input type
 export const proxy = (Class: PlusElement) => {
-  if (isServer()) return class { };
+  if (isServer()) return class {};
 
   let host, instance;
 
