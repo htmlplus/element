@@ -5,7 +5,6 @@ import { DecoratorSetup, decorator, defineProperty } from '../utils/index.js';
 export function Method() {
   const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
     return {
-      type: 'method',
       onReady() {
         defineProperty(host(this), propertyKey, {
           get: () => {

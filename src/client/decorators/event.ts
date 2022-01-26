@@ -8,7 +8,6 @@ export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 export function Event<T = any>(options: EventOptions = {}) {
   const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
     return {
-      type: 'property',
       get() {
         return (detail?: T): CustomEvent<T> => {
           const name = options.name || String(propertyKey);

@@ -1,4 +1,4 @@
-import { html, render as renderer } from 'uhtml';
+import { html, render } from 'uhtml';
 
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
@@ -25,11 +25,11 @@ export const proxy = (Class: PlusElement) => {
     instance[CONSTANTS.TOKEN_API][key] = value;
   };
 
-  const render = (/*force?: boolean*/) => {
+  const request = (/*force?: boolean*/) => {
     // TODO
     instance[CONSTANTS.TOKEN_LIFECYCLE_UPDATE]?.();
 
-    renderer(host.shadowRoot, () => {
+    render(host.shadowRoot, () => {
       const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
 
       const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
@@ -58,7 +58,7 @@ export const proxy = (Class: PlusElement) => {
 
       instance[CONSTANTS.TOKEN_API] ??= {};
       set(CONSTANTS.TOKEN_API_HOST, () => this);
-      set(CONSTANTS.TOKEN_API_RENDER, render);
+      set(CONSTANTS.TOKEN_API_REQUEST, request);
 
       this.attachShadow({ mode: 'open' });
     }
@@ -75,12 +75,12 @@ export const proxy = (Class: PlusElement) => {
       const [type] = members[name];
       instance[name] = parseValue(next, type);
       if (!get(CONSTANTS.TOKEN_API_READY)) return;
-      render();
+      request();
     }
 
     connectedCallback() {
       call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
-      render();
+      request();
       call(CONSTANTS.TOKEN_LIFECYCLE_LOADED);
       set(CONSTANTS.TOKEN_API_READY, true);
     }

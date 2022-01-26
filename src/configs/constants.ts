@@ -2,7 +2,7 @@
 export const TOKEN_API = '$api';
 export const TOKEN_API_HOST = 'host';
 export const TOKEN_API_READY = 'ready';
-export const TOKEN_API_RENDER = 'render';
+export const TOKEN_API_REQUEST = 'request';
 
 // decorators
 export const TOKEN_DECORATOR_ELEMENT = 'Element';

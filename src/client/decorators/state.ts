@@ -6,7 +6,6 @@ export function State() {
   const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
     let value;
     return {
-      type: 'property',
       get() {
         return value;
       },
@@ -17,7 +16,7 @@ export function State() {
 
         if (!api(this)?.ready) return;
 
-        api(this).render();
+        api(this).request();
       },
       onReady() {
         defineProperty(host(this), propertyKey, {

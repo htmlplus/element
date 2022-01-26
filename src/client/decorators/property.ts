@@ -7,7 +7,6 @@ export function Property(options?: PropertyOptions) {
   const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
     let value;
     return {
-      type: 'property',
       get() {
         return value;
       },
@@ -32,7 +31,7 @@ export function Property(options?: PropertyOptions) {
 
         if (options?.reflect) updateAttribute(element, name, value);
 
-        api(this).render();
+        api(this).request();
       },
       onReady() {
         defineProperty(host(this), propertyKey, {

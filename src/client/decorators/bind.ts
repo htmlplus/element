@@ -4,7 +4,6 @@ import { DecoratorSetup, decorator, defineProperty } from '../utils/index.js';
 export function Bind() {
   const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey, descriptor?: PropertyDescriptor) => {
     return {
-      type: 'method',
       configurable: true,
       get() {
         const value = descriptor?.value!.bind(this);
