@@ -7,12 +7,13 @@ export type DecoratorSetup = (
 ) => DecoratorSetupReturn;
 
 export type DecoratorSetupReturn = PropertyDescriptor & {
-  type?: 'method' | 'property';
-  onReady?(host: HTMLElement): void;
+  type: 'method' | 'property';
+  onReady?(): void;
+  onInit?(): void;
 };
 
 export const decorator = (setup: DecoratorSetup) => {
-  return function (target: Object, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
+  return function (target: Object, propertyKey: PropertyKey, descriptor?: PropertyDescriptor) {
     const key = String(propertyKey);
 
     const options = setup(target, propertyKey, descriptor);
@@ -28,11 +29,16 @@ export const decorator = (setup: DecoratorSetup) => {
         break;
     }
 
-    defineProperty(target, propertyKey, options);
+    options.onInit?.();
+
+    if (
+      Object.keys(options).some((key) =>
+        ['configurable', 'enumerable', 'value', 'writable', 'get', 'set'].includes(key)
+      )
+    )
+      defineProperty(target, propertyKey, options);
 
     // TODO
-    if (!options.onReady) return;
-    target['setup'] ??= [];
-    target['setup'].push(options.onReady);
+    if (options.onReady) (target['setup'] ??= []).push(options.onReady);
   };
 };

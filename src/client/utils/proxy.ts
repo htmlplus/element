@@ -2,7 +2,8 @@ import { html, render as renderer } from 'uhtml';
 
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { isServer, parseValue } from '../utils/index.js';
+import { isServer } from './is-server.js';
+import { parseValue } from './parse-value.js';
 
 // TODO: input type
 export const proxy = (Class: PlusElement) => {
@@ -53,7 +54,7 @@ export const proxy = (Class: PlusElement) => {
       instance = new (Class as any)();
 
       // TODO
-      instance.setup?.map((fn) => fn.bind(instance)(this));
+      instance.setup?.map((fn) => fn.bind(instance)());
 
       instance[CONSTANTS.TOKEN_API] ??= {};
       set(CONSTANTS.TOKEN_API_HOST, () => this);

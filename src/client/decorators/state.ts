@@ -1,4 +1,5 @@
 import { PlusElement } from '../../types/index.js';
+import { host } from '../helpers/index.js';
 import { DecoratorSetup, api, decorator, defineProperty } from '../utils/index.js';
 
 export function State() {
@@ -18,8 +19,8 @@ export function State() {
 
         api(this).render();
       },
-      onReady(host: HTMLElement) {
-        defineProperty(host, propertyKey, {
+      onReady() {
+        defineProperty(host(this), propertyKey, {
           get: () => {
             return this[propertyKey];
           },

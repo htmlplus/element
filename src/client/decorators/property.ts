@@ -34,8 +34,8 @@ export function Property(options?: PropertyOptions) {
 
         api(this).render();
       },
-      onReady(host: HTMLElement) {
-        defineProperty(host, propertyKey, {
+      onReady() {
+        defineProperty(host(this), propertyKey, {
           get: () => {
             return this[propertyKey];
           },
