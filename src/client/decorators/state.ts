@@ -4,19 +4,21 @@ import { DecoratorSetup, api, decorator, defineProperty } from '../utils/index.j
 
 export function State() {
   const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
-    let value;
+    let prev, next;
     return {
       get() {
-        return value;
+        return next;
       },
       set(input) {
-        if (input === value) return;
+        if (input === next) return;
 
-        value = input;
+        next = input;
 
         if (!api(this)?.ready) return;
 
-        api(this).request();
+        api(this).request({ [propertyKey]: [next, prev] });
+
+        prev = next;
       },
       onReady() {
         defineProperty(host(this), propertyKey, {

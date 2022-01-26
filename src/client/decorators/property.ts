@@ -5,15 +5,15 @@ import { DecoratorSetup, api, decorator, defineProperty, parseValue, updateAttri
 
 export function Property(options?: PropertyOptions) {
   const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
-    let value;
+    let prev, next;
     return {
       get() {
-        return value;
+        return next;
       },
       set(input) {
-        if (input === value) return;
+        if (input === next) return;
 
-        value = input;
+        next = input;
 
         if (!api(this)?.ready) return;
 
@@ -27,11 +27,13 @@ export function Property(options?: PropertyOptions) {
 
         const parsed = parseValue(raw, type);
 
-        if (parsed === value) return;
+        if (parsed === next) return;
 
-        if (options?.reflect) updateAttribute(element, name, value);
+        if (options?.reflect) updateAttribute(element, name, next);
 
-        api(this).request();
+        api(this).request({ [propertyKey]: [next, prev] });
+
+        prev = next;
       },
       onReady() {
         defineProperty(host(this), propertyKey, {

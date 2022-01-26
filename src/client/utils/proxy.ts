@@ -25,7 +25,7 @@ export const proxy = (Class: PlusElement) => {
     instance[CONSTANTS.TOKEN_API][key] = value;
   };
 
-  const request = (/*force?: boolean*/) => {
+  const request = (states?) => {
     // TODO
     instance[CONSTANTS.TOKEN_LIFECYCLE_UPDATE]?.();
 
@@ -42,6 +42,9 @@ export const proxy = (Class: PlusElement) => {
 
       return html`<style>${styles}</style>${markup}`;
     });
+
+    // TODO
+    instance[CONSTANTS.TOKEN_LIFECYCLE_UPDATED]?.(states);
   };
 
   return class extends HTMLElement {
@@ -53,12 +56,12 @@ export const proxy = (Class: PlusElement) => {
       // TODO
       instance = new (Class as any)();
 
-      // TODO
-      instance.setup?.map((fn) => fn.bind(instance)());
-
       instance[CONSTANTS.TOKEN_API] ??= {};
       set(CONSTANTS.TOKEN_API_HOST, () => this);
       set(CONSTANTS.TOKEN_API_REQUEST, request);
+
+      // TODO
+      instance.setup?.forEach((setup) => setup.bind(instance)());
 
       this.attachShadow({ mode: 'open' });
     }
