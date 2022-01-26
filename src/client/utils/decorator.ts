@@ -13,9 +13,9 @@ export type DecoratorSetupReturn = PropertyDescriptor & {
 
 export const decorator = (setup: DecoratorSetup) => {
   return function (target: Object, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
-    const options = setup(target, propertyKey, descriptor);
-
     const key = String(propertyKey);
+
+    const options = setup(target, propertyKey, descriptor);
 
     const isMethod = !descriptor || typeof descriptor.value !== 'function';
 

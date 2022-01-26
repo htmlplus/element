@@ -1,1 +1,3 @@
-export const isServer = (): boolean => !(typeof window != 'undefined' && window.document);
+export const isServer = (): boolean => {
+  return !(typeof window != 'undefined' && window.document);
+};

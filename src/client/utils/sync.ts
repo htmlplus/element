@@ -2,14 +2,13 @@ import { isEvent } from './is-event.js';
 import { toEvent } from './to-event.js';
 import { updateAttribute } from './update-attribute.js';
 
-// TODO: input type
-export const sync =
-  (node: any, prev: any) =>
-  (next: any = {}) => {
+export const sync = (node: HTMLElement) => {
+  let prev: any = {};
+  return (next: any = {}) => {
     const prevClass = (prev.class || '').split(' ');
     const nextClass = (next.class || '').split(' ');
 
-    const newClass = (node.className || '')
+    const newClass = node.className
       .split(' ')
       .filter((key) => !prevClass.includes(key) && !nextClass.includes(key))
       .concat(nextClass)
@@ -20,31 +19,14 @@ export const sync =
 
     if (prev.style || next.style) node.setAttribute('style', next.style || '');
 
-    for (const key in prev) {
-      const value = prev[key];
-
-      if (!isEvent(key)) continue;
-
-      const name = toEvent(key);
-
-      node.removeEventListener(name, value);
-    }
+    for (const key in prev) isEvent(key) && node.removeEventListener(toEvent(key), prev[key]);
 
     for (const key in next) {
-      const value = next[key];
-
       if (['class', 'style'].includes(key)) continue;
-
-      if (isEvent(key)) {
-        const name = toEvent(key);
-
-        node.addEventListener(name, value);
-
-        continue;
-      }
-
-      updateAttribute(node, key, value);
+      if (isEvent(key)) node.addEventListener(toEvent(key), next[key]);
+      else updateAttribute(node, key, next[key]);
     }
 
     prev = { ...next };
   };
+};

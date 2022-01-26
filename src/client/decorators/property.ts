@@ -1,4 +1,6 @@
+import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement, PropertyOptions } from '../../types/index.js';
+import { host } from '../helpers/index.js';
 import { DecoratorSetup, api, decorator, defineProperty, parseValue, updateAttribute } from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
@@ -16,12 +18,20 @@ export function Property(options?: PropertyOptions) {
 
         if (!api(this)?.ready) return;
 
-        // TODO
-        const raw = api(this).host().getAttribute(String(propertyKey));
-        const [type] = target.constructor['members'][propertyKey];
+        const element = host(this);
+
+        const name = String(propertyKey);
+
+        const raw = element.getAttribute(name);
+
+        const [type] = target.constructor[CONSTANTS.TOKEN_STATIC_MEMBERS][propertyKey];
+
         const parsed = parseValue(raw, type);
+
         if (parsed === value) return;
-        if (options?.reflect) updateAttribute(api(this).host(), String(propertyKey), value);
+
+        if (options?.reflect) updateAttribute(element, name, value);
+
         api(this).render();
       },
       onReady(host: HTMLElement) {
