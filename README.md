@@ -1,9 +1,8 @@
 # Create Custom HTML Element
 
-
 [![Version](https://img.shields.io/npm/v/@htmlplus/element.svg)](https://www.npmjs.com/package/@htmlplus/element)
-[![GitHub forks](https://img.shields.io/github/forks/htmlplus/element)](https://github.com/htmlplus/element/network/members) 
-[![GitHub stars](https://img.shields.io/github/stars/htmlplus/element)](https://github.com/htmlplus/element/stargazers) 
+[![GitHub forks](https://img.shields.io/github/forks/htmlplus/element)](https://github.com/htmlplus/element/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/htmlplus/element)](https://github.com/htmlplus/element/stargazers)
 [![GitHub license](https://img.shields.io/github/license/htmlplus/element)](https://github.com/htmlplus/core/blob/main/LICENSE)
 [![Linkedin](https://img.shields.io/badge/Follow%20us-white?logo=linkedIn&color=0077B5&logoColor=white)](https://www.linkedin.com/company/htmlplus)
 [![code coverage](https://img.shields.io/coveralls//htmlplus/element/.svg?style=flat-square)](https://coveralls.io/r/htmlplus/element/)
@@ -17,14 +16,14 @@ Completely compatible for Typescript and tsx.
 
 - [Install](#install)
 - [Start](#start)
-- [First element](#Firstelement)
+- [First Element](#FirstElement)
 - [Styles](#Styles)
 - [Development Environment](#DevelopmentEnvironment)
 - [Decorators](#decorators)
 - [Helpers](#helpers)
 - [Lifecycles](#lifecycles)
 - [Services](#services)
-- [Tag name configuration](#TagNameConfiguration)
+- [Tag Name Configuration](#TagNameConfiguration)
 - [Compiler](#compiler)
 
 ## Install
@@ -47,25 +46,27 @@ pnpm create @htmlplus/element
 ```bash
 cd htmlplus-project
 ```
+
 To start your Element project, run:
 
 ```bash
 # with npm
 npm i
 npm start
+
 # with yarn
 yarn install
 yarn start
+
 # with pnpm
 pnpm install
 pnpm start
 ```
 
-## First element
+## First Element
+
 Element is based on classes, so all components are based on `decorator`.
-The decorator converts the next component code based on its properties during the build.
-
-
+The decorator converts the next component code based on it's properties during the build.
 
 ```tsx
 // my-element/my-element.tsx
@@ -80,54 +81,55 @@ export class MyElement {
 }
 ```
 
-The result of this component after build is provide `my-element` web component:
+The result of this component after build is provide `my-element` web component.
+
 ```html
 <my-element></my-element>
 ```
 
 ## Styles
-The element automatically adds a same name style file to this component.
 
-Create `my-element.scss` file for style:
+The element automatically adds a same name style file to this component. Create `my-element.scss` file for style.
+
 ```scss
 // my-element/my-element.scss
 
-:root {
+:host {
   display: block;
   background-color: red;
   font-size: 2rem;
 }
-
 ```
 
 ## Development Environment
 
-For run any of the component, you must write element name tag into the `public/index.html`:
+For run any of the component, you must write element name tag into the `public/index.html`
 
 ```html
-<--! public/index.html -->
+<!-- public/index.html -->
+
 <body>
-    <my-element>
-        Hello World
-    </my-element>
+    <my-element></my-element>
 </body>
 ```
+
 ## Decorators
 
-With the introduction of Classes in TypeScript and ES6, there now exist certain scenarios that require additional features to support annotating or modifying classes and class members. Decorators provide a way to add both annotations and a meta-programming syntax for class declarations and members. [More information](https://www.typescriptlang.org/docs/handbook/decorators.html)
-
+With the introduction of Classes in TypeScript and ES6, there now exist certain scenarios that require additional features to support annotating or modifying classes and class members. Decorators provide a way to add both annotations and a meta-programming syntax for class declarations and members [More information](https://www.typescriptlang.org/docs/handbook/decorators.html).
 
 <details>
   <summary>Element</summary>
 
-Any component must be decorated with `@Element()` decorator.
+Any component must be decorated with `@Element()` decorator. It also makes your web component tag name.
 
-`@Element` make your web component tag name.
+Options:
+
+- **name**: `String` tag name
 
 ```tsx
 import { Element } from '@htmlplus/element';
 
-@Element("my-element")
+@Element('my-element')
 export class MyElement {
   render() {
     return <h1>Hi Everybody</h1>
@@ -139,25 +141,17 @@ export class MyElement {
 <my-element></my-element>
 ```
 
-Options:
-
-- **name**:`string` tag name
-
-
 </details>
 
 <details>
   <summary>Property</summary>
 
-Property is decorated all the component props for exposed attributes:
-
-It can be `number | string | boolean | object | array`.
-
+Property is decorated all the component properties for exposed attributes.
 
 Options:
 
 - **attribute**: TODO
-- **reflect**: `boolean` For watch mode, when you want to be notified of the attribute change.
+- **reflect**: `Boolean` For watch mode, when you want to be notified of the attribute change.
 
 ```tsx
 import { Element, Property } from '@htmlplus/element';
@@ -182,29 +176,6 @@ export class SayGreeting {
 </script>
 ```
 
-
-> It can use for any property or just one for all properties
-
-```tsx
-import { Element, Property } from '@htmlplus/element';
-
-@Element()
-export class SayGreeting {
-
-  @Property()
-  name?: string = 'Simon';
-
-  @Property()
-  color?: string = 'red';
-  size?: number = 16;
-  weight?: number = 300;
-  
-  render() {
-    return <h1>Hi {this.name}</h1>
-  }
-}
-```
-
 </details>
 
 <details>
@@ -214,10 +185,10 @@ Components can emit data and events using the Event decorator.
 
 Options:
 
-- **name**: An string custom event name to override the default.
-- **bubbles**: An Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
-- **cancelable**: An Boolean indicating whether the event is cancelable. default is `false`.
-- **composed**: An Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
+- **name**: A `String` custom event name to override the default.
+- **bubbles**: A `Boolean` indicating whether the event bubbles up through the DOM or not. default is `false`.
+- **cancelable**: A `Boolean` indicating whether the event is cancelable. default is `false`.
+- **composed**: A `Boolean` value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is `false`.
 
 ```tsx
 import { Element, Event, EventEmitter } from '@htmlplus/element';
@@ -237,7 +208,6 @@ export class MyButton {
   }
 }
 ```
-
 
 ```html
 <my-button id="button">Button</my-button>
@@ -259,22 +229,22 @@ import { Element, Method, State } from '@htmlplus/element';
 
 @Element()
 export class MyCounter {
-   @State()
-   counter?: number;
-    
+
+  @State()
+  counter?: number;
+
   @Method()
   increase() {
-    this.counter = this.counter++;
+    this.counter++;
   }
 
-    render() {
-        return (
-            <button>
-                {this.counter}
-                <slot />
-            </button>
-        )
-    }
+  render() {
+    return (
+      <button>
+        {this.counter}
+      </button>
+    )
+  }
 }
 ```
 
@@ -291,9 +261,10 @@ export class MyCounter {
 <details>
   <summary>Watch</summary>
 
-`@Watch` take the name of the `@Prop` variable to monitor as a parameter. Any time the value of that prop changes the function decorated by `@Watch` will be invoked with the `new value` and ‘old value’ as parameters. This is called first out of the lifecycle callbacks after a prop changes.
+`@Watch` take the name of the `@Property` and `@State` variable to monitor as a parameter. Any time the value of that property changes the function decorated by `@Watch` will be invoked with the `key`, `newValue` and `oldValue` as parameters. This is called first out of the lifecycle callbacks after a property changes.
 
-- **name**: `string` @Property name
+- **name**: `String` property name
+
 ```tsx
 import { Element, Property, Watch } from '@htmlplus/element';
 
@@ -314,18 +285,16 @@ export class MyElement {
 <details>
   <summary>Listen</summary>
 
-### Listen
-
 The `@Listen` decorates a function that will handle the event.
 It takes two parameter, event name and event config.
 
 Options:
 
-- **target**: `body|document|window|host` This option allows us to set where we will listen for the event.
-- **once**: `boolean` Listen just for one time
-- **passive**: `boolean` This will guarantee to the DOM that the event being fired will not `.stopPropagation()`.
+- **target**: `body | document | window | host` This option allows us to set where we will listen for the event.
+- **once**: `Boolean` Listen just for one time.
+- **passive**: `Boolean` This will guarantee to the DOM that the event being fired will not `.stopPropagation()`.
 - **signal**: TODO
-- **capture**: `boolean` This option is about when during the event lifecycle the handler will be called.
+- **capture**: `Boolean` This option is about when during the event lifecycle the handler will be called.
 
 ```tsx
 import { Element, Listen } from '@htmlplus/element';
@@ -342,8 +311,8 @@ import { Element, Listen } from '@htmlplus/element';
 
 @Element()
 export class MyContainer {
-  @Listen('scroll', {target: 'window'})
-  OnScroll(event) {}
+  @Listen('scroll', { target: 'window' })
+  onScroll(event) {}
 }
 ```
 
@@ -365,13 +334,14 @@ export class MyButton {
   }
 }
 ```
+
 </details>
 
 <details>
   <summary>State</summary>
 
-The `@state` decorator is for manage data inside the component.
-Any changes of `@state` will cause the render function to called again.
+The `@State` decorator is for manage data inside the component.
+Any changes of `@State` will cause the render function to called again.
 
 ```tsx
 import { Element, Listen, State } from '@htmlplus/element';
@@ -401,8 +371,6 @@ export class MySwitch {
 
 <details>
   <summary>Bind</summary>
-
-### Bind
 
 The `@Bind` for decorating methods only, by binding them to the current context.
 
@@ -765,7 +733,7 @@ TODO
 
 </details>
 
-## Tag name configuration
+## Tag Name Configuration
 
 All examples below produce output `<plus-button></plus-button>`
 
