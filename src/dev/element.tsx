@@ -13,17 +13,18 @@ export class MyElement {
 
   @Method()
   open() {
-    console.log('@Method', this.name);
+    // console.log('@Method', this.name);
   }
 
   @Watch('name')
+  // @Watch('*')
   watcher(key, newValue, oldValue) {
     console.log('@Watch', key, newValue, oldValue);
   }
 
   @Listen('scroll', { target: 'window' })
   onClick(event) {
-    console.log('@Listen', event);
+    // console.log('@Listen', event);
     this.active = !this.active;
   }
 
@@ -36,9 +37,9 @@ export class MyElement {
     // this.clicked()
     // console.log('handleClick', this.name)
     this.active = !this.active;
-    console.log('active', this.active);
+    console.log('update => active', this.active);
     this.name = Date.now().toString();
-    console.log('name', this.name);
+    console.log('update => name', this.name);
   }
 
   connectedCallback() {

@@ -13,8 +13,8 @@ export const proxy = (Class: PlusElement) => {
 
   const members = Class[CONSTANTS.TOKEN_STATIC_MEMBERS] || {};
 
-  const call = (key: string) => {
-    return instance[key]?.apply(instance);
+  const call = (key: string, args?: Array<any>) => {
+    return instance[key]?.apply(instance, args);
   };
 
   const get = (key: string) => {
@@ -25,26 +25,36 @@ export const proxy = (Class: PlusElement) => {
     instance[CONSTANTS.TOKEN_API][key] = value;
   };
 
+  // TODO
+  let timeout, allStates;
   const request = (states?) => {
-    // TODO
-    instance[CONSTANTS.TOKEN_LIFECYCLE_UPDATE]?.();
+    clearTimeout(timeout);
 
-    render(host.shadowRoot, () => {
-      const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
+    allStates = { ...(allStates || {}), ...states };
 
-      const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
+    timeout = setTimeout(() => {
+      // TODO
+      // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
 
-      if (!styles && !markup) return html``;
+      render(host.shadowRoot, () => {
+        const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
 
-      if (!styles) return markup;
+        const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
 
-      if (!markup) return html`<style>${styles}</style>`;
+        if (!styles && !markup) return html``;
 
-      return html`<style>${styles}</style>${markup}`;
+        if (!styles) return markup;
+
+        if (!markup) return html`<style>${styles}</style>`;
+
+        return html`<style>${styles}</style>${markup}`;
+      });
+
+      // TODO
+      call(CONSTANTS.TOKEN_LIFECYCLE_UPDATED, [allStates]);
+
+      allStates = undefined;
     });
-
-    // TODO
-    instance[CONSTANTS.TOKEN_LIFECYCLE_UPDATED]?.(states);
   };
 
   return class extends HTMLElement {
@@ -57,7 +67,7 @@ export const proxy = (Class: PlusElement) => {
       instance = new (Class as any)();
 
       instance[CONSTANTS.TOKEN_API] ??= {};
-      set(CONSTANTS.TOKEN_API_HOST, () => this);
+      set(CONSTANTS.TOKEN_API_HOST, () => host);
       set(CONSTANTS.TOKEN_API_REQUEST, request);
 
       // TODO
