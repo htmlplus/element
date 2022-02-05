@@ -1,17 +1,29 @@
 # Create Custom HTML Element
 
-TODO
+[![Version](https://img.shields.io/npm/v/@htmlplus/element.svg)](https://www.npmjs.com/package/@htmlplus/element)
+[![GitHub forks](https://img.shields.io/github/forks/htmlplus/element)](https://github.com/htmlplus/element/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/htmlplus/element)](https://github.com/htmlplus/element/stargazers)
+[![GitHub license](https://img.shields.io/github/license/htmlplus/element)](https://github.com/htmlplus/core/blob/main/LICENSE)
+[![Linkedin](https://img.shields.io/badge/Follow%20us-white?logo=linkedIn&color=0077B5&logoColor=white)](https://www.linkedin.com/company/htmlplus)
+[![code coverage](https://img.shields.io/coveralls//htmlplus/element/.svg?style=flat-square)](https://coveralls.io/r/htmlplus/element/)
+[![install size](https://packagephobia.now.sh/badge?p=element)](https://packagephobia.now.sh/result?p=element)
+
+Element is powerful library for building scalable, reusable design system for any technology.
+It is one of the fastest and most testable libraries for building web components on the web.
+Completely compatible for Typescript and tsx.
 
 ## Table of content
 
 - [Install](#install)
 - [Start](#start)
-- [First element](#Firstelement)
+- [First Element](#FirstElement)
+- [Styles](#Styles)
+- [Development Environment](#DevelopmentEnvironment)
 - [Decorators](#decorators)
 - [Helpers](#helpers)
 - [Lifecycles](#lifecycles)
 - [Services](#services)
-- [Tag name configuration](#TagNameConfiguration)
+- [Tag Name Configuration](#TagNameConfiguration)
 - [Compiler](#compiler)
 
 ## Install
@@ -31,17 +43,88 @@ pnpm create @htmlplus/element
 
 ## Start
 
-TODO
-
 ```bash
 cd htmlplus-project
-npm i
-npm start
 ```
 
-## First element
+To start your Element project, run:
 
-TODO
+```bash
+# with npm
+npm i
+npm start
+
+# with yarn
+yarn install
+yarn start
+
+# with pnpm
+pnpm install
+pnpm start
+```
+
+## First Element
+
+Element is based on classes, so all components are based on `decorator`.
+The decorator converts the next component code based on it's properties during the build.
+
+```tsx
+// my-element/my-element.tsx
+
+import { Element } from '@htmlplus/element';
+
+@Element('my-element')
+export class MyElement {
+  render() {
+    return <h1>Hi Everybody</h1>
+  }
+}
+```
+
+The result of this component after build is provide `my-element` web component.
+
+```html
+<my-element></my-element>
+```
+
+## Styles
+
+The element automatically adds a same name style file to this component. Create `my-element.scss` file for style.
+
+```scss
+// my-element/my-element.scss
+
+:host {
+  display: block;
+  background-color: red;
+  font-size: 2rem;
+}
+```
+
+## Development Environment
+
+For run any of the component, you must write element name tag into the `public/index.html`
+
+```html
+<!-- public/index.html -->
+
+<body>
+    <my-element></my-element>
+</body>
+```
+
+## Decorators
+
+With the introduction of Classes in TypeScript and ES6, there now exist certain scenarios that require additional features to support annotating or modifying classes and class members. Decorators provide a way to add both annotations and a meta-programming syntax for class declarations and members [More information](https://www.typescriptlang.org/docs/handbook/decorators.html).
+
+<details>
+  <summary>Element</summary>
+
+Any component must be decorated with `@Element()` decorator. It also makes your web component tag name.
+
+Options:
+
+- **name**: `String` tag name
 
 ```tsx
 import { Element } from '@htmlplus/element';
@@ -58,41 +141,17 @@ export class MyElement {
 <my-element></my-element>
 ```
 
-## Decorators
-
-TODO
-
-<details>
-  <summary>Element</summary>
-
-TODO
-
-```tsx
-import { Element } from '@htmlplus/element';
-
-@Element()
-export class MyElement {
-  render() {
-    return <h1>Hi Everybody</h1>
-  }
-}
-```
-
-```html
-<my-element></my-element>
-```
-
 </details>
 
 <details>
   <summary>Property</summary>
 
-TODO
+Property is decorated all the component properties for exposed attributes.
 
 Options:
 
 - **attribute**: TODO
-- **reflect**: TODO
+- **reflect**: `Boolean` For watch mode, when you want to be notified of the attribute change.
 
 ```tsx
 import { Element, Property } from '@htmlplus/element';
@@ -122,14 +181,14 @@ export class SayGreeting {
 <details>
   <summary>Event</summary>
 
-TODO
+Components can emit data and events using the Event decorator.
 
 Options:
 
-- **name**: A string custom event name to override the default.
-- **bubbles**: A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
-- **cancelable**: A Boolean indicating whether the event is cancelable. default is `false`.
-- **composed**: A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
+- **name**: A `String` custom event name to override the default.
+- **bubbles**: A `Boolean` indicating whether the event bubbles up through the DOM or not. default is `false`.
+- **cancelable**: A `Boolean` indicating whether the event is cancelable. default is `false`.
+- **composed**: A `Boolean` value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is `false`.
 
 ```tsx
 import { Element, Event, EventEmitter } from '@htmlplus/element';
@@ -163,25 +222,37 @@ export class MyButton {
 <details>
   <summary>Method</summary>
 
-TODO
+Ths `@Method` decorator can be called directly from the element. It can be called from the outside.
 
 ```tsx
-import { Element, Method } from '@htmlplus/element';
+import { Element, Method, State } from '@htmlplus/element';
 
 @Element()
-export class MyDialog {
+export class MyCounter {
+
+  @State()
+  counter?: number;
+
   @Method()
-  open() {
-    /* TODO */
+  increase() {
+    this.counter++;
+  }
+
+  render() {
+    return (
+      <button>
+        {this.counter}
+      </button>
+    )
   }
 }
 ```
 
 ```html
-<my-dialog id="dialog"></my-dialog>
+<my-counter id="counter"></my-counter>
 
 <script>
-  document.getElementById('dialog').open();
+  document.getElementById('counter').increase();
 </script>
 ```
 
@@ -190,10 +261,13 @@ export class MyDialog {
 <details>
   <summary>Watch</summary>
 
-TODO
+`@Watch` take the name of the `@Property` and `@State` variable to monitor as a parameter. Any time the value of that property changes the function decorated by `@Watch` will be invoked with the `key`, `newValue` and `oldValue` as parameters. This is called first out of the lifecycle callbacks after a property changes.
+
+- **name**: `String` property name
 
 ```tsx
 import { Element, Property, Watch } from '@htmlplus/element';
+
 
 @Element()
 export class MyElement {
@@ -211,17 +285,16 @@ export class MyElement {
 <details>
   <summary>Listen</summary>
 
-### Listen
-
-TODO
+The `@Listen` decorates a function that will handle the event.
+It takes two parameter, event name and event config.
 
 Options:
 
-- **target**: TODO
-- **once**: TODO
-- **passive**: TODO
+- **target**: `body | document | window | host` This option allows us to set where we will listen for the event.
+- **once**: `Boolean` Listen just for one time.
+- **passive**: `Boolean` This will guarantee to the DOM that the event being fired will not `.stopPropagation()`.
 - **signal**: TODO
-- **capture**: TODO
+- **capture**: `Boolean` This option is about when during the event lifecycle the handler will be called.
 
 ```tsx
 import { Element, Listen } from '@htmlplus/element';
@@ -229,25 +302,19 @@ import { Element, Listen } from '@htmlplus/element';
 @Element()
 export class MyButton {
   @Listen('click')
-  onClick(event) {
-    /* TODO */
-  }
+  onClick(event) {}
 }
 ```
 
-</details>
+```tsx
+import { Element, Listen } from '@htmlplus/element';
 
-<details>
-  <summary>ListenOptions</summary>
-
-TODO
-
-Options:
-
-- **once**: TODO
-- **passive**: TODO
-- **signal**: TODO
-- **capture**: TODO
+@Element()
+export class MyContainer {
+  @Listen('scroll', { target: 'window' })
+  onScroll(event) {}
+}
+```
 
 ```tsx
 import { Element, ListenOptions } from '@htmlplus/element';
@@ -256,9 +323,7 @@ import { Element, ListenOptions } from '@htmlplus/element';
 export class MyButton {
 
   @ListenOptions({ once: true })
-  onClick(event) {
-    /* TODO */
-  }
+  onClick(event) {}
 
   render() {
     return (
@@ -275,7 +340,8 @@ export class MyButton {
 <details>
   <summary>State</summary>
 
-TODO
+The `@State` decorator is for manage data inside the component.
+Any changes of `@State` will cause the render function to called again.
 
 ```tsx
 import { Element, Listen, State } from '@htmlplus/element';
@@ -306,9 +372,7 @@ export class MySwitch {
 <details>
   <summary>Bind</summary>
 
-### Bind
-
-TODO
+The `@Bind` for decorating methods only, by binding them to the current context.
 
 ```tsx
 import { Bind, Element } from '@htmlplus/element';
@@ -669,7 +733,7 @@ TODO
 
 </details>
 
-## Tag name configuration
+## Tag Name Configuration
 
 All examples below produce output `<plus-button></plus-button>`
 
