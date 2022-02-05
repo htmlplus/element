@@ -27,12 +27,12 @@ export const proxy = (Class: PlusElement) => {
 
   // TODO
   let timeout, allStates;
-  const request = (states?) => {
+  const request = (states?, force?: boolean) => {
     clearTimeout(timeout);
 
     allStates = { ...(allStates || {}), ...states };
 
-    timeout = setTimeout(() => {
+    const update = () => {
       // TODO
       // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
 
@@ -54,7 +54,11 @@ export const proxy = (Class: PlusElement) => {
       call(CONSTANTS.TOKEN_LIFECYCLE_UPDATED, [allStates]);
 
       allStates = undefined;
-    });
+    };
+
+    if (force) return update();
+
+    timeout = setTimeout(update);
   };
 
   return class extends HTMLElement {
@@ -93,7 +97,7 @@ export const proxy = (Class: PlusElement) => {
 
     connectedCallback() {
       call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
-      request();
+      request(undefined, true);
       call(CONSTANTS.TOKEN_LIFECYCLE_LOADED);
       set(CONSTANTS.TOKEN_API_READY, true);
     }
