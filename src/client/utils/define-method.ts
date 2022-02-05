@@ -2,6 +2,6 @@
 export const defineMethod = <T>(target: T, propertyKey: PropertyKey, handler) => {
   const callback = target[propertyKey];
   target[propertyKey] = function (...args) {
-    handler(this, callback, args);
+    return handler(this, callback?.bind(this), args);
   };
 };
