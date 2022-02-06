@@ -1,4 +1,4 @@
-import { host } from '../helpers/index.js';
+import { host } from '../utils/index.js';
 
 const links = new Map<string, any>();
 

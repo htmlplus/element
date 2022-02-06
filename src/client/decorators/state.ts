@@ -1,6 +1,5 @@
 import { PlusElement } from '../../types/index.js';
-import { host } from '../helpers/index.js';
-import { api, onReady } from '../utils/index.js';
+import { api, host, onReady } from '../utils/index.js';
 
 export function State() {
   return function (target: PlusElement, propertyKey: PropertyKey) {

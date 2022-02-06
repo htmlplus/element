@@ -1,5 +1,5 @@
 import { EventOptions, PlusElement } from '../../types/index.js';
-import { host } from '../helpers/index.js';
+import { host } from '../utils/index.js';
 
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 

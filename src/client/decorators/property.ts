@@ -1,7 +1,6 @@
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement, PropertyOptions } from '../../types/index.js';
-import { host } from '../helpers/index.js';
-import { api, onReady, parseValue, updateAttribute } from '../utils/index.js';
+import { api, host, onReady, parseValue, updateAttribute } from '../utils/index.js';
 
 export function Property(options?: PropertyOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
