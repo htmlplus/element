@@ -1,8 +1,9 @@
 import { PlusElement } from '../../types/index.js';
-import { defineElement, proxy } from '../utils/index.js';
+import { isServer, proxy } from '../utils/index.js';
 
 export function Element(tag?: string) {
   return function (constructor: PlusElement) {
-    defineElement(tag!, proxy(constructor));
+    if (isServer()) return;
+    customElements.define(tag!, proxy(constructor) as any);
   };
 }
