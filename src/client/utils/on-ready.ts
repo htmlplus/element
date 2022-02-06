@@ -1,3 +1,3 @@
-export function onReady<T>(target: T, callback: (this) => void) {
+export function onReady(target, callback: (this) => void) {
   (target['setup'] ??= []).push(callback);
 }
