@@ -1,7 +1,7 @@
 import * as CONSTANTS from '../../configs/constants.js';
 import { ListenOptions, PlusElement } from '../../types/index.js';
 import { host } from '../helpers/index.js';
-import { defineMethod } from '../utils/index.js';
+import { appendToMethod } from '../utils/index.js';
 import { Bind } from './bind.js';
 
 const defaults: ListenOptions = {
@@ -24,14 +24,12 @@ export function Listen(name: string, options: ListenOptions = defaults) {
       }
     };
 
-    defineMethod(target, CONSTANTS.TOKEN_LIFECYCLE_CONNECTED, function (instance, callback, args) {
-      element(instance)?.addEventListener(name, instance[propertyKey], options);
-      return callback?.(...args);
+    appendToMethod(target, CONSTANTS.TOKEN_LIFECYCLE_CONNECTED, function () {
+      element(this)?.addEventListener(name, this[propertyKey], options);
     });
 
-    defineMethod(target, CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED, function (instance, callback, args) {
-      element(instance)?.removeEventListener(name, instance[propertyKey], options);
-      return callback?.(...args);
+    appendToMethod(target, CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED, function () {
+      element(this)?.removeEventListener(name, this[propertyKey], options);
     });
 
     return Bind()(target, propertyKey, descriptor);

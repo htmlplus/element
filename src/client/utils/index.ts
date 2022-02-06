@@ -1,5 +1,5 @@
 export * from './api.js';
-export * from './define-method.js';
+export * from './append-to-method.js';
 export * from './is-event.js';
 export * from './is-server.js';
 export * from './on-ready.js';
