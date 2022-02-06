@@ -13,6 +13,60 @@ export const proxy = (Class: PlusElement) => {
 
   const members = Class[CONSTANTS.TOKEN_STATIC_MEMBERS] || {};
 
+  // TODO
+  let states;
+  let isPending = false;
+  let updatePromise: Promise<boolean>;
+  const request = (state?): void => {
+    if (!true /*hasChange*/) return;
+    states = { ...(states || {}), ...state };
+    if (isPending) return;
+    updatePromise = enqueue();
+  };
+  const enqueue = async (): Promise<boolean> => {
+    isPending = true;
+    try {
+      await updatePromise;
+    } catch (error) {
+      Promise.reject(error);
+    }
+    const result = perform();
+    if (result != null) await result;
+    return !isPending;
+  };
+  const perform = (): void | Promise<unknown> => {
+    if (!isPending) return;
+    try {
+      if (true /*shouldUpdate*/) {
+        // TODO
+        // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
+
+        render(host.shadowRoot, () => {
+          const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
+
+          const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
+
+          if (!styles && !markup) return html``;
+
+          if (!styles) return markup;
+
+          if (!markup) return html`<style>${styles}</style>`;
+
+          return html`<style>${styles}</style>${markup}`;
+        });
+
+        // TODO
+        call(CONSTANTS.TOKEN_LIFECYCLE_UPDATED, [states]);
+
+        states = undefined;
+      }
+      isPending = false;
+    } catch (error) {
+      isPending = false;
+      throw error;
+    }
+  };
+
   const call = (key: string, args?: Array<any>) => {
     return instance[key]?.apply(instance, args);
   };
@@ -23,42 +77,6 @@ export const proxy = (Class: PlusElement) => {
 
   const set = (key: string, value: any) => {
     instance[CONSTANTS.TOKEN_API][key] = value;
-  };
-
-  // TODO
-  let timeout, allStates;
-  const request = (states?, force?: boolean) => {
-    clearTimeout(timeout);
-
-    allStates = { ...(allStates || {}), ...states };
-
-    const update = () => {
-      // TODO
-      // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
-
-      render(host.shadowRoot, () => {
-        const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
-
-        const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
-
-        if (!styles && !markup) return html``;
-
-        if (!styles) return markup;
-
-        if (!markup) return html`<style>${styles}</style>`;
-
-        return html`<style>${styles}</style>${markup}`;
-      });
-
-      // TODO
-      call(CONSTANTS.TOKEN_LIFECYCLE_UPDATED, [allStates]);
-
-      allStates = undefined;
-    };
-
-    if (force) return update();
-
-    timeout = setTimeout(update);
   };
 
   return class extends HTMLElement {
@@ -97,8 +115,11 @@ export const proxy = (Class: PlusElement) => {
 
     connectedCallback() {
       call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
-      request(undefined, true);
-      call(CONSTANTS.TOKEN_LIFECYCLE_LOADED);
+      request();
+
+      // TODO
+      setTimeout(() => call(CONSTANTS.TOKEN_LIFECYCLE_LOADED));
+
       set(CONSTANTS.TOKEN_API_READY, true);
     }
 

@@ -1,4 +1,4 @@
-import { host } from './host.js';
+import { host } from '../utils/index.js';
 
 // TODO: merge types
 export function queryAll<K extends keyof HTMLElementTagNameMap>(
