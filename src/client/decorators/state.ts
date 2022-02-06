@@ -1,11 +1,11 @@
 import { PlusElement } from '../../types/index.js';
 import { host } from '../helpers/index.js';
-import { DecoratorSetup, api, decorator, defineProperty } from '../utils/index.js';
+import { api, onReady } from '../utils/index.js';
 
 export function State() {
-  const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey) => {
+  return function (target: PlusElement, propertyKey: PropertyKey) {
     let prev, next;
-    return {
+    Object.defineProperty(target, propertyKey, {
       get() {
         return next;
       },
@@ -19,18 +19,17 @@ export function State() {
         api(this).request({ [propertyKey]: [next, prev] });
 
         prev = next;
-      },
-      onReady() {
-        defineProperty(host(this), propertyKey, {
-          get: () => {
-            return this[propertyKey];
-          },
-          set: (value) => {
-            this[propertyKey] = value;
-          }
-        });
       }
-    };
+    });
+    onReady(target, function () {
+      Object.defineProperty(host(this), propertyKey, {
+        get: () => {
+          return this[propertyKey];
+        },
+        set: (value) => {
+          this[propertyKey] = value;
+        }
+      });
+    });
   };
-  return decorator(setup);
 }
