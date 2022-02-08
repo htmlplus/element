@@ -1,6 +1,6 @@
 import { paramCase } from 'change-case';
 
-import { typeOf } from '../utils/index.js';
+import { typeOf } from '../utils';
 
 export const classes = (input: any, smart?: boolean): string => {
   const result: Array<string> = [];

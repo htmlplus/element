@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../configs/constants.js';
-import { PlusElement } from '../../types/index.js';
-import { appendToMethod } from '../utils/index.js';
+import { PlusElement } from '../../types';
+import { appendToMethod } from '../utils';
 
 // TODO: support * key
 export function Watch(...keys: Array<string>) {

@@ -1,7 +1,7 @@
 import { html, render } from 'uhtml';
 
 import * as CONSTANTS from '../../configs/constants.js';
-import { PlusElement } from '../../types/index.js';
+import { PlusElement } from '../../types';
 import { isServer } from './is-server.js';
 import { parseValue } from './parse-value.js';
 

@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../configs/constants.js';
-import { ListenOptions, PlusElement } from '../../types/index.js';
-import { appendToMethod, host, on, off } from '../utils/index.js';
+import { ListenOptions, PlusElement } from '../../types';
+import { appendToMethod, host, on, off } from '../utils';
 import { Bind } from './bind.js';
 
 const defaults: ListenOptions = {

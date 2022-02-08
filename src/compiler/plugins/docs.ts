@@ -3,8 +3,8 @@ import fs from 'fs';
 import glob from 'glob';
 import path from 'path';
 
-import { Context } from '../../types/index.js';
-import { getInitializer, getTags, getType, printType } from '../utils/index.js';
+import { Context } from '../../types';
+import { getInitializer, getTags, getType, printType } from '../utils';
 
 export interface DocsOptions {
   // TODO bundle?: boolean;

@@ -1,5 +1,5 @@
-import { PlusElement } from '../../types/index.js';
-import { isServer, proxy } from '../utils/index.js';
+import { PlusElement } from '../../types';
+import { isServer, proxy } from '../utils';
 
 export function Element(tag?: string) {
   return function (constructor: PlusElement) {

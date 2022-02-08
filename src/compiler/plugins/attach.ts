@@ -2,8 +2,8 @@ import t, { TSTypeAnnotation } from '@babel/types';
 import { pascalCase } from 'change-case';
 
 import * as CONSTANTS from '../../configs/constants.js';
-import { Context } from '../../types/index.js';
-import { visitor } from '../utils/index.js';
+import { Context } from '../../types';
+import { visitor } from '../utils';
 
 const defaults: AttachOptions = {
   dependencies: true,

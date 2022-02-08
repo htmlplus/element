@@ -1,4 +1,4 @@
-import { host } from '../utils/index.js';
+import { host } from '../utils';
 
 // TODO: merge types
 export function query<K extends keyof HTMLElementTagNameMap>(target, selectors: K): HTMLElementTagNameMap[K] | null;

@@ -1,4 +1,4 @@
-import { Context } from '../../types/index.js';
+import { Context } from '../../types';
 import { print as core } from '../utils/index.js';
 
 export const print = () => {

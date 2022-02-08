@@ -1,4 +1,4 @@
-import { Context } from '../../types/index.js';
+import { Context } from '../../types';
 
 export const validate = () => {
   const name = 'validate';

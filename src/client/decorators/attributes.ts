@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../configs/constants.js';
-import { PlusElement } from '../../types/index.js';
-import { appendToMethod, host, sync } from '../utils/index.js';
+import { PlusElement } from '../../types';
+import { appendToMethod, host, sync } from '../utils';
 
 export function Attributes() {
   return function (target: PlusElement, propertyKey: PropertyKey) {
