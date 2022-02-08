@@ -7,7 +7,7 @@ import { parseValue } from './parse-value.js';
 
 // TODO: input type
 export const proxy = (Class: PlusElement) => {
-  if (isServer()) return class {};
+  if (isServer()) return class { };
 
   let host, instance;
 
@@ -17,51 +17,56 @@ export const proxy = (Class: PlusElement) => {
   let states;
   let isPending = false;
   let updatePromise: Promise<boolean>;
-  const request = (state?): void => {
-    if (!true /*hasChange*/) return;
+  const request = (state?) => {
+    if (!true /*hasChange*/) return Promise.resolve(false);
     states = { ...(states || {}), ...state };
-    if (isPending) return;
-    updatePromise = enqueue();
+    if (!isPending)
+      updatePromise = enqueue();
+    return updatePromise;
   };
   const enqueue = async (): Promise<boolean> => {
     isPending = true;
+
     try {
       await updatePromise;
-    } catch (error) {
+    }
+    catch (error) {
       Promise.reject(error);
     }
-    const result = perform();
-    if (result != null) await result;
-    return !isPending;
-  };
-  const perform = (): void | Promise<unknown> => {
-    if (!isPending) return;
+
+    // TODO: may be not used
+    if (!isPending) return updatePromise;
+
     try {
-      if (true /*shouldUpdate*/) {
-        // TODO
-        // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
+      if (!true /*shouldUpdate*/) return isPending = false;
 
-        render(host.shadowRoot, () => {
-          const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
+      console.log('render')
 
-          const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
+      // TODO
+      // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
 
-          if (!styles && !markup) return html``;
+      render(host.shadowRoot, () => {
+        const markup = call(CONSTANTS.TOKEN_METHOD_RENDER);
 
-          if (!styles) return markup;
+        const styles = Class[CONSTANTS.TOKEN_STATIC_STYLES];
 
-          if (!markup) return html`<style>${styles}</style>`;
+        if (!styles && !markup) return html``;
 
-          return html`<style>${styles}</style>${markup}`;
-        });
+        if (!styles) return markup;
 
-        // TODO
-        call(CONSTANTS.TOKEN_LIFECYCLE_UPDATED, [states]);
+        if (!markup) return html`<style>${styles}</style>`;
 
-        states = undefined;
-      }
+        return html`<style>${styles}</style>${markup}`;
+      });
+
+      // TODO
+      call(CONSTANTS.TOKEN_LIFECYCLE_UPDATED, [states]);
+
+      states = undefined;
       isPending = false;
-    } catch (error) {
+      return true
+    }
+    catch (error) {
       isPending = false;
       throw error;
     }
@@ -110,16 +115,12 @@ export const proxy = (Class: PlusElement) => {
       const [type] = members[name];
       instance[name] = parseValue(next, type);
       if (!get(CONSTANTS.TOKEN_API_READY)) return;
-      request();
+      request().catch((error) => { throw error });
     }
 
     connectedCallback() {
       call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
-      request();
-
-      // TODO
-      setTimeout(() => call(CONSTANTS.TOKEN_LIFECYCLE_LOADED));
-
+      request().then(() => call(CONSTANTS.TOKEN_LIFECYCLE_LOADED)).catch((error) => { throw error });
       set(CONSTANTS.TOKEN_API_READY, true);
     }
 
