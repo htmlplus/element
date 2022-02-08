@@ -15,7 +15,11 @@ export function State() {
 
         if (!api(this)?.ready) return;
 
-        api(this).request({ [propertyKey]: [next, prev] });
+        api(this)
+          .request({ [propertyKey]: [next, prev] })
+          .catch((error) => {
+            throw error;
+          });
 
         prev = next;
       }

@@ -28,9 +28,16 @@ export function Property(options?: PropertyOptions) {
 
         if (parsed === next) return;
 
-        if (options?.reflect) updateAttribute(element, name, next);
-
-        api(this).request({ [propertyKey]: [next, prev] });
+        api(this)
+          .request({ [propertyKey]: [next, prev] })
+          .then((renderd) => {
+            if (!renderd) return;
+            if (!options?.reflect) return;
+            updateAttribute(element, name, next);
+          })
+          .catch((error) => {
+            throw error;
+          });
 
         prev = next;
       }
