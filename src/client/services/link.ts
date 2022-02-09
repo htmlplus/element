@@ -1,4 +1,4 @@
-import { host } from '../utils/index.js';
+import { defineProperty, host } from '../utils/index.js';
 
 const links = new Map<string, any>();
 
@@ -89,7 +89,7 @@ export const createLink = (namespace: string) => {
     if (source.type === 'inject') return set(source, source.value /* TODO */);
 
     // TODO: any
-    Object.defineProperty(source.instance, source.name as any, {
+    defineProperty(source.instance, source.name as any, {
       value: get(source) /* TODO */,
       enumerable: true,
       configurable: true
@@ -108,7 +108,7 @@ export const createLink = (namespace: string) => {
     let value = get(source);
 
     // TODO: any
-    Object.defineProperty(source.instance, source.name as any, {
+    defineProperty(source.instance, source.name as any, {
       enumerable: true,
       configurable: true,
       get() {

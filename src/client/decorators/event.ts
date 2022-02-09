@@ -1,12 +1,13 @@
 import { EventOptions, PlusElement } from '../../types/index.js';
-import { host } from '../utils/index.js';
+import { defineProperty, host } from '../utils/index.js';
+
 
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
 // TODO: add global hook
 export function Event<T = any>(options: EventOptions = {}) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
-    Object.defineProperty(target, propertyKey, {
+    defineProperty(target, propertyKey, {
       get() {
         return (detail?: T): CustomEvent<T> => {
           options.bubbles ??= false;

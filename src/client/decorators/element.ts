@@ -7,154 +7,113 @@ import { isServer, parseValue } from '../utils/index.js';
 export function Element(tag?: string) {
   return function (constructor: PlusElement) {
     if (isServer()) return;
+    const members = constructor[CONSTANTS.TOKEN_STATIC_MEMBERS];
+    const styles = constructor[CONSTANTS.TOKEN_STATIC_STYLES];
     customElements.define(
       tag!,
       class extends HTMLElement {
-        private plus;
-
+        plus;
         constructor() {
           super();
 
-          this.plus = new Plus(constructor, this);
+          // TODO
+          this.plus = new (constructor as any)();
+
+          // TODO
+          let states, isPending, updatePromise!: Promise<boolean>;
+          const request = (state?) => {
+            if (!true /*hasChange*/) return Promise.resolve(false);
+            states = { ...(states || {}), ...state };
+            if (!isPending) updatePromise = enqueue();
+            return updatePromise;
+          }
+          const enqueue = async (): Promise<boolean> => {
+            isPending = true;
+
+            try {
+              await updatePromise;
+            } catch (error) {
+              Promise.reject(error);
+            }
+
+            // TODO: may be not used
+            if (!isPending) return updatePromise;
+
+            try {
+              if (!true /*shouldUpdate*/) return (isPending = false);
+
+              console.log('render');
+
+              // TODO
+              // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
+
+              render(this.shadowRoot!, () => {
+                const markup = this.plus[CONSTANTS.TOKEN_METHOD_RENDER]?.call(this.plus);
+                if (!styles && !markup) return html``;
+                if (!styles) return markup;
+                if (!markup) return html`<style>${styles}</style>`;
+                return html`<style>${styles}</style>${markup}`;
+              });
+
+              // TODO
+              this.plus[CONSTANTS.TOKEN_LIFECYCLE_UPDATED]?.call(this.plus, states);
+
+              states = undefined;
+
+              isPending = false;
+
+              return true;
+            } catch (error) {
+              isPending = false;
+              throw error;
+            }
+          }
+
+          this.plus[CONSTANTS.TOKEN_API] ??= {
+            [CONSTANTS.TOKEN_API_HOST]: () => this,
+            [CONSTANTS.TOKEN_API_REQUEST]: request
+          };
+
+          // TODO
+          this.plus.setup?.forEach((setup) => setup.call(this.plus));
 
           this.attachShadow({ mode: 'open' });
         }
 
         static get observedAttributes() {
-          const members = constructor[CONSTANTS.TOKEN_STATIC_MEMBERS];
           return Object.keys(members).filter((key) => members[key][0] != CONSTANTS.TYPE_FUNCTION);
         }
 
         adoptedCallback() {
-          this.plus.adoptedCallback();
+          this.plus[CONSTANTS.TOKEN_LIFECYCLE_ADOPTED]?.call(this.plus);
         }
 
         attributeChangedCallback(name, prev, next) {
-          this.plus.attributeChangedCallback(name, prev, next);
+          const [type] = members[name];
+          this.plus[name] = parseValue(next, type);
+          if (!this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY]) return;
+          this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_REQUEST]()
+            .catch((error) => {
+              throw error;
+            });
         }
 
         connectedCallback() {
-          this.plus.connectedCallback();
+          this.plus[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED]?.call(this.plus);
+          this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_REQUEST]()
+            .then(() => {
+              this.plus[CONSTANTS.TOKEN_LIFECYCLE_LOADED]?.call(this.plus);
+            })
+            .catch((error) => {
+              throw error;
+            });
+          this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = true;
         }
 
         disconnectedCallback() {
-          this.plus.disconnectedCallback();
+          this.plus[CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED]?.call(this.plus);
         }
       }
     );
   };
-}
-
-class Plus {
-  instance;
-
-  states;
-
-  isPending;
-
-  updatePromise!: Promise<boolean>;
-
-  constructor(private Class, private host) {
-    // TODO
-    this.instance = new (Class as any)();
-
-    this.instance[CONSTANTS.TOKEN_API] ??= {};
-    this.set(CONSTANTS.TOKEN_API_HOST, () => host);
-    this.set(CONSTANTS.TOKEN_API_REQUEST, this.request.bind(this));
-
-    // TODO
-    this.instance.setup?.forEach((setup) => setup.bind(this.instance)());
-  }
-
-  adoptedCallback() {
-    this.call(CONSTANTS.TOKEN_LIFECYCLE_ADOPTED);
-  }
-
-  attributeChangedCallback(name, prev, next) {
-    const [type] = this.Class[CONSTANTS.TOKEN_STATIC_MEMBERS][name];
-    this.instance[name] = parseValue(next, type);
-    if (!this.get(CONSTANTS.TOKEN_API_READY)) return;
-    this.request().catch((error) => {
-      throw error;
-    });
-  }
-
-  connectedCallback() {
-    this.call(CONSTANTS.TOKEN_LIFECYCLE_CONNECTED);
-    this.request()
-      .then(() => this.call(CONSTANTS.TOKEN_LIFECYCLE_LOADED))
-      .catch((error) => {
-        throw error;
-      });
-    this.set(CONSTANTS.TOKEN_API_READY, true);
-  }
-
-  disconnectedCallback() {
-    this.call(CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED);
-  }
-
-  call(key: string, args?: Array<any>) {
-    return this.instance[key]?.apply(this.instance, args);
-  }
-
-  get(key: string) {
-    return this.instance[CONSTANTS.TOKEN_API][key];
-  }
-
-  set(key: string, value: any) {
-    this.instance[CONSTANTS.TOKEN_API][key] = value;
-  }
-
-  async enqueue(): Promise<boolean> {
-    this.isPending = true;
-
-    try {
-      await this.updatePromise;
-    } catch (error) {
-      Promise.reject(error);
-    }
-
-    // TODO: may be not used
-    if (!this.isPending) return this.updatePromise;
-
-    try {
-      if (!true /*shouldUpdate*/) return (this.isPending = false);
-
-      console.log('render');
-
-      // TODO
-      // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
-
-      render(this.host.shadowRoot, () => {
-        const markup = this.call(CONSTANTS.TOKEN_METHOD_RENDER);
-
-        const styles = this.Class[CONSTANTS.TOKEN_STATIC_STYLES];
-
-        if (!styles && !markup) return html``;
-
-        if (!styles) return markup;
-
-        if (!markup) return html`<style>${styles}</style>`;
-
-        return html`<style>${styles}</style>${markup}`;
-      });
-
-      // TODO
-      this.call(CONSTANTS.TOKEN_LIFECYCLE_UPDATED, [this.states]);
-
-      this.states = undefined;
-      this.isPending = false;
-      return true;
-    } catch (error) {
-      this.isPending = false;
-      throw error;
-    }
-  }
-
-  request(state?) {
-    if (!true /*hasChange*/) return Promise.resolve(false);
-    this.states = { ...(this.states || {}), ...state };
-    if (!this.isPending) this.updatePromise = this.enqueue();
-    return this.updatePromise;
-  }
 }
