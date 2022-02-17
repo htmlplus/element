@@ -1,7 +1,6 @@
 import { EventOptions, PlusElement } from '../../types/index.js';
 import { defineProperty, host } from '../utils/index.js';
 
-
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
 // TODO: add global hook

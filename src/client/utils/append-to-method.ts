@@ -2,6 +2,6 @@ export const appendToMethod = (target, propertyKey: PropertyKey, handler: (this,
   const callback = target[propertyKey];
   target[propertyKey] = function () {
     handler.bind(this)(Array.from(arguments));
-    return callback?.bind(this)(arguments)
+    return callback?.bind(this)(arguments);
   };
 };

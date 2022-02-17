@@ -26,7 +26,7 @@ export function Element(tag?: string) {
             states = { ...(states || {}), ...state };
             if (!isPending) updatePromise = enqueue();
             return updatePromise;
-          }
+          };
           const enqueue = async (): Promise<boolean> => {
             isPending = true;
 
@@ -67,7 +67,7 @@ export function Element(tag?: string) {
               isPending = false;
               throw error;
             }
-          }
+          };
 
           this.plus[CONSTANTS.TOKEN_API] ??= {
             [CONSTANTS.TOKEN_API_HOST]: () => this,
@@ -92,15 +92,15 @@ export function Element(tag?: string) {
           const [type] = members[name];
           this.plus[name] = parseValue(next, type);
           if (!this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY]) return;
-          this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_REQUEST]()
-            .catch((error) => {
-              throw error;
-            });
+          this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_REQUEST]().catch((error) => {
+            throw error;
+          });
         }
 
         connectedCallback() {
           this.plus[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED]?.call(this.plus);
-          this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_REQUEST]()
+          this.plus[CONSTANTS.TOKEN_API]
+            [CONSTANTS.TOKEN_API_REQUEST]()
             .then(() => {
               this.plus[CONSTANTS.TOKEN_LIFECYCLE_LOADED]?.call(this.plus);
             })

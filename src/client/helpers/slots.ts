@@ -1,5 +1,5 @@
-import { queryAll } from './query-all.js';
 import { defineProperty } from '../utils/index.js';
+import { queryAll } from './query-all.js';
 
 type Slots = {
   [key: string]: boolean;
