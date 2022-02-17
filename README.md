@@ -109,7 +109,7 @@ For run any of the component, you must write element name tag into the `public/i
 <!-- public/index.html -->
 
 <body>
-    <my-element></my-element>
+  <my-element></my-element>
 </body>
 ```
 
@@ -399,11 +399,12 @@ export class MyButton {
 
 ## Helpers
 
-What is helpers? 
+What is helpers?
 
 Helpers are a versatile tool in the web component building project that eliminates the need for rewriting.
 
 You can import `Helpers` two ways:
+
 ```js
 import { direction } from '@htmlplus/element';
 import * as Helpers from '@htmlplus/element/helpers';
@@ -416,14 +417,13 @@ direction === Helpers.direction; // true
 
 TODO
 `¯\_(ツ)_/¯`
+
 </details>
 
 <details>
   <summary>direction</summary>
 
-`direction` is return `ltr` or `rtl` for input element.
-
-Also, you can pass target element or this inside of the component.
+This helper returns `ltr` or `rtl` from component.
 
 ```js
 import { Element, direction } from '@htmlplus/element';
@@ -441,15 +441,14 @@ export class MyElement {
 <details>
   <summary>event</summary>
 
-`Event` is a wrapper of event listener, in JavaScript.
-`on` is like a `addEventListener` and `of` is like  `removeEventListener` and used when you want to add or remove event on `Element|Document|Window`.
+`Event` is a wrapper of event listener, in JavaScript. `on` is like a `addEventListener` and `off` is like `removeEventListener` and used when you want to add or remove event on `window | documnet | Element`.
 
+Options:
 
-Options: 
-- target: `window`, `documnet`, `element`
+- target: `window | documnet | Element`
 - event: `string`
 - handler: `EventListenerOrEventListenerObject`
-- options: `boolean`, `AddEventListenerOptions`
+- options: `boolean | AddEventListenerOptions`
 
 ```js
 import { Bind, Element, on, off } from '@htmlplus/element';
@@ -477,7 +476,7 @@ export class MyElement {
 <details>
   <summary>host</summary>
 
-`host` is return output element of component.
+Returns output element of component.
 
 ```js
 import { Element, host } from '@htmlplus/element';
@@ -495,7 +494,7 @@ export class MyElement {
 <details>
   <summary>isRTL</summary>
 
-`isRTL` return a `boolean` to diagnosis direction style of element.
+Returns a `boolean` to diagnosis direction style of element.
 
 ```js
 import { Element, isRTL } from '@htmlplus/element';
@@ -513,7 +512,7 @@ export class MyElement {
 <details>
   <summary>isServer</summary>
 
-`isServer` is a way to understand to component is mounted in DOM or not.
+Is a way to understand to component is mounted in DOM or not.
 
 ```js
 import { Element, isServer } from '@htmlplus/element';
@@ -531,11 +530,13 @@ export class MyElement {
 <details>
   <summary>query</summary>
 
-`query` is a wrapper of `querySelector` Is a way to find an element with a specific features.
+Is a wrapper of `querySelector` Is a way to find an element with a specific features.
 
 Options:
+
 - target: `HTML Element` or `Element Component(this)`
 - selectors: `string` any specific features such as `id`, `class`, `element name`, ...
+
 ```js
 import { Element, query } from '@htmlplus/element';
 
@@ -565,9 +566,10 @@ export class MyElement {
 <details>
   <summary>queryAll</summary>
 
-`queryAll` is a wrapper of `querySelectorAll` Is a way to find an array of elements with a specific features.
+Is a wrapper of `querySelectorAll` Is a way to find an array of elements with a specific features.
 
 Options:
+
 - target: `HTML Element` or `Element Component(this)`
 - selectors: `string` any specific features such as `id`, `class`, `element name`, ...
 
@@ -597,8 +599,6 @@ export class MyElement {
 
 <details>
   <summary>slots</summary>
-
-What is slot?
 
 Sometimes components need to render dynamic children in specific locations in their component, so we use `slot` for separate these.
 
@@ -639,10 +639,11 @@ export class MyElement {
 <details>
   <summary>styles</summary>
 
-`styles` is return css style of your `array` or `object` style.
+Returns css style of your `array` or `object` style.
 
 Options:
-- input: `object`, `array`
+
+- input: `array | object`
 
 ```js
 import { Element, Property, styles } from '@htmlplus/element';
@@ -675,10 +676,11 @@ export class MyElement {
 <details>
   <summary>toUnit</summary>
 
-`toUnit` is transformer to `number` type or make unit based on unit input.
+Transformer to `number` type or make unit based on unit input.
 
 Options:
-- input: `number`, `string`
+
+- input: `number | string`
 - unit: `string`
 
 ```js
@@ -709,7 +711,7 @@ export class MyElement {
 
 ## Lifecycles
 
-Components have numerous lifecycle methods which can be used to know when the component `will` and `did` `load`, `update`, and `render`.
+Components have numerous lifecycle methods which can be used to know when the component.
 
 <details>
   <summary>connectedCallback</summary>
@@ -721,14 +723,14 @@ import { Element } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
-    
+
   connectedCallback() {
-      console.log("Component is connected!")
+    console.log("Component is connected!")
   }
-  
+
   render() {
     return (
-        <slot />
+      <slot />
     )
   }
 }
@@ -746,18 +748,19 @@ import { Element } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
-    
+
   disconnectedCallback() {
-      console.log("Component is disconnected!")
+    console.log("Component is disconnected!")
   }
-  
+
   render() {
     return (
-        <slot />
+      <slot />
     )
   }
 }
 ```
+
 </details>
 
 <details>
@@ -777,11 +780,12 @@ export class MyElement {
 
   render() {
     return (
-        <slot />
+      <slot />
     )
   }
 }
 ```
+
 </details>
 
 <details>
@@ -801,7 +805,7 @@ export class MyElement {
 
   render() {
     return (
-        <slot />
+      <slot />
     )
   }
 }
