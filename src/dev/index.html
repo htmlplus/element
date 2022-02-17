@@ -5,19 +5,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script type="module" src="/element.tsx"></script>
+    <style>
+      my-element{
+        display: block;
+      }
+    </style>
   </head>
 
   <body>
-    <my-element id="el">
+    <my-element>
       <div>123</div>
     </my-element>
-    <script>
+    <my-element>
+      <div>123</div>
+    </my-element>
+    <my-element>
+      <div>123</div>
+    </my-element>
+    <my-element>
+      <div>123</div>
+    </my-element>
+    <!-- <script>
       const el = document.getElementById('el')
       el.addEventListener('clicked', () => alert('Clicked!'));
       setTimeout(() => {
         el.open()
       }, 200);
     </script>
-    <div style="height: 200vh;"></div>
+    <div style="height: 200vh;"></div> -->
   </body>
 </html>

@@ -1,3 +1,4 @@
+import { on, off } from './event.js';
 import { isEvent } from './is-event.js';
 import { toEvent } from './to-event.js';
 import { updateAttribute } from './update-attribute.js';
@@ -19,11 +20,11 @@ export const sync = (node: HTMLElement) => {
 
     if (prev.style || next.style) node.setAttribute('style', next.style || '');
 
-    for (const key in prev) isEvent(key) && node.removeEventListener(toEvent(key), prev[key]);
+    for (const key in prev) isEvent(key) && off(node, toEvent(key), prev[key]);
 
     for (const key in next) {
       if (['class', 'style'].includes(key)) continue;
-      if (isEvent(key)) node.addEventListener(toEvent(key), next[key]);
+      if (isEvent(key)) on(node, toEvent(key), next[key]);
       else updateAttribute(node, key, next[key]);
     }
 

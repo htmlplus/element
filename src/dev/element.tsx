@@ -1,4 +1,4 @@
-import { Bind, Element, Event, EventEmitter, Listen, Method, Property, State, Watch } from '@htmlplus/element';
+import { Attributes, Bind, Element, Event, EventEmitter, Listen, Method, Property, State, Watch } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
@@ -10,6 +10,16 @@ export class MyElement {
 
   @State()
   active?: boolean = false;
+
+  $indicator!: HTMLElement
+
+  @Attributes()
+  get attributes() {
+    return {
+      'role': 'TODO'
+    }
+  }
+
 
   @Method()
   open() {
@@ -24,13 +34,13 @@ export class MyElement {
 
   @Listen('scroll', { target: 'window' })
   onClick(event) {
-    // console.log('@Listen', event);
+    console.log('@Listen', event, this);
     this.active = !this.active;
   }
 
   @Bind()
   onScroll(event) {
-    console.log(event);
+    console.log(123, event, this);
   }
 
   handleClick() {
@@ -43,17 +53,17 @@ export class MyElement {
   }
 
   connectedCallback() {
-    // document.addEventListener('scroll', this.onScroll);
+    document.addEventListener('scroll', this.onScroll);
   }
 
   disconnectedCallback() {
-    // document.removeEventListener('scroll', this.onScroll);
+    document.removeEventListener('scroll', this.onScroll);
   }
 
   render() {
     return (
       <>
-        <button onClick={() => this.handleClick()}>
+        <button onClick={() => this.handleClick()} ref={this.$indicator}>
           {this.active ? 'On' : 'Off'} {this.name}
         </button>
       </>

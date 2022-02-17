@@ -1,8 +1,7 @@
-import { PlusElement } from '../../types/index.js';
-import { DecoratorSetup, decorator, defineProperty } from '../utils/index.js';
+import { defineProperty } from '../utils/index.js';
 
 export function Bind() {
-  const setup: DecoratorSetup = (target: PlusElement, propertyKey: PropertyKey, descriptor?: PropertyDescriptor) => {
+  return function (target: Object, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
     return {
       configurable: true,
       get() {
@@ -16,5 +15,4 @@ export function Bind() {
       }
     };
   };
-  return decorator(setup);
 }
