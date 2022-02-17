@@ -415,19 +415,15 @@ direction === Helpers.direction; // true
 <details>
   <summary>classes</summary>
 
-TODO `¯\_(ツ)_/¯`
+TODO
+`¯\_(ツ)_/¯`
 
 </details>
 
 <details>
   <summary>direction</summary>
 
-<<<<<<< HEAD
 This helper returns `ltr` or `rtl` from component.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element, direction } from '@htmlplus/element';
@@ -445,7 +441,6 @@ export class MyElement {
 <details>
   <summary>event</summary>
 
-<<<<<<< HEAD
 `Event` is a wrapper of event listener, in JavaScript. `on` is like a `addEventListener` and `off` is like `removeEventListener` and used when you want to add or remove event on `window | documnet | Element`.
 
 Options:
@@ -453,12 +448,7 @@ Options:
 - target: `window | documnet | Element`
 - event: `string`
 - handler: `EventListenerOrEventListenerObject`
-- # options: `boolean | AddEventListenerOptions`
-  TODO
-
-Options: TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
+- options: `boolean | AddEventListenerOptions`
 
 ```js
 import { Bind, Element, on, off } from '@htmlplus/element';
@@ -486,12 +476,7 @@ export class MyElement {
 <details>
   <summary>host</summary>
 
-<<<<<<< HEAD
 Returns output element of component.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element, host } from '@htmlplus/element';
@@ -509,12 +494,7 @@ export class MyElement {
 <details>
   <summary>isRTL</summary>
 
-<<<<<<< HEAD
 Returns a `boolean` to diagnosis direction style of element.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element, isRTL } from '@htmlplus/element';
@@ -532,12 +512,7 @@ export class MyElement {
 <details>
   <summary>isServer</summary>
 
-<<<<<<< HEAD
 Is a way to understand to component is mounted in DOM or not.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element, isServer } from '@htmlplus/element';
@@ -555,15 +530,12 @@ export class MyElement {
 <details>
   <summary>query</summary>
 
-<<<<<<< HEAD
 Is a wrapper of `querySelector` Is a way to find an element with a specific features.
 
 Options:
 
 - target: `HTML Element` or `Element Component(this)`
-- # selectors: `string` any specific features such as `id`, `class`, `element name`, ...
-  TODO
-  > > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
+- selectors: `string` any specific features such as `id`, `class`, `element name`, ...
 
 ```js
 import { Element, query } from '@htmlplus/element';
@@ -594,15 +566,12 @@ export class MyElement {
 <details>
   <summary>queryAll</summary>
 
-<<<<<<< HEAD
 Is a wrapper of `querySelectorAll` Is a way to find an array of elements with a specific features.
 
 Options:
 
 - target: `HTML Element` or `Element Component(this)`
-- # selectors: `string` any specific features such as `id`, `class`, `element name`, ...
-  TODO
-  > > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
+- selectors: `string` any specific features such as `id`, `class`, `element name`, ...
 
 ```js
 import { Element, queryAll } from '@htmlplus/element';
@@ -631,14 +600,9 @@ export class MyElement {
 <details>
   <summary>slots</summary>
 
-<<<<<<< HEAD
 Sometimes components need to render dynamic children in specific locations in their component, so we use `slot` for separate these.
 
 `slots` return the state of the slots of a component (is empty or not).
-
-=======
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element, Property, slots } from '@htmlplus/element';
@@ -675,14 +639,11 @@ export class MyElement {
 <details>
   <summary>styles</summary>
 
-<<<<<<< HEAD
 Returns css style of your `array` or `object` style.
 
 Options:
 
-- # input: `array | object`
-  TODO
-  > > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
+- input: `array | object`
 
 ```js
 import { Element, Property, styles } from '@htmlplus/element';
@@ -715,15 +676,12 @@ export class MyElement {
 <details>
   <summary>toUnit</summary>
 
-<<<<<<< HEAD
 Transformer to `number` type or make unit based on unit input.
 
 Options:
 
 - input: `number | string`
-- # unit: `string`
-  TODO
-  > > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
+- unit: `string`
 
 ```js
 import { Element, Property, toUnit } from '@htmlplus/element';
@@ -753,17 +711,11 @@ export class MyElement {
 
 ## Lifecycles
 
-<<<<<<< HEAD
 Components have numerous lifecycle methods which can be used to know when the component.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 <details>
   <summary>connectedCallback</summary>
 
-<<<<<<< HEAD
 Called every time the component is connected to the DOM. When the component is first connected, this method is called before `loadedCallback`.
 
 ```js
@@ -784,17 +736,11 @@ export class MyElement {
 }
 ```
 
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
-
 </details>
 
 <details>
   <summary>disconnectedCallback</summary>
 
-<<<<<<< HEAD
 Called every time the component is disconnected from the DOM.
 
 ```js
@@ -815,17 +761,11 @@ export class MyElement {
 }
 ```
 
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
-
 </details>
 
 <details>
   <summary>loadedCallback</summary>
 
-<<<<<<< HEAD
 Called once just after the component is fully loaded and the first `render()`.
 
 ```js
@@ -846,24 +786,11 @@ export class MyElement {
 }
 ```
 
-=======
-TODO
-
-</details>
-
-<details>
-  <summary>updateCallback</summary>
-
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
-
 </details>
 
 <details>
   <summary>updatedCallback</summary>
 
-<<<<<<< HEAD
 Called everytime when `states` or `props` changed.It's never called during the first `render()`.
 
 ```js
@@ -883,11 +810,6 @@ export class MyElement {
   }
 }
 ```
-
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 </details>
 
@@ -916,12 +838,7 @@ All examples below produce output `<plus-button></plus-button>`
 <details>
   <summary>Explicitly tag name</summary>
 
-<<<<<<< HEAD
 You can give the final name of your component as an input to the `@Element`.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element } from '@htmlplus/element';
@@ -935,22 +852,13 @@ export class Button {}
 <details>
   <summary>Class name with at least 2 syllables</summary>
 
-<<<<<<< HEAD
 The name of your element should eventually be `two` syllables.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element } from '@htmlplus/element';
 
 @Element()
-<<<<<<< HEAD
 export class PlusButton {} // <plus-button></plus-button>
-=======
-export class PlusButton {}
->>>>>>> 10fc222996c5596b9b5fc425a766c36717fa5f0b
 ```
 
 </details>
@@ -958,12 +866,7 @@ export class PlusButton {}
 <details>
   <summary>With global prefix (recommended)</summary>
 
-<<<<<<< HEAD
 You can set a prefix for all elements and this prefix attached to all elements.
-=======
-TODO
-
-> > > > > > > 10fc222996c5596b9b5fc425a766c36717fa5f0b
 
 ```js
 import { Element } from '@htmlplus/element';
