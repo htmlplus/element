@@ -399,8 +399,11 @@ export class MyButton {
 
 ## Helpers
 
-TODO
+What is helpers? 
 
+Helpers are a versatile tool in the web component building project that eliminates the need for rewriting.
+
+You can import `Helpers` two ways:
 ```js
 import { direction } from '@htmlplus/element';
 import * as Helpers from '@htmlplus/element/helpers';
@@ -412,13 +415,15 @@ direction === Helpers.direction; // true
   <summary>classes</summary>
 
 TODO
-
+`¯\_(ツ)_/¯`
 </details>
 
 <details>
   <summary>direction</summary>
 
-TODO
+`direction` is return `ltr` or `rtl` for input element.
+
+Also, you can pass target element or this inside of the component.
 
 ```js
 import { Element, direction } from '@htmlplus/element';
@@ -436,9 +441,15 @@ export class MyElement {
 <details>
   <summary>event</summary>
 
-TODO
+`Event` is a wrapper of event listener, in JavaScript.
+`on` is like a `addEventListener` and `of` is like  `removeEventListener` and used when you want to add or remove event on `Element|Document|Window`.
 
-Options: TODO
+
+Options: 
+- target: `window`, `documnet`, `element`
+- event: `string`
+- handler: `EventListenerOrEventListenerObject`
+- options: `boolean`, `AddEventListenerOptions`
 
 ```js
 import { Bind, Element, on, off } from '@htmlplus/element';
@@ -466,7 +477,7 @@ export class MyElement {
 <details>
   <summary>host</summary>
 
-TODO
+`host` is return output element of component.
 
 ```js
 import { Element, host } from '@htmlplus/element';
@@ -484,7 +495,7 @@ export class MyElement {
 <details>
   <summary>isRTL</summary>
 
-TODO
+`isRTL` return a `boolean` to diagnosis direction style of element.
 
 ```js
 import { Element, isRTL } from '@htmlplus/element';
@@ -502,7 +513,7 @@ export class MyElement {
 <details>
   <summary>isServer</summary>
 
-TODO
+`isServer` is a way to understand to component is mounted in DOM or not.
 
 ```js
 import { Element, isServer } from '@htmlplus/element';
@@ -520,8 +531,11 @@ export class MyElement {
 <details>
   <summary>query</summary>
 
-TODO
+`query` is a wrapper of `querySelector` Is a way to find an element with a specific features.
 
+Options:
+- target: `HTML Element` or `Element Component(this)`
+- selectors: `string` any specific features such as `id`, `class`, `element name`, ...
 ```js
 import { Element, query } from '@htmlplus/element';
 
@@ -551,7 +565,11 @@ export class MyElement {
 <details>
   <summary>queryAll</summary>
 
-TODO
+`queryAll` is a wrapper of `querySelectorAll` Is a way to find an array of elements with a specific features.
+
+Options:
+- target: `HTML Element` or `Element Component(this)`
+- selectors: `string` any specific features such as `id`, `class`, `element name`, ...
 
 ```js
 import { Element, queryAll } from '@htmlplus/element';
@@ -579,6 +597,12 @@ export class MyElement {
 
 <details>
   <summary>slots</summary>
+
+What is slot?
+
+Sometimes components need to render dynamic children in specific locations in their component, so we use `slot` for separate these.
+
+`slots` return the state of the slots of a component (is empty or not).
 
 ```js
 import { Element, Property, slots } from '@htmlplus/element';
@@ -615,7 +639,10 @@ export class MyElement {
 <details>
   <summary>styles</summary>
 
-TODO
+`styles` is return css style of your `array` or `object` style.
+
+Options:
+- input: `object`, `array`
 
 ```js
 import { Element, Property, styles } from '@htmlplus/element';
@@ -648,7 +675,11 @@ export class MyElement {
 <details>
   <summary>toUnit</summary>
 
-TODO
+`toUnit` is transformer to `number` type or make unit based on unit input.
+
+Options:
+- input: `number`, `string`
+- unit: `string`
 
 ```js
 import { Element, Property, toUnit } from '@htmlplus/element';
@@ -678,40 +709,103 @@ export class MyElement {
 
 ## Lifecycles
 
-TODO
+Components have numerous lifecycle methods which can be used to know when the component `will` and `did` `load`, `update`, and `render`.
 
 <details>
   <summary>connectedCallback</summary>
 
-TODO
+Called every time the component is connected to the DOM. When the component is first connected, this method is called before `loadedCallback`.
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+    
+  connectedCallback() {
+      console.log("Component is connected!")
+  }
+  
+  render() {
+    return (
+        <slot />
+    )
+  }
+}
+```
 
 </details>
 
 <details>
   <summary>disconnectedCallback</summary>
 
-TODO
+Called every time the component is disconnected from the DOM.
 
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+    
+  disconnectedCallback() {
+      console.log("Component is disconnected!")
+  }
+  
+  render() {
+    return (
+        <slot />
+    )
+  }
+}
+```
 </details>
 
 <details>
   <summary>loadedCallback</summary>
 
-TODO
+Called once just after the component is fully loaded and the first `render()`.
 
-</details>
+```js
+import { Element } from '@htmlplus/element';
 
-<details>
-  <summary>updateCallback</summary>
+@Element()
+export class MyElement {
 
-TODO
+  loadedCallback() {
+    console.log("Component is loaded!")
+  }
 
+  render() {
+    return (
+        <slot />
+    )
+  }
+}
+```
 </details>
 
 <details>
   <summary>updatedCallback</summary>
 
-TODO
+Called everytime when `states` or `props` changed.It's never called during the first `render()`.
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+
+  loadedCallback(prevProps, prevState, snapshot) {
+    console.log("Component is updated!")
+  }
+
+  render() {
+    return (
+        <slot />
+    )
+  }
+}
+```
 
 </details>
 
@@ -740,7 +834,7 @@ All examples below produce output `<plus-button></plus-button>`
 <details>
   <summary>Explicitly tag name</summary>
 
-TODO
+You can give the final name of your component as an input to the `@Element`.
 
 ```js
 import { Element } from '@htmlplus/element';
@@ -754,13 +848,13 @@ export class Button {}
 <details>
   <summary>Class name with at least 2 syllables</summary>
 
-TODO
+The name of your element should eventually be `two` syllables.
 
 ```js
 import { Element } from '@htmlplus/element';
 
 @Element()
-export class PlusButton {}
+export class PlusButton {} // <plus-button></plus-button>
 ```
 
 </details>
@@ -768,7 +862,7 @@ export class PlusButton {}
 <details>
   <summary>With global prefix (recommended)</summary>
 
-TODO
+You can set a prefix for all elements and this prefix attached to all elements.
 
 ```js
 import { Element } from '@htmlplus/element';
