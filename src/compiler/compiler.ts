@@ -7,7 +7,7 @@ const log = (namespace?: string, message?: string) => {
 };
 
 export default (...plugins: Array<Plugin>) => {
-  const global = {
+  let global = {
     contexts: {}
   };
 
@@ -15,7 +15,7 @@ export default (...plugins: Array<Plugin>) => {
     log(undefined, 'Starting.');
     for (const plugin of plugins) {
       if (!plugin.start) continue;
-      await plugin.start(global);
+      global = (await plugin.start(global)) || global;
       log(plugin.name, 'Started successfully.');
     }
   };
@@ -43,7 +43,7 @@ export default (...plugins: Array<Plugin>) => {
   const finish = async () => {
     for (const plugin of plugins) {
       if (!plugin.finish) continue;
-      await plugin.finish(global);
+      global = (await plugin.finish(global)) || global;
       log(plugin.name, 'Finished successfully.');
     }
     log(undefined, 'Finished.');
