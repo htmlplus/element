@@ -1,0 +1,21 @@
+/* eslint-disable */
+/* tslint:disable */
+/* auto-generated react proxies */
+import { proxy } from './proxy';
+import type { JSX } from '@htmlplus/core';
+
+import '@htmlplus/core/dist/components/plus-browse';
+
+export const {{className}} = /*@__PURE__*/ proxy<{{elementInterfaceName}}, JSX.{{className}}>(
+  '{{componentTag}}', 
+  [
+    {{#each classProperties}}
+    '{{this.key.name}}',
+    {{/each}}
+  ], 
+  [
+    {{#each classEvents}}
+    '{{this.key.name}}',
+    {{/each}}
+  ],
+);

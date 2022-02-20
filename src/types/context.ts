@@ -3,6 +3,8 @@ import { ClassBody, ClassDeclaration, ClassMethod, ClassProperty, File } from '@
 export interface Context {
   // TODO
   script?: string;
+  elementClassName?: string;
+  elementInterfaceName?: string;
 
   // component
   componentKey?: string;

@@ -1,5 +1,4 @@
 import t, { TSTypeAnnotation } from '@babel/types';
-import { pascalCase } from 'change-case';
 
 import * as CONSTANTS from '../../configs/constants.js';
 import { Context } from '../../types/index.js';
@@ -87,10 +86,6 @@ export const attach = (options: AttachOptions) => {
     }
 
     if (options.typings) {
-      const className = pascalCase(context.componentTag!.split('-').slice(1).join('-'));
-
-      const elementName = `HTML${className}Element`;
-
       visitor(context.fileAST as any, {
         Program(path) {
           path.node.body.push(
@@ -99,7 +94,7 @@ export const attach = (options: AttachOptions) => {
                 t.identifier('global'),
                 t.tsModuleBlock([
                   t.tsInterfaceDeclaration(
-                    t.identifier(elementName),
+                    t.identifier(context.elementInterfaceName!),
                     null,
                     [],
                     t.tsInterfaceBody([
@@ -116,17 +111,17 @@ export const attach = (options: AttachOptions) => {
                   ),
                   t.variableDeclaration('var', [
                     t.variableDeclarator(
-                      Object.assign(t.identifier(elementName), {
+                      Object.assign(t.identifier(context.elementInterfaceName!), {
                         typeAnnotation: t.tSTypeAnnotation(
                           t.tSTypeLiteral([
                             t.tSPropertySignature(
                               t.identifier('prototype'),
-                              t.tsTypeAnnotation(t.tSTypeReference(t.identifier(elementName)))
+                              t.tsTypeAnnotation(t.tSTypeReference(t.identifier(context.elementInterfaceName!)))
                             ),
                             t.tSConstructSignatureDeclaration(
                               null,
                               [],
-                              t.tSTypeAnnotation(t.tSTypeReference(t.identifier(elementName)))
+                              t.tSTypeAnnotation(t.tSTypeReference(t.identifier(context.elementInterfaceName!)))
                             )
                           ])
                         )
@@ -134,7 +129,7 @@ export const attach = (options: AttachOptions) => {
                     )
                   ]),
                   t.tsInterfaceDeclaration(
-                    t.identifier(className),
+                    t.identifier(context.elementClassName!),
                     null,
                     [],
                     t.tsInterfaceBody([
@@ -156,7 +151,9 @@ export const attach = (options: AttachOptions) => {
                     t.tsInterfaceBody([
                       t.tSPropertySignature(
                         t.stringLiteral(context.componentTag!),
-                        t.tSTypeAnnotation(t.tSIntersectionType([t.tSTypeReference(t.identifier(className))]))
+                        t.tSTypeAnnotation(
+                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.elementClassName!))])
+                        )
                       )
                     ])
                   ),
@@ -171,7 +168,7 @@ export const attach = (options: AttachOptions) => {
                           t.tsInterfaceBody([
                             t.tsPropertySignature(
                               t.stringLiteral(context.componentTag!),
-                              t.tsTypeAnnotation(t.tsTypeReference(t.identifier(className)))
+                              t.tsTypeAnnotation(t.tsTypeReference(t.identifier(context.elementClassName!)))
                             )
                           ])
                         )

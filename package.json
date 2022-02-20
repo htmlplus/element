@@ -6,7 +6,9 @@
   "description": "Compiler of HTMLPlus",
   "type": "module",
   "scripts": {
-    "build": "npm run clean && tsc",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "postbuild": "cpx 'src/**/*.hbs' 'dist'",
     "build:watch": "tsc -w",
     "clean": "rimraf dist",
     "prettier": "prettier --write .",
@@ -78,6 +80,8 @@
     "@babel/types": "^7.16.0",
     "@types/node": "^16.11.11",
     "change-case": "^4.1.2",
+    "glob": "^7.2.0",
+    "handlebars": "^4.7.7",
     "log-update": "^5.0.0",
     "sass": "^1.43.4",
     "ts-node": "^10.4.0",
@@ -86,6 +90,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^3.1.1",
+    "cpx": "^1.5.0",
     "prettier": "^2.5.0",
     "rimraf": "^3.0.2",
     "vite": "^2.7.10"

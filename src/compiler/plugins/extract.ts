@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import { ClassMethod, ClassProperty } from '@babel/types';
-import { capitalCase, paramCase } from 'change-case';
+import { pascalCase, paramCase } from 'change-case';
 import fs from 'fs';
 import path from 'path';
 
@@ -65,6 +65,10 @@ export const extract = (options?: ExtractOptions) => {
     context.className = context.class?.id?.name!;
 
     context.componentKey = paramCase(context.className);
+
+    // TODO
+    context.elementClassName = pascalCase(context.componentTag!.split('-').slice(1).join('-'));
+    context.elementInterfaceName = `HTML${context.elementClassName}Element`;
 
     (() => {
       const stylePath = path.join(context.directoryPath, `${context.fileName}.scss`);

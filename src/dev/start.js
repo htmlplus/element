@@ -1,6 +1,7 @@
 import { createServer } from 'vite';
+
 import compiler from '../../dist/compiler/index.js';
-import { attach, extract, parse, print, read, uhtml, validate } from '../../dist/compiler/index.js';
+import { attach, extract, parse, print, reactProxy, read, uhtml, validate } from '../../dist/compiler/index.js';
 
 const { start, next, finish } = compiler(
   read(),
@@ -9,6 +10,9 @@ const { start, next, finish } = compiler(
   extract(),
   attach({
     typings: false
+  }),
+  reactProxy({
+    dist: 'aaaaaaaaaaaaaa'
   }),
   uhtml(),
   print()
