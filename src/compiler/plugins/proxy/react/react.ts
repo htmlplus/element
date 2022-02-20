@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { Context } from '../../../../types/index.js';
 import { getTemplate } from '../../../utils/index.js';
 
@@ -10,7 +13,11 @@ export const reactProxy = (options: ReactProxyOptions) => {
 
   const next = (context: Context) => {
     debugger;
-    console.log(9999, getTemplate(import.meta.url, 'templates/[component].ts.hbs')(context));
+    const a = getTemplate(import.meta.url, 'templates/src/[component].ts.hbs')(context);
+    if (!fs.existsSync(path.resolve(options.dist, `src`))) {
+      fs.mkdirSync(path.resolve(options.dist, `src`), { recursive: true });
+    }
+    fs.writeFileSync(path.resolve(options.dist, `src/${context.fileName}.ts`), a, 'utf8');
   };
 
   const finish = (global) => {

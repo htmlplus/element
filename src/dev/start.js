@@ -12,7 +12,7 @@ const { start, next, finish } = compiler(
     typings: false
   }),
   reactProxy({
-    dist: 'aaaaaaaaaaaaaa'
+    dist: 'dist/react-port'
   }),
   uhtml(),
   print()
