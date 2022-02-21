@@ -1,8 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-
 import { Context } from '../../../../types/index.js';
-import { getTemplate } from '../../../utils/index.js';
+import { copyTemplate } from '../../../utils/index.js';
 
 export interface ReactProxyOptions {
   dist: string;
@@ -11,17 +8,14 @@ export interface ReactProxyOptions {
 export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'reactProxy';
 
+  const ignore = 'templates/src/components/[component]';
+
   const next = (context: Context) => {
-    debugger;
-    const a = getTemplate(import.meta.url, 'templates/src/[component].ts.hbs')(context);
-    if (!fs.existsSync(path.resolve(options.dist, `src`))) {
-      fs.mkdirSync(path.resolve(options.dist, `src`), { recursive: true });
-    }
-    fs.writeFileSync(path.resolve(options.dist, `src/${context.fileName}.ts`), a, 'utf8');
+    copyTemplate(import.meta.url, ignore)(context);
   };
 
   const finish = (global) => {
-    // fs.copyFileSync('templates/proxy.ts.hbs', options.dist + 'proxy.ts');
+    copyTemplate(import.meta.url, ['templates/**/*', `!${ignore}`])(global);
   };
 
   return {
