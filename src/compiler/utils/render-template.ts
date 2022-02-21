@@ -3,11 +3,12 @@ import handlebars from 'handlebars';
 import path from 'path';
 import url from 'url';
 
-export const copyTemplate = (root: string, template: string) => {
-  const dirname = path.dirname(url.fileURLToPath(root));
-  const filePath = path.resolve(dirname, template);
-  const content = fs.readFileSync(filePath, 'utf8');
-  return handlebars.compile(content);
+export const renderTemplate = (root: string, pattern: string | Array<string>) => {
+  const patterns = [pattern].flat();
+  // const dirname = path.dirname(url.fileURLToPath(root));
+  // const filePath = path.resolve(dirname, template);
+  // const content = fs.readFileSync(filePath, 'utf8');
+  return handlebars.compile('content');
 };
 
 // fs.copyFileSync('templates/proxy.ts.hbs', options.dist + 'proxy.ts');
