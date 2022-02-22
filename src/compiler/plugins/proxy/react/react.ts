@@ -8,7 +8,7 @@ export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'reactProxy';
 
   const finish = (global) => {
-    const component = 'templates/src/components/component*';
+    const component = 'templates/src/components/[component]*';
     const config = { cwd: import.meta.url };
     Object.keys(global.contexts).forEach((context) => {
       renderTemplate(component, options.dist, config)(context);
