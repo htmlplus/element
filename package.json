@@ -80,6 +80,7 @@
     "@babel/types": "^7.16.0",
     "@types/node": "^16.11.11",
     "change-case": "^4.1.2",
+    "fast-glob": "^3.2.11",
     "handlebars": "^4.7.7",
     "log-update": "^5.0.0",
     "sass": "^1.43.4",
