@@ -9,20 +9,33 @@ export const renderTemplate = (source: string | Array<string>, destination: stri
   if (options?.cwd && options.cwd.startsWith('file:///'))
     options.cwd = path.dirname(options?.cwd).replace('file:///', '');
 
-  const files: any = glob.sync([source].flat(), {
+  const addresses: any = glob.sync([source].flat(), {
     ...(options || {})
   });
 
-  for (const file of files) {
-    const fromPath = path.resolve(options?.cwd, file);
-    const toPath = path.resolve(destination, file);
+  for (const address of addresses) {
+    const addressNormalized = path.normalize(address);
+    const addressResolved = path.resolve(options?.cwd, addressNormalized);
+    const addressParsed = path
+      .normalize(addressNormalized)
+      .split(path.sep)
+      .map((section) => {
+        const parsed = section.replace('_.', '.').replace('.hbs', '').replace('[', '{{').replace(']', '}}');
+        return handlebars.compile(parsed)(context);
+      })
+      .slice(1)
+      .join(path.sep);
+
+    const toPath = path.resolve(destination, addressParsed);
     const toDirectory = path.dirname(toPath);
-    const toParsed = handlebars.compile(toPath.replace('.hbs', ''))(context);
-    const raw = fs.readFileSync(fromPath, 'utf8');
-    const content = handlebars.compile(raw)(context);
+
+    const templateRaw = fs.readFileSync(addressResolved, 'utf8');
+    const templateParsed = handlebars.compile(templateRaw)(context);
+
     if (!fs.existsSync(toDirectory)) {
       fs.mkdirSync(toDirectory, { recursive: true });
     }
-    fs.writeFileSync(toParsed, content, 'utf8');
+
+    fs.writeFileSync(toPath, templateParsed, 'utf8');
   }
 };

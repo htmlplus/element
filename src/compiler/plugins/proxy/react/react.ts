@@ -8,10 +8,10 @@ export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'reactProxy';
 
   const finish = (global) => {
-    const component = 'templates/src/components/[component]*';
+    const component = 'templates/src/components/[fileName]*';
     const config = { cwd: import.meta.url };
-    Object.keys(global.contexts).forEach((context) => {
-      renderTemplate(component, options.dist, config)(context);
+    Object.keys(global.contexts).forEach((key) => {
+      renderTemplate(component, options.dist, config)(global.contexts[key]);
     });
     if (false /*dirty*/) {
       renderTemplate('templates/src/proxy*', options.dist, config)(global);
