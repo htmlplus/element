@@ -5,19 +5,24 @@ import path from 'path';
 import url from 'url';
 
 export const renderTemplate = (source: string | Array<string>, destination: string, options?) => (context) => {
+  // TODO
+  if (options?.cwd && options.cwd.startsWith('file:///'))
+    options.cwd = path.dirname(options?.cwd).replace('file:///', '');
+
   const files: any = glob.sync([source].flat(), {
-    ...(options || {}),
-    // TODO
-    cwd: path.dirname(options?.cwd).replace('file:///', '')
+    ...(options || {})
   });
+
   for (const file of files) {
-    debugger;
-    const filePath = path.resolve(path.dirname(options?.cwd).replace('file:///', ''), file);
-    const content = fs.readFileSync(filePath, 'utf8');
-    const t = handlebars.compile(content)(context);
-    if (!fs.existsSync(path.dirname(path.resolve(destination, file)))) {
-      fs.mkdirSync(path.dirname(path.resolve(destination, file)), { recursive: true });
+    const fromPath = path.resolve(options?.cwd, file);
+    const toPath = path.resolve(destination, file);
+    const toDirectory = path.dirname(toPath);
+    const toParsed = handlebars.compile(toPath.replace('.hbs', ''))(context);
+    const raw = fs.readFileSync(fromPath, 'utf8');
+    const content = handlebars.compile(raw)(context);
+    if (!fs.existsSync(toDirectory)) {
+      fs.mkdirSync(toDirectory, { recursive: true });
     }
-    fs.writeFileSync(path.resolve(destination, file).replace('.hbs', ''), t, 'utf8');
+    fs.writeFileSync(toParsed, content, 'utf8');
   }
 };
