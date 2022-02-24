@@ -1,5 +1,5 @@
-export * from './proxy/index.js';
-// export * from './transpiler/index.js';
+export * from './reactProxy/index.js';
+export * from './reactTranspiler/index.js';
 export * from './attach.js';
 export * from './docs.js';
 export * from './extract.js';
