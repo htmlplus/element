@@ -10,7 +10,7 @@ const { start, next, finish } = compiler(
     typings: false
   }),
   reactProxy({
-    dist: 'dist/react-port'
+    dist: '../ports/react.new'
   }),
   uhtml(),
   print()
@@ -18,6 +18,7 @@ const { start, next, finish } = compiler(
 
 (async () => {
   await start();
-  const { script } = await next('./src/dev/element.tsx');
+  await next('./src/dev/button.tsx');
+  await next('./src/dev/element.tsx');
   await finish();
 })();

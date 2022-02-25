@@ -1,7 +1,7 @@
 /**
  * version 0.0.9
  */
-import * as Case from 'case';
+import { camelCase, paramCase, pascalCase } from 'change-case';
 import React from 'react';
 
 type EventHandlerType = (event: Event) => any;
@@ -38,7 +38,7 @@ const arrayToMap = (array: string[] | DOMTokenList) => {
 
 const getCustomEvent = (name: string, events: Array<string>) => {
   // TODO
-  name = Case.camel(name.slice(3));
+  name = camelCase(name.slice(3));
 
   const event = events.find((event) => event.endsWith(name));
 
@@ -102,7 +102,7 @@ const getProps = <ElementType>(ref: React.Ref<ElementType>, props: PropsType<Ele
     } else if (extra.props.includes(name)) {
       if (!isPrimitive(value)) return;
 
-      result[Case.kebab(name)] = value;
+      result[paramCase(name)] = value;
     } else {
       result[name] = value;
     }
@@ -195,7 +195,7 @@ const setProps = <ElementType>(element: ElementType, props: PropsType<ElementTyp
       setEvent(element, event, value);
     } else if (extra.props.includes(name)) {
       if (isPrimitive(value)) {
-        element.setAttribute(Case.kebab(name), value);
+        element.setAttribute(paramCase(name), value);
       } else {
         element[name] = value;
       }
@@ -271,7 +271,7 @@ export const proxy = <ElementType, PropType>(
   //   return React.createElement(tagName, newProps, children);
   // }
 
-  ReactComponent['displayName'] = Case.pascal(tagName);
+  ReactComponent['displayName'] = pascalCase(tagName);
 
   return forwardRef<ElementType, PropType>(ReactComponent);
 };
