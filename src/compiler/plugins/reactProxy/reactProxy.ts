@@ -8,9 +8,32 @@ const __dirname = path.dirname(__filename);
 
 export interface ReactProxyOptions {
   dist: string;
+  corePackageName: string;
   // TODO
   // categorize?: boolean;
+  // prefix?: boolean;
 }
+/**
+ * <PlusDialog>
+ *   <PlusDialogBody>
+ *   </PlusDialogBody>
+ * </PlusDialog>
+ *
+ * <Dialog>
+ *   <DialogBody>
+ *   </DialogBody>
+ * </Dialog>
+ *
+ * <Dialog>
+ *   <Dialog.Body>
+ *   </Dialog.Body>
+ * </Dialog>
+ *
+ * <PlusDialog>
+ *   <PlusDialog.Body>
+ *   </PlusDialog.Body>
+ * </PlusDialog>
+ */
 
 export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'reactProxy';
@@ -22,12 +45,17 @@ export const reactProxy = (options: ReactProxyOptions) => {
 
     const component = 'templates/src/components/{{fileName}}*';
 
-    const pattenrs = isDirectoryEmpty(options.dist) ? ['templates/**', `!${component}`] : ['templates/src/proxy*'];
+    global = Object.assign({}, global, options);
 
-    renderTemplate(pattenrs, options.dist, config)(global);
+    if (isDirectoryEmpty(options.dist)) {
+      renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
+    } else {
+      renderTemplate(['templates/src/proxy*'], options.dist, config)(global);
+    }
 
     for (const key of Object.keys(contexts)) {
-      renderTemplate(component, options.dist, config)(contexts[key]);
+      const context = Object.assign({}, contexts[key], options);
+      renderTemplate(component, options.dist, config)(context);
     }
   };
 

@@ -10,7 +10,8 @@ const { start, next, finish } = compiler(
     typings: false
   }),
   reactProxy({
-    dist: '../ports/react.new'
+    dist: '../ports/react.new',
+    corePackageName: '@htmlplus/components'
   }),
   uhtml(),
   print()
