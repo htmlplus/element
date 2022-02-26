@@ -1,18 +1,11 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-import { isDirectoryEmpty, renderTemplate } from '../../utils/index.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { __dirname, isDirectoryEmpty, renderTemplate } from '../../utils/index.js';
 
 export interface ReactProxyOptions {
   dist: string;
   corePackageName: string;
-  // TODO
-  // categorize?: boolean;
-  // prefix?: boolean;
+  categorize?: boolean;
 }
+
 /**
  * <PlusDialog>
  *   <PlusDialogBody>
@@ -38,19 +31,19 @@ export interface ReactProxyOptions {
 export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'reactProxy';
 
-  const finish = (global) => {
+  const finish = async (global) => {
     const contexts = global.contexts;
 
-    const config = { cwd: __dirname };
+    const config = { cwd: __dirname(import.meta.url) };
 
     const component = 'templates/src/components/{{fileName}}*';
 
     global = Object.assign({}, global, options);
 
-    if (isDirectoryEmpty(options.dist)) {
+    if (await isDirectoryEmpty(options.dist)) {
       renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
     } else {
-      renderTemplate(['templates/src/proxy*'], options.dist, config)(global);
+      renderTemplate(['templates/src/proxy*', 'templates/src/components/index*'], options.dist, config)(global);
     }
 
     for (const key of Object.keys(contexts)) {

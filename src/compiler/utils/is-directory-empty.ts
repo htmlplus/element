@@ -1,5 +1,10 @@
-import path from 'path';
+import fs from 'fs';
 
-export const isDirectoryEmpty = (directory: string) => {
-  return true;
+export const isDirectoryEmpty = async (directory: string) => {
+  try {
+    const files = await fs.readdirSync(directory);
+    return !files.length;
+  } catch {
+    return true;
+  }
 };

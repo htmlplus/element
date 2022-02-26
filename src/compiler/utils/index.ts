@@ -1,3 +1,4 @@
+export * from './__dirname.js';
 export * from './get-initializer.js';
 export * from './get-tags.js';
 export * from './get-type.js';
