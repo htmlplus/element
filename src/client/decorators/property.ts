@@ -1,6 +1,17 @@
 import * as CONSTANTS from '../../configs/constants.js';
-import { PlusElement, PropertyOptions } from '../../types/index.js';
+import { PlusElement } from '../../types/index.js';
 import { api, defineProperty, host, onReady, parseValue, updateAttribute } from '../utils/index.js';
+
+export interface PropertyOptions {
+  /**
+   * TODO
+   */
+  attribute?: boolean | string;
+  /**
+   * Whether property value is reflected back to the associated attribute. default is `false`.
+   */
+  reflect?: boolean;
+}
 
 export function Property(options?: PropertyOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey) {

@@ -1,11 +1,19 @@
 import * as CONSTANTS from '../../configs/constants.js';
-import { ListenOptions, PlusElement } from '../../types/index.js';
+import { PlusElement } from '../../types/index.js';
 import { appendToMethod, host, on, off } from '../utils/index.js';
 import { Bind } from './bind.js';
 
 const defaults: ListenOptions = {
   target: 'host'
 };
+
+export interface ListenOptions {
+  target?: 'host' | 'body' | 'document' | 'window';
+  once?: boolean;
+  passive?: boolean;
+  signal?: AbortSignal;
+  capture?: boolean;
+}
 
 export function Listen(name: string, options: ListenOptions = defaults) {
   return function (target: PlusElement, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
