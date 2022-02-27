@@ -3,19 +3,36 @@
 /* auto-generated */
 
 import { proxy } from '../proxy';
-import type { JSX } from '{{corePackageName}}';
-import '{{corePackageName}}/{{componentKey}}';
+import type { JSX } from '{{options.corePackageName}}';
 
-export const {{className}} = /*@__PURE__*/ proxy<{{elementInterfaceName}}, JSX.{{className}}>(
+{{#each components}}
+import '{{options.corePackageName}}/{{fileName}}';
+{{/each}}
+
+{{#each components}}
+const {{className}} = /*@__PURE__*/ proxy<{{elementInterfaceName}}, JSX.{{className}}>(
   '{{componentTag}}', 
   [
     {{#each classProperties}}
-    '{{this.key.name}}',
+    '{{key.name}}',
     {{/each}}
   ], 
   [
     {{#each classEvents}}
-    '{{this.key.name}}',
+    '{{key.name}}',
     {{/each}}
   ],
 );
+
+{{/each}}
+{{#if single}}
+export { {{root.className}} }
+{{else}}
+const All = /*@__PURE__*/ Object.assign({{root.className}}, {
+  {{#each components}}
+  {{className}}: {{className}},
+  {{/each}}
+});
+
+export { All as {{root.className}} }
+{{/if}}

@@ -47,7 +47,17 @@ export const reactProxy = (options: ReactProxyOptions) => {
     }
 
     for (const key of Object.keys(contexts)) {
-      const context = Object.assign({}, contexts[key], options);
+      const root = contexts[key];
+      const fileName = root.fileName;
+      const components = [root];
+      const single = components.length == 1;
+      const context = {
+        options,
+        components,
+        fileName,
+        root,
+        single
+      };
       renderTemplate(component, options.dist, config)(context);
     }
   };
