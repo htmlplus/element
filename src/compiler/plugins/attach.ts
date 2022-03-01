@@ -94,7 +94,7 @@ export const attach = (options: AttachOptions) => {
                 t.identifier('global'),
                 t.tsModuleBlock([
                   t.tsInterfaceDeclaration(
-                    t.identifier(context.elementInterfaceName!),
+                    t.identifier(context.componentInterfaceName!),
                     null,
                     [],
                     t.tsInterfaceBody([
@@ -111,17 +111,17 @@ export const attach = (options: AttachOptions) => {
                   ),
                   t.variableDeclaration('var', [
                     t.variableDeclarator(
-                      Object.assign(t.identifier(context.elementInterfaceName!), {
+                      Object.assign(t.identifier(context.componentInterfaceName!), {
                         typeAnnotation: t.tSTypeAnnotation(
                           t.tSTypeLiteral([
                             t.tSPropertySignature(
                               t.identifier('prototype'),
-                              t.tsTypeAnnotation(t.tSTypeReference(t.identifier(context.elementInterfaceName!)))
+                              t.tsTypeAnnotation(t.tSTypeReference(t.identifier(context.componentInterfaceName!)))
                             ),
                             t.tSConstructSignatureDeclaration(
                               null,
                               [],
-                              t.tSTypeAnnotation(t.tSTypeReference(t.identifier(context.elementInterfaceName!)))
+                              t.tSTypeAnnotation(t.tSTypeReference(t.identifier(context.componentInterfaceName!)))
                             )
                           ])
                         )
@@ -129,7 +129,7 @@ export const attach = (options: AttachOptions) => {
                     )
                   ]),
                   t.tsInterfaceDeclaration(
-                    t.identifier(context.elementClassName!),
+                    t.identifier(context.componentClassName!),
                     null,
                     [],
                     t.tsInterfaceBody([
@@ -152,7 +152,7 @@ export const attach = (options: AttachOptions) => {
                       t.tSPropertySignature(
                         t.stringLiteral(context.componentTag!),
                         t.tSTypeAnnotation(
-                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.elementClassName!))])
+                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.componentClassName!))])
                         )
                       )
                     ])
@@ -168,7 +168,7 @@ export const attach = (options: AttachOptions) => {
                           t.tsInterfaceBody([
                             t.tsPropertySignature(
                               t.stringLiteral(context.componentTag!),
-                              t.tsTypeAnnotation(t.tsTypeReference(t.identifier(context.elementClassName!)))
+                              t.tsTypeAnnotation(t.tsTypeReference(t.identifier(context.componentClassName!)))
                             )
                           ])
                         )

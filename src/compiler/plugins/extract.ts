@@ -64,11 +64,20 @@ export const extract = (options?: ExtractOptions) => {
 
     context.className = context.class?.id?.name!;
 
-    context.componentKey = paramCase(context.className);
+    // TODO
+    // context.componentKey = paramCase(context.className);
+    context.componentClassName = pascalCase(context.componentTag!.split('-').slice(1).join('-'));
+    context.componentInterfaceName = `HTML${context.componentClassName}Element`;
 
     // TODO
-    context.elementClassName = pascalCase(context.componentTag!.split('-').slice(1).join('-'));
-    context.elementInterfaceName = `HTML${context.elementClassName}Element`;
+    // const componentClassName           = "DialogBody";              [OK]
+    // const componentInterfaceName       = "HTMLDialogBodyElement";   [OK]
+    // const componentTag                 = "plus-dialog-body";        [OK]
+    // const componentClassNameInCategory = "Body";                    [RAW]
+    // const componentKey                 = "dialog-body-1";           [RAW]
+    // const fileName                     = "dialogBodyNew";           [OK]
+    // const className                    = "DialogBody1";             [OK]
+    // const category                     = "Dialog";                  [RAW]
 
     (() => {
       const stylePath = path.join(context.directoryPath, `${context.fileName}.scss`);

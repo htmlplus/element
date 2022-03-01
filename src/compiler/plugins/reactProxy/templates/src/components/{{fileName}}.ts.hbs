@@ -10,7 +10,7 @@ import '{{options.corePackageName}}/{{fileName}}';
 {{/each}}
 
 {{#each components}}
-const {{className}} = /*@__PURE__*/ proxy<{{elementInterfaceName}}, JSX.{{className}}>(
+const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, JSX.{{componentClassName}}>(
   '{{componentTag}}', 
   [
     {{#each classProperties}}
@@ -26,13 +26,13 @@ const {{className}} = /*@__PURE__*/ proxy<{{elementInterfaceName}}, JSX.{{classN
 
 {{/each}}
 {{#if single}}
-export { {{root.className}} }
+export { {{root.componentClassName}} }
 {{else}}
-const All = /*@__PURE__*/ Object.assign({{root.className}}, {
+const All = /*@__PURE__*/ Object.assign({{root.componentClassName}}, {
   {{#each components}}
-  {{className}}: {{className}},
+  {{componentClassNameInCategory}}: {{componentClassName}},
   {{/each}}
 });
 
-export { All as {{root.className}} }
+export { All as {{root.componentClassName}} }
 {{/if}}
