@@ -12,7 +12,7 @@ export const reactProxy = (options: ReactProxyOptions) => {
   const finish = async (global) => {
     const config = { cwd: __dirname(import.meta.url) };
 
-    const component = 'templates/src/components/{{fileName}}*';
+    const component = 'templates/src/components/*fileName*';
 
     global = Object.assign({}, global, { options });
 
@@ -47,7 +47,8 @@ export const reactProxy = (options: ReactProxyOptions) => {
           all,
           filterd
         };
-      });
+      })
+      .sort((a, b) => (getKey(a.root) < getKey(b.root) ? -1 : 0));
 
     if (await isDirectoryEmpty(options.dist)) {
       renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
