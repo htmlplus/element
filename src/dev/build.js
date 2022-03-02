@@ -11,7 +11,8 @@ const { start, next, finish } = compiler(
   }),
   reactProxy({
     dist: '../ports/react.new',
-    corePackageName: '@htmlplus/components'
+    corePackageName: '@htmlplus/components',
+    categorize: true
   }),
   uhtml(),
   print()
@@ -20,6 +21,7 @@ const { start, next, finish } = compiler(
 (async () => {
   await start();
   await next('./src/dev/button.tsx');
+  await next('./src/dev/button-icon.tsx');
   await next('./src/dev/element.tsx');
   await finish();
 })();

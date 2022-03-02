@@ -8,11 +8,12 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",
+    "build:watch": "tsc -w",
     "postbuild": "cpx 'src/**/*.hbs' 'dist'",
     "clean": "rimraf dist",
     "format": "prettier --write .",
     "dev:start": "node src/dev/start.js",
-    "dev:build": "npm run build && node src/dev/build.js"
+    "dev:build": "node src/dev/build.js"
   },
   "exports": {
     ".": {

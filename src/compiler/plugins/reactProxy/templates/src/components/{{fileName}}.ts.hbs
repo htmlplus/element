@@ -5,11 +5,11 @@
 import { proxy } from '../proxy';
 import type { JSX } from '{{options.corePackageName}}';
 
-{{#each components}}
-import '{{options.corePackageName}}/{{fileName}}';
+{{#each all}}
+import '{{../options.corePackageName}}/{{fileName}}';
 {{/each}}
 
-{{#each components}}
+{{#each all}}
 const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, JSX.{{componentClassName}}>(
   '{{componentTag}}', 
   [
@@ -29,7 +29,7 @@ const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, J
 export { {{root.componentClassName}} }
 {{else}}
 const All = /*@__PURE__*/ Object.assign({{root.componentClassName}}, {
-  {{#each components}}
+  {{#each filterd}}
   {{componentClassNameInCategory}}: {{componentClassName}},
   {{/each}}
 });

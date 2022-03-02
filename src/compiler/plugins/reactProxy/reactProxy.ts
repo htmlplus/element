@@ -10,9 +10,11 @@ export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'reactProxy';
 
   const finish = async (global) => {
-    global = Object.assign({}, global, { options });
+    const config = { cwd: __dirname(import.meta.url) };
 
-    const contexts = global.contexts;
+    const component = 'templates/src/components/{{fileName}}*';
+
+    global = Object.assign({}, global, { options });
 
     if (options.categorize) {
       const skip: Array<string> = [];
@@ -31,14 +33,23 @@ export const reactProxy = (options: ReactProxyOptions) => {
           components.forEach((component) => skip.push(component.componentClassName))
           return true
         })
+        .map((group) => {
+          const [key, components] = group as any;
+          return {
+            root: components.find((component) => component.componentClassName == key),
+            filterd: components.filter((component) => component.componentClassName != key).map((component) => ({ ...component, componentClassNameInCategory: component.componentClassName.replace(key, '') })),
+            all: components.map((component) => ({ ...component, componentClassNameInCategory: component.componentClassName.replace(key, '') })),
+          }
+        })
     }
     else {
-      global.groups = Object.values<any>(global.contexts).map((component) => [component.componentClassName, [component]])
+      global.groups = Object.values<any>(global.contexts).map((component) => ({
+        single: true,
+        root: component,
+        filterd: [],
+        all: [component]
+      }))
     }
-
-    const config = { cwd: __dirname(import.meta.url) };
-
-    const component = 'templates/src/components/{{fileName}}*';
 
     if (await isDirectoryEmpty(options.dist)) {
       renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
@@ -46,19 +57,12 @@ export const reactProxy = (options: ReactProxyOptions) => {
       renderTemplate(['templates/src/proxy*', 'templates/src/components/index*'], options.dist, config)(global);
     }
 
-    for (const key of Object.keys(contexts)) {
-      const root = contexts[key];
-      const fileName = root.fileName;
-      const components = [root];
-      const single = components.length == 1;
-      const context = {
+    for (const group of global.groups) {
+      renderTemplate(component, options.dist, config)({
         options,
-        components,
-        fileName,
-        root,
-        single
-      };
-      renderTemplate(component, options.dist, config)(context);
+        ...group,
+        fileName: group.root.fileName,
+      });
     }
   };
 
