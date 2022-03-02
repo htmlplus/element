@@ -16,40 +16,36 @@ export const reactProxy = (options: ReactProxyOptions) => {
 
     global = Object.assign({}, global, { options });
 
-    if (options.categorize) {
-      const skip: Array<string> = [];
-      global.groups = Object.values<any>(global.contexts)
-        .sort((a, b) => b.componentClassName.length - a.componentClassName.length)
-        .map((component, index, components) => {
-          const key = component.componentClassName;
-          const filterd = components.filter(component => component.componentClassName.startsWith(key));
-          return [key, filterd]
-        })
-        .filter((group) => group)
-        .sort((a, b) => b[1].length - a[1].length)
-        .filter((group) => {
-          const [key, components] = group as any;
-          if (skip.includes(key)) return;
-          components.forEach((component) => skip.push(component.componentClassName))
-          return true
-        })
-        .map((group) => {
-          const [key, components] = group as any;
-          return {
-            root: components.find((component) => component.componentClassName == key),
-            filterd: components.filter((component) => component.componentClassName != key).map((component) => ({ ...component, componentClassNameInCategory: component.componentClassName.replace(key, '') })),
-            all: components.map((component) => ({ ...component, componentClassNameInCategory: component.componentClassName.replace(key, '') })),
-          }
-        })
-    }
-    else {
-      global.groups = Object.values<any>(global.contexts).map((component) => ({
-        single: true,
-        root: component,
-        filterd: [],
-        all: [component]
+    const skip: Array<string> = [];
+
+    const getKey = (component) => component.componentClassName
+
+    global.groups = Object.values<any>(global.contexts)
+      .sort((a, b) => getKey(b).length - getKey(a).length)
+      .map((component, index, components) => ({
+        key: getKey(component),
+        components: components.filter((current) => getKey(current).startsWith(getKey(component)))
       }))
-    }
+      .sort((a, b) => b.components.length - a.components.length)
+      .filter((group) => {
+        if (skip.includes(group.key)) return;
+        group.components.forEach((component) => skip.push(getKey(component)))
+        return true
+      })
+      .map((group) => {
+        const root = group.components.find((component) => getKey(component) == group.key);
+        const all = group.components.map((component) => ({
+          ...component,
+          componentClassNameInCategory: getKey(component).replace(group.key, '')
+        })).reverse()
+        const filterd = all.filter((component) => getKey(component) != group.key);
+        return {
+          single: !filterd.length,
+          root,
+          all,
+          filterd,
+        }
+      })
 
     if (await isDirectoryEmpty(options.dist)) {
       renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
@@ -60,8 +56,8 @@ export const reactProxy = (options: ReactProxyOptions) => {
     for (const group of global.groups) {
       renderTemplate(component, options.dist, config)({
         options,
-        ...group,
         fileName: group.root.fileName,
+        ...group,
       });
     }
   };
