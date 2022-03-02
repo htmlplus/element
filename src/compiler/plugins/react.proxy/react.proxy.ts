@@ -7,7 +7,7 @@ export interface ReactProxyOptions {
 }
 
 export const reactProxy = (options: ReactProxyOptions) => {
-  const name = 'reactProxy';
+  const name = 'react-proxy';
 
   const finish = async (global) => {
     const config = { cwd: __dirname(import.meta.url) };
@@ -18,7 +18,7 @@ export const reactProxy = (options: ReactProxyOptions) => {
 
     const skip: Array<string> = [];
 
-    const getKey = (component) => component.componentClassName
+    const getKey = (component) => component.componentClassName;
 
     global.groups = Object.values<any>(global.contexts)
       .sort((a, b) => getKey(b).length - getKey(a).length)
@@ -29,23 +29,25 @@ export const reactProxy = (options: ReactProxyOptions) => {
       .sort((a, b) => b.components.length - a.components.length)
       .filter((group) => {
         if (skip.includes(group.key)) return;
-        group.components.forEach((component) => skip.push(getKey(component)))
-        return true
+        group.components.forEach((component) => skip.push(getKey(component)));
+        return true;
       })
       .map((group) => {
         const root = group.components.find((component) => getKey(component) == group.key);
-        const all = group.components.map((component) => ({
-          ...component,
-          componentClassNameInCategory: getKey(component).replace(group.key, '')
-        })).reverse()
+        const all = group.components
+          .map((component) => ({
+            ...component,
+            componentClassNameInCategory: getKey(component).replace(group.key, '')
+          }))
+          .reverse();
         const filterd = all.filter((component) => getKey(component) != group.key);
         return {
           single: !filterd.length,
           root,
           all,
-          filterd,
-        }
-      })
+          filterd
+        };
+      });
 
     if (await isDirectoryEmpty(options.dist)) {
       renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
@@ -54,10 +56,14 @@ export const reactProxy = (options: ReactProxyOptions) => {
     }
 
     for (const group of global.groups) {
-      renderTemplate(component, options.dist, config)({
+      renderTemplate(
+        component,
+        options.dist,
+        config
+      )({
         options,
         fileName: group.root.fileName,
-        ...group,
+        ...group
       });
     }
   };
