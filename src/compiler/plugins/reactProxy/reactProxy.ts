@@ -6,39 +6,39 @@ export interface ReactProxyOptions {
   categorize?: boolean;
 }
 
-/**
- * <PlusDialog>
- *   <PlusDialogBody>
- *   </PlusDialogBody>
- * </PlusDialog>
- *
- * <Dialog>
- *   <DialogBody>
- *   </DialogBody>
- * </Dialog>
- *
- * <Dialog>
- *   <Dialog.Body>
- *   </Dialog.Body>
- * </Dialog>
- *
- * <PlusDialog>
- *   <PlusDialog.Body>
- *   </PlusDialog.Body>
- * </PlusDialog>
- */
-
 export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'reactProxy';
 
   const finish = async (global) => {
+    global = Object.assign({}, global, { options });
+
     const contexts = global.contexts;
+
+    if (options.categorize) {
+      const skip: Array<string> = [];
+      global.groups = Object.values<any>(global.contexts)
+        .sort((a, b) => b.componentClassName.length - a.componentClassName.length)
+        .map((component, index, components) => {
+          const key = component.componentClassName;
+          const filterd = components.filter(component => component.componentClassName.startsWith(key));
+          return [key, filterd]
+        })
+        .filter((group) => group)
+        .sort((a, b) => b[1].length - a[1].length)
+        .filter((group) => {
+          const [key, components] = group as any;
+          if (skip.includes(key)) return;
+          components.forEach((component) => skip.push(component.componentClassName))
+          return true
+        })
+    }
+    else {
+      global.groups = Object.values<any>(global.contexts).map((component) => [component.componentClassName, [component]])
+    }
 
     const config = { cwd: __dirname(import.meta.url) };
 
     const component = 'templates/src/components/{{fileName}}*';
-
-    global = Object.assign({}, global, options);
 
     if (await isDirectoryEmpty(options.dist)) {
       renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
