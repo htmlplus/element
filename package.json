@@ -9,7 +9,7 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "build:watch": "tsc -w",
-    "postbuild": "cpx 'src/**/*.hbs' 'dist'",
+    "postbuild": "node scripts/build.post.js",
     "clean": "rimraf dist",
     "format": "prettier --write .",
     "dev:start": "node src/dev/start.js",
@@ -91,7 +91,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^3.1.1",
-    "cpx": "^1.5.0",
+    "cpy": "^9.0.0",
     "prettier": "^2.5.0",
     "rimraf": "^3.0.2",
     "vite": "^2.7.10"
