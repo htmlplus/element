@@ -13,6 +13,7 @@ export function Element(tag?: string) {
       tag!,
       class extends HTMLElement {
         plus;
+
         constructor() {
           super();
 

@@ -6,7 +6,7 @@ import { proxy } from '../proxy';
 import type { JSX } from '{{options.corePackageName}}';
 
 {{#each all}}
-import '{{../options.corePackageName}}/{{fileName}}';
+import {{componentClassName}} from '{{../options.corePackageName}}/{{fileName}}';
 {{/each}}
 
 {{#each all}}
