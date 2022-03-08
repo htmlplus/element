@@ -72,3 +72,16 @@ declare module "@stencil/core" {
     }
 }
 ```
+
+// file3
+
+```ts
+/* eslint-disable */
+/* tslint:disable */
+/* auto-generated react proxies */
+import { createReactComponent } from './react-component-lib';
+
+import type { JSX } from '@wow-design-system/core';
+
+export const WowSignature = /*@__PURE__*/createReactComponent<JSX.WowSignature, HTMLWowSignatureElement>('wow-signature');
+```
