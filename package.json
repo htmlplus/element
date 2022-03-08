@@ -1,14 +1,16 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
   "description": "Compiler of HTMLPlus",
   "type": "module",
   "scripts": {
+    "prebuild": "npm run clean",
     "build": "tsc",
     "build:watch": "tsc -w",
     "postbuild": "node scripts/build.post.js",
+    "clean": "rimraf dist",
     "format": "prettier --write .",
     "dev:start": "node src/dev/start.js",
     "dev:build": "node src/dev/build.js"
@@ -91,6 +93,7 @@
     "@trivago/prettier-plugin-sort-imports": "^3.1.1",
     "cpy": "^9.0.0",
     "prettier": "^2.5.0",
+    "rimraf": "^3.0.2",
     "vite": "^2.7.10"
   }
 }
