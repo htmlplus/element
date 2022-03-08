@@ -1,6 +1,6 @@
 import { capitalCase, paramCase } from 'change-case';
 import fs from 'fs';
-import glob from 'glob';
+// import glob from 'glob';
 import path from 'path';
 
 import { Context } from '../../types/index.js';
@@ -71,7 +71,7 @@ export const docs = (options: DocsOptions) => {
                 type,
                 value
               };
-            } catch {}
+            } catch { }
           });
 
           return item;
@@ -83,7 +83,7 @@ export const docs = (options: DocsOptions) => {
         const source = path.resolve(context.directoryPath || '', `${context.fileName}.md`);
 
         return fs.readFileSync(source, 'utf8');
-      } catch {}
+      } catch { }
     })();
 
     const description = (() => {
@@ -129,7 +129,7 @@ export const docs = (options: DocsOptions) => {
               }
             }
           }
-        } catch {}
+        } catch { }
 
         return false;
       })();
@@ -206,7 +206,7 @@ export const docs = (options: DocsOptions) => {
               directory: context.directoryPath
             })
           );
-        } catch {}
+        } catch { }
       })();
 
       // TODO
@@ -270,7 +270,7 @@ export const docs = (options: DocsOptions) => {
               }
             }
           }
-        } catch {}
+        } catch { }
 
         return false;
       })();
@@ -283,7 +283,7 @@ export const docs = (options: DocsOptions) => {
               directory: context.directoryPath
             })
           );
-        } catch {}
+        } catch { }
       })();
 
       const experimental = tags.some((tag) => tag.key == 'experimental');
@@ -326,7 +326,7 @@ export const docs = (options: DocsOptions) => {
               description
             });
           });
-      } catch {}
+      } catch { }
 
       return styles;
     })();
