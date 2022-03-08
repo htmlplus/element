@@ -9,7 +9,6 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "postbuild": "node scripts/build.post.js",
-    "clean": "rimraf dist",
     "format": "prettier --write .",
     "dev:start": "node src/dev/start.js",
     "dev:build": "node src/dev/build.js"
@@ -92,7 +91,6 @@
     "@trivago/prettier-plugin-sort-imports": "^3.1.1",
     "cpy": "^9.0.0",
     "prettier": "^2.5.0",
-    "rimraf": "^3.0.2",
     "vite": "^2.7.10"
   }
 }
