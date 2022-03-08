@@ -6,7 +6,6 @@
   "description": "Compiler of HTMLPlus",
   "type": "module",
   "scripts": {
-    "prebuild": "npm run clean",
     "build": "tsc",
     "build:watch": "tsc -w",
     "postbuild": "node scripts/build.post.js",
