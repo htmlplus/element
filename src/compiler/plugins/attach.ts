@@ -129,6 +129,32 @@ export const attach = (options: AttachOptions) => {
                     )
                   ]),
                   t.tsInterfaceDeclaration(
+                    t.identifier('HTMLElementTagNameMap'),
+                    null,
+                    [],
+                    t.tsInterfaceBody([
+                      t.tSPropertySignature(
+                        t.stringLiteral(context.componentTag!),
+                        t.tSTypeAnnotation(
+                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.componentClassName!))])
+                        )
+                      )
+                    ])
+                  )
+                ])
+              ),
+              {
+                declare: true,
+                global: true
+              }
+            )
+          );
+          path.node.body.push(
+            Object.assign(
+              t.tsModuleDeclaration(
+                t.identifier('LocalJSX'),
+                t.tsModuleBlock([
+                  t.tsInterfaceDeclaration(
                     t.identifier(context.componentClassName!),
                     null,
                     [],
@@ -143,46 +169,25 @@ export const attach = (options: AttachOptions) => {
                         )
                       )
                     ])
-                  ),
-                  t.tsInterfaceDeclaration(
-                    t.identifier('HTMLElementTagNameMap'),
-                    null,
-                    [],
-                    t.tsInterfaceBody([
-                      t.tSPropertySignature(
-                        t.stringLiteral(context.componentTag!),
-                        t.tSTypeAnnotation(
-                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.componentClassName!))])
-                        )
-                      )
-                    ])
-                  ),
-                  t.exportNamedDeclaration(
-                    t.tSModuleDeclaration(
-                      t.identifier('JSX'),
-                      t.tsModuleBlock([
-                        t.tsInterfaceDeclaration(
-                          t.identifier('IntrinsicElements'),
-                          undefined,
-                          undefined,
-                          t.tsInterfaceBody([
-                            t.tsPropertySignature(
-                              t.stringLiteral(context.componentTag!),
-                              t.tsTypeAnnotation(t.tsTypeReference(t.identifier(context.componentClassName!)))
-                            )
-                          ])
-                        )
-                      ])
-                    )
                   )
                 ])
               ),
               {
-                declare: true,
-                global: true
+                declare: true
               }
             )
           );
+          path.node.body.push(
+            t.exportNamedDeclaration(
+              undefined,
+              [
+                t.exportSpecifier(
+                  t.identifier('LocalJSX'),
+                  t.identifier('JSX')
+                )
+              ]
+            )
+          )
         }
       });
     }

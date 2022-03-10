@@ -3,7 +3,7 @@
 /* auto-generated */
 
 import { proxy } from '../proxy';
-import type { JSX } from '{{options.corePackageName}}';
+import type { JSX } from '{{options.corePackageName}}/{{fileName}}';
 
 {{#each all}}
 import '{{../options.corePackageName}}/{{fileName}}';
@@ -12,16 +12,8 @@ import '{{../options.corePackageName}}/{{fileName}}';
 {{#each all}}
 const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, JSX.{{componentClassName}}>(
   '{{componentTag}}', 
-  [
-    {{#each classProperties}}
-    '{{key.name}}',
-    {{/each}}
-  ], 
-  [
-    {{#each classEvents}}
-    '{{key.name}}',
-    {{/each}}
-  ],
+  [{{#each classProperties}}'{{key.name}}', {{/each}}], 
+  [{{#each classEvents}}'{{key.name}}', {{/each}}],
 );
 
 {{/each}}
