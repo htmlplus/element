@@ -1,1 +1,3 @@
-export { html, render } from 'uhtml';
+export { html } from 'uhtml';
+
+// export const html = (...args: any[]): any => {};
