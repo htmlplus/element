@@ -136,7 +136,7 @@ export const attach = (options: AttachOptions) => {
                       t.tSPropertySignature(
                         t.stringLiteral(context.componentTag!),
                         t.tSTypeAnnotation(
-                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.componentClassName!))])
+                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.componentInterfaceName!))])
                         )
                       )
                     ])
@@ -150,42 +150,23 @@ export const attach = (options: AttachOptions) => {
             )
           );
           path.node.body.push(
-            Object.assign(
-              t.tsModuleDeclaration(
-                t.identifier('LocalJSX'),
-                t.tsModuleBlock([
-                  t.tsInterfaceDeclaration(
-                    t.identifier(context.componentClassName!),
-                    null,
-                    [],
-                    t.tsInterfaceBody([
-                      ...context.classProperties!.map((property) =>
-                        Object.assign(
-                          t.tSPropertySignature(property.key, property.typeAnnotation as TSTypeAnnotation),
-                          {
-                            optional: property.optional,
-                            leadingComments: property.leadingComments
-                          }
-                        )
-                      )
-                    ])
+            t.exportNamedDeclaration(
+              t.tsInterfaceDeclaration(
+                t.identifier(context.componentClassName! + 'JSX'),
+                null,
+                [],
+                t.tsInterfaceBody([
+                  ...context.classProperties!.map((property) =>
+                    Object.assign(
+                      t.tSPropertySignature(property.key, property.typeAnnotation as TSTypeAnnotation),
+                      {
+                        optional: property.optional,
+                        leadingComments: property.leadingComments
+                      }
+                    )
                   )
                 ])
-              ),
-              {
-                declare: true
-              }
-            )
-          );
-          path.node.body.push(
-            t.exportNamedDeclaration(
-              undefined,
-              [
-                t.exportSpecifier(
-                  t.identifier('LocalJSX'),
-                  t.identifier('JSX')
-                )
-              ]
+              )
             )
           )
         }

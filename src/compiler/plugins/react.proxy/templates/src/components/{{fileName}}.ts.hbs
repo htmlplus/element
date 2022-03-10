@@ -3,14 +3,15 @@
 /* auto-generated */
 
 import { proxy } from '../proxy';
-import type { JSX } from '{{options.corePackageName}}/{{fileName}}';
 
 {{#each all}}
 import '{{../options.corePackageName}}/{{fileName}}';
+import type { {{componentClassName}}JSX } from '{{../options.corePackageName}}/{{fileName}}';
+
 {{/each}}
 
 {{#each all}}
-const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, JSX.{{componentClassName}}>(
+const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{componentClassName}}JSX>(
   '{{componentTag}}', 
   [{{#each classProperties}}'{{key.name}}', {{/each}}], 
   [{{#each classEvents}}'{{key.name}}', {{/each}}],
