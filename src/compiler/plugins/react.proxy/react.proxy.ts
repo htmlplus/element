@@ -4,16 +4,20 @@ const defaults: ReactProxyOptions = {
   categorize: false,
   corePackageName: 'your_package',
   dist: '',
-  importerComponent: 'your_package#{{componentClassName}}',
-  importerComponentType: 'your_package#JSX.{{componentClassName}}',
+  importerComponent(context) {
+    return `your_package#${context.componentClassName}`;
+  },
+  importerComponentType(context) {
+    return `your_package#JSX.${context.componentClassName}`;
+  }
 };
 
 export interface ReactProxyOptions {
   categorize?: boolean;
   corePackageName?: string;
   dist: string;
-  importerComponent?: string;
-  importerComponentType?: string;
+  importerComponent?: (context) => string;
+  importerComponentType?: (context) => string;
 }
 
 export const reactProxy = (options: ReactProxyOptions) => {
@@ -69,17 +73,21 @@ export const reactProxy = (options: ReactProxyOptions) => {
     }
 
     for (const group of global.groups) {
-      const [componentSource, componentVariable] = options.importerComponent!.split('#')
-      const [componentTypeSource, componentTypeVariable] = options.importerComponentType!.split('#')
-      renderTemplate(
-        component,
-        options.dist,
-        config
-      )({
+      const [componentSource, componentVariable] = options.importerComponent!(group).split('#');
+
+      const [componentTypeSource, componentTypeVariable] = options.importerComponentType!(group).split('#');
+
+      const state = {
         options,
         fileName: group.root.fileName,
-        ...group
-      });
+        ...group,
+        componentSource,
+        componentVariable,
+        componentTypeSource,
+        componentTypeVariable
+      };
+
+      renderTemplate(component, options.dist, config)(state);
     }
   };
 

@@ -5,13 +5,13 @@
 import { proxy } from '../proxy';
 
 {{#each all}}
-import '{{../options.corePackageName}}/{{fileName}}';
-import type { {{componentClassName}}JSX } from '{{../options.corePackageName}}/{{fileName}}';
+import { {{componentVariable}} as _{{componentClassName}} } from '{{componentSource}}';
+import type { {{componentTypeVariable}} as _{{componentClassName}} } from '{{componentTypeSource}}';
 
 {{/each}}
 
 {{#each all}}
-const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{componentClassName}}JSX>(
+const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{componentClassName}}>(
   '{{componentTag}}', 
   [{{#each classProperties}}'{{key.name}}', {{/each}}], 
   [{{#each classEvents}}'{{key.name}}', {{/each}}],
