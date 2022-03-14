@@ -1,15 +1,27 @@
 import { __dirname, isDirectoryEmpty, renderTemplate } from '../../utils/index.js';
 
+const defaults: ReactProxyOptions = {
+  categorize: false,
+  corePackageName: 'your_package',
+  dist: '',
+  importerComponent: 'your_package#{{componentClassName}}',
+  importerComponentType: 'your_package#JSX.{{componentClassName}}',
+};
+
 export interface ReactProxyOptions {
-  dist: string;
-  corePackageName: string;
   categorize?: boolean;
+  corePackageName?: string;
+  dist: string;
+  importerComponent?: string;
+  importerComponentType?: string;
 }
 
 export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'react-proxy';
 
   const finish = async (global) => {
+    options = Object.assign({}, defaults, options);
+
     const config = { cwd: __dirname(import.meta.url) };
 
     const component = 'templates/src/components/*fileName*';
@@ -57,6 +69,8 @@ export const reactProxy = (options: ReactProxyOptions) => {
     }
 
     for (const group of global.groups) {
+      const [componentSource, componentVariable] = options.importerComponent!.split('#')
+      const [componentTypeSource, componentTypeVariable] = options.importerComponentType!.split('#')
       renderTemplate(
         component,
         options.dist,
