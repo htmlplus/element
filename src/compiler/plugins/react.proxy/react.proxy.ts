@@ -23,14 +23,14 @@ export interface ReactProxyOptions {
 export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'react-proxy';
 
-  const finish = async (global) => {
-    options = Object.assign({}, defaults, options);
+  const finish = (global) => {
+    options = { ...defaults, ...options };
+
+    global = { ...global, options };
 
     const config = { cwd: __dirname(import.meta.url) };
 
     const component = 'templates/src/components/*fileName*';
-
-    global = Object.assign({}, global, { options });
 
     const skip: Array<string> = [];
 
@@ -86,7 +86,7 @@ export const reactProxy = (options: ReactProxyOptions) => {
       })
       .sort((a, b) => (getKey(a.root) < getKey(b.root) ? -1 : 0));
 
-    if (await isDirectoryEmpty(options.dist)) {
+    if (isDirectoryEmpty(options.dist)) {
       renderTemplate(['templates/**', `!${component}`], options.dist, config)(global);
     } else {
       renderTemplate(['templates/src/proxy*', 'templates/src/components/index*'], options.dist, config)(global);
