@@ -11,7 +11,6 @@ const { start, next, finish } = compiler(
   }),
   reactProxy({
     dist: '../ports/react.new',
-    corePackageName: '@htmlplus/components',
     categorize: true
   }),
   uhtml(),

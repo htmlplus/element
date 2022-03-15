@@ -2,20 +2,20 @@ import { __dirname, isDirectoryEmpty, renderTemplate } from '../../utils/index.j
 
 const defaults: ReactProxyOptions = {
   categorize: false,
-  corePackageName: 'your_package',
   dist: '',
+  eventName: undefined,
   importerComponent(context) {
-    return `your_package#${context.componentClassName}`;
+    return `YOUR_CORE_PACKAGE_NAME#${context.componentClassName}`;
   },
   importerComponentType(context) {
-    return `your_package#JSX.${context.componentClassName}`;
+    return `YOUR_CORE_PACKAGE_NAME#JSX.${context.componentClassName}`;
   }
 };
 
 export interface ReactProxyOptions {
   categorize?: boolean;
-  corePackageName?: string;
   dist: string;
+  eventName?: (eventName: string) => string,
   importerComponent?: (context) => string;
   importerComponentType?: (context) => string;
 }
@@ -49,17 +49,16 @@ export const reactProxy = (options: ReactProxyOptions) => {
         return true;
       })
       .map((group) => {
-        const root = group.components.find((component) => getKey(component) == group.key);
         const all = group.components
           .reverse()
-          .map((component) => {
+          .map((component, index) => {
             const componentClassNameInCategory = getKey(component).replace(group.key, '');
 
             const parse = (input) => {
               const [source, key] = input.split('#');
               const [root, ...sub] = key.split('.');
               const local = root + (index + 1);
-              const variable = sub.length ? local + '.' + sub.join('.') : local;
+              const variable = [local, ...sub].join('.')
               return {
                 source,
                 variable,
@@ -68,38 +67,21 @@ export const reactProxy = (options: ReactProxyOptions) => {
               }
             }
 
-            const {
-              source: componentSource,
-              variable: componentVariable,
-              root: componentVariableRoot,
-              local: componentVariableRootLocal,
-            } = parse(options.importerComponent!(component));
+            const importerComponent = parse(options.importerComponent!(component))
+            const importerComponentType = parse(options.importerComponentType!(component))
 
-            const {
-              source: componentTypeSource,
-              variable: componentTypeVariable,
-              root: componentTypeVariableRoot,
-              local: componentTypeVariableRootLocal,
-            } = parse(options.importerComponentType!(component));
-
-            return Object.assign(Object.assign({}, component), {
+            return {
+              ...component,
               componentClassNameInCategory,
-              componentSource,
-              componentVariable,
-              componentVariableRoot,
-              componentVariableRootLocal,
-              componentTypeSource,
-              componentTypeVariable,
-              componentTypeVariableRoot,
-              componentTypeVariableRootLocal
-            });
+              importerComponent,
+              importerComponentType,
+            };
           });
-        const filterd = all.filter((component) => getKey(component) != group.key);
         return {
-          single: !filterd.length,
-          root,
           all,
-          filterd
+          filterd: all.slice(1),
+          root: all.at(0),
+          single: all.length == 1,
         };
       })
       .sort((a, b) => (getKey(a.root) < getKey(b.root) ? -1 : 0));
