@@ -9,6 +9,10 @@ import { {{importerComponent.root}} as {{importerComponent.local}} } from '{{imp
 import type { {{importerComponentType.root}} as {{importerComponentType.local}} } from '{{importerComponentType.source}}';
 
 {{/each}}
+
+type Rename<T, R extends { [K in keyof R]: K extends keyof T ? PropertyKey : "Error: key not in T" }> = { [P in keyof T as P extends keyof R ? R[P] : P]: T[P] }
+type NewDialogJSX = Rename<DialogJSX, { onPlusClicked: "onClicked" }>
+
 {{#each all}}
 const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{importerComponentType.variable}}>(
   '{{componentTag}}', 
