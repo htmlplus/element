@@ -8,9 +8,14 @@ import { {{importerComponent.root}} as Component } from '{{importerComponent.sou
 import type { {{importerComponentType.root}} as Type } from '{{importerComponentType.source}}';
 
 type Rename<T, R extends { [K in keyof R]: K extends keyof T ? PropertyKey : "Error: key not in T" }> = { [P in keyof T as P extends keyof R ? R[P] : P]: T[P] }
-// type NewDialogJSX = Rename<DialogJSX, { onPlusClicked: "onClicked" }>
 
-export const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{importerComponentType.variable}}>(
+type Renamed = Rename<{{importerComponentType.variable}}, { 
+  {{#each classEvents}}
+  {{key.name}}: '{{converted}}',
+  {{/each}}
+}>
+
+export const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, Renamed>(
   '{{componentTag}}', 
   [{{#each classProperties}}'{{key.name}}', {{/each}}], 
   [{{#each classEvents}}'{{key.name}}', {{/each}}],

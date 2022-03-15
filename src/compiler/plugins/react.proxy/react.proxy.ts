@@ -50,16 +50,26 @@ export const reactProxy = (options: ReactProxyOptions) => {
         };
       };
 
+      const classEvents = context.classEvents.map((classEvent) => {
+        return {
+          ...classEvent,
+          converted: options.eventName!(classEvent.key.name)
+        };
+      });
+
+      const fileName = context.fileName;
+
       const importerComponent = parse(options.importerComponent!(context));
 
       const importerComponentType = parse(options.importerComponentType!(context));
 
       const state = {
-        options,
-        fileName: context.fileName,
+        ...context,
+        classEvents,
+        fileName,
         importerComponent,
         importerComponentType,
-        ...context
+        options
       };
 
       const patterns = [
