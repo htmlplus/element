@@ -51,11 +51,49 @@ export const reactProxy = (options: ReactProxyOptions) => {
       .map((group) => {
         const root = group.components.find((component) => getKey(component) == group.key);
         const all = group.components
-          .map((component) => ({
-            ...component,
-            componentClassNameInCategory: getKey(component).replace(group.key, '')
-          }))
-          .reverse();
+          .reverse()
+          .map((component) => {
+            const componentClassNameInCategory = getKey(component).replace(group.key, '');
+
+            const parse = (input) => {
+              const [source, key] = input.split('#');
+              const [root, ...sub] = key.split('.');
+              const local = root + (index + 1);
+              const variable = sub.length ? local + '.' + sub.join('.') : local;
+              return {
+                source,
+                variable,
+                root,
+                local,
+              }
+            }
+
+            const {
+              source: componentSource,
+              variable: componentVariable,
+              root: componentVariableRoot,
+              local: componentVariableRootLocal,
+            } = parse(options.importerComponent!(component));
+
+            const {
+              source: componentTypeSource,
+              variable: componentTypeVariable,
+              root: componentTypeVariableRoot,
+              local: componentTypeVariableRootLocal,
+            } = parse(options.importerComponentType!(component));
+
+            return Object.assign(Object.assign({}, component), {
+              componentClassNameInCategory,
+              componentSource,
+              componentVariable,
+              componentVariableRoot,
+              componentVariableRootLocal,
+              componentTypeSource,
+              componentTypeVariable,
+              componentTypeVariableRoot,
+              componentTypeVariableRootLocal
+            });
+          });
         const filterd = all.filter((component) => getKey(component) != group.key);
         return {
           single: !filterd.length,
@@ -73,20 +111,11 @@ export const reactProxy = (options: ReactProxyOptions) => {
     }
 
     for (const group of global.groups) {
-      const [componentSource, componentVariable] = options.importerComponent!(group).split('#');
-
-      const [componentTypeSource, componentTypeVariable] = options.importerComponentType!(group).split('#');
-
       const state = {
         options,
         fileName: group.root.fileName,
         ...group,
-        componentSource,
-        componentVariable,
-        componentTypeSource,
-        componentTypeVariable
       };
-
       renderTemplate(component, options.dist, config)(state);
     }
   };

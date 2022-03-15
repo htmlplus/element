@@ -5,13 +5,12 @@
 import { proxy } from '../proxy';
 
 {{#each all}}
-import { {{componentVariable}} as _{{componentClassName}} } from '{{componentSource}}';
-import type { {{componentTypeVariable}} as _{{componentClassName}} } from '{{componentTypeSource}}';
+import { {{componentVariableRoot}} as {{componentVariableRootLocal}} } from '{{componentSource}}';
+import type { {{componentTypeVariableRoot}} as {{componentTypeVariableRootLocal}} } from '{{componentTypeSource}}';
 
 {{/each}}
-
 {{#each all}}
-const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{componentClassName}}>(
+const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{componentTypeVariable}}>(
   '{{componentTag}}', 
   [{{#each classProperties}}'{{key.name}}', {{/each}}], 
   [{{#each classEvents}}'{{key.name}}', {{/each}}],
