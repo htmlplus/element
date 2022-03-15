@@ -4,7 +4,8 @@
 
 import { proxy } from '../proxy';
 
-import { {{importerComponent.root}} as Component } from '{{importerComponent.source}}';
+{{!-- import { {{importerComponent.root}} as Component } from '{{importerComponent.source}}'; --}}
+import '{{importerComponent.source}}';
 import type { {{importerComponentType.root}} as Type } from '{{importerComponentType.source}}';
 
 type Rename<T, R extends { [K in keyof R]: K extends keyof T ? PropertyKey : "Error: key not in T" }> = { [P in keyof T as P extends keyof R ? R[P] : P]: T[P] }
