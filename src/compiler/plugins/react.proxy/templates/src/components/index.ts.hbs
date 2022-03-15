@@ -1,3 +1,13 @@
+{{#if options.compact}}
 {{#each groups}}
+{{#if single}}
 export * from './{{root.fileName}}';
+{{else}}
+export * from './{{root.fileName}}.compact';
+{{/if}}
 {{/each}}
+{{else}}
+{{#each contexts}}
+export * from './{{fileName}}';
+{{/each}}
+{{/if}}

@@ -1,0 +1,15 @@
+/* eslint-disable */
+/* tslint:disable */
+/* auto-generated */
+
+{{#each all}}
+import { {{componentClassName}} } from './{{fileName}}';
+{{/each}}
+
+const All = /*@__PURE__*/ Object.assign({{root.componentClassName}}, {
+  {{#each filterd}}
+  {{componentClassNameInCategory}}: {{componentClassName}},
+  {{/each}}
+});
+
+export { All as {{root.componentClassName}} }

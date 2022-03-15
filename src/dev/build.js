@@ -10,8 +10,8 @@ const { start, next, finish } = compiler(
     typings: false
   }),
   reactProxy({
-    dist: '../ports/react.new',
-    categorize: true
+    compact: true,
+    dist: '../ports/react.new'
   }),
   uhtml(),
   print()

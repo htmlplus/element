@@ -4,31 +4,14 @@
 
 import { proxy } from '../proxy';
 
-{{#each all}}
-import { {{importerComponent.root}} as {{importerComponent.local}} } from '{{importerComponent.source}}';
-import type { {{importerComponentType.root}} as {{importerComponentType.local}} } from '{{importerComponentType.source}}';
-
-{{/each}}
+import { {{importerComponent.root}} as Component } from '{{importerComponent.source}}';
+import type { {{importerComponentType.root}} as Type } from '{{importerComponentType.source}}';
 
 type Rename<T, R extends { [K in keyof R]: K extends keyof T ? PropertyKey : "Error: key not in T" }> = { [P in keyof T as P extends keyof R ? R[P] : P]: T[P] }
-type NewDialogJSX = Rename<DialogJSX, { onPlusClicked: "onClicked" }>
+// type NewDialogJSX = Rename<DialogJSX, { onPlusClicked: "onClicked" }>
 
-{{#each all}}
-const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{importerComponentType.variable}}>(
+export const {{componentClassName}} = /*@__PURE__*/ proxy<{{componentInterfaceName}}, {{importerComponentType.variable}}>(
   '{{componentTag}}', 
   [{{#each classProperties}}'{{key.name}}', {{/each}}], 
   [{{#each classEvents}}'{{key.name}}', {{/each}}],
 );
-
-{{/each}}
-{{#if single}}
-export { {{root.componentClassName}} }
-{{else}}
-const All = /*@__PURE__*/ Object.assign({{root.componentClassName}}, {
-  {{#each filterd}}
-  {{componentClassNameInCategory}}: {{componentClassName}},
-  {{/each}}
-});
-
-export { All as {{root.componentClassName}} }
-{{/if}}
