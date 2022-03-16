@@ -1,3 +1,5 @@
-export { html } from 'uhtml';
+import { html as core } from 'uhtml';
 
-// export const html = (...args: any[]): any => {};
+export const html = (template, ...values: any[]): any => {
+  return core(template, ...values)
+};
