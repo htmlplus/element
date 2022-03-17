@@ -11,7 +11,7 @@ const { start, next, finish } = compiler(
   }),
   reactProxy({
     compact: true,
-    dist: '../ports/react.new'
+    dist: '../ports/react.test'
   }),
   uhtml(),
   print()
