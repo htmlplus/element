@@ -51,9 +51,10 @@ export const reactProxy = (options: ReactProxyOptions) => {
       };
 
       const classEvents = context.classEvents.map((classEvent) => {
+        const name = options.eventName?.(classEvent.key.name) || classEvent.key.name;
         return {
           ...classEvent,
-          converted: options.eventName!(classEvent.key.name)
+          converted: 'on' + name.charAt(0).toUpperCase() + name.slice(1)
         };
       });
 
