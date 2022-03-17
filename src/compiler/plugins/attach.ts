@@ -152,23 +152,48 @@ export const attach = (options: AttachOptions) => {
           path.node.body.push(
             t.exportNamedDeclaration(
               t.tsInterfaceDeclaration(
+                // TODO
                 t.identifier(context.componentClassName! + 'JSX'),
                 null,
                 [],
                 t.tsInterfaceBody([
                   ...context.classProperties!.map((property) =>
+                    Object.assign(t.tSPropertySignature(property.key, property.typeAnnotation as TSTypeAnnotation), {
+                      optional: property.optional,
+                      leadingComments: property.leadingComments
+                    })
+                  ),
+                  ...context.classEvents!.map((event) =>
                     Object.assign(
-                      t.tSPropertySignature(property.key, property.typeAnnotation as TSTypeAnnotation),
+                      t.tSPropertySignature(
+                        event.key,
+                        t.tsTypeAnnotation(
+                          t.tsFunctionType(
+                            undefined,
+                            [
+                              Object.assign({}, t.identifier('event'), {
+                                typeAnnotation: t.tsTypeAnnotation(
+                                  t.tsTypeReference(
+                                    t.identifier('CustomEvent'),
+                                    event.typeAnnotation?.['typeAnnotation']?.typeParameters
+                                  )
+                                )
+                              })
+                            ],
+                            t.tsTypeAnnotation(t.tsVoidKeyword())
+                          )
+                        )
+                      ),
                       {
-                        optional: property.optional,
-                        leadingComments: property.leadingComments
+                        optional: true,
+                        leadingComments: event.leadingComments
                       }
                     )
                   )
                 ])
               )
             )
-          )
+          );
         }
       });
     }
