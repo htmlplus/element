@@ -63,6 +63,12 @@ export const uhtml = () => {
             return;
           }
         }
+      },
+      JSXSpreadAttribute: {
+        enter(path) {
+          // TODO
+          path.replaceWith(t.jsxAttribute(t.jsxIdentifier('.dataset'), t.jsxExpressionContainer(path.node.argument)));
+        }
       }
     });
   };
