@@ -3,13 +3,17 @@ import { api, defineProperty, host, onReady } from '../utils/index.js';
 
 export function State() {
   return function (target: PlusElement, propertyKey: PropertyKey) {
-    let prev, next;
+    const values = new Map();
     defineProperty(target, propertyKey, {
       get() {
-        return next;
+        return values.get(this)?.next;
       },
       set(input) {
+        let { prev, next } = values.get(this) ?? {};
+
         if (input === next) return;
+
+        values.set(this, { next: input });
 
         next = input;
 
@@ -21,7 +25,7 @@ export function State() {
             throw error;
           });
 
-        prev = next;
+        values.set(this, { prev: next, next: input });
       }
     });
     onReady(target, function () {

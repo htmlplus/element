@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { api, defineProperty, host, onReady, parseValue, updateAttribute } from '../utils/index.js';
+import { api, defineProperty, host, parseValue, updateAttribute, onReady } from '../utils/index.js';
 
 export interface PropertyOptions {
   /**
@@ -15,13 +15,17 @@ export interface PropertyOptions {
 
 export function Property(options?: PropertyOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
-    let prev, next;
+    const values = new Map();
     defineProperty(target, propertyKey, {
       get() {
-        return next;
+        return values.get(this)?.next;
       },
       set(input) {
+        let { prev, next } = values.get(this) ?? {};
+
         if (input === next) return;
+
+        values.set(this, { next: input });
 
         next = input;
 
@@ -50,7 +54,7 @@ export function Property(options?: PropertyOptions) {
             throw error;
           });
 
-        prev = next;
+        values.set(this, { prev: next, next: input });
       }
     });
     onReady(target, function () {

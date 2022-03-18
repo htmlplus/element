@@ -43,8 +43,6 @@ export function Element(tag?: string) {
             try {
               if (!true /*shouldUpdate*/) return (isPending = false);
 
-              console.log('render');
-
               // TODO
               // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
 
