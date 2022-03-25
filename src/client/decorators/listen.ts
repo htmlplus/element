@@ -31,11 +31,11 @@ export function Listen(name: string, options: ListenOptions = defaults) {
       }
     };
 
-    appendToMethod(target, CONSTANTS.TOKEN_LIFECYCLE_CONNECTED, function () {
+    appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
       on(element(this)!, name, this[propertyKey], options);
     });
 
-    appendToMethod(target, CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED, function () {
+    appendToMethod(target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
       off(element(this)!, name, this[propertyKey], options);
     });
 

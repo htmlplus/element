@@ -31,7 +31,7 @@ export const attach = (options: AttachOptions) => {
     if (options.styles && context.styleParsed)
       context.class!.body.body.unshift(
         t.classProperty(
-          t.identifier(CONSTANTS.TOKEN_STATIC_STYLES),
+          t.identifier(CONSTANTS.STATIC_STYLES),
           t.stringLiteral(context.styleParsed),
           undefined,
           null,
@@ -43,7 +43,7 @@ export const attach = (options: AttachOptions) => {
     if (options.members) {
       context.class!.body.body.unshift(
         t.classProperty(
-          t.identifier(CONSTANTS.TOKEN_STATIC_MEMBERS),
+          t.identifier(CONSTANTS.STATIC_MEMBERS),
           t.objectExpression([
             ...context.classProperties!.map((property) => {
               const type = (property as any).typeAnnotation?.typeAnnotation?.type;

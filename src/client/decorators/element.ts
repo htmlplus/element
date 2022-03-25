@@ -2,13 +2,13 @@ import { html, render } from 'uhtml';
 
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { isServer, parseValue } from '../utils/index.js';
+import { api, isServer, parseValue } from '../utils/index.js';
 
 export function Element(tag?: string) {
   return function (constructor: PlusElement) {
     if (isServer()) return;
-    const members = constructor[CONSTANTS.TOKEN_STATIC_MEMBERS];
-    const styles = constructor[CONSTANTS.TOKEN_STATIC_STYLES];
+    const members = constructor[CONSTANTS.STATIC_MEMBERS];
+    const styles = constructor[CONSTANTS.STATIC_STYLES];
     class Plus extends HTMLElement {
       plus;
 
@@ -45,7 +45,7 @@ export function Element(tag?: string) {
             // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
 
             render(this.shadowRoot!, () => {
-              const markup = this.plus[CONSTANTS.TOKEN_METHOD_RENDER]?.call(this.plus);
+              const markup = this.plus[CONSTANTS.METHOD_RENDER]?.call(this.plus);
               if (!styles && !markup) return html``;
               if (!styles) return markup;
               if (!markup) return html`<style>${styles}</style>`;
@@ -53,7 +53,7 @@ export function Element(tag?: string) {
             });
 
             // TODO
-            this.plus[CONSTANTS.TOKEN_LIFECYCLE_UPDATED]?.call(this.plus, states);
+            this.plus[CONSTANTS.LIFECYCLE_UPDATED]?.call(this.plus, states);
 
             states = undefined;
 
@@ -66,9 +66,9 @@ export function Element(tag?: string) {
           }
         };
 
-        this.plus[CONSTANTS.TOKEN_API] ??= {
-          [CONSTANTS.TOKEN_API_HOST]: () => this,
-          [CONSTANTS.TOKEN_API_REQUEST]: request
+        this.plus[CONSTANTS.API] ??= {
+          [CONSTANTS.API_HOST]: () => this,
+          [CONSTANTS.API_REQUEST]: request
         };
 
         // TODO
@@ -82,33 +82,37 @@ export function Element(tag?: string) {
       }
 
       adoptedCallback() {
-        this.plus[CONSTANTS.TOKEN_LIFECYCLE_ADOPTED]?.call(this.plus);
+        this.plus[CONSTANTS.LIFECYCLE_ADOPTED]?.call(this.plus);
       }
 
       attributeChangedCallback(name, prev, next) {
         const [type] = members[name];
         this.plus[name] = parseValue(next, type);
-        if (!this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY]) return;
-        this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_REQUEST]().catch((error) => {
-          throw error;
-        });
+        if (!api(this.plus).ready) return;
+        api(this.plus)
+          .request()
+          .catch((error) => {
+            throw error;
+          });
       }
 
       connectedCallback() {
-        this.plus[CONSTANTS.TOKEN_LIFECYCLE_CONNECTED]?.call(this.plus);
-        this.plus[CONSTANTS.TOKEN_API]
-          [CONSTANTS.TOKEN_API_REQUEST]()
+        this.plus[CONSTANTS.LIFECYCLE_CONNECTED]?.call(this.plus);
+
+        api(this.plus)
+          .request()
           .then(() => {
-            this.plus[CONSTANTS.TOKEN_LIFECYCLE_LOADED]?.call(this.plus);
+            this.plus[CONSTANTS.LIFECYCLE_LOADED]?.call(this.plus);
           })
           .catch((error) => {
             throw error;
           });
-        this.plus[CONSTANTS.TOKEN_API][CONSTANTS.TOKEN_API_READY] = true;
+
+        this.plus[CONSTANTS.API][CONSTANTS.API_READY] = true;
       }
 
       disconnectedCallback() {
-        this.plus[CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED]?.call(this.plus);
+        this.plus[CONSTANTS.LIFECYCLE_DISCONNECTED]?.call(this.plus);
       }
     }
     customElements.define(tag!, Plus);

@@ -37,7 +37,7 @@ export function Property(options?: PropertyOptions) {
 
         const raw = element.getAttribute(name);
 
-        const [type] = target.constructor[CONSTANTS.TOKEN_STATIC_MEMBERS][propertyKey];
+        const [type] = target.constructor[CONSTANTS.STATIC_MEMBERS][propertyKey];
 
         const parsed = parseValue(raw, type);
 

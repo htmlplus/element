@@ -6,4 +6,4 @@ export interface Api {
   request(states?): Promise<boolean>;
 }
 
-export const api = (target): Api => target[CONSTANTS.TOKEN_API];
+export const api = (target): Api => target[CONSTANTS.API];

@@ -28,7 +28,7 @@ export const extract = (options?: ExtractOptions) => {
         const name = path.node.expression.callee?.name;
 
         // TODO
-        if (CONSTANTS.TOKEN_DECORATOR_ELEMENT == name) {
+        if (CONSTANTS.DECORATOR_ELEMENT == name) {
           const [argument] = path.node.expression.arguments;
 
           if (argument) {
@@ -88,31 +88,31 @@ export const extract = (options?: ExtractOptions) => {
     })();
 
     context.classEvents = (context.classMembers || []).filter((member) =>
-      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_EVENT)
+      hasDecorator(member, CONSTANTS.DECORATOR_EVENT)
     ) as Array<ClassProperty>;
 
     context.classMethods = (context.classMembers || []).filter((member) =>
-      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_METHOD)
+      hasDecorator(member, CONSTANTS.DECORATOR_METHOD)
     ) as Array<ClassMethod>;
 
     context.classProperties = (context.classMembers || []).filter((member) =>
-      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_PROPERTY)
+      hasDecorator(member, CONSTANTS.DECORATOR_PROPERTY)
     ) as Array<ClassProperty>;
 
     context.classStates = (context.classMembers || []).filter((member) =>
-      hasDecorator(member, CONSTANTS.TOKEN_DECORATOR_STATE)
+      hasDecorator(member, CONSTANTS.DECORATOR_STATE)
     ) as Array<ClassProperty>;
 
     context.classHasMount = (context.classMembers || []).some(
-      (member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_CONNECTED
+      (member) => member['key'].name == CONSTANTS.LIFECYCLE_CONNECTED
     );
 
     context.classHasUnmount = (context.classMembers || []).some(
-      (member) => member['key'].name == CONSTANTS.TOKEN_LIFECYCLE_DISCONNECTED
+      (member) => member['key'].name == CONSTANTS.LIFECYCLE_DISCONNECTED
     );
 
     context.classRender = (context.classMembers || []).find(
-      (member) => member['key'].name == CONSTANTS.TOKEN_METHOD_RENDER
+      (member) => member['key'].name == CONSTANTS.METHOD_RENDER
     ) as ClassMethod;
   };
 

@@ -1,30 +1,30 @@
 // apis
-export const TOKEN_API = '$api';
-export const TOKEN_API_HOST = 'host';
-export const TOKEN_API_READY = 'ready';
-export const TOKEN_API_REQUEST = 'request';
+export const API = '$api';
+export const API_HOST = 'host';
+export const API_READY = 'ready';
+export const API_REQUEST = 'request';
 
 // decorators
-export const TOKEN_DECORATOR_ELEMENT = 'Element';
-export const TOKEN_DECORATOR_EVENT = 'Event';
-export const TOKEN_DECORATOR_PROPERTY = 'Property';
-export const TOKEN_DECORATOR_STATE = 'State';
-export const TOKEN_DECORATOR_METHOD = 'Method';
+export const DECORATOR_ELEMENT = 'Element';
+export const DECORATOR_EVENT = 'Event';
+export const DECORATOR_PROPERTY = 'Property';
+export const DECORATOR_STATE = 'State';
+export const DECORATOR_METHOD = 'Method';
 
 // lifecycle
-export const TOKEN_LIFECYCLE_ADOPTED = 'adoptedCallback';
-export const TOKEN_LIFECYCLE_CONNECTED = 'connectedCallback';
-export const TOKEN_LIFECYCLE_DISCONNECTED = 'disconnectedCallback';
-export const TOKEN_LIFECYCLE_LOADED = 'loadedCallback';
-export const TOKEN_LIFECYCLE_UPDATE = 'updateCallback';
-export const TOKEN_LIFECYCLE_UPDATED = 'updatedCallback';
+export const LIFECYCLE_ADOPTED = 'adoptedCallback';
+export const LIFECYCLE_CONNECTED = 'connectedCallback';
+export const LIFECYCLE_DISCONNECTED = 'disconnectedCallback';
+export const LIFECYCLE_LOADED = 'loadedCallback';
+export const LIFECYCLE_UPDATE = 'updateCallback';
+export const LIFECYCLE_UPDATED = 'updatedCallback';
 
 // methods
-export const TOKEN_METHOD_RENDER = 'render';
+export const METHOD_RENDER = 'render';
 
 // statics
-export const TOKEN_STATIC_MEMBERS = 'members';
-export const TOKEN_STATIC_STYLES = 'styles';
+export const STATIC_MEMBERS = 'members';
+export const STATIC_STYLES = 'styles';
 
 // types
 export const TYPE_BOOLEAN = 'boolean';

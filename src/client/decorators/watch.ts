@@ -6,7 +6,7 @@ import { appendToMethod } from '../utils/index.js';
 export function Watch(...keys: Array<string>) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
     if (!keys.length) return;
-    appendToMethod(target, CONSTANTS.TOKEN_LIFECYCLE_UPDATED, function (args) {
+    appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function (args) {
       const [states] = args;
       for (const key of keys) {
         if (states?.[key]) {
