@@ -19,8 +19,6 @@ const { start, next, finish } = compiler(
 
 (async () => {
   await start();
-  await next('./src/dev/button.tsx');
-  await next('./src/dev/button-icon.tsx');
   await next('./src/dev/element.tsx');
   await finish();
 })();

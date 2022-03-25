@@ -2,16 +2,14 @@ import { Attributes, Bind, Element, Event, EventEmitter, Listen, Method, Propert
 
 @Element()
 export class MyElement {
+  
   @Property()
-  name?: string = 'Simon';
+  property?: string = "Simon";
 
   @Event()
-  clicked!: EventEmitter;
-
-  @State()
-  active?: boolean = false;
-
-  $indicator!: HTMLElement
+  plusClicked!: EventEmitter;  
+  
+  $element!: HTMLElement
 
   @Attributes()
   get attributes() {
@@ -20,53 +18,44 @@ export class MyElement {
     }
   }
 
-
   @Method()
-  open() {
-    // console.log('@Method', this.name);
+  method() {
+    console.log('@Method', this.property);
   }
 
-  @Watch('name')
-  // @Watch('*')
+  @Watch('property')
   watcher(key, newValue, oldValue) {
     console.log('@Watch', key, newValue, oldValue);
   }
 
-  @Listen('scroll', { target: 'window' })
-  onClick(event) {
-    console.log('@Listen', event, this);
-    this.active = !this.active;
+  @Listen('dblclick', { target: 'window' })
+  onDblclick(event) {
+    console.log('@Listen', 'dblclick', event);
   }
 
   @Bind()
-  onScroll(event) {
-    console.log(123, event, this);
+  onClick(event) {
+    console.log('@Bind', 'click', event);
   }
 
-  handleClick() {
-    // this.clicked()
-    // console.log('handleClick', this.name)
-    this.active = !this.active;
-    console.log('update => active', this.active);
-    this.name = Date.now().toString();
-    console.log('update => name', this.name);
+  @Bind()
+  onContextMenu(event) {
+    console.log('@Bind', 'contextmenu', event);
   }
 
   connectedCallback() {
-    document.addEventListener('scroll', this.onScroll);
+    document.addEventListener('contextmenu', this.onContextMenu);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('scroll', this.onScroll);
+    document.removeEventListener('contextmenu', this.onContextMenu);
   }
 
   render() {
     return (
-      <>
-        <button onClick={() => this.handleClick()} ref={this.$indicator}>
-          {this.active ? 'On' : 'Off'} {this.name}
-        </button>
-      </>
-    );
+      <div ref={this.$element} onClick={this.onClick}>
+        {this.property}
+      </div>
+    )
   }
 }
