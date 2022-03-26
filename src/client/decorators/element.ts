@@ -2,7 +2,7 @@ import { html, render } from 'uhtml';
 
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { api, task, isServer, parseValue } from '../utils/index.js';
+import { api, call, task, isServer, parseValue } from '../utils/index.js';
 
 export function Element(tag?: string) {
   return function (constructor: PlusElement) {
@@ -15,10 +15,8 @@ export function Element(tag?: string) {
       constructor() {
         super();
 
-        // TODO
         this.plus = new (constructor as any)();
 
-        // TODO
         const { run } = task({
           canStart: (states, state) => {
             return /* hasChange */ true;
@@ -27,19 +25,15 @@ export function Element(tag?: string) {
             return /* shouldUpdate */ true;
           },
           run: (states) => {
-            // TODO
-            // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
-
+            call(this.plus, CONSTANTS.LIFECYCLE_UPDATE, states);
             render(this.shadowRoot!, () => {
-              const markup = this.plus[CONSTANTS.METHOD_RENDER]?.call(this.plus);
+              const markup = call(this.plus, CONSTANTS.METHOD_RENDER);
               if (!styles && !markup) return html``;
               if (!styles) return markup;
               if (!markup) return html`<style>${styles}</style>`;
               return html`<style>${styles}</style>${markup}`;
             });
-
-            // TODO
-            this.plus[CONSTANTS.LIFECYCLE_UPDATED]?.call(this.plus, states);
+            call(this.plus, CONSTANTS.LIFECYCLE_UPDATED, states);
           }
         });
 
@@ -48,7 +42,6 @@ export function Element(tag?: string) {
           [CONSTANTS.API_REQUEST]: run
         };
 
-        // TODO
         this.plus.setup?.forEach((setup) => setup.call(this.plus));
 
         this.attachShadow({ mode: 'open' });
@@ -59,7 +52,7 @@ export function Element(tag?: string) {
       }
 
       adoptedCallback() {
-        this.plus[CONSTANTS.LIFECYCLE_ADOPTED]?.call(this.plus);
+        call(this.plus, CONSTANTS.LIFECYCLE_ADOPTED);
       }
 
       attributeChangedCallback(name, prev, next) {
@@ -74,12 +67,12 @@ export function Element(tag?: string) {
       }
 
       connectedCallback() {
-        this.plus[CONSTANTS.LIFECYCLE_CONNECTED]?.call(this.plus);
+        call(this.plus, CONSTANTS.LIFECYCLE_CONNECTED);
 
         api(this.plus)
           .request()
           .then(() => {
-            this.plus[CONSTANTS.LIFECYCLE_LOADED]?.call(this.plus);
+            call(this.plus, CONSTANTS.LIFECYCLE_LOADED);
           })
           .catch((error) => {
             throw error;
@@ -89,7 +82,7 @@ export function Element(tag?: string) {
       }
 
       disconnectedCallback() {
-        this.plus[CONSTANTS.LIFECYCLE_DISCONNECTED]?.call(this.plus);
+        call(this.plus, CONSTANTS.LIFECYCLE_DISCONNECTED);
       }
     }
     customElements.define(tag!, Plus);

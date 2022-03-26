@@ -1,5 +1,6 @@
 export * from './api.js';
 export * from './append-to-method.js';
+export * from './call.js';
 export * from './define-property.js';
 export * from './event.js';
 export * from './host.js';
