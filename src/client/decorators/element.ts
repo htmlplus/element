@@ -2,7 +2,7 @@ import { html, render } from 'uhtml';
 
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { api, isServer, parseValue } from '../utils/index.js';
+import { api, task, isServer, parseValue } from '../utils/index.js';
 
 export function Element(tag?: string) {
   return function (constructor: PlusElement) {
@@ -19,28 +19,14 @@ export function Element(tag?: string) {
         this.plus = new (constructor as any)();
 
         // TODO
-        let states, isPending, updatePromise!: Promise<boolean>;
-        const request = (state?) => {
-          if (!true /*hasChange*/) return Promise.resolve(false);
-          states = { ...(states || {}), ...state };
-          if (!isPending) updatePromise = enqueue();
-          return updatePromise;
-        };
-        const enqueue = async (): Promise<boolean> => {
-          isPending = true;
-
-          try {
-            await updatePromise;
-          } catch (error) {
-            Promise.reject(error);
-          }
-
-          // TODO: may be not used
-          if (!isPending) return updatePromise;
-
-          try {
-            if (!true /*shouldUpdate*/) return (isPending = false);
-
+        const { run } = task({
+          canStart: (states, state) => {
+            return /* hasChange */ true;
+          },
+          canRun: (states) => {
+            return /* shouldUpdate */ true;
+          },
+          run: (states) => {
             // TODO
             // call(CONSTANTS.TOKEN_LIFECYCLE_UPDATE, [allStates]);
 
@@ -54,21 +40,12 @@ export function Element(tag?: string) {
 
             // TODO
             this.plus[CONSTANTS.LIFECYCLE_UPDATED]?.call(this.plus, states);
-
-            states = undefined;
-
-            isPending = false;
-
-            return true;
-          } catch (error) {
-            isPending = false;
-            throw error;
           }
-        };
+        });
 
         this.plus[CONSTANTS.API] ??= {
           [CONSTANTS.API_HOST]: () => this,
-          [CONSTANTS.API_REQUEST]: request
+          [CONSTANTS.API_REQUEST]: run
         };
 
         // TODO

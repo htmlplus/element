@@ -8,6 +8,7 @@ export * from './is-server.js';
 export * from './on-ready.js';
 export * from './parse-value.js';
 export * from './sync.js';
+export * from './task.js';
 export * from './to-boolean.js';
 export * from './to-event.js';
 export * from './type-of.js';
