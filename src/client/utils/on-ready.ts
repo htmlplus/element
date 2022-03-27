@@ -1,3 +1,5 @@
+import * as CONSTANTS from '../../configs/constants.js';
+
 export function onReady(target, callback: (this) => void): void {
-  (target['setup'] ??= []).push(callback);
+  (target[CONSTANTS.API_SETUP] ??= []).push(callback);
 }

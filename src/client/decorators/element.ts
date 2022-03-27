@@ -42,7 +42,7 @@ export function Element(tag?: string) {
           [CONSTANTS.API_REQUEST]: run
         };
 
-        this.plus.setup?.forEach((setup) => setup.call(this.plus));
+        this.plus[CONSTANTS.API_SETUP]?.forEach((setup) => setup.call(this.plus));
 
         this.attachShadow({ mode: 'open' });
       }

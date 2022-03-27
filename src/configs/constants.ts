@@ -3,6 +3,7 @@ export const API = '$api';
 export const API_HOST = 'host';
 export const API_READY = 'ready';
 export const API_REQUEST = 'request';
+export const API_SETUP = 'setup';
 
 // decorators
 export const DECORATOR_ELEMENT = 'Element';
