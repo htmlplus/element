@@ -6,6 +6,8 @@ export function Element(tag?: string) {
   return function (constructor: PlusElement) {
     if (isServer()) return;
     const members = constructor[CONSTANTS.STATIC_MEMBERS];
+    console.log(111, { constructor });
+
     class Plus extends HTMLElement {
       plus;
 

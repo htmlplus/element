@@ -2,6 +2,8 @@ export * from './append-to-method.js';
 export * from './call.js';
 export * from './define-property.js';
 export * from './event.js';
+export * from './get-members.js';
+export * from './get-styles.js';
 export * from './host.js';
 export * from './is-event.js';
 export * from './is-server.js';

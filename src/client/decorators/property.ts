@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { defineProperty, host, parseValue, request, updateAttribute, onReady } from '../utils/index.js';
+import { defineProperty, getMembers, host, parseValue, request, updateAttribute, onReady } from '../utils/index.js';
 
 export interface PropertyOptions {
   /**
@@ -39,7 +39,7 @@ export function Property(options?: PropertyOptions) {
 
             const raw = element.getAttribute(name);
 
-            const [type] = target.constructor[CONSTANTS.STATIC_MEMBERS][propertyKey];
+            const [type] = getMembers(target)[propertyKey];
 
             const parsed = parseValue(raw, type);
 
