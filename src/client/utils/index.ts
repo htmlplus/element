@@ -1,4 +1,3 @@
-export * from './api.js';
 export * from './append-to-method.js';
 export * from './call.js';
 export * from './define-property.js';
@@ -8,6 +7,8 @@ export * from './is-event.js';
 export * from './is-server.js';
 export * from './on-ready.js';
 export * from './parse-value.js';
+export * from './render.js';
+export * from './request.js';
 export * from './sync.js';
 export * from './task.js';
 export * from './to-boolean.js';

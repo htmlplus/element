@@ -3,8 +3,8 @@ import { Attributes, Bind, Element, Event, EventEmitter, Listen, Method, Propert
 @Element()
 export class MyElement {
   
-  @Property()
-  property?: string = "Simon";
+  @Property({ reflect: true })
+  property?: string = "Initial";
 
   @Event()
   plusClicked!: EventEmitter;  

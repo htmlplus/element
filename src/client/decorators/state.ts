@@ -1,31 +1,25 @@
 import { PlusElement } from '../../types/index.js';
-import { api, defineProperty, host, onReady } from '../utils/index.js';
+import { defineProperty, host, onReady, request } from '../utils/index.js';
 
 export function State() {
   return function (target: PlusElement, propertyKey: PropertyKey) {
     const values = new Map();
     defineProperty(target, propertyKey, {
       get() {
-        return values.get(this)?.next;
+        return values.get(this);
       },
       set(input) {
-        let { prev, next } = values.get(this) ?? {};
+        const value = values.get(this);
 
-        if (input === next) return;
+        if (value === input) return;
 
-        values.set(this, { next: input });
+        values.set(this, input);
 
-        next = input;
-
-        if (!api(this)?.ready) return;
-
-        api(this)
-          .request({ [propertyKey]: [next, prev] })
+        request(this, { [propertyKey]: [input, value] })
+          .then(() => {})
           .catch((error) => {
             throw error;
           });
-
-        values.set(this, { prev: next, next: input });
       }
     });
     onReady(target, function () {

@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { api, defineProperty, host, parseValue, updateAttribute, onReady } from '../utils/index.js';
+import { defineProperty, host, parseValue, request, updateAttribute, onReady } from '../utils/index.js';
 
 export interface PropertyOptions {
   /**
@@ -18,43 +18,38 @@ export function Property(options?: PropertyOptions) {
     const values = new Map();
     defineProperty(target, propertyKey, {
       get() {
-        return values.get(this)?.next;
+        return values.get(this);
       },
       set(input) {
-        let { prev, next } = values.get(this) ?? {};
+        const value = values.get(this);
 
-        if (input === next) return;
+        if (value === input) return;
 
-        values.set(this, { next: input });
+        values.set(this, input);
 
-        next = input;
-
-        if (!api(this)?.ready) return;
-
-        const element = host(this);
-
-        const name = String(propertyKey);
-
-        const raw = element.getAttribute(name);
-
-        const [type] = target.constructor[CONSTANTS.STATIC_MEMBERS][propertyKey];
-
-        const parsed = parseValue(raw, type);
-
-        if (parsed === next) return;
-
-        api(this)
-          .request({ [propertyKey]: [next, prev] })
+        request(this, { [propertyKey]: [input, value] })
           .then((renderd) => {
             if (!renderd) return;
+
             if (!options?.reflect) return;
-            updateAttribute(element, name, next);
+
+            const element = host(this);
+
+            const name = String(propertyKey);
+
+            const raw = element.getAttribute(name);
+
+            const [type] = target.constructor[CONSTANTS.STATIC_MEMBERS][propertyKey];
+
+            const parsed = parseValue(raw, type);
+
+            if (parsed === input) return;
+
+            updateAttribute(element, name, input);
           })
           .catch((error) => {
             throw error;
           });
-
-        values.set(this, { prev: next, next: input });
       }
     });
     onReady(target, function () {

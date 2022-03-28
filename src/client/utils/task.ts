@@ -47,5 +47,5 @@ export const task = (options: QueueOptions) => {
     }
   };
 
-  return { run };
+  return run;
 };
