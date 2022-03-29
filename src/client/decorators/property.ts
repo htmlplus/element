@@ -1,4 +1,3 @@
-import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
 import { defineProperty, getMembers, host, parseValue, request, updateAttribute, onReady } from '../utils/index.js';
 
