@@ -1,11 +1,11 @@
 import * as CONSTANTS from '../../configs/constants.js';
 import { PlusElement } from '../../types/index.js';
-import { call, render, task } from '../utils/index.js';
+import { call, isReady, render, task } from '../utils/index.js';
 
 const targets = new Map();
 
 export const request = (target: PlusElement, state?): Promise<boolean> => {
-  if (!target[CONSTANTS.API_READY]) return Promise.resolve(false);
+  if (!isReady(target)) return Promise.resolve(false);
   let run = targets.get(target);
   if (run) return run(state);
   run = task({

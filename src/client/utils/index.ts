@@ -6,6 +6,7 @@ export * from './get-members.js';
 export * from './get-styles.js';
 export * from './host.js';
 export * from './is-event.js';
+export * from './is-ready.js';
 export * from './is-server.js';
 export * from './on-ready.js';
 export * from './parse-value.js';

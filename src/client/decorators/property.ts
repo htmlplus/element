@@ -1,5 +1,14 @@
 import { PlusElement } from '../../types/index.js';
-import { defineProperty, getMembers, host, parseValue, request, updateAttribute, onReady } from '../utils/index.js';
+import {
+  defineProperty,
+  getMembers,
+  host,
+  isReady,
+  parseValue,
+  request,
+  updateAttribute,
+  onReady
+} from '../utils/index.js';
 
 export interface PropertyOptions {
   /**
@@ -26,15 +35,23 @@ export function Property(options?: PropertyOptions) {
 
         values.set(this, input);
 
+        // TODO
+        const ready = isReady(this);
+
         request(this, { [propertyKey]: [input, value] })
           .then((renderd) => {
-            if (!renderd) return;
-
-            if (!options?.reflect) return;
+            const name = String(propertyKey);
 
             const element = host(this);
 
-            const name = String(propertyKey);
+            const hasAttribute = element.hasAttribute(name);
+
+            // TODO
+            if (options?.reflect && !hasAttribute && !renderd && !ready) updateAttribute(element, name, input);
+
+            if (!renderd) return;
+
+            if (!options?.reflect) return;
 
             const raw = element.getAttribute(name);
 
