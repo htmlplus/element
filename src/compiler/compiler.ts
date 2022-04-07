@@ -2,8 +2,9 @@ import logUpdate from 'log-update';
 
 import { Context, Plugin } from '../types/index.js';
 
-const log = (namespace?: string, message?: string) => {
+const log = (namespace?: string, message?: string, persist?: boolean) => {
   logUpdate(`${new Date().toLocaleTimeString()} [@htmlplus/element]${namespace ? `[${namespace}]` : ''} ${message}`);
+  persist && logUpdate.done();
 };
 
 export default (...plugins: Array<Plugin>) => {
@@ -12,12 +13,14 @@ export default (...plugins: Array<Plugin>) => {
   };
 
   const start = async () => {
-    log(undefined, 'Starting.');
+    log(undefined, 'Starting...', true);
     for (const plugin of plugins) {
-      if (!plugin.start) continue;
-      global = (await plugin.start(global)) || global;
+      if (plugin.start) {
+        global = (await plugin.start(global)) || global;
+      }
       log(plugin.name, 'Started successfully.');
     }
+    log(undefined, `${plugins.length} Plugins started successfully.`, true);
   };
 
   const next = async (filePath: string) => {
@@ -27,10 +30,11 @@ export default (...plugins: Array<Plugin>) => {
       filePath
     };
 
+    log(`${key}`, 'Executing...');
+
     for (const plugin of plugins) {
       if (!plugin.next) continue;
       context = (await plugin.next(context, global)) || context;
-      log(`${key}:${plugin.name}`, 'Executed successfully.');
     }
 
     log(key, 'Executed successfully.');
@@ -41,12 +45,14 @@ export default (...plugins: Array<Plugin>) => {
   };
 
   const finish = async () => {
+    log(undefined, 'Finishing...', true);
     for (const plugin of plugins) {
-      if (!plugin.finish) continue;
-      global = (await plugin.finish(global)) || global;
+      if (plugin.finish) {
+        global = (await plugin.finish(global)) || global;
+      }
       log(plugin.name, 'Finished successfully.');
     }
-    log(undefined, 'Finished.');
+    log(undefined, `${plugins.length} Plugins finished successfully.`, true);
   };
 
   return {
