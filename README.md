@@ -259,6 +259,36 @@ export class MyCounter {
 </details>
 
 <details>
+  <summary>Attributes</summary>
+
+TODO
+
+```tsx
+import { Attributes, Element } from '@htmlplus/element';
+
+@Element('my-button')
+export class MyButton {
+
+  @Attributes()
+  get attributes() {
+    return {
+      role: 'button'
+    }
+  }
+
+  render() {
+    return <button><slot /></button>
+  }
+}
+```
+
+```html
+<my-button role="button"></my-button>
+```
+
+</details>
+
+<details>
   <summary>Watch</summary>
 
 `@Watch` take the name of the `@Property` and `@State` variable to monitor as a parameter. Any time the value of that property changes the function decorated by `@Watch` will be invoked with the `key`, `newValue` and `oldValue` as parameters. This is called first out of the lifecycle callbacks after a property changes.
