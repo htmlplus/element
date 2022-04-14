@@ -1,6 +1,9 @@
-import * as CONSTANTS from '../../configs/constants.js';
+import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types/index.js';
-import { call, isReady, render, task } from '../utils/index.js';
+import { call } from '../utils/call';
+import { isReady } from '../utils/is-ready';
+import { render } from '../utils/render';
+import { task } from '../utils/task';
 
 const targets = new Map();
 

@@ -1,6 +1,6 @@
 import { camelCase, paramCase } from 'change-case';
 
-import * as CONSTANTS from '../../configs/constants.js';
+import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types/index.js';
 import { call, getMembers, isServer, parseValue, request } from '../utils/index.js';
 

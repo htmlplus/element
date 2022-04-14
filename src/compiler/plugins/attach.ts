@@ -1,6 +1,6 @@
 import t, { TSTypeAnnotation } from '@babel/types';
 
-import * as CONSTANTS from '../../configs/constants.js';
+import * as CONSTANTS from '../../constants/index.js';
 import { Context } from '../../types/index.js';
 import { visitor } from '../utils/index.js';
 

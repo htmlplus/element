@@ -1,4 +1,4 @@
-import * as CONSTANTS from '../../configs/constants.js';
+import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types/index.js';
 
 export const host = (target: PlusElement): HTMLElement => {

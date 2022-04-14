@@ -4,7 +4,7 @@ import { pascalCase, paramCase } from 'change-case';
 import fs from 'fs';
 import path from 'path';
 
-import * as CONSTANTS from '../../configs/constants.js';
+import * as CONSTANTS from '../../constants/index.js';
 import { Context } from '../../types/index.js';
 import { hasDecorator, visitor } from '../utils/index.js';
 

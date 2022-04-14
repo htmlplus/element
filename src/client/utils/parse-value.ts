@@ -1,4 +1,4 @@
-import * as CONSTANTS from '../../configs/constants.js';
+import * as CONSTANTS from '../../constants/index.js';
 import { toBoolean } from './to-boolean.js';
 
 // TODO: input type & validate date

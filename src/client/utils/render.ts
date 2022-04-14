@@ -1,6 +1,6 @@
 import { html, render as renderer } from 'uhtml';
 
-import * as CONSTANTS from '../../configs/constants.js';
+import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types/index.js';
 import { call } from './call.js';
 import { getStyles } from './get-styles.js';
