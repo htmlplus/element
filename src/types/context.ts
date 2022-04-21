@@ -10,6 +10,9 @@ export interface Context {
   componentKey?: string;
   componentTag?: string;
 
+  // validation
+  isInvalid?: boolean;
+
   // directory
   directoryName?: string;
   directoryPath?: string;
