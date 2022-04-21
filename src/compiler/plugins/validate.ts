@@ -1,5 +1,6 @@
 import { DECORATOR_ELEMENT } from '../../constants/index.js';
 import { Context } from '../../types/index.js';
+import { hasDecorator } from '../utils/has-decorator.js';
 import { visitor } from '../utils/visitor.js';
 
 export const validate = () => {
@@ -8,65 +9,54 @@ export const validate = () => {
   // rules:
   // 1: Should export only one class
   // 2: that class should have @Element decorator
-  // 2: if @Element has argument, that should have '-' character
+  // 3: should import Element from '@htmlplus/element'
 
   const next = (context: Context) => {
-    let isValid = false;
-    let message = 'No Class exported from file';
+    let message;
+    let hasValidImport = false;
+    let hasValidExport = false;
 
     visitor(context.fileAST as any, {
+      ImportDeclaration: {
+        enter(path) {
+          if (path.node.source?.value !== '@htmlplus/element') {
+            return;
+          }
+
+          // should import Element
+          path.node.specifiers.map((specifier) => {
+            if (specifier.imported.name === DECORATOR_ELEMENT) {
+              hasValidImport = true;
+            }
+          });
+        }
+      },
       ExportNamedDeclaration: {
         enter(path) {
-          console.log(path.node.declaration.type);
           if (path.node.declaration.type !== 'ClassDeclaration') {
             // skip
             return;
           }
-          if (isValid) {
-            isValid = false;
-            message = 'Error: You should only export one class';
+          if (hasValidExport) {
+            hasValidExport = false;
+            // TODO: filename, stackreact, line number...
+            // context.WHAT? = `You should only export one class from ${context.fileName}`);
             return;
           }
 
-          const decorators = path.node.declaration.decorators ?? [];
-
-          let hasElementDecorator = false;
-          decorators.map((decorator) => {
-            // TODO: handle: import {Element as SomethingElse} from '@htmlplus/element'
-            console.log(decorator);
-            if (
-              decorator.expression.type === 'CallExpression' &&
-              decorator.expression.callee.type === 'Identifier' &&
-              decorator.expression.callee.name === DECORATOR_ELEMENT
-            ) {
-              hasElementDecorator = true;
-              //  now check if has valid name
-              const [argument] = decorator.expression.arguments;
-
-              // QUESTION: what if no argument is passed? do I need to validate filename or className?
-              if (!argument) {
-                isValid = true;
-                message = "it's Valid";
-                return;
-              }
-
-              if (!argument.value.includes('-')) {
-                message = `Error: @${DECORATOR_ELEMENT}'s first argument should include '-' character`;
-              } else {
-                isValid = true;
-                message = "it's Valid";
-              }
-            }
-          });
-
-          if (!hasElementDecorator) {
-            message = `Error: you should use @${DECORATOR_ELEMENT} decorator for class`;
+          if (!hasDecorator(path.node, DECORATOR_ELEMENT)) {
+            // context.WHAT? = `you should use @${DECORATOR_ELEMENT} decorator for class`);
+            return;
           }
+
+          hasValidExport = true;
         }
       }
     });
-    console.log({ isValid, message });
-    console.log(' '); // TODO: last line of console.log is not visible in console.
+
+    context.isInvalid = !(hasValidImport && hasValidExport);
+
+    return context;
   };
 
   return {
