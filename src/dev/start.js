@@ -39,7 +39,7 @@ createServer({
       async load(id) {
         if (!id.endsWith('.tsx')) return;
         const { script, isInvalid } = await next(id);
-        console.log(isInvalid);
+        if (isInvalid) return;
         return script;
       },
       async buildEnd() {

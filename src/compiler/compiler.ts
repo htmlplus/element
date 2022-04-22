@@ -35,6 +35,9 @@ export default (...plugins: Array<Plugin>) => {
     for (const plugin of plugins) {
       if (!plugin.next) continue;
       context = (await plugin.next(context, global)) || context;
+      if (context.isInvalid) {
+        break;
+      }
     }
 
     log(key, 'Executed successfully.');

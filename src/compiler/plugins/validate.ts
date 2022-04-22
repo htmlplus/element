@@ -44,7 +44,7 @@ export const validate = () => {
             return;
           }
 
-          if (!hasDecorator(path.node, DECORATOR_ELEMENT)) {
+          if (!hasDecorator(path.node.declaration, DECORATOR_ELEMENT)) {
             // context.WHAT? = `you should use @${DECORATOR_ELEMENT} decorator for class`);
             return;
           }
