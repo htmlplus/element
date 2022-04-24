@@ -2,6 +2,7 @@ import { ClassBody, ClassDeclaration, ClassMethod, ClassProperty, File } from '@
 
 export interface Context {
   // TODO
+  isInvalid?: boolean;
   script?: string;
 
   // component
@@ -9,9 +10,6 @@ export interface Context {
   componentInterfaceName?: string;
   componentKey?: string;
   componentTag?: string;
-
-  // validation
-  isInvalid?: boolean;
 
   // directory
   directoryName?: string;

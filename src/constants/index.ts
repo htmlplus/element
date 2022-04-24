@@ -1,3 +1,5 @@
+export const PACKAGE_NAME = '@htmlplus/element';
+
 // apis
 export const API_HOST = '$host$';
 export const API_READY = '$ready$';
