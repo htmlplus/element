@@ -1,3 +1,4 @@
+import { Global } from '../../../types/index.js';
 import { __dirname, isDirectoryEmpty, renderTemplate } from '../../utils/index.js';
 
 const defaults: ReactProxyOptions = {
@@ -23,10 +24,14 @@ export interface ReactProxyOptions {
 export const reactProxy = (options: ReactProxyOptions) => {
   const name = 'react-proxy';
 
-  const finish = (global) => {
+  const finish = (global: Global) => {
     options = { ...defaults, ...options };
 
-    global = { ...global, options };
+    // TODO
+    const globalNew: any = {
+      contexts: global.contexts.reduce((previous, current) => ({ ...previous, [current.filePath!]: current }), {}),
+      options
+    };
 
     const config = { cwd: __dirname(import.meta.url) };
 
@@ -36,8 +41,8 @@ export const reactProxy = (options: ReactProxyOptions) => {
 
     const getKey = (component) => component.componentClassName;
 
-    for (const key in global.contexts) {
-      const context = global.contexts[key];
+    for (const key in globalNew.contexts) {
+      const context = globalNew.contexts[key];
 
       const parse = (input) => {
         const [source, key] = input.split('#');
@@ -82,7 +87,7 @@ export const reactProxy = (options: ReactProxyOptions) => {
     }
 
     if (options.compact) {
-      global.groups = Object.values<any>(global.contexts)
+      globalNew.groups = Object.values<any>(globalNew.contexts)
         .sort((a, b) => getKey(b).length - getKey(a).length)
         .map((component, index, components) => ({
           key: getKey(component),
@@ -130,7 +135,7 @@ export const reactProxy = (options: ReactProxyOptions) => {
         })
         .sort((a, b) => (getKey(a.root) < getKey(b.root) ? -1 : 0));
 
-      for (const group of global.groups) {
+      for (const group of globalNew.groups) {
         if (group.single) continue;
         const state = {
           fileName: group.root.fileName,
@@ -148,12 +153,12 @@ export const reactProxy = (options: ReactProxyOptions) => {
         '!templates/src/components/*fileName*.ts.hbs',
         '!templates/src/components/*fileName*.compact.ts.hbs'
       ];
-      renderTemplate(patterns, options.dist, config)(global);
+      renderTemplate(patterns, options.dist, config)(globalNew);
     }
 
     if (!isEmpty) {
       const patterns = ['templates/src/proxy*', 'templates/src/components/index*'];
-      renderTemplate(patterns, options.dist, config)(global);
+      renderTemplate(patterns, options.dist, config)(globalNew);
     }
   };
 

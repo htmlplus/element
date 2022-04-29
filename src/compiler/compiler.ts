@@ -1,6 +1,6 @@
 import logUpdate from 'log-update';
 
-import { Context, Plugin } from '../types/index.js';
+import { Context, Global, Plugin } from '../types/index.js';
 
 const log = (namespace?: string, message?: string, persist?: boolean) => {
   logUpdate(`${new Date().toLocaleTimeString()} [@htmlplus/element]${namespace ? `[${namespace}]` : ''} ${message}`);
@@ -8,8 +8,8 @@ const log = (namespace?: string, message?: string, persist?: boolean) => {
 };
 
 export default (...plugins: Array<Plugin>) => {
-  let global = {
-    contexts: {}
+  let global: Global = {
+    contexts: []
   };
 
   const start = async () => {
@@ -35,7 +35,7 @@ export default (...plugins: Array<Plugin>) => {
     for (const plugin of plugins) {
       if (!plugin.next) continue;
       context = (await plugin.next(context, global)) || context;
-      global.contexts[filePath] = context;
+      global.contexts = global.contexts.filter((current) => current.filePath != context.filePath).concat(context);
       if (context.isInvalid) break;
     }
 

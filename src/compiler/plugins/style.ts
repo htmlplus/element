@@ -10,7 +10,7 @@ const defaults: StyleOptions = {
   },
   filename(context: Context) {
     return context.fileName!;
-  },
+  }
 };
 
 export type StyleOptions = {
@@ -24,24 +24,19 @@ export const style = (options: StyleOptions) => {
 
   options = { ...defaults, ...options };
 
-  const next = (context: Context, global: any) => {
+  const next = (context: Context) => {
     const filename = options.filename!(context);
-
     const directory = options.directory!(context);
-
     for (let extension of options.extensions!) {
       const stylePath = path.join(directory, `${filename}.${extension}`);
-
-      if (!fs.existsSync(stylePath)) continue
-
+      if (!fs.existsSync(stylePath)) continue;
       context.stylePath = stylePath;
-
       break;
-    };
-  }
+    }
+  };
 
   return {
     name,
     next
   };
-}
+};
