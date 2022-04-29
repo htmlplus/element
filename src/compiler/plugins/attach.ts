@@ -12,7 +12,6 @@ const defaults: AttachOptions = {
 };
 
 export interface AttachOptions {
-  dependencies?: boolean;
   members?: boolean;
   styles?: boolean;
   typings?: boolean;
@@ -24,10 +23,6 @@ export const attach = (options: AttachOptions) => {
   const name = 'attach';
 
   const next = (context: Context) => {
-    // TODO
-    if (options.dependencies) {
-    }
-
     if (options.styles && context.styleParsed)
       context.class!.body.body.unshift(
         t.classProperty(

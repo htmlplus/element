@@ -4,7 +4,7 @@ import { Context, Global } from '../../types/index.js';
 import { visitor } from '../utils/index.js';
 
 export const componentDependencyResolver = () => {
-  const name = 'comoponent dependency resolver';
+  const name = 'componentDependencyResolver';
 
   const next = (context: Context, global: Global) => {
     if (!context.dependenciesUnresolved) {
