@@ -1,0 +1,37 @@
+{  
+  "name": "YOUR_REACT_PACKAGE_NAME",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "React output target for your custom element.",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "rollup -c",
+    "clean": "rimraf dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "YOUR_CORE_PACKAGE_NAME": "latest",
+    "change-case": "^4.1.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^15.0.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@types/react": "^16.9.49",
+    "glob": "^7.2.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.27.1",
+    "rollup-plugin-peer-deps-external": "^2.2.3",
+    "rollup-plugin-typescript2": "^0.27.2",
+    "typescript": "^4.0.2"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0 || ^17.0.0",
+    "react-dom": "^16.0.0 || ^17.0.0"
+  }
+}
