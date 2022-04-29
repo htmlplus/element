@@ -2,11 +2,13 @@ import core, { Options } from 'sass';
 
 import { Context } from '../../types/index.js';
 
-export const sass = (options?: Options<'sync'>) => {
-  const name = 'sass';
+export const scss = (options?: Options<'sync'>) => {
+  const name = 'scss';
 
   const next = (context: Context) => {
     if (!context.stylePath) return;
+
+    if (!context.stylePath.endsWith('.scss')) return;
 
     const { css, loadedUrls } = core.compile(context.stylePath, {
       ...(options || {}),
@@ -15,7 +17,8 @@ export const sass = (options?: Options<'sync'>) => {
 
     context.styleParsed = css.toString();
 
-    context.styleDependencies = []; // TODO loadedUrls;
+    // TODO loadedUrls;
+    context.styleDependencies = [];
   };
 
   return {

@@ -1,7 +1,6 @@
 import * as t from '@babel/types';
 import { ClassMethod, ClassProperty } from '@babel/types';
 import { pascalCase, paramCase } from 'change-case';
-import fs from 'fs';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
@@ -78,14 +77,6 @@ export const extract = (options?: ExtractOptions) => {
     // const fileName                     = "dialogBodyNew";           [OK]
     // const className                    = "DialogBody1";             [OK]
     // const category                     = "Dialog";                  [RAW]
-
-    (() => {
-      const stylePath = path.join(context.directoryPath, `${context.fileName}.scss`);
-
-      if (!fs.existsSync(stylePath)) return;
-
-      context.stylePath = stylePath;
-    })();
 
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_EVENT)

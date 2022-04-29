@@ -1,18 +1,29 @@
 import { createServer } from 'vite';
 
 import compiler from '../../dist/compiler/index.js';
-import { attach, extract, parse, print, reactProxy, read, uhtml, validate } from '../../dist/compiler/index.js';
+import {
+  attach,
+  componentDependencyResolver,
+  extract,
+  parse,
+  print,
+  read,
+  scss,
+  style,
+  uhtml,
+  validate
+} from '../../dist/compiler/index.js';
 
 const { start, next, finish } = compiler(
   read(),
   parse(),
   validate(),
   extract(),
+  componentDependencyResolver(),
+  style(),
+  scss(),
   attach({
     typings: false
-  }),
-  reactProxy({
-    dist: 'dist/react-port'
   }),
   uhtml(),
   print()

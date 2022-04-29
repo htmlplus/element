@@ -2,6 +2,8 @@ import { ClassBody, ClassDeclaration, ClassMethod, ClassProperty, File } from '@
 
 export interface Context {
   // TODO
+  dependencies?: Array<Context>;
+  dependenciesUnresolved?: Array<string>;
   isInvalid?: boolean;
   script?: string;
 
