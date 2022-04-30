@@ -5,15 +5,12 @@ import { Context } from '../../types/index.js';
 import { visitor } from '../utils/index.js';
 
 const defaults: AttachOptions = {
-  dependencies: true,
   members: true,
-  styles: true,
   typings: true
 };
 
 export interface AttachOptions {
   members?: boolean;
-  styles?: boolean;
   typings?: boolean;
 }
 
@@ -23,18 +20,6 @@ export const attach = (options: AttachOptions) => {
   const name = 'attach';
 
   const next = (context: Context) => {
-    if (options.styles && context.styleParsed)
-      context.class!.body.body.unshift(
-        t.classProperty(
-          t.identifier(CONSTANTS.STATIC_STYLES),
-          t.stringLiteral(context.styleParsed),
-          undefined,
-          null,
-          undefined,
-          true
-        )
-      );
-
     if (options.members) {
       context.class!.body.body.unshift(
         t.classProperty(

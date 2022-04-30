@@ -8,7 +8,6 @@ import {
   parse,
   print,
   read,
-  scss,
   style,
   uhtml,
   validate
@@ -21,7 +20,6 @@ const { start, next, finish } = compiler(
   extract(),
   componentDependencyResolver(),
   style(),
-  scss(),
   attach({
     typings: false
   }),

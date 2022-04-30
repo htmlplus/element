@@ -1,1 +1,1 @@
-export * from './customElementReact';
+export * from './customElementReact.js';
