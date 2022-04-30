@@ -942,15 +942,15 @@ TODO
 
 ```js
 import compiler from '@htmlplus/element/compiler';
-import { read, parse, extract, attach, uhtml, print } from '@htmlplus/element/compiler';
+import { customElement, extract, parse, read, style, validate } from '@htmlplus/element/compiler';
 
 const { start, next, finish } = compiler(
   read(),
   parse(),
+  validate(),
   extract(),
-  attach(),
-  uhtml(),
-  print(),
+  style(),
+  customElement(),
 );
 
 await start();
