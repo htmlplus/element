@@ -1,5 +1,4 @@
 export * from './customElementReact/index.js';
-export * from './attach.js';
 export * from './customElement.js';
 export * from './extract.js';
 export * from './parse.js';

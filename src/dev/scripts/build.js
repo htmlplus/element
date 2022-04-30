@@ -1,17 +1,7 @@
 import compiler from '../../../dist/compiler/index.js';
-import { attach, customElement, extract, parse, read, style, validate } from '../../../dist/compiler/index.js';
+import { customElement, extract, parse, read, style, validate } from '../../../dist/compiler/index.js';
 
-const { start, next, finish } = compiler(
-  read(),
-  parse(),
-  validate(),
-  extract(),
-  style(),
-  attach({
-    typings: false
-  }),
-  customElement()
-);
+const { start, next, finish } = compiler(read(), parse(), validate(), extract(), style(), customElement());
 
 (async () => {
   await start();
