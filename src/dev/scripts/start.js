@@ -1,30 +1,18 @@
 import { createServer } from 'vite';
 
-import compiler from '../../dist/compiler/index.js';
-import {
-  attach,
-  componentDependencyResolver,
-  extract,
-  parse,
-  print,
-  read,
-  style,
-  uhtml,
-  validate
-} from '../../dist/compiler/index.js';
+import compiler from '../../../dist/compiler/index.js';
+import { attach, customElement, extract, parse, read, style, validate } from '../../../dist/compiler/index.js';
 
 const { start, next, finish } = compiler(
   read(),
   parse(),
   validate(),
   extract(),
-  componentDependencyResolver(),
   style(),
   attach({
     typings: false
   }),
-  uhtml(),
-  print()
+  customElement()
 );
 
 createServer({
@@ -35,8 +23,8 @@ createServer({
   },
   resolve: {
     alias: {
-      '@htmlplus/element/runtime': '../../dist/runtime/index.js',
-      '@htmlplus/element': '../../dist/client/index.js'
+      '@htmlplus/element/runtime': '../../../dist/runtime/index.js',
+      '@htmlplus/element': '../../../dist/client/index.js'
     }
   },
   plugins: [

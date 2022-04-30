@@ -4,8 +4,10 @@ import {Element } from '@htmlplus/element'
 @Element()
 export class MyText {
     render() {
-        return <div>
-            <slot/>
-        </div>
+        return (
+            <div>
+                <slot/>
+            </div>
+        )
     }
 }

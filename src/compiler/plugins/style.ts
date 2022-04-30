@@ -7,7 +7,7 @@ import * as CONSTANTS from '../../constants/index.js';
 import { Context } from '../../types/index.js';
 
 const defaults: StyleOptions = {
-  extensions: ['scss', 'less', 'styl', 'css'],
+  extensions: ['scss', 'css'],
   directory(context: Context) {
     return context.directoryPath!;
   },
@@ -17,7 +17,7 @@ const defaults: StyleOptions = {
 };
 
 export type StyleOptions = {
-  extensions?: Array<'scss' | 'less' | 'styl' | 'css'>;
+  extensions?: Array<'scss' | 'css'>;
   directory?: (context: Context) => string;
   filename?: (context: Context) => string;
   sass?: Options<'sync'>;
@@ -52,7 +52,7 @@ export const style = (options: StyleOptions) => {
     // TODO loadedUrls;
     context.styleDependencies = [];
 
-    if (context.styleParsed) return;
+    if (!context.styleParsed) return;
 
     context.class!.body.body.unshift(
       t.classProperty(

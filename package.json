@@ -12,8 +12,8 @@
     "postbuild": "node scripts/build.post.js",
     "clean": "rimraf dist",
     "format": "prettier --write .",
-    "dev:start": "node src/dev/start.js",
-    "dev:build": "node src/dev/build.js"
+    "dev:start": "node src/dev/scripts/start.js",
+    "dev:build": "node src/dev/scripts/build.js"
   },
   "exports": {
     ".": {
