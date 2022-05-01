@@ -17,6 +17,13 @@ createServer({
       '@htmlplus/element': '../../../dist/client/index.js'
     }
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '$color: pink;\n'
+      }
+    }
+  },
   plugins: [
     {
       name: 'htmlplus',

@@ -1,7 +1,6 @@
 import t from '@babel/types';
 import fs from 'fs';
 import path from 'path';
-import core, { Options } from 'sass';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { Context } from '../../types/index.js';
@@ -17,10 +16,9 @@ const defaults: StyleOptions = {
 };
 
 export type StyleOptions = {
-  extensions?: Array<'scss' | 'css'>;
+  extensions?: Array<string>;
   directory?: (context: Context) => string;
   filename?: (context: Context) => string;
-  sass?: Options<'sync'>;
 };
 
 export const style = (options: StyleOptions) => {
@@ -42,22 +40,17 @@ export const style = (options: StyleOptions) => {
 
     if (!context.stylePath) return;
 
-    const { css, loadedUrls } = core.compile(context.stylePath, {
-      ...(options.sass || {}),
-      style: 'compressed'
-    });
-
-    context.styleParsed = css.toString();
-
-    // TODO loadedUrls;
-    context.styleDependencies = [];
-
-    if (!context.styleParsed) return;
+    context.fileAST!.program.body.unshift(
+      t.importDeclaration(
+        [t.importDefaultSpecifier(t.identifier('AUTO_IMPORT_STYLE'))],
+        t.stringLiteral(context.stylePath)
+      )
+    );
 
     context.class!.body.body.unshift(
       t.classProperty(
         t.identifier(CONSTANTS.STATIC_STYLES),
-        t.stringLiteral(context.styleParsed),
+        t.identifier('AUTO_IMPORT_STYLE'),
         undefined,
         null,
         undefined,
