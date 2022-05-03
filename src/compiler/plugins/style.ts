@@ -40,20 +40,17 @@ export const style = (options: StyleOptions) => {
 
     if (!context.stylePath) return;
 
-    // TODO
-    // context.fileAST!.program.body.unshift(
-    //   t.importDeclaration(
-    //     [t.importDefaultSpecifier(t.identifier('AUTO_IMPORT_STYLE'))],
-    //     t.stringLiteral(context.stylePath)
-    //   )
-    // );
-
-    const raw = fs.readFileSync(context.stylePath, 'utf8');
+    context.fileAST!.program.body.unshift(
+      t.importDeclaration(
+        [t.importDefaultSpecifier(t.identifier('AUTO_IMPORT_STYLE'))],
+        t.stringLiteral(context.stylePath + '?inline')
+      )
+    );
 
     context.class!.body.body.unshift(
       t.classProperty(
         t.identifier(CONSTANTS.STATIC_STYLES),
-        t.templateLiteral([t.templateElement({ raw })], []),
+        t.identifier('AUTO_IMPORT_STYLE'),
         undefined,
         null,
         undefined,
