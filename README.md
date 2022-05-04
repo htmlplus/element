@@ -941,8 +941,8 @@ const { start, next, finish } = compiler(...plugins);
 TODO
 
 ```js
-import compiler from '@htmlplus/element/compiler';
-import { customElement, extract, parse, read, style, validate } from '@htmlplus/element/compiler';
+import compiler from '@htmlplus/element/compiler/index.js';
+import { customElement, extract, parse, read, style, validate } from '@htmlplus/element/compiler/index.js';
 
 const { start, next, finish } = compiler(
   read(),
