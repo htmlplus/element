@@ -1,10 +1,12 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
   "description": "Compiler of HTMLPlus",
   "type": "module",
+  "main": "./client/index.js",
+  "types": "./client/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",
@@ -15,50 +17,12 @@
     "dev:start": "node src/dev/scripts/start.js",
     "dev:build": "node src/dev/scripts/build.js"
   },
-  "exports": {
-    ".": {
-      "default": "./dist/client/index.js"
-    },
-    "./compiler": {
-      "default": "./dist/compiler/index.js"
-    },
-    "./decorators": {
-      "default": "./dist/client/decorators/index.js"
-    },
-    "./helpers": {
-      "default": "./dist/client/helpers/index.js"
-    },
-    "./runtime": {
-      "default": "./dist/runtime/index.js"
-    },
-    "./services": {
-      "default": "./dist/client/services/index.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/client/index.d.ts"
-      ],
-      "compiler": [
-        "./dist/compiler/index.d.ts"
-      ],
-      "decorators": [
-        "./dist/client/decorators/index.d.ts"
-      ],
-      "helpers": [
-        "./dist/client/helpers/index.d.ts"
-      ],
-      "runtime": [
-        "./dist/runtime/index.d.ts"
-      ],
-      "services": [
-        "./dist/client/services/index.d.ts"
-      ]
-    }
-  },
   "files": [
-    "dist",
+    "client",
+    "compiler",
+    "constants",
+    "runtime",
+    "types",
     "package.json",
     "README.md"
   ],
