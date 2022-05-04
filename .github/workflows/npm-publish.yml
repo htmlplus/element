@@ -22,9 +22,7 @@ jobs:
         run: npm ci
       - name: build
         run: npm run build
-      - name: cd
-        run: cd dist
       - name: publish
-        run: npm publish --tag next --access public
+        run: cd dist && npm publish --tag next --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
