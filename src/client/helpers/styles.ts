@@ -8,7 +8,8 @@ export const styles = (input: any): string => {
       return input.join('; ');
     case 'object':
       return Object.keys(input)
-        .map((key) => `${paramCase(key)}: ${input[key]}`)
+        .filter((key) => input[key] !== undefined && input[key] !== null)
+        .map((key) => `${key.startsWith('--') ? '--' : ''}${paramCase(key)}: ${input[key]}`)
         .join('; ');
     case 'string':
       return input;

@@ -1,20 +1,22 @@
-import { PlusElement } from '../../types/index.js';
-import { defineProperty } from '../utils/index.js';
-import { queryAll } from './query-all.js';
+import { PlusElement } from '../../types';
+import { host } from '../utils/index.js';
 
 type Slots = {
   [key: string]: boolean;
 };
 
 export const slots = (target: PlusElement): Slots => {
-  const result = {};
-  queryAll(target, 'slot')?.forEach((slot) => {
-    const name = slot.name || 'default';
-    defineProperty(result, name, {
-      get() {
-        return !!slot.assignedNodes().filter((node) => node.nodeName != '#text' || node.nodeValue?.trim()).length;
-      }
-    });
-  });
-  return result;
+  const slots = {};
+
+  const children = Array.from(host(target).childNodes);
+
+  for (const child of children) {
+    const name = child['slot'] || (child.nodeValue?.trim() && 'default');
+
+    if (!name) continue;
+
+    slots[name] = true;
+  }
+
+  return slots;
 };

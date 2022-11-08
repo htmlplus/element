@@ -1,32 +1,24 @@
-import { Global } from '../../../types/index.js';
+import { pascalCase } from 'change-case';
+
+import { Context, Global } from '../../../types';
 import { __dirname, isDirectoryEmpty, renderTemplate } from '../../utils/index.js';
 
-const defaults: CustomElementReactOptions = {
-  compact: false,
-  dist: '',
-  eventName: undefined,
-  importerComponent(context) {
-    return `YOUR_CORE_PACKAGE_NAME#${context.componentClassName}`;
-  },
-  importerComponentType(context) {
-    return `YOUR_CORE_PACKAGE_NAME#JSX.${context.componentClassName}`;
-  }
-};
+export const CUSTOM_ELEMENT_REACT_OPTIONS: Partial<CustomElementReactOptions> = {};
 
 export interface CustomElementReactOptions {
   compact?: boolean;
-  dist: string;
+  destination: string;
   eventName?: (eventName: string) => string;
-  importerComponent?: (context) => string;
-  importerComponentType?: (context) => string;
+  importerComponent: (context: Context) => { source: string };
+  importerComponentType: (context: Context) => { source: string; imported: string; local: string };
 }
 
 export const customElementReact = (options: CustomElementReactOptions) => {
   const name = 'customElementReact';
 
-  const finish = (global: Global) => {
-    options = { ...defaults, ...options };
+  options = Object.assign({}, CUSTOM_ELEMENT_REACT_OPTIONS, options);
 
+  const finish = (global: Global) => {
     // TODO
     const globalNew: any = {
       contexts: global.contexts.reduce((previous, current) => ({ ...previous, [current.filePath!]: current }), {}),
@@ -35,39 +27,30 @@ export const customElementReact = (options: CustomElementReactOptions) => {
 
     const config = { cwd: __dirname(import.meta.url) };
 
-    const isEmpty = isDirectoryEmpty(options.dist);
+    const isEmpty = isDirectoryEmpty(options.destination);
 
     const skip: Array<string> = [];
 
-    const getKey = (component) => component.componentClassName;
+    const getKey = (component) => component.className;
 
     for (const key in globalNew.contexts) {
       const context = globalNew.contexts[key];
 
-      const parse = (input) => {
-        const [source, key] = input.split('#');
-        const [root, ...sub] = key.split('.');
-        const variable = ['Type', ...sub].join('.');
-        return {
-          source,
-          variable,
-          root
-        };
-      };
-
       const classEvents = context.classEvents.map((classEvent) => {
-        const name = options.eventName?.(classEvent.key.name) || classEvent.key.name;
+        const from = 'on' + pascalCase(classEvent.key.name);
+        const to = options.eventName?.(from) ?? from;
         return {
           ...classEvent,
-          converted: 'on' + name.charAt(0).toUpperCase() + name.slice(1)
+          from,
+          to
         };
       });
 
       const fileName = context.fileName;
 
-      const importerComponent = parse(options.importerComponent!(context));
+      const importerComponent = options.importerComponent(context);
 
-      const importerComponentType = parse(options.importerComponentType!(context));
+      const importerComponentType = options.importerComponentType(context);
 
       const state = {
         ...context,
@@ -83,7 +66,7 @@ export const customElementReact = (options: CustomElementReactOptions) => {
         '!templates/src/components/*fileName*.compact.ts.hbs'
       ];
 
-      renderTemplate(patterns, options.dist, config)(state);
+      renderTemplate(patterns, options.destination, config)(state);
     }
 
     if (options.compact) {
@@ -100,36 +83,28 @@ export const customElementReact = (options: CustomElementReactOptions) => {
           return true;
         })
         .map((group) => {
-          const all = group.components.reverse().map((component, index) => {
-            const componentClassNameInCategory = getKey(component).replace(group.key, '');
+          const all = group.components
+            .reverse()
+            .map((component, index) => {
+              const componentClassNameInCategory = getKey(component).replace(group.key, '');
 
-            const parse = (input) => {
-              const [source, key] = input.split('#');
-              const [root, ...sub] = key.split('.');
-              const local = root + (index + 1);
-              const variable = [local, ...sub].join('.');
+              const importerComponent = options.importerComponent(component);
+
+              const importerComponentType = options.importerComponentType(component);
+
               return {
-                source,
-                variable,
-                root,
-                local
+                ...component,
+                componentClassNameInCategory,
+                importerComponent,
+                importerComponentType
               };
-            };
-
-            const importerComponent = parse(options.importerComponent!(component));
-            const importerComponentType = parse(options.importerComponentType!(component));
-
-            return {
-              ...component,
-              componentClassNameInCategory,
-              importerComponent,
-              importerComponentType
-            };
-          });
+            })
+            // TODO: experimental
+            .sort((a, b) => (getKey(b) < getKey(a) ? 0 : -1));
           return {
             all,
             filterd: all.slice(1),
-            root: all.at(0),
+            root: all[0],
             single: all.length == 1
           };
         })
@@ -143,7 +118,7 @@ export const customElementReact = (options: CustomElementReactOptions) => {
           ...group
         };
         const patterns = ['templates/src/components/*fileName*.compact.ts.hbs'];
-        renderTemplate(patterns, options.dist, config)(state);
+        renderTemplate(patterns, options.destination, config)(state);
       }
     }
 
@@ -153,17 +128,14 @@ export const customElementReact = (options: CustomElementReactOptions) => {
         '!templates/src/components/*fileName*.ts.hbs',
         '!templates/src/components/*fileName*.compact.ts.hbs'
       ];
-      renderTemplate(patterns, options.dist, config)(globalNew);
+      renderTemplate(patterns, options.destination, config)(globalNew);
     }
 
     if (!isEmpty) {
       const patterns = ['templates/src/proxy*', 'templates/src/components/index*'];
-      renderTemplate(patterns, options.dist, config)(globalNew);
+      renderTemplate(patterns, options.destination, config)(globalNew);
     }
   };
 
-  return {
-    name,
-    finish
-  };
+  return { name, finish };
 };

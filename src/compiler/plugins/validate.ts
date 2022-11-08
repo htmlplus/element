@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { Context } from '../../types/index.js';
+import { Context } from '../../types';
 import { hasDecorator, visitor } from '../utils/index.js';
 
 export const validate = () => {
@@ -34,8 +34,5 @@ export const validate = () => {
     context.isInvalid = !hasValidImport || !hasValidExport;
   };
 
-  return {
-    name,
-    next
-  };
+  return { name, next };
 };

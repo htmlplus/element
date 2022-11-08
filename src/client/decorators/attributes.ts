@@ -1,15 +1,14 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types/index.js';
-import { appendToMethod, host, sync } from '../utils/index.js';
+import { PlusElement } from '../../types';
+import { appendToMethod, host, syncAttributes } from '../utils/index.js';
 
 export function Attributes() {
   return function (target: PlusElement, propertyKey: PropertyKey) {
-    let update;
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
-      update = sync(host(this));
+      this[CONSTANTS.API_ATTRIBUTES_SYNCER] = syncAttributes(host(this));
     });
     appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function () {
-      update(this[propertyKey]);
+      this[CONSTANTS.API_ATTRIBUTES_SYNCER](this[propertyKey]);
     });
   };
 }

@@ -1,16 +1,6 @@
 # Create Custom HTML Element
 
-[![Version](https://img.shields.io/npm/v/@htmlplus/element.svg)](https://www.npmjs.com/package/@htmlplus/element)
-[![GitHub forks](https://img.shields.io/github/forks/htmlplus/element)](https://github.com/htmlplus/element/network/members)
-[![GitHub stars](https://img.shields.io/github/stars/htmlplus/element)](https://github.com/htmlplus/element/stargazers)
-[![GitHub license](https://img.shields.io/github/license/htmlplus/element)](https://github.com/htmlplus/core/blob/main/LICENSE)
-[![Linkedin](https://img.shields.io/badge/Follow%20us-white?logo=linkedIn&color=0077B5&logoColor=white)](https://www.linkedin.com/company/htmlplus)
-[![code coverage](https://img.shields.io/coveralls//htmlplus/element/.svg?style=flat-square)](https://coveralls.io/r/htmlplus/element/)
-[![install size](https://packagephobia.now.sh/badge?p=element)](https://packagephobia.now.sh/result?p=element)
-
-Element is powerful library for building scalable, reusable design system for any technology.
-It is one of the fastest and most testable libraries for building web components on the web.
-Completely compatible for Typescript and tsx.
+A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies. Powerd by [Web Component](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements).
 
 ## Table of content
 
@@ -47,7 +37,7 @@ pnpm create @htmlplus/element
 cd htmlplus-project
 ```
 
-To start your Element project, run:
+To start the project, run:
 
 ```bash
 # with npm
@@ -69,7 +59,7 @@ Element is based on classes, so all components are based on `decorator`.
 The decorator converts the next component code based on it's properties during the build.
 
 ```tsx
-// my-element/my-element.tsx
+// my-element.tsx
 
 import { Element } from '@htmlplus/element';
 
@@ -92,7 +82,7 @@ The result of this component after build is provide `my-element` web component.
 The element automatically adds a same name style file to this component. Create `my-element.scss` file for style.
 
 ```scss
-// my-element/my-element.scss
+// my-element.scss
 
 :host {
   display: block;
@@ -103,10 +93,10 @@ The element automatically adds a same name style file to this component. Create 
 
 ## Development Environment
 
-For run any of the component, you must write element name tag into the `public/index.html`
+For run any of the component, you must write element name tag into the `index.html`
 
 ```html
-<!-- public/index.html -->
+<!-- index.html -->
 
 <body>
   <my-element></my-element>
@@ -289,15 +279,24 @@ export class MyButton {
 </details>
 
 <details>
-  <summary>Watch</summary>
+<summary>Watch</summary>
 
-`@Watch` take the name of the `@Property` and `@State` variable to monitor as a parameter. Any time the value of that property changes the function decorated by `@Watch` will be invoked with the `key`, `newValue` and `oldValue` as parameters. This is called first out of the lifecycle callbacks after a property changes.
+Monitors `@Property` and `@State` to catch changes.
+The decorated method will be invoked after any
+changes with the `key`, `newValue`, and `oldValue` as parameters.
+If the arguments aren't defined, all of the `@Property` and `@State` are considered.
 
-- **name**: `String` property name
+Parameters:
+
+- **keys**: Collection of `@Property` and `@State` names.
+  - **type**: string | string[]
+  - **default**: undefined
+- **immediate**: Triggers the callback immediately after initialization.
+  - **type**: boolean
+  - **default**: undefined
 
 ```tsx
 import { Element, Property, Watch } from '@htmlplus/element';
-
 
 @Element()
 export class MyElement {

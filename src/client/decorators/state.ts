@@ -1,36 +1,27 @@
-import { PlusElement } from '../../types/index.js';
-import { defineProperty, host, onReady, request } from '../utils/index.js';
+import { PlusElement } from '../../types';
+import { defineProperty, request } from '../utils/index.js';
 
 export function State() {
   return function (target: PlusElement, propertyKey: PropertyKey) {
-    const values = new Map();
-    defineProperty(target, propertyKey, {
-      get() {
-        return values.get(this);
-      },
-      set(input) {
-        const value = values.get(this);
+    const name = String(propertyKey);
 
-        if (value === input) return;
+    const symbol = Symbol();
 
-        values.set(this, input);
+    function get(this) {
+      return this[symbol];
+    }
 
-        request(this, { [propertyKey]: [input, value] })
-          .then(() => {})
-          .catch((error) => {
-            throw error;
-          });
-      }
-    });
-    onReady(target, function () {
-      defineProperty(host(this), propertyKey, {
-        get: () => {
-          return this[propertyKey];
-        },
-        set: (value) => {
-          this[propertyKey] = value;
-        }
-      });
-    });
+    function set(this, next) {
+      const previous = this[symbol];
+
+      if (next === previous) return;
+
+      this[symbol] = next;
+
+      request(this, name, previous);
+    }
+
+    // TODO: configurable
+    defineProperty(target, propertyKey, { get, set, configurable: true });
   };
 }

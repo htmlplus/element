@@ -1,20 +1,17 @@
-import { PlusElement } from '../../types/index.js';
+import * as CONSTANTS from '../../constants/index.js';
+import { PlusElement } from '../../types';
 import {
   defineProperty,
-  getMembers,
   host,
-  isReady,
-  parseValue,
   request,
+  appendToMethod,
   updateAttribute,
-  onReady
+  getConfig,
+  getMembers,
+  getTag
 } from '../utils/index.js';
 
 export interface PropertyOptions {
-  /**
-   * TODO
-   */
-  attribute?: boolean | string;
   /**
    * Whether property value is reflected back to the associated attribute. default is `false`.
    */
@@ -23,60 +20,56 @@ export interface PropertyOptions {
 
 export function Property(options?: PropertyOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
-    const values = new Map();
-    defineProperty(target, propertyKey, {
-      get() {
-        return values.get(this);
-      },
-      set(input) {
-        const value = values.get(this);
+    const name = String(propertyKey);
 
-        if (value === input) return;
+    const symbol = Symbol();
 
-        values.set(this, input);
+    function get(this) {
+      return this[symbol];
+    }
 
-        // TODO
-        const ready = isReady(this);
+    function set(this, next) {
+      const previous = this[symbol];
 
-        request(this, { [propertyKey]: [input, value] })
-          .then((renderd) => {
-            const name = String(propertyKey);
+      if (next === previous) return;
 
-            const element = host(this);
+      this[symbol] = next;
 
-            const hasAttribute = element.hasAttribute(name);
+      request(this, name, previous, (skip) => {
+        if (!options?.reflect || skip) return;
 
-            // TODO
-            if (options?.reflect && !hasAttribute && !renderd && !ready) updateAttribute(element, name, input);
+        target[CONSTANTS.API_LOCKED] = true;
 
-            if (!renderd) return;
+        updateAttribute(host(this), name, next);
 
-            if (!options?.reflect) return;
-
-            const raw = element.getAttribute(name);
-
-            const [type] = getMembers(target)[propertyKey];
-
-            const parsed = parseValue(raw, type);
-
-            if (parsed === input) return;
-
-            updateAttribute(element, name, input);
-          })
-          .catch((error) => {
-            throw error;
-          });
-      }
-    });
-    onReady(target, function () {
-      defineProperty(host(this), propertyKey, {
-        get: () => {
-          return this[propertyKey];
-        },
-        set: (value) => {
-          this[propertyKey] = value;
-        }
+        target[CONSTANTS.API_LOCKED] = false;
       });
+    }
+
+    defineProperty(target, propertyKey, { get, set });
+
+    appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+      const element = host(this);
+
+      // TODO: experimental for global config
+      if (getMembers(this)[name]?.default === this[name]) {
+        const config = getConfig('component', getTag(target)!, 'property', name);
+        if (typeof config != 'undefined') this[name] = config;
+      }
+
+      // TODO: experimental for isolated options
+      if (element === this) return;
+
+      const get = () => {
+        return this[propertyKey];
+      };
+
+      const set = (input) => {
+        this[propertyKey] = input;
+      };
+
+      // TODO: configurable
+      defineProperty(element, propertyKey, { get, set, configurable: true });
     });
   };
 }

@@ -1,5 +1,3 @@
-import { PlusElement } from '../../types/index.js';
-
-export const call = (target: PlusElement, key: string, ...args: Array<any>): any => {
-  return target[key]?.call(target, ...args);
+export const call = (target: any, key: PropertyKey, ...parameters: Array<any>): any => {
+  return target[key]?.call(target, ...parameters);
 };

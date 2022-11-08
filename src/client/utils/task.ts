@@ -1,18 +1,14 @@
 export interface QueueOptions {
-  canStart?: (states, state) => boolean;
-  canRun?: (states) => boolean;
-  run: (states) => void;
+  canStart?: () => boolean;
+  canRun?: () => boolean;
+  run: () => void;
 }
 
 export const task = (options: QueueOptions) => {
-  let states, isPending, updatePromise!: Promise<boolean>;
+  let isPending, updatePromise!: Promise<boolean>;
 
-  const run = (state?) => {
-    const newStates = Object.assign({}, states, state);
-
-    if (options.canStart && !options.canStart(newStates, state)) return Promise.resolve(false);
-
-    states = newStates;
+  const run = () => {
+    if (options.canStart && !options.canStart()) return Promise.resolve(false);
 
     if (!isPending) updatePromise = enqueue();
 
@@ -32,11 +28,9 @@ export const task = (options: QueueOptions) => {
     if (!isPending) return updatePromise;
 
     try {
-      if (options.canRun && !options.canRun(states)) return (isPending = false);
+      if (options.canRun && !options.canRun()) return (isPending = false);
 
-      options.run(states);
-
-      states = undefined;
+      options.run();
 
       isPending = false;
 

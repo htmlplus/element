@@ -1,66 +1,62 @@
 import t from '@babel/types';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { Context } from '../../types/index.js';
+import { Context } from '../../types';
+import { addDependency } from '../utils/index.js';
 
-const defaults: StyleOptions = {
-  extensions: ['scss', 'css'],
-  directory(context: Context) {
-    return context.directoryPath!;
-  },
-  filename(context: Context) {
-    return context.fileName!;
+export const STYLE_OPTIONS: Partial<StyleOptions> = {
+  source(context) {
+    return [
+      path.join(context.directoryPath!, `${context.fileName!}.css`),
+      path.join(context.directoryPath!, `${context.fileName!}.less`),
+      path.join(context.directoryPath!, `${context.fileName!}.sass`),
+      path.join(context.directoryPath!, `${context.fileName!}.scss`),
+      path.join(context.directoryPath!, `${context.fileName!}.styl`)
+    ];
   }
 };
 
 export type StyleOptions = {
-  extensions?: Array<string>;
-  directory?: (context: Context) => string;
-  filename?: (context: Context) => string;
+  source?: (context: Context) => string | string[];
 };
 
-export const style = (options: StyleOptions) => {
+export const style = (options?: StyleOptions) => {
   const name = 'style';
 
-  options = { ...defaults, ...options };
+  options = Object.assign({}, STYLE_OPTIONS, options);
 
   const next = (context: Context) => {
-    const filename = options.filename!(context);
+    const sources = [options?.source?.(context)].flat();
 
-    const directory = options.directory!(context);
-
-    for (let extension of options.extensions!) {
-      const stylePath = path.join(directory, `${filename}.${extension}`);
-      if (!fs.existsSync(stylePath)) continue;
-      context.stylePath = stylePath;
+    for (const source of sources) {
+      if (!source) continue;
+      if (!fs.existsSync(source)) continue;
+      context.stylePath = source;
       break;
     }
 
     if (!context.stylePath) return;
 
-    context.fileAST!.program.body.unshift(
-      t.importDeclaration(
-        [t.importDefaultSpecifier(t.identifier('AUTO_IMPORT_STYLE'))],
-        t.stringLiteral(context.stylePath + '?inline')
-      )
+    const { local, node } = addDependency(context.fileAST!, context.stylePath, CONSTANTS.STYLE_IMPORTED);
+
+    t.addComment(node, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+
+    // TODO: remove 'local!'
+    const property = t.classProperty(
+      t.identifier(CONSTANTS.STATIC_STYLES),
+      t.identifier(local!),
+      undefined,
+      null,
+      undefined,
+      true
     );
 
-    context.class!.body.body.unshift(
-      t.classProperty(
-        t.identifier(CONSTANTS.STATIC_STYLES),
-        t.identifier('AUTO_IMPORT_STYLE'),
-        undefined,
-        null,
-        undefined,
-        true
-      )
-    );
+    t.addComment(property, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_PROPERTY, true);
+
+    context.class!.body.body.unshift(property);
   };
 
-  return {
-    name,
-    next
-  };
+  return { name, next };
 };

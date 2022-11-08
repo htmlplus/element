@@ -1,18 +1,18 @@
-/* eslint-disable */
-/* tslint:disable */
-
 /**************************************************
  * THIS FILE IS AUTO-GENERATED, DO NOT EDIT MANUALY
  **************************************************/
  
 {{#each all}}
-import { {{componentClassName}} } from './{{fileName}}';
+import { {{className}} } from './{{fileName}}';
 {{/each}}
 
-const All = /*@__PURE__*/ Object.assign({{root.componentClassName}}, {
-  {{#each filterd}}
-  {{componentClassNameInCategory}}: {{componentClassName}},
-  {{/each}}
-});
+const All = Object.assign(
+  {{root.className}},
+  {
+    {{#each filterd}}
+    {{componentClassNameInCategory}}: {{className}},
+    {{/each}}
+  }
+);
 
-export { All as {{root.componentClassName}} }
+export { All as {{root.className}} }

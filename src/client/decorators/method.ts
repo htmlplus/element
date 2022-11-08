@@ -1,13 +1,12 @@
-import { PlusElement } from '../../types/index.js';
-import { defineProperty, host, onReady } from '../utils/index.js';
+import * as CONSTANTS from '../../constants/index.js';
+import { PlusElement } from '../../types';
+import { appendToMethod, defineProperty, host } from '../utils/index.js';
 
 export function Method() {
   return function (target: PlusElement, propertyKey: PropertyKey) {
-    onReady(target, function () {
+    appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
       defineProperty(host(this), propertyKey, {
-        get: () => {
-          return this[propertyKey].bind(this);
-        }
+        get: () => this[propertyKey].bind(this)
       });
     });
   };

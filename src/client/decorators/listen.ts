@@ -1,25 +1,35 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types/index.js';
+import { PlusElement } from '../../types';
 import { appendToMethod, host, on, off } from '../utils/index.js';
 import { Bind } from './bind.js';
 
-const defaults: ListenOptions = {
-  target: 'host'
-};
-
 export interface ListenOptions {
-  target?: 'host' | 'body' | 'document' | 'window';
+  capture?: boolean;
   once?: boolean;
   passive?: boolean;
   signal?: AbortSignal;
-  capture?: boolean;
+  target?: 'host' | 'body' | 'document' | 'window';
 }
 
-export function Listen(name: string, options: ListenOptions = defaults) {
+/**
+ * The default options.
+ */
+export const ListenOptionsDefault: ListenOptions = {
+  target: 'host'
+};
+
+/**
+ * Will be called whenever the specified event is delivered to the target.
+ * [More](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
+ * @param type TODO
+ * @param options TODO
+ */
+export function Listen(type: string, options?: ListenOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
-    // TODO: types
+    options = Object.assign({}, ListenOptionsDefault, options);
+
     const element = (instance) => {
-      switch (options.target) {
+      switch (options?.target) {
         case 'body':
           return window.document.body;
         case 'document':
@@ -28,15 +38,17 @@ export function Listen(name: string, options: ListenOptions = defaults) {
           return window;
         case 'host':
           return host(instance);
+        default:
+          return host(instance);
       }
     };
 
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
-      on(element(this)!, name, this[propertyKey], options);
+      on(element(this), type, this[propertyKey], options);
     });
 
     appendToMethod(target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
-      off(element(this)!, name, this[propertyKey], options);
+      off(element(this), type, this[propertyKey], options);
     });
 
     return Bind()(target, propertyKey, descriptor);

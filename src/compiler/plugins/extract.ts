@@ -4,8 +4,10 @@ import { pascalCase, paramCase } from 'change-case';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { Context } from '../../types/index.js';
+import { Context } from '../../types';
 import { hasDecorator, visitor } from '../utils/index.js';
+
+export const EXTRACT_OPTIONS: Partial<ExtractOptions> = {};
 
 export interface ExtractOptions {
   prefix?: string;
@@ -13,6 +15,8 @@ export interface ExtractOptions {
 
 export const extract = (options?: ExtractOptions) => {
   const name = 'extract';
+
+  options = Object.assign({}, EXTRACT_OPTIONS, options);
 
   const next = (context: Context) => {
     visitor(context.fileAST as any, {
@@ -50,6 +54,21 @@ export const extract = (options?: ExtractOptions) => {
 
           return;
         }
+      },
+      JSXElement(path) {
+        const { openingElement } = path.node;
+
+        const name = openingElement.name.name;
+
+        if (!/-/g.test(name)) return;
+
+        context.customElementNames ??= [];
+
+        context.customElementNames.push(name);
+
+        context.customElementNames = context.customElementNames
+          .filter((item, index, items) => items.indexOf(item) === index)
+          .sort();
       }
     });
 
@@ -63,20 +82,10 @@ export const extract = (options?: ExtractOptions) => {
 
     context.className = context.class?.id?.name!;
 
-    // TODO
-    // context.componentKey = paramCase(context.className);
-    context.componentClassName = pascalCase(context.componentTag!.split('-').slice(1).join('-'));
-    context.componentInterfaceName = `HTML${context.componentClassName}Element`;
+    context.componentKey = paramCase(context.className);
 
     // TODO
-    // const componentClassName           = "DialogBody";              [OK]
-    // const componentInterfaceName       = "HTMLDialogBodyElement";   [OK]
-    // const componentTag                 = "plus-dialog-body";        [OK]
-    // const componentClassNameInCategory = "Body";                    [RAW]
-    // const componentKey                 = "dialog-body-1";           [RAW]
-    // const fileName                     = "dialogBodyNew";           [OK]
-    // const className                    = "DialogBody1";             [OK]
-    // const category                     = "Dialog";                  [RAW]
+    context.componentInterfaceName = `HTML${pascalCase(context.componentTag!)}Element`;
 
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_EVENT)
@@ -107,8 +116,5 @@ export const extract = (options?: ExtractOptions) => {
     ) as ClassMethod;
   };
 
-  return {
-    name,
-    next
-  };
+  return { name, next };
 };

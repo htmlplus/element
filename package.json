@@ -1,35 +1,36 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.3.3",
+  "version": "0.5.1",
   "license": "MIT",
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
-  "description": "Compiler of HTMLPlus",
+  "description": "A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies.",
   "type": "module",
-  "main": "./client/index.js",
-  "types": "./client/index.d.ts",
+  "main": "client/index.js",
+  "types": "client/index.d.ts",
   "scripts": {
-    "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "npm run clean && tsc && node scripts/build.post.js",
     "build:watch": "tsc -w",
-    "postbuild": "node scripts/build.post.js",
     "clean": "rimraf dist",
-    "format": "prettier --write .",
-    "dev:start": "node src/dev/scripts/start.js",
-    "dev:build": "node src/dev/scripts/build.js"
+    "development:start": "ts-node --esm src/development/scripts/start.ts",
+    "development:build": "ts-node --esm src/development/scripts/build.ts",
+    "development:build:watch": "nodemon src/development/scripts/build.ts",
+    "format": "prettier --write ."
   },
   "files": [
-    "client",
-    "compiler",
-    "constants",
-    "runtime",
-    "types",
-    "package.json",
-    "README.md"
+    "**/*.*"
   ],
+  "publishConfig": {
+    "directory": "dist"
+  },
   "engines": {
     "node": ">= 12.7.0"
   },
-  "keywords": [],
+  "keywords": [
+    "components",
+    "custom elements",
+    "design systems",
+    "web components"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/htmlplus/element.git"
@@ -39,24 +40,25 @@
   },
   "homepage": "https://github.com/htmlplus/element#readme",
   "dependencies": {
-    "@babel/generator": "^7.16.0",
-    "@babel/parser": "^7.16.4",
-    "@babel/traverse": "^7.16.3",
-    "@babel/types": "^7.16.0",
-    "@types/node": "^16.11.11",
+    "@babel/generator": "^7.20.3",
+    "@babel/parser": "^7.20.3",
+    "@babel/traverse": "^7.20.1",
+    "@babel/types": "^7.20.2",
+    "@types/node": "^18.11.9",
     "change-case": "^4.1.2",
-    "fast-glob": "^3.2.11",
+    "fast-glob": "^3.2.12",
+    "fs-extra": "^10.1.0",
     "handlebars": "^4.7.7",
-    "log-update": "^5.0.0",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.2",
-    "uhtml": "^2.7.6"
+    "ora": "^6.1.2",
+    "typescript": "^4.8.4"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
-    "cpy": "^9.0.0",
-    "prettier": "^2.5.0",
+    "@trivago/prettier-plugin-sort-imports": "^3.4.0",
+    "cpy": "^9.0.1",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
-    "vite": "^2.7.10"
+    "ts-node": "^10.9.1",
+    "vite": "^3.2.3"
   }
 }
