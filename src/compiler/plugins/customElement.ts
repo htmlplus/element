@@ -92,19 +92,7 @@ export const customElement = (options?: CustomElementOptions) => {
       JSXAttribute: {
         exit(path) {
           if (path.node.value?.type == 'JSXExpressionContainer') {
-            let node = path.node;
-
-            if (path.node.name.name == 'ref') {
-              node = t.jsxAttribute(
-                path.node.name,
-                t.jSXExpressionContainer(
-                  t.arrowFunctionExpression(
-                    [t.identifier('$element')],
-                    t.assignmentExpression('=', path.node.value.expression, t.identifier('$element'))
-                  )
-                )
-              );
-            }
+            const node = path.node;
 
             path.replaceWith(t.jsxIdentifier(print(node).replace('={', '=${')));
 
