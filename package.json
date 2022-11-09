@@ -19,9 +19,6 @@
   "files": [
     "**/*.*"
   ],
-  "publishConfig": {
-    "directory": "dist"
-  },
   "engines": {
     "node": ">= 12.7.0"
   },
