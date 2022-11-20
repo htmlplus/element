@@ -30,11 +30,15 @@ export const setConfig = (config: Options, override?: boolean) => {
 const merge = (target, ...sources) => {
   for (const source of sources) {
     if (!source) continue;
-    for (const key of Object.keys(source)) {
-      if (source[key] instanceof Object) {
-        target[key] = merge(target[key] || {}, source[key]);
-      } else {
-        target[key] = source[key];
+    if (Array.isArray(source)) {
+      target = source;
+    } else {
+      for (const key of Object.keys(source)) {
+        if (source[key] instanceof Object) {
+          target[key] = merge(target[key] || {}, source[key]);
+        } else {
+          target[key] = source[key];
+        }
       }
     }
   }
