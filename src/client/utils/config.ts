@@ -12,19 +12,22 @@ let defaults: Options = {
   component: {}
 };
 
-let options: Options = {};
-
 export const getConfig = (...parameters: string[]): any => {
-  let config = options;
+  if (typeof window == 'undefined') return;
+
+  let config = window['HTMLPLUS'];
+
   for (const parameter of parameters) {
     if (!config) break;
     config = config[parameter];
   }
+
   return config;
 };
 
 export const setConfig = (config: Options, override?: boolean) => {
-  options = override ? merge({}, defaults, config) : merge({}, defaults, options, config);
+  if (typeof window == 'undefined') return;
+  window['HTMLPLUS'] = merge({}, defaults, override ? {} : window['HTMLPLUS'], config);
 };
 
 const merge = (target, ...sources) => {
