@@ -3,8 +3,8 @@ import { parse as parser, ParserOptions } from '@babel/parser';
 import { Context } from '../../types';
 
 export const PARSE_OPTIONS: Partial<ParseOptions> = {
-  allowImportExportEverywhere: true,
-  plugins: ['jsx', 'typescript', 'decorators-legacy']
+  sourceType: 'module',
+  plugins: [['decorators', { decoratorsBeforeExport: true }], 'jsx', 'typescript']
 };
 
 export type ParseOptions = ParserOptions;

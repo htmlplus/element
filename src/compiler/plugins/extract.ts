@@ -23,7 +23,14 @@ export const extract = (options?: ExtractOptions) => {
       ClassDeclaration: {
         exit(path) {
           context.class = path.node;
+
           context.classMembers = context.class?.body?.body || [];
+
+          // TODO
+          if (path.parentPath.isExportNamedDeclaration() && !context.class?.leadingComments) {
+            context.class!['_leadingComments'] = t.cloneNode(path.parentPath.node, true).leadingComments || [];
+          }
+
           path.skip();
         }
       },

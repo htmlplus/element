@@ -17,7 +17,10 @@ export const getTag = (node: Node, key?: string): Tag | undefined => {
 export const getTags = (node: Node, filter?: string): Array<Tag> => {
   const tags: Array<Tag> = [];
 
-  const lines = node.leadingComments
+  // TODO
+  const comments = node['_leadingComments'] || node.leadingComments;
+
+  const lines = comments
     ?.map((comment) => {
       const { type, value } = comment;
       if (type == 'CommentLine') return value;
