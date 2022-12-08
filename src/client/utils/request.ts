@@ -70,11 +70,11 @@ export const request = (target: PlusElement, name?: string, previous?: any, call
       // Calls the lifecycle's callback after the rendering phase.
       call(target, CONSTANTS.LIFECYCLE_UPDATED, states);
 
-      // TODO: releated to the @Watch decorator.
-      target[CONSTANTS.API_LOADED] = true;
-
       // Clears stacks.
       stacks.clear();
+
+      // TODO: releated to the @Watch decorator.
+      target[CONSTANTS.API_RENDER_COMPLETED] = true;
     }
   });
 

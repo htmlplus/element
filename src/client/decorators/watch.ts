@@ -17,13 +17,13 @@ export function Watch(keys?: string | string[], immediate?: boolean) {
     // Registers a lifecycle to detect changes.
     appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function (states: Map<string, any>) {
       // Skips the logic if 'immediate' wasn't passed.
-      if (!immediate && !this[CONSTANTS.API_LOADED]) return;
+      if (!immediate && !this[CONSTANTS.API_RENDER_COMPLETED]) return;
       // Loops the keys.
-      states.forEach((prev, key) => {
+      states.forEach((previous, key) => {
         // Skips the current key.
         if (all.length && !all.includes(key)) return;
         // Invokes the method with parameters.
-        this[propertyKey](this[key], prev, key);
+        this[propertyKey](this[key], previous, key);
       });
     });
   };

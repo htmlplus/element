@@ -5,9 +5,9 @@ export const API_ATTRIBUTES_SYNCER = Symbol();
 export const API_CONNECTED = Symbol();
 export const API_HOST = Symbol();
 export const API_INSTANCE = Symbol();
-export const API_LOADED = Symbol();
 export const API_LOCKED = Symbol();
 export const API_REQUEST = Symbol();
+export const API_RENDER_COMPLETED = Symbol();
 export const API_STACKS = Symbol();
 
 // comments
