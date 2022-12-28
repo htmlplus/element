@@ -20,9 +20,9 @@ export const ListenOptionsDefault: ListenOptions = {
 
 /**
  * Will be called whenever the specified event is delivered to the target.
- * [More](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
- * @param type TODO
- * @param options TODO
+ * [More](https://mdn.io/addEventListener).
+ * @param type A case-sensitive string representing the [event type](https://mdn.io/events) to listen for.
+ * @param options An object that specifies characteristics about the event listener.
  */
 export function Listen(type: string, options?: ListenOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
