@@ -28,7 +28,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
 
       log(`Plugin '${plugin.name}' is starting...`);
 
-      await plugin.start(global);
+      global = (await plugin.start(global)) || global;
 
       log(`Plugin '${plugin.name}' started successfully.`);
     }
@@ -36,7 +36,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
     log(`Plugins started successfully.`, true);
   };
 
-  const next = async (filePath: string) => {
+  const run = async (filePath: string) => {
     const key = filePath.split(/[\/|\\]/g).pop();
 
     let context: Context = {
@@ -44,27 +44,17 @@ export const compiler = (...plugins: Array<Plugin>) => {
     };
 
     for (const plugin of plugins) {
-      if (!plugin.next) continue;
+      if (!plugin.run) continue;
 
       log(`Plugin '${plugin.name}' is executing on '${path.basename(filePath)}' file.`);
 
-      const output = await plugin.next(context, global);
+      context = (await plugin.run(context, global)) || context;
 
-      // TODO
-      if (output) {
-        context.outputs = (context.outputs ?? [])
-          .filter((output) => {
-            if (plugin.name != output.name) return true;
-            if (plugin.options && plugin.options != output.options) return true;
-          })
-          .concat({
-            name: plugin.name,
-            options: plugin.options,
-            output
-          });
-      }
-
-      global.contexts = global.contexts.filter((current) => current.filePath != context.filePath).concat(context);
+      global.contexts = global.contexts
+        .filter((current) => {
+          return current.filePath != context.filePath;
+        })
+        .concat(context);
 
       log(`Plugin '${plugin.name}' executed successfully on '${path.basename(filePath)}' file.`);
 
@@ -86,7 +76,7 @@ export const compiler = (...plugins: Array<Plugin>) => {
 
       log(`Plugin '${plugin.name}' is finishing...`);
 
-      await plugin.finish(global);
+      global = (await plugin.finish(global)) || global;
 
       log(`Plugin '${plugin.name}' finished successfully.`);
     }
@@ -96,5 +86,5 @@ export const compiler = (...plugins: Array<Plugin>) => {
     log(`Finished.`, true);
   };
 
-  return { start, next, finish };
+  return { start, run, finish };
 };

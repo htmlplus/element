@@ -4,7 +4,7 @@ import { pascalCase, paramCase } from 'change-case';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { Context } from '../../types';
+import { Context, Plugin } from '../../types';
 import { hasDecorator, visitor } from '../utils/index.js';
 
 export const EXTRACT_OPTIONS: Partial<ExtractOptions> = {};
@@ -13,12 +13,12 @@ export interface ExtractOptions {
   prefix?: string;
 }
 
-export const extract = (options?: ExtractOptions) => {
+export const extract = (options?: ExtractOptions): Plugin => {
   const name = 'extract';
 
   options = Object.assign({}, EXTRACT_OPTIONS, options);
 
-  const next = (context: Context) => {
+  const run = (context: Context) => {
     visitor(context.fileAST as any, {
       ClassDeclaration: {
         exit(path) {
@@ -123,5 +123,5 @@ export const extract = (options?: ExtractOptions) => {
     ) as ClassMethod;
   };
 
-  return { name, next };
+  return { name, run };
 };

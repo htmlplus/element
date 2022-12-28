@@ -2,7 +2,7 @@ import t, { ObjectProperty, TSTypeAnnotation } from '@babel/types';
 import { pascalCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { Context } from '../../types';
+import { Context, Plugin } from '../../types';
 import { addDependency, print, visitor } from '../utils/index.js';
 
 export const CUSTOM_ELEMENT_OPTIONS: Partial<CustomElementOptions> = {
@@ -16,12 +16,12 @@ export interface CustomElementOptions {
 }
 
 // TODO: support {variable && jsxElement}
-export const customElement = (options?: CustomElementOptions) => {
+export const customElement = (options?: CustomElementOptions): Plugin => {
   const name = 'customElement';
 
   options = Object.assign({}, CUSTOM_ELEMENT_OPTIONS, options);
 
-  const next = (context: Context) => {
+  const run = (context: Context) => {
     const ast = t.cloneNode(context.fileAST!, true);
 
     // attaches name
@@ -363,5 +363,5 @@ export const customElement = (options?: CustomElementOptions) => {
     context.script = print(ast);
   };
 
-  return { name, next };
+  return { name, run };
 };

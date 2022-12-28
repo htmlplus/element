@@ -1,6 +1,6 @@
 import { pascalCase } from 'change-case';
 
-import { Context, Global } from '../../../types';
+import { Context, Global, Plugin } from '../../../types';
 import { __dirname, isDirectoryEmpty, renderTemplate } from '../../utils/index.js';
 
 export const CUSTOM_ELEMENT_REACT_OPTIONS: Partial<CustomElementReactOptions> = {};
@@ -13,7 +13,7 @@ export interface CustomElementReactOptions {
   importerComponentType: (context: Context) => { source: string; imported: string; local: string };
 }
 
-export const customElementReact = (options: CustomElementReactOptions) => {
+export const customElementReact = (options: CustomElementReactOptions): Plugin => {
   const name = 'customElementReact';
 
   options = Object.assign({}, CUSTOM_ELEMENT_REACT_OPTIONS, options);

@@ -5,11 +5,6 @@ export interface Context {
   customElementNames?: Array<string>;
   isInvalid?: boolean;
   script?: string;
-  outputs?: Array<{
-    name: string;
-    options?: any;
-    output?: any;
-  }>;
 
   // assets
   assets?: string;

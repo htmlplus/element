@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
 
-import { Context, Global } from '../../types';
+import { Context, Global, Plugin } from '../../types';
 import { getInitializer, getTag, getTags, getTypeReference, hasTag, parseTag, print } from '../utils/index.js';
 
 export const DOCUMENT_OPTIONS: Partial<DocumentOptions> = {};
@@ -13,7 +13,7 @@ export interface DocumentOptions {
   transformer?: (context: Context, element: any) => any;
 }
 
-export const document = (options: DocumentOptions) => {
+export const document = (options: DocumentOptions): Plugin => {
   const name = 'document';
 
   options = Object.assign({}, DOCUMENT_OPTIONS, options);

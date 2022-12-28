@@ -1,18 +1,20 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { Plugin } from '../../types';
+
 export const COPY_OPTIONS: Partial<CopyOptions> = {
   at: 'start'
 };
 
 export interface CopyOptions {
-  at?: 'start' | 'next' | 'finish';
+  at?: 'start' | 'run' | 'finish';
   destination: string;
   source: string;
   transformer?: (content: string) => string;
 }
 
-export const copy = (options: CopyOptions) => {
+export const copy = (options: CopyOptions): Plugin => {
   const name = 'copy';
 
   options = Object.assign({}, COPY_OPTIONS, options);
@@ -35,13 +37,13 @@ export const copy = (options: CopyOptions) => {
     copy('start');
   };
 
-  const next = () => {
-    copy('next');
+  const run = () => {
+    copy('run');
   };
 
   const finish = () => {
     copy('finish');
   };
 
-  return { name, start, next, finish };
+  return { name, start, run, finish };
 };

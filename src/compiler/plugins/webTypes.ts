@@ -2,7 +2,7 @@ import { paramCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Context, Global } from '../../types';
+import { Context, Global, Plugin } from '../../types';
 import { getInitializer, getTags, hasTag, parseTag, print } from '../utils/index.js';
 
 export const WEB_TYPES_OPTIONS: Partial<WebTypesOptions> = {};
@@ -15,7 +15,7 @@ export interface WebTypesOptions {
   transformer?: (context: Context, component: any) => any;
 }
 
-export const webTypes = (options: WebTypesOptions) => {
+export const webTypes = (options: WebTypesOptions): Plugin => {
   const name = 'webTypes';
 
   options = Object.assign({}, WEB_TYPES_OPTIONS, options);

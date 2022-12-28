@@ -4,7 +4,7 @@ import { compiler } from '../compiler/index.js';
 import { Plugin } from '../types';
 
 export const vite = (...plugins: Array<Plugin>) => {
-  const { start, next, finish } = compiler(...plugins);
+  const { start, run, finish } = compiler(...plugins);
   return {
     name: 'htmlplus',
     async buildStart() {
@@ -12,7 +12,7 @@ export const vite = (...plugins: Array<Plugin>) => {
     },
     async load(id) {
       if (!id.endsWith('.tsx')) return;
-      let { isInvalid, script, stylePath } = await next(id);
+      let { isInvalid, script, stylePath } = await run(id);
       if (isInvalid) return;
       if (script && stylePath) {
         script = script.replace(path.basename(stylePath), `${path.basename(stylePath)}?inline`);

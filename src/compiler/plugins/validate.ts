@@ -1,11 +1,11 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { Context } from '../../types';
+import { Context, Plugin } from '../../types';
 import { hasDecorator, visitor } from '../utils/index.js';
 
-export const validate = () => {
+export const validate = (): Plugin => {
   const name = 'validate';
 
-  const next = (context: Context) => {
+  const run = (context: Context) => {
     let hasValidImport;
     visitor(context.fileAST!, {
       ImportDeclaration(path) {
@@ -34,5 +34,5 @@ export const validate = () => {
     context.isInvalid = !hasValidImport || !hasValidExport;
   };
 
-  return { name, next };
+  return { name, run };
 };

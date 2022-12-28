@@ -1,4 +1,4 @@
-import { Global } from '../../types';
+import { Global, Plugin } from '../../types';
 
 export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {};
 
@@ -6,7 +6,7 @@ export interface VisualStudioCodeOptions {
   destination: string;
 }
 
-export const visualStudioCode = (options: VisualStudioCodeOptions) => {
+export const visualStudioCode = (options: VisualStudioCodeOptions): Plugin => {
   const name = 'visualStudioCode';
 
   options = Object.assign({}, VISUAL_STUDIO_CODE_OPTIONS, options);

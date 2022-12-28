@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Context, Global } from '../../types';
+import { Context, Global, Plugin } from '../../types';
 
 export const README_OPTIONS: Partial<ReadmeOptions> = {
   source(context) {
@@ -13,7 +13,7 @@ export type ReadmeOptions = {
   source?: (context: Context) => string;
 };
 
-export const readme = (options: ReadmeOptions) => {
+export const readme = (options: ReadmeOptions): Plugin => {
   const name = 'readme';
 
   options = Object.assign({}, README_OPTIONS, options);

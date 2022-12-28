@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Context } from '../../types';
+import { Context, Plugin } from '../../types';
 
 export const ASSETS_OPTIONS: Partial<AssetsOptions> = {
   once: true,
@@ -19,14 +19,14 @@ export type AssetsOptions = {
   source?: (context: Context) => string;
 };
 
-export const assets = (options: AssetsOptions) => {
+export const assets = (options: AssetsOptions): Plugin => {
   const name = 'assets';
 
   options = Object.assign({}, ASSETS_OPTIONS, options);
 
   const sources = new Set<string>();
 
-  const next = (context: Context) => {
+  const run = (context: Context) => {
     const source = options.source?.(context);
 
     if (!source) return;
@@ -44,5 +44,5 @@ export const assets = (options: AssetsOptions) => {
     context.assets = source;
   };
 
-  return { name, next };
+  return { name, run };
 };

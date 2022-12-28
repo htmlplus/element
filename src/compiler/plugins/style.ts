@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { Context } from '../../types';
+import { Context, Plugin } from '../../types';
 import { addDependency } from '../utils/index.js';
 
 export const STYLE_OPTIONS: Partial<StyleOptions> = {
@@ -22,12 +22,12 @@ export type StyleOptions = {
   source?: (context: Context) => string | string[];
 };
 
-export const style = (options?: StyleOptions) => {
+export const style = (options?: StyleOptions): Plugin => {
   const name = 'style';
 
   options = Object.assign({}, STYLE_OPTIONS, options);
 
-  const next = (context: Context) => {
+  const run = (context: Context) => {
     const sources = [options?.source?.(context)].flat();
 
     for (const source of sources) {
@@ -58,5 +58,5 @@ export const style = (options?: StyleOptions) => {
     context.class!.body.body.unshift(property);
   };
 
-  return { name, next };
+  return { name, run };
 };
