@@ -212,6 +212,15 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
       }
     });
 
+    // removes methods decorators
+    visitor(ast, {
+      Decorator(path) {
+        const { expression } = path.node;
+        if (expression.callee?.name != CONSTANTS.DECORATOR_METHOD) return;
+        path.remove();
+      }
+    });
+
     // attaches typings
     if (options?.typings) {
       visitor(ast, {
