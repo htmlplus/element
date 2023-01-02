@@ -232,40 +232,6 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
       }
     });
 
-    // attaches members
-    visitor(ast, {
-      ClassDeclaration(path) {
-        const { body, id } = path.node;
-
-        if (id.name != context.className) return;
-
-        const node = t.classProperty(
-          t.identifier(CONSTANTS.STATIC_MEMBERS),
-          t.objectExpression(
-            context.classMethods!.map((method) =>
-              t.objectProperty(
-                t.identifier(method.key['name']),
-                t.objectExpression([
-                  t.objectProperty(
-                    t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE),
-                    t.numericLiteral(CONSTANTS.TYPE_FUNCTION)
-                  )
-                ])
-              )
-            )
-          ),
-          undefined,
-          undefined,
-          undefined,
-          true
-        );
-
-        t.addComment(node, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_PROPERTY, true);
-
-        body.body.unshift(node);
-      }
-    });
-
     // attaches typings
     if (options?.typings) {
       visitor(ast, {
