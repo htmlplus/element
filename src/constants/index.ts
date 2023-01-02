@@ -43,11 +43,16 @@ export const STATIC_TAG = 'TAG';
 export const STYLE_IMPORTED = 'STYLE_IMPORTED';
 
 // types
-export const TYPE_BOOLEAN = 'Boolean';
-export const TYPE_DATE = 'Date';
-export const TYPE_FUNCTION = 'Function';
-export const TYPE_STRING = 'String';
-export const TYPE_NUMBER = 'Number';
+export const TYPE_ARRAY = 1;
+export const TYPE_BOOLEAN = 2;
+export const TYPE_DATE = 4;
+export const TYPE_ENUM = 8;
+export const TYPE_FUNCTION = 16;
+export const TYPE_NULL = 32;
+export const TYPE_NUMBER = 64;
+export const TYPE_OBJECT = 128;
+export const TYPE_STRING = 256;
+export const TYPE_UNDEFINED = 512;
 
 // utils
 export const UTIL_STYLE_MAPPER = 'styles';

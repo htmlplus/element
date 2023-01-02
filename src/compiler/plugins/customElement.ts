@@ -1,9 +1,9 @@
-import t, { ObjectProperty, TSTypeAnnotation } from '@babel/types';
+import t, { TSTypeAnnotation } from '@babel/types';
 import { pascalCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { Context, Plugin } from '../../types';
-import { addDependency, print, visitor } from '../utils/index.js';
+import { addDependency, getType, print, visitor } from '../utils/index.js';
 
 export const CUSTOM_ELEMENT_OPTIONS: Partial<CustomElementOptions> = {
   // prefix: undefined,
@@ -141,6 +141,97 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
       }
     });
 
+    // adds type to properties
+    visitor(ast, {
+      Decorator(path) {
+        const { expression } = path.node;
+
+        if (expression.callee?.name != CONSTANTS.DECORATOR_PROPERTY) return;
+
+        let type = 0;
+
+        const extract = (input) => {
+          switch (input?.type) {
+            case 'BooleanLiteral':
+              type |= CONSTANTS.TYPE_BOOLEAN;
+              break;
+            case 'NumericLiteral':
+              type |= CONSTANTS.TYPE_NUMBER;
+              break;
+            case 'StringLiteral':
+              type |= CONSTANTS.TYPE_ENUM;
+              break;
+            case 'TSArrayType':
+              type |= CONSTANTS.TYPE_ARRAY;
+              break;
+            case 'TSBooleanKeyword':
+              type |= CONSTANTS.TYPE_BOOLEAN;
+              break;
+            case 'TSLiteralType':
+              extract(input.literal);
+              break;
+            case 'TSNullKeyword':
+              type |= CONSTANTS.TYPE_NULL;
+              break;
+            case 'TSNumberKeyword':
+              type |= CONSTANTS.TYPE_NUMBER;
+              break;
+            case 'TSObjectKeyword':
+              type |= CONSTANTS.TYPE_OBJECT;
+              break;
+            case 'TSStringKeyword':
+              type |= CONSTANTS.TYPE_STRING;
+              break;
+            case 'TSTypeLiteral':
+              type |= CONSTANTS.TYPE_OBJECT;
+              break;
+            case 'TSTypeReference':
+              if (!input.typeName) break;
+              switch (input.typeName.name) {
+                case 'Array':
+                  type |= CONSTANTS.TYPE_ARRAY;
+                  break;
+                case 'Boolean':
+                  type |= CONSTANTS.TYPE_BOOLEAN;
+                  break;
+                case 'bool':
+                  type |= CONSTANTS.TYPE_BOOLEAN;
+                  break;
+                case 'Date':
+                  type |= CONSTANTS.TYPE_DATE;
+                  break;
+                case 'Number':
+                  type |= CONSTANTS.TYPE_NUMBER;
+                  break;
+                case 'Object':
+                  type |= CONSTANTS.TYPE_OBJECT;
+                  break;
+              }
+              break;
+            case 'TSUnionType':
+              input.types.forEach(extract);
+              break;
+          }
+        };
+
+        extract(
+          getType(ast, path.parentPath.node.typeAnnotation?.typeAnnotation, { directory: context.directoryPath })
+        );
+
+        if (!expression.arguments.length) {
+          expression.arguments.push(t.objectExpression([]));
+        }
+
+        const [argument] = expression.arguments;
+
+        argument.properties = argument.properties.filter((property) => {
+          return property.key.name != CONSTANTS.STATIC_MEMBERS_TYPE;
+        });
+
+        argument.properties.push(t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE), t.numericLiteral(type)));
+      }
+    });
+
     // attaches members
     visitor(ast, {
       ClassDeclaration(path) {
@@ -150,56 +241,19 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
 
         const node = t.classProperty(
           t.identifier(CONSTANTS.STATIC_MEMBERS),
-          t.objectExpression([
-            ...context.classProperties!.map((property) => {
-              const properties: ObjectProperty[] = [];
-
-              if (property.value) {
-                properties.push(t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_INITIALIZER), property.value));
-              }
-
-              const type = (() => {
-                switch ((property as any).typeAnnotation?.typeAnnotation?.type) {
-                  case 'TSBooleanKeyword':
-                    return t.stringLiteral(CONSTANTS.TYPE_BOOLEAN);
-                  case 'TSStringKeyword':
-                    return t.stringLiteral(CONSTANTS.TYPE_STRING);
-                  case 'TSNumberKeyword':
-                    return t.stringLiteral(CONSTANTS.TYPE_NUMBER);
-                }
-              })();
-
-              if (type) {
-                properties.push(t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE), type));
-              }
-
-              // TODO
-              // prettier-ignore
-              property
-                ?.decorators
-                ?.find((decorator) => {
-                  return decorator.expression?.['callee']?.name == CONSTANTS.DECORATOR_PROPERTY;
-                })
-                ?.expression
-                ?.['arguments']
-                ?.[0]
-                ?.properties
-                ?.forEach((property) => properties.push(property));
-
-              return t.objectProperty(t.identifier(property.key['name']), t.objectExpression(properties));
-            }),
-            ...context.classMethods!.map((method) =>
+          t.objectExpression(
+            context.classMethods!.map((method) =>
               t.objectProperty(
                 t.identifier(method.key['name']),
                 t.objectExpression([
                   t.objectProperty(
                     t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE),
-                    t.stringLiteral(CONSTANTS.TYPE_FUNCTION)
+                    t.numericLiteral(CONSTANTS.TYPE_FUNCTION)
                   )
                 ])
               )
             )
-          ]),
+          ),
           undefined,
           undefined,
           undefined,

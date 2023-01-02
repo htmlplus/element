@@ -10,5 +10,5 @@ export const getMembers = (
     [CONSTANTS.STATIC_MEMBERS_TYPE]?: any;
   };
 } => {
-  return target.constructor[CONSTANTS.STATIC_MEMBERS] || target[CONSTANTS.STATIC_MEMBERS] || {};
+  return target[CONSTANTS.STATIC_MEMBERS] || {};
 };

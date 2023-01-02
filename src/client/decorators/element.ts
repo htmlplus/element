@@ -2,13 +2,15 @@ import { camelCase, paramCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import { call, getMembers, isServer, parseValue, request } from '../utils/index.js';
+import { call, fromAttribute, getMembers, isServer, request } from '../utils/index.js';
 
 export function Element(tag?: string) {
   return function (constructor: PlusElement) {
     if (isServer()) return;
 
     if (customElements.get(tag!)) return;
+
+    const members = getMembers(constructor);
 
     class Plus extends HTMLElement {
       constructor() {
@@ -18,12 +20,19 @@ export function Element(tag?: string) {
 
         this[CONSTANTS.API_INSTANCE] = new (constructor as any)();
 
+        Object.keys(members)
+          .filter((key) => members[key].type != CONSTANTS.TYPE_FUNCTION)
+          .forEach((key) => {
+            members[key].default = this[CONSTANTS.API_INSTANCE][key];
+          });
+
         this[CONSTANTS.API_INSTANCE][CONSTANTS.API_HOST] = () => this;
       }
 
-      // TODO: ignore functions
       static get observedAttributes() {
-        return Object.keys(getMembers(constructor)).map((key) => paramCase(key));
+        return Object.keys(members)
+          .filter((key) => members[key].type != CONSTANTS.TYPE_FUNCTION)
+          .map((key) => paramCase(key));
       }
 
       adoptedCallback() {
@@ -37,9 +46,9 @@ export function Element(tag?: string) {
 
         const name = camelCase(attribute);
 
-        const type = getMembers(instance)[name]?.type;
+        const type = members[name]?.type;
 
-        const value = parseValue(next, type);
+        const value = fromAttribute(next, type);
 
         if (instance[name] === value) return;
 

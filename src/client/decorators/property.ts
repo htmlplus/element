@@ -1,14 +1,15 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
 import {
-  defineProperty,
-  host,
-  request,
+  addMember,
   appendToMethod,
-  updateAttribute,
+  defineProperty,
   getConfig,
   getMembers,
-  getTag
+  getTag,
+  host,
+  request,
+  updateAttribute
 } from '../utils/index.js';
 
 export interface PropertyOptions {
@@ -16,13 +17,18 @@ export interface PropertyOptions {
    * Whether property value is reflected back to the associated attribute. default is `false`.
    */
   reflect?: boolean;
+  /**
+   * TODO
+   */
+  type?: number;
 }
-
 export function Property(options?: PropertyOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
     const name = String(propertyKey);
 
     const symbol = Symbol();
+
+    addMember(target.constructor, name, options);
 
     function get(this) {
       return this[symbol];
@@ -52,7 +58,7 @@ export function Property(options?: PropertyOptions) {
       const element = host(this);
 
       // TODO: experimental for global config
-      if (getMembers(this)[name]?.default === this[name]) {
+      if (getMembers(this.constructor)[name]?.default === this[name]) {
         const config = getConfig('component', getTag(target)!, 'property', name);
         if (typeof config != 'undefined') this[name] = config;
       }
