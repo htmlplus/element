@@ -1,6 +1,6 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.5.9",
+  "version": "0.6.0",
   "license": "MIT",
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
   "description": "A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies. Powerd by Web Component.",
