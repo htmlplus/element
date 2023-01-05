@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { Context, Global, Plugin } from '../../types';
-import { getInitializer, getTags, hasTag, parseTag, print } from '../utils/index.js';
+import { getInitializer, getTags, getType, hasTag, parseTag, print } from '../utils/index.js';
 
 export const WEB_TYPES_OPTIONS: Partial<WebTypesOptions> = {};
 
@@ -21,6 +21,10 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
   options = Object.assign({}, WEB_TYPES_OPTIONS, options);
 
   const finish = (global: Global) => {
+    const contexts = global.contexts.sort((a, b) => {
+      return a.componentTag!.toUpperCase() > b.componentTag!.toUpperCase() ? -1 : +1;
+    });
+
     const json = {
       '$schema': 'http://json.schemastore.org/web-types',
       'name': options.packageName,
@@ -45,26 +49,17 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
       experimental: hasTag(member, 'experimental')
     });
 
-    for (const context of global.contexts) {
+    for (const context of contexts) {
       const attributes = context.classProperties?.map((property) =>
         Object.assign(common(property), {
           name: paramCase(property.key['name']),
           value: {
             // kind: TODO
-            /**
-             * For Example
-             * 01) type: "''"
-             * 02) type: "null"
-             * 03) type: "undefined"
-             * 04) type: "boolean"
-             * 05) type: "string"
-             * 06) type: "number"
-             * 07) type: "boolean | string | number"
-             * 08) type: "string[]"
-             * 09) type: "1 | 2 | 3"
-             * 10) type: "'Value-1' | 'Value-2'"
-             */
-            type: print(property.typeAnnotation?.['typeAnnotation'])
+            type: print(
+              getType(context.fileAST!, property.typeAnnotation?.['typeAnnotation'], {
+                directory: context.directoryPath
+              })
+            )
             // required: TODO
             // default: TODO
           },

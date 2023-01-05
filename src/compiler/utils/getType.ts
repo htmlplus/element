@@ -7,8 +7,7 @@ import { join } from 'path';
 
 import { visitor } from './visitor.js';
 
-// TODO: return type
-export const getType = (file: File, node: Node, options): any => {
+export const getType = (file: File, node: Node, options): Node => {
   if (!node) return node;
 
   if (node.type != 'TSTypeReference') return node;
@@ -87,6 +86,24 @@ export const getType = (file: File, node: Node, options): any => {
       if (path.node.id.name != node.typeName['name']) return;
 
       result = path.node.typeAnnotation;
+
+      switch (result.type) {
+        case 'TSUnionType':
+          const types: any[] = [];
+          for (const prev of result.types) {
+            const next = getType(file, prev, options);
+            if (next.type == 'TSUnionType') {
+              next.types.forEach((type) => types.push(type));
+            } else {
+              types.push(next);
+            }
+          }
+          result.types = types;
+          break;
+        default:
+          result = getType(file, result, options);
+          break;
+      }
 
       path.stop();
     }
