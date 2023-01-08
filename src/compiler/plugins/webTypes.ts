@@ -22,7 +22,7 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
 
   const finish = (global: Global) => {
     const contexts = global.contexts.sort((a, b) => {
-      return a.componentTag!.toUpperCase() > b.componentTag!.toUpperCase() ? -1 : +1;
+      return a.componentTag!.toUpperCase() > b.componentTag!.toUpperCase() ? +1 : -1;
     });
 
     const json = {
