@@ -182,6 +182,9 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
             case 'TSStringKeyword':
               type |= CONSTANTS.TYPE_STRING;
               break;
+            case 'TSTupleType':
+              type |= CONSTANTS.TYPE_ARRAY;
+              break;
             case 'TSTypeLiteral':
               type |= CONSTANTS.TYPE_OBJECT;
               break;
