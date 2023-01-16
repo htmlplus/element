@@ -1,6 +1,6 @@
 # Create Custom HTML Element
 
-A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies. Powerd by [Web Component](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements).
+A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies. Powerd by [Web Component](https://mdn.io/using-custom-elements).
 
 ## Table of content
 
