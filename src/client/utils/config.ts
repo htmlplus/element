@@ -38,7 +38,11 @@ const merge = (target, ...sources) => {
     } else {
       for (const key of Object.keys(source)) {
         if (source[key] instanceof Object) {
-          target[key] = merge(target[key] || {}, source[key]);
+          if (target[key] instanceof Object) {
+            target[key] = merge(target[key], source[key]);
+          } else {
+            target[key] = source[key];
+          }
         } else {
           target[key] = source[key];
         }
