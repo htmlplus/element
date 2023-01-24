@@ -1,3 +1,5 @@
+import { typeOf } from './typeOf';
+
 interface Options {
   component?: {
     [key: string]: {
@@ -33,19 +35,15 @@ export const setConfig = (config: Options, override?: boolean) => {
 const merge = (target, ...sources) => {
   for (const source of sources) {
     if (!source) continue;
-    if (Array.isArray(source)) {
+    if (typeOf(source) != 'object') {
       target = source;
-    } else {
-      for (const key of Object.keys(source)) {
-        if (source[key] instanceof Object) {
-          if (target[key] instanceof Object) {
-            target[key] = merge(target[key], source[key]);
-          } else {
-            target[key] = source[key];
-          }
-        } else {
-          target[key] = source[key];
-        }
+      continue;
+    }
+    for (const key of Object.keys(source)) {
+      if (target[key] instanceof Object && source[key] instanceof Object) {
+        target[key] = merge(target[key], source[key]);
+      } else {
+        target[key] = source[key];
       }
     }
   }
