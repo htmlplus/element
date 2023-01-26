@@ -40,7 +40,7 @@ const merge = (target, ...sources) => {
       continue;
     }
     for (const key of Object.keys(source)) {
-      if (target[key] instanceof Object && source[key] instanceof Object) {
+      if (target[key] instanceof Object && source[key] instanceof Object && target[key] !== source[key]) {
         target[key] = merge(target[key], source[key]);
       } else {
         target[key] = source[key];
