@@ -1,4 +1,4 @@
-import { typeOf } from './typeOf';
+import { typeOf } from './typeOf.js';
 
 interface Options {
   component?: {
