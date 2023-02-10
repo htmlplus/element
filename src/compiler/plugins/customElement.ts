@@ -215,6 +215,19 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
               input.types.forEach(extract);
               break;
           }
+
+          // TODO
+          if (input?.type == 'TSParenthesizedType' && input?.typeAnnotation?.type == 'TSIntersectionType') {
+            let types = input.types || input.typeAnnotation.types;
+
+            if (types.length != 2) return;
+
+            types = types.filter((type) => type.type != 'TSTypeLiteral');
+
+            if (types.length != 1) return;
+
+            extract(types[0]);
+          }
         };
 
         extract(
