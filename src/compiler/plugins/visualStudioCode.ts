@@ -52,9 +52,7 @@ export const visualStudioCode = (options: VisualStudioCodeOptions): Plugin => {
         };
 
         const type = print(
-          getType(context.fileAST!, property.typeAnnotation?.['typeAnnotation'], {
-            directory: context.directoryPath
-          })
+          getType(context.directoryPath!, context.fileAST!, property.typeAnnotation?.['typeAnnotation'])
         );
 
         const sections = type.split('|');

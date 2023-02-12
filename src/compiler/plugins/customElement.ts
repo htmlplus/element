@@ -230,9 +230,7 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
           }
         };
 
-        extract(
-          getType(ast, path.parentPath.node.typeAnnotation?.typeAnnotation, { directory: context.directoryPath })
-        );
+        extract(getType(context.directoryPath!, ast, path.parentPath.node.typeAnnotation?.typeAnnotation));
 
         if (!expression.arguments.length) {
           expression.arguments.push(t.objectExpression([]));

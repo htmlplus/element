@@ -55,11 +55,7 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
           name: paramCase(property.key['name']),
           value: {
             // kind: TODO
-            type: print(
-              getType(context.fileAST!, property.typeAnnotation?.['typeAnnotation'], {
-                directory: context.directoryPath
-              })
-            )
+            type: print(getType(context.directoryPath!, context.fileAST!, property.typeAnnotation?.['typeAnnotation']))
             // required: TODO
             // default: TODO
           },

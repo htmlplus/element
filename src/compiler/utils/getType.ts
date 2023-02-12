@@ -7,12 +7,10 @@ import { join } from 'path';
 
 import { visitor } from './visitor.js';
 
-export const getType = (file: File, node: Node, options): Node => {
+export const getType = (directory: string, file: File, node: Node): Node => {
   if (!node) return node;
 
   if (node.type != 'TSTypeReference') return node;
-
-  const { directory } = options;
 
   let result;
 
@@ -65,9 +63,7 @@ export const getType = (file: File, node: Node, options): Node => {
             ranges: false
           });
 
-          result = getType(path.$ast, node, {
-            directory: dirname(filePath)
-          });
+          result = getType(dirname(filePath), path.$ast, node);
         } catch {}
 
         path.stop();
@@ -91,7 +87,7 @@ export const getType = (file: File, node: Node, options): Node => {
         case 'TSUnionType':
           const types: any[] = [];
           for (const prev of result.types) {
-            const next = getType(file, prev, options);
+            const next = getType(directory, file, prev);
             if (next.type == 'TSUnionType') {
               next.types.forEach((type) => types.push(type));
             } else {
@@ -101,7 +97,7 @@ export const getType = (file: File, node: Node, options): Node => {
           result.types = types;
           break;
         default:
-          result = getType(file, result, options);
+          result = getType(directory, file, result);
           break;
       }
 
