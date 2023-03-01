@@ -58,13 +58,21 @@ export function Element(tag?: string) {
       connectedCallback() {
         const instance = this[CONSTANTS.API_INSTANCE];
 
-        instance[CONSTANTS.API_CONNECTED] = true;
+        const connect = () => {
+          instance[CONSTANTS.API_CONNECTED] = true;
 
-        call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
+          call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
 
-        request(instance, undefined, undefined, () => {
-          call(instance, CONSTANTS.LIFECYCLE_LOADED);
-        });
+          request(instance, undefined, undefined, () => {
+            call(instance, CONSTANTS.LIFECYCLE_LOADED);
+          });
+        };
+
+        const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECT);
+
+        if (!callback?.then) return connect();
+
+        callback.then(() => connect());
       }
 
       disconnectedCallback() {

@@ -23,6 +23,7 @@ export const DECORATOR_METHOD = 'Method';
 
 // lifecycle
 export const LIFECYCLE_ADOPTED = 'adoptedCallback';
+export const LIFECYCLE_CONNECT = 'connectCallback';
 export const LIFECYCLE_CONNECTED = 'connectedCallback';
 export const LIFECYCLE_DISCONNECTED = 'disconnectedCallback';
 export const LIFECYCLE_LOADED = 'loadedCallback';
