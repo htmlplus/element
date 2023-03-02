@@ -1,6 +1,5 @@
+import { off, on } from './event.js';
 import { isEvent } from './isEvent.js';
-import { off } from './off.js';
-import { on } from './on.js';
 import { toEvent } from './toEvent.js';
 import { updateAttribute } from './updateAttribute.js';
 
