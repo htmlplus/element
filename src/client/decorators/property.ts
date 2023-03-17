@@ -57,12 +57,6 @@ export function Property(options?: PropertyOptions) {
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
       const element = host(this);
 
-      // TODO: experimental for global config
-      if (getMembers(this.constructor)[name]?.default === this[name]) {
-        const config = getConfig('component', getTag(target)!, 'property', name);
-        if (typeof config != 'undefined') this[name] = config;
-      }
-
       // TODO: experimental for isolated options
       if (element === this) return;
 
