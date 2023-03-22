@@ -22,9 +22,7 @@ export interface Context {
   classStates?: Array<ClassProperty>;
 
   // component
-  componentInterfaceName?: string;
   componentKey?: string;
-  componentTag?: string;
 
   // directory
   directoryName?: string;

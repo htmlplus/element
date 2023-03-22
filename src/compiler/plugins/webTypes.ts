@@ -22,7 +22,7 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
 
   const finish = (global: Global) => {
     const contexts = global.contexts.sort((a, b) => {
-      return a.componentTag!.toUpperCase() > b.componentTag!.toUpperCase() ? +1 : -1;
+      return a.componentKey!.toUpperCase() > b.componentKey!.toUpperCase() ? +1 : -1;
     });
 
     const json = {
@@ -94,7 +94,7 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
       });
 
       const component = {
-        'name': context.componentTag,
+        'name': context.componentKey,
         'description': description,
         'doc-url': options.reference?.(context),
         'deprecated': hasTag(context.class!, 'deprecated'),

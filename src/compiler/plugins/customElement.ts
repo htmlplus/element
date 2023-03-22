@@ -6,12 +6,12 @@ import { Context, Plugin } from '../../types';
 import { addDependency, getType, print, visitor } from '../utils/index.js';
 
 export const CUSTOM_ELEMENT_OPTIONS: Partial<CustomElementOptions> = {
-  // prefix: undefined,
+  prefix: undefined,
   typings: true
 };
 
 export interface CustomElementOptions {
-  // prefix?: string;
+  prefix?: string;
   typings?: boolean;
 }
 
@@ -24,6 +24,10 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
   const run = (context: Context) => {
     const ast = t.cloneNode(context.fileAST!, true);
 
+    // TODO
+    const tag = (options?.prefix || '') + context.componentKey!;
+    const componentInterfaceName = `HTML${pascalCase(tag)}Element`;
+
     // attaches name
     visitor(ast, {
       ClassDeclaration(path) {
@@ -33,7 +37,7 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
 
         const node = t.classProperty(
           t.identifier(CONSTANTS.STATIC_TAG),
-          t.stringLiteral(context.componentTag!),
+          t.stringLiteral(tag),
           undefined,
           undefined,
           undefined,
@@ -302,7 +306,7 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
                 t.identifier('global'),
                 t.tsModuleBlock([
                   t.tsInterfaceDeclaration(
-                    t.identifier(context.componentInterfaceName!),
+                    t.identifier(componentInterfaceName),
                     null,
                     [
                       t.tSExpressionWithTypeArguments(t.identifier('HTMLElement')) // TODO
@@ -321,17 +325,17 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
                   ),
                   t.variableDeclaration('var', [
                     t.variableDeclarator(
-                      Object.assign(t.identifier(context.componentInterfaceName!), {
+                      Object.assign(t.identifier(componentInterfaceName), {
                         typeAnnotation: t.tSTypeAnnotation(
                           t.tSTypeLiteral([
                             t.tSPropertySignature(
                               t.identifier('prototype'),
-                              t.tsTypeAnnotation(t.tSTypeReference(t.identifier(context.componentInterfaceName!)))
+                              t.tsTypeAnnotation(t.tSTypeReference(t.identifier(componentInterfaceName)))
                             ),
                             t.tSConstructSignatureDeclaration(
                               null,
                               [],
-                              t.tSTypeAnnotation(t.tSTypeReference(t.identifier(context.componentInterfaceName!)))
+                              t.tSTypeAnnotation(t.tSTypeReference(t.identifier(componentInterfaceName)))
                             )
                           ])
                         )
@@ -344,9 +348,9 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
                     [],
                     t.tsInterfaceBody([
                       t.tSPropertySignature(
-                        t.stringLiteral(context.componentTag!),
+                        t.stringLiteral(tag),
                         t.tSTypeAnnotation(
-                          t.tSIntersectionType([t.tSTypeReference(t.identifier(context.componentInterfaceName!))])
+                          t.tSIntersectionType([t.tSTypeReference(t.identifier(componentInterfaceName))])
                         )
                       )
                     ])
@@ -360,7 +364,7 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
                         undefined,
                         t.tSInterfaceBody([
                           t.tSPropertySignature(
-                            t.stringLiteral(context.componentTag!),
+                            t.stringLiteral(tag),
                             t.tSTypeAnnotation(
                               t.tSIntersectionType([
                                 t.tSTypeReference(t.identifier(context.className! + 'JSX')),
@@ -387,6 +391,15 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
                 declare: true,
                 global: true
               }
+            )
+          );
+          body.push(
+            t.exportNamedDeclaration(
+              t.tsTypeAliasDeclaration(
+                t.identifier(`${context.className}Element`),
+                undefined,
+                t.tsTypeReference(t.tsQualifiedName(t.identifier('globalThis'), t.identifier(componentInterfaceName)))
+              )
             )
           );
         }

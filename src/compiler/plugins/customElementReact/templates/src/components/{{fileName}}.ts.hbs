@@ -1,8 +1,8 @@
 /**************************************************
  * THIS FILE IS AUTO-GENERATED, DO NOT EDIT MANUALY
  **************************************************/
-import '{{importerComponent.source}}';
-import type { {{importerComponentType.imported}} as {{importerComponentType.local}} } from '{{importerComponentType.source}}';
+import { {{className}} as {{className}}Core } from '{{importerComponent.source}}';
+import type { {{className}}Element, {{importerComponentType.imported}} as {{importerComponentType.local}} } from '{{importerComponentType.source}}';
 
 import { proxy } from '../proxy';
 import type { Rename } from '../proxy';
@@ -16,8 +16,8 @@ type Renamed = Rename<
   }
 >;
 
-export const {{className}} = proxy<{{componentInterfaceName}}, Renamed>(
-  '{{componentTag}}', 
+export const {{className}} = proxy<{{className}}Element, Renamed>(
+  {{className}}Core.TAG, 
   [{{#each classProperties}}'{{key.name}}', {{/each}}], 
   [{{#each classEvents}}'{{key.name}}', {{/each}}],
 );

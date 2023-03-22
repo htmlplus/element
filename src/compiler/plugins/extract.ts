@@ -7,16 +7,8 @@ import * as CONSTANTS from '../../constants/index.js';
 import { Context, Plugin } from '../../types';
 import { hasDecorator, visitor } from '../utils/index.js';
 
-export const EXTRACT_OPTIONS: Partial<ExtractOptions> = {};
-
-export interface ExtractOptions {
-  prefix?: string;
-}
-
-export const extract = (options?: ExtractOptions): Plugin => {
+export const extract = (): Plugin => {
   const name = 'extract';
-
-  options = Object.assign({}, EXTRACT_OPTIONS, options);
 
   const run = (context: Context) => {
     visitor(context.fileAST as any, {
@@ -32,34 +24,6 @@ export const extract = (options?: ExtractOptions): Plugin => {
           }
 
           path.skip();
-        }
-      },
-      Decorator(path) {
-        const name = path.node.expression.callee?.name;
-
-        // TODO
-        if (CONSTANTS.DECORATOR_ELEMENT == name) {
-          const [argument] = path.node.expression.arguments;
-
-          if (argument) {
-            context.componentTag = argument?.value;
-            return;
-          }
-
-          context.componentTag = paramCase(path.parent.id.name);
-
-          if (options?.prefix) context.componentTag = options.prefix + '-' + context.componentTag;
-
-          path.replaceWith(
-            t.decorator(
-              t.callExpression(t.identifier(name), [
-                t.stringLiteral(context.componentTag),
-                ...path.node.expression.arguments.slice(1)
-              ])
-            )
-          );
-
-          return;
         }
       },
       JSXElement(path) {
@@ -90,9 +54,6 @@ export const extract = (options?: ExtractOptions): Plugin => {
     context.className = context.class?.id?.name!;
 
     context.componentKey = paramCase(context.className);
-
-    // TODO
-    context.componentInterfaceName = `HTML${pascalCase(context.componentTag!)}Element`;
 
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_EVENT)

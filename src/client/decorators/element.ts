@@ -4,9 +4,11 @@ import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
 import { call, fromAttribute, getConfig, getMembers, getTag, isServer, request } from '../utils/index.js';
 
-export function Element(tag?: string) {
+export function Element() {
   return function (constructor: PlusElement) {
     if (isServer()) return;
+
+    const tag = getTag(constructor);
 
     if (customElements.get(tag!)) return;
 

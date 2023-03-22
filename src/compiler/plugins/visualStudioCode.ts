@@ -20,7 +20,7 @@ export const visualStudioCode = (options: VisualStudioCodeOptions): Plugin => {
 
   const finish = (global: Global) => {
     const contexts = global.contexts.sort((a, b) => {
-      return a.componentTag!.toUpperCase() > b.componentTag!.toUpperCase() ? +1 : -1;
+      return a.componentKey!.toUpperCase() > b.componentKey!.toUpperCase() ? +1 : -1;
     });
 
     const json = {
@@ -33,7 +33,7 @@ export const visualStudioCode = (options: VisualStudioCodeOptions): Plugin => {
       const description = getTags(context.class!).find((tag) => !tag.key)?.value;
 
       const tag = {
-        name: context.componentTag,
+        name: context.componentKey!,
         description: description,
         attributes: [] as any,
         references: [
