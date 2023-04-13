@@ -91,6 +91,15 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
       }
     });
 
+    // replaces 'tabIndex' attribute with 'tabindex'
+    visitor(ast, {
+      JSXAttribute(path) {
+        const { name, value } = path.node;
+        if (name.name != 'tabIndex') return;
+        path.replaceWith(t.jsxAttribute(t.jsxIdentifier('tabindex'), value));
+      }
+    });
+
     // converts 'jsx' to 'uhtml' syntax
     visitor(ast, {
       JSXAttribute: {
