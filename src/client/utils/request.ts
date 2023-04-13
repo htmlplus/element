@@ -13,7 +13,12 @@ import { shadowRoot } from './shadowRoot.js';
  * @param previous The previous value of Property/State.
  * @param callback Invoked when the rendering phase is completed.
  */
-export const request = (target: PlusElement, name?: string, previous?: any, callback?: Function): void => {
+export const request = (
+  target: PlusElement,
+  name?: string,
+  previous?: any,
+  callback?: (skipped: boolean) => void
+): void => {
   // Creates/Gets a stacks.
   const stacks = (target[CONSTANTS.API_STACKS] ||= new Map());
 

@@ -1,16 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import {
-  addMember,
-  appendToMethod,
-  defineProperty,
-  getConfig,
-  getMembers,
-  getTag,
-  host,
-  request,
-  updateAttribute
-} from '../utils/index.js';
+import { addMember, appendToMethod, defineProperty, host, request, updateAttribute } from '../utils/index.js';
 
 export interface PropertyOptions {
   /**
@@ -22,6 +12,7 @@ export interface PropertyOptions {
    */
   type?: number;
 }
+
 export function Property(options?: PropertyOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
     const name = String(propertyKey);
@@ -41,8 +32,8 @@ export function Property(options?: PropertyOptions) {
 
       this[symbol] = next;
 
-      request(this, name, previous, (skip) => {
-        if (!options?.reflect || skip) return;
+      request(this, name, previous, (skipped) => {
+        if (!options?.reflect || skipped) return;
 
         target[CONSTANTS.API_LOCKED] = true;
 
