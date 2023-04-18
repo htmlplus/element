@@ -7,4 +7,4 @@ export * from './slots.js';
 export * from './styles.js';
 export * from './toUnit.js';
 
-export { host, isServer, on, off } from '../utils/index.js';
+export { getConfig, host, isServer, on, off, setConfig } from '../utils/index.js';

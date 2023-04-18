@@ -2,7 +2,7 @@ import { camelCase, paramCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import { call, fromAttribute, getConfig, getMembers, getTag, isServer, request } from '../utils/index.js';
+import { call, fromAttribute, getConfig, getMembers, getNamespace, getTag, isServer, request } from '../utils/index.js';
 
 export function Element() {
   return function (constructor: PlusElement) {
@@ -61,7 +61,7 @@ export function Element() {
         const instance = this[CONSTANTS.API_INSTANCE];
 
         // TODO: experimental for global config
-        Object.assign(instance, getConfig('component', getTag(instance)!, 'property'));
+        Object.assign(instance, getConfig(getNamespace(instance), 'component', getTag(instance)!, 'property'));
 
         const connect = () => {
           instance[CONSTANTS.API_CONNECTED] = true;
