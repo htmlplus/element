@@ -1,6 +1,13 @@
 import { merge } from './merge.js';
 
-interface Options {
+let defaults: Config = {
+  component: {}
+};
+
+export interface Config {
+  asset?: {
+    [key: string]: any;
+  };
   component?: {
     [key: string]: {
       property?: {
@@ -9,10 +16,6 @@ interface Options {
     };
   };
 }
-
-let defaults: Options = {
-  component: {}
-};
 
 export const getConfig = (namespace: string, ...parameters: string[]): any => {
   if (typeof window == 'undefined') return;
@@ -27,7 +30,7 @@ export const getConfig = (namespace: string, ...parameters: string[]): any => {
   return config;
 };
 
-export const setConfig = (namespace: string, config: Options, override?: boolean) => {
+export const setConfig = (namespace: string, config: Config, override?: boolean) => {
   if (typeof window == 'undefined') return;
   window[namespace] = merge({}, defaults, override ? {} : window[namespace], config);
 };
