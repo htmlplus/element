@@ -63,9 +63,9 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
 
         const { local } = addDependency(
           path,
-          CONSTANTS.PACKAGE_NAME,
-          CONSTANTS.UTIL_STYLE_MAPPER,
-          CONSTANTS.UTIL_STYLE_MAPPER
+          CONSTANTS.UTILS_PATH,
+          CONSTANTS.UTILS_STYLES_LOCAL,
+          CONSTANTS.UTILS_STYLES_IMPORTED
         );
 
         // TODO: remove 'local!'
@@ -85,72 +85,184 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
       JSXAttribute(path) {
         const { name, value } = path.node;
         if (name.name != 'className') return;
-        const hasClass = path.parentPath.node.attributes.some((attribute) => attribute.name.name == 'class');
+        const hasClass = path.parentPath.node.attributes.some((attribute) => attribute.name?.name == 'class');
         if (hasClass) return path.remove();
         path.replaceWith(t.jsxAttribute(t.jsxIdentifier('class'), value));
       }
     });
 
-    // replaces 'tabIndex' attribute with 'tabindex'
+    // TODO
     visitor(ast, {
       JSXAttribute(path) {
         const { name, value } = path.node;
-        if (name.name != 'tabIndex') return;
-        path.replaceWith(t.jsxAttribute(t.jsxIdentifier('tabindex'), value));
+
+        const key = ['tabIndex', 'viewBox'];
+
+        if (!key.includes(name.name)) return;
+
+        path.replaceWith(t.jsxAttribute(t.jsxIdentifier(name.name.toLowerCase()), value));
       }
     });
 
     // converts 'jsx' to 'uhtml' syntax
     visitor(ast, {
-      JSXAttribute: {
-        exit(path) {
-          if (path.node.value?.type == 'JSXExpressionContainer') {
-            const node = path.node;
+      enter(path) {
+        const { type } = path.node;
 
-            path.replaceWith(t.jsxIdentifier(print(node).replace('={', '=${')));
+        if (!['JSXElement', 'JSXFragment'].includes(type)) return;
 
-            path.skip();
-
-            return;
-          }
-        }
-      },
-      JSXElement: {
-        exit(path) {
-          if (path.parent.type == 'JSXElement' || path.parent.type == 'JSXFragment') {
-            path.replaceWith(t.identifier(print(path.node)));
-          } else {
-            path.replaceWith(t.memberExpression(t.identifier('uhtml'), t.identifier(`html\`${print(path.node)}\``)));
-          }
-        }
-      },
-      JSXFragment: {
-        exit(path) {
-          path.replaceWith(
-            t.memberExpression(
-              t.identifier('uhtml'),
-              t.identifier(['html`', ...path.node.children.map((child) => print(child)), '`'].join(''))
-            )
+        const TODO = (node, attributes) => {
+          const { local } = addDependency(
+            path,
+            CONSTANTS.UTILS_PATH,
+            CONSTANTS.UTILS_ATTRIBUTES_LOCAL,
+            CONSTANTS.UTILS_ATTRIBUTES_IMPORTED
           );
-        }
-      },
-      JSXExpressionContainer: {
-        exit(path) {
-          if (path.parent.type == 'JSXElement' || path.parent.type == 'JSXFragment') {
-            path.replaceWith(t.identifier('$' + print(path.node)));
-            return;
+          return t.callExpression(t.identifier(local!), [
+            node,
+            t.arrayExpression(
+              attributes.map((attribute) => {
+                switch (attribute.type) {
+                  case 'JSXSpreadAttribute':
+                    return attribute.argument;
+                  default:
+                    return t.objectExpression([
+                      t.objectProperty(
+                        t.stringLiteral(attribute.name.name),
+                        attribute.value?.type == 'JSXExpressionContainer'
+                          ? attribute.value.expression
+                          : attribute.value || t.booleanLiteral(true)
+                      )
+                    ]);
+                }
+              })
+            )
+          ]);
+        };
+
+        const render = (node) => {
+          switch (node.type) {
+            case 'JSXElement':
+              const attributes = node.openingElement.attributes;
+
+              const isHost = node.openingElement.name.name == 'host';
+
+              // TODO
+              if (isHost) {
+                const children = node.children.map(render).flat();
+
+                if (!attributes.length) return children;
+
+                const { local } = addDependency(
+                  path,
+                  CONSTANTS.UTILS_PATH,
+                  CONSTANTS.UTILS_HOST_LOCAL,
+                  CONSTANTS.UTILS_HOST_IMPORTED
+                );
+
+                const host = t.callExpression(t.identifier(local!), [t.thisExpression()]);
+
+                return [TODO(host, attributes), ...children];
+              }
+
+              const name = node.openingElement.name.name;
+
+              const children = node.children.map(render).flat();
+
+              const parts: any[] = [];
+
+              parts.push('<', name);
+
+              const hasSpreadAttribute = attributes.some((attribute) => attribute.type == 'JSXSpreadAttribute');
+
+              if (hasSpreadAttribute) {
+                parts.push(' ', TODO(t.identifier('TODO'), attributes));
+              } else {
+                for (const attribute of attributes) {
+                  switch (attribute.type) {
+                    case 'JSXAttribute':
+                      parts.push(' ', attribute.name.name);
+
+                      if (!attribute.value) continue;
+
+                      parts.push('=');
+
+                      switch (attribute.value.type) {
+                        case 'JSXExpressionContainer':
+                          parts.push(attribute.value.expression);
+                          break;
+                        default:
+                          parts.push(attribute.value.extra.raw);
+                          break;
+                      }
+                      break;
+                    default:
+                      parts.push(' ', attribute);
+                      break;
+                  }
+                }
+              }
+
+              parts.push(node.closingElement ? '>' : ' />');
+
+              parts.push(...children);
+
+              if (node.closingElement) {
+                parts.push('<', '/', name, '>');
+              }
+
+              return parts;
+
+            case 'JSXFragment':
+              return node.children.map(render).flat();
+
+            case 'JSXText':
+              return [node.extra.raw];
+
+            case 'JSXExpressionContainer':
+              if (node.expression.type == 'JSXEmptyExpression') return [];
+              return [node.expression];
           }
-        }
-      },
-      JSXSpreadAttribute: {
-        enter(path) {
+        };
+
+        const transform = (parts) => {
+          const quasis: any = [];
+
+          const expressions: any = [];
+
+          let i = 0;
+
+          while (i < parts.length + 1) {
+            let quasi = '';
+
+            while (typeof parts[i] == 'string') {
+              quasi += parts[i].replace(/[\\`]/g, (s) => `\\${s}`);
+              i += 1;
+            }
+
+            quasis.push(t.templateElement({ raw: quasi }));
+
+            if (parts[i] != null) expressions.push(parts[i]);
+
+            i += 1;
+          }
+
+          const template = t.templateLiteral(quasis, expressions);
+
           // TODO
-          path.replaceWith(t.jsxAttribute(t.jsxIdentifier('.dataset'), t.jsxExpressionContainer(path.node.argument)));
-        }
-      },
-      Program(path) {
-        const { node } = addDependency(path, CONSTANTS.VENDOR_UHTML_PATH, 'uhtml');
-        t.addComment(node, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+          // if (!expressions.length) return template;
+
+          const { local } = addDependency(
+            path,
+            CONSTANTS.UTILS_PATH,
+            CONSTANTS.UTILS_HTML_LOCAL,
+            CONSTANTS.UTILS_HTML_IMPORTED
+          );
+
+          return t.taggedTemplateExpression(t.identifier(local!), template);
+        };
+
+        path.replaceWith(transform(render(path.node)));
       }
     });
 

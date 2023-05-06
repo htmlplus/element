@@ -1,5 +1,5 @@
 import { PlusElement } from '../../types';
-import { host } from '../utils/index.js';
+import { host } from './host.js';
 
 type Slots = {
   [key: string]: boolean;

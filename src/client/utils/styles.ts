@@ -1,6 +1,6 @@
 import { paramCase } from 'change-case';
 
-import { typeOf } from '../utils/index.js';
+import { typeOf } from './typeOf.js';
 
 export const styles = (input: any): string => {
   switch (typeOf(input)) {

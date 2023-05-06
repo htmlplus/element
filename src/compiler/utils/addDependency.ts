@@ -1,5 +1,6 @@
 import t, { File, ImportDeclaration } from '@babel/types';
 
+import * as CONSTANTS from '../../constants/index.js';
 import { visitor } from './visitor.js';
 
 interface AddDependencyReturns {
@@ -71,8 +72,12 @@ export function addDependency(
     }
   } else {
     declaration = t.importDeclaration(specifier ? [specifier] : [], t.stringLiteral(source));
+
     // TODO
     (file.program || file).body.unshift(declaration);
+
+    // TODO
+    t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
   }
 
   return {

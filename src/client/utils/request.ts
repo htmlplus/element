@@ -1,10 +1,10 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import { call } from '../utils/call.js';
-import { task } from '../utils/task.js';
-import { html, render } from '../vendors/uhtml.js';
+import { call } from './call.js';
 import { getStyles } from './getStyles.js';
 import { shadowRoot } from './shadowRoot.js';
+import { task } from './task.js';
+import { html, render } from './uhtml.js';
 
 /**
  * Updates the DOM with a scheduled task.

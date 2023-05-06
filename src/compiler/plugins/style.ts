@@ -39,9 +39,7 @@ export const style = (options?: StyleOptions): Plugin => {
 
     if (!context.stylePath) return;
 
-    const { local, node } = addDependency(context.fileAST!, context.stylePath, CONSTANTS.STYLE_IMPORTED);
-
-    t.addComment(node, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+    const { local } = addDependency(context.fileAST!, context.stylePath, CONSTANTS.STYLE_IMPORTED);
 
     // TODO: remove 'local!'
     const property = t.classProperty(

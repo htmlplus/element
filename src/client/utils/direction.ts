@@ -1,5 +1,5 @@
 import { PlusElement } from '../../types';
-import { host } from '../utils/index.js';
+import { host } from './host.js';
 
 export type Direction = 'ltr' | 'rtl';
 

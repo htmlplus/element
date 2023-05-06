@@ -1,4 +1,4 @@
-import { shadowRoot } from '../utils/index.js';
+import { shadowRoot } from './shadowRoot.js';
 
 // TODO: merge types
 export function query<K extends keyof HTMLElementTagNameMap>(target, selectors: K): HTMLElementTagNameMap[K] | null;

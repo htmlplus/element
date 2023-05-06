@@ -1,4 +1,3 @@
-export * from './attributes.js';
 export * from './bind.js';
 export * from './element.js';
 export * from './event.js';

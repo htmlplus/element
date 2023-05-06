@@ -1,7 +1,6 @@
 export const PACKAGE_NAME = '@htmlplus/element';
 
 // apis
-export const API_ATTRIBUTES_SYNCER = Symbol();
 export const API_CONNECTED = Symbol();
 export const API_HOST = Symbol();
 export const API_INSTANCE = Symbol();
@@ -56,7 +55,12 @@ export const TYPE_STRING = 256;
 export const TYPE_UNDEFINED = 512;
 
 // utils
-export const UTIL_STYLE_MAPPER = 'styles';
-
-// vendors
-export const VENDOR_UHTML_PATH = '@htmlplus/element/client/vendors/uhtml.js';
+export const UTILS_ATTRIBUTES_IMPORTED = 'attributes';
+export const UTILS_ATTRIBUTES_LOCAL = 'UTILS_ATTRIBUTES';
+export const UTILS_HOST_IMPORTED = 'host';
+export const UTILS_HOST_LOCAL = 'UTILS_HOST';
+export const UTILS_HTML_IMPORTED = 'html';
+export const UTILS_HTML_LOCAL = 'UTILS_HTML';
+export const UTILS_STYLES_IMPORTED = 'styles';
+export const UTILS_STYLES_LOCAL = 'UTILS_STYLES';
+export const UTILS_PATH = '@htmlplus/element/client/utils/index.js';
