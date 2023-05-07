@@ -14,7 +14,8 @@ export const rollup = (...plugins: Array<Plugin>) => {
       if (isInvalid) return;
       return script;
     },
-    async buildEnd() {
+    async buildEnd(error?: Error) {
+      if (error) throw error;
       await finish();
     }
   };
