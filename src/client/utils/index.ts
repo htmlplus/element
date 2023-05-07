@@ -18,8 +18,6 @@ export * from './isEvent.js';
 export * from './isRTL.js';
 export * from './isServer.js';
 export * from './merge.js';
-export * from './query.js';
-export * from './queryAll.js';
 export * from './request.js';
 export * from './shadowRoot.js';
 export * from './slots.js';

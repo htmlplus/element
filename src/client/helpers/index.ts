@@ -7,8 +7,6 @@ export {
   isServer,
   on,
   off,
-  query,
-  queryAll,
   slots,
   styles,
   toUnit,
