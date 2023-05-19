@@ -1,7 +1,7 @@
 import t from '@babel/types';
 import * as CONSTANTS from '../../constants/index.js';
 import { visitor } from './visitor.js';
-export function addDependency(path, source, local, imported) {
+export function addDependency(path, source, local, imported, comment) {
     const isDefault = local && !imported;
     const isImport = local && imported;
     const isNormal = !local && !imported;
@@ -54,7 +54,9 @@ export function addDependency(path, source, local, imported) {
         // TODO
         (file.program || file).body.unshift(declaration);
         // TODO
-        t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+        if (comment) {
+            t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+        }
     }
     return {
         local,

@@ -39,7 +39,7 @@ export const style = (options?: StyleOptions): Plugin => {
 
     if (!context.stylePath) return;
 
-    const { local } = addDependency(context.fileAST!, context.stylePath, CONSTANTS.STYLE_IMPORTED);
+    const { local } = addDependency(context.fileAST!, context.stylePath, CONSTANTS.STYLE_IMPORTED, undefined, true);
 
     // TODO: remove 'local!'
     const property = t.classProperty(
