@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updated
 
-- Updated the `addDependency` utils.
+- Updated the internal `addDependency` util.
 
 ## [0.7.5] - 2023-05-07
 
