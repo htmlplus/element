@@ -195,7 +195,7 @@ export const document = (options) => {
                     };
                 });
             })();
-            const tags = getTags(context.class);
+            const tags = getTags(context.class).filter((tag) => !['part', 'slot'].includes(tag.key));
             const title = capitalCase(context.componentKey);
             const component = {
                 events,

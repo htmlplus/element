@@ -32,7 +32,7 @@ export const getTags = (node, filter) => {
 export const hasTag = (node, name) => {
     return getTags(node).some((tag) => tag.key === name);
 };
-export const parseTag = (tag, spliter = '-') => {
+export const parseTag = (tag, spliter = ' - ') => {
     var _a, _b;
     const sections = ((_a = tag.value) === null || _a === void 0 ? void 0 : _a.split(spliter)) || [];
     const name = (_b = sections[0]) === null || _b === void 0 ? void 0 : _b.trim();

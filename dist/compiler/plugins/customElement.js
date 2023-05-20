@@ -168,7 +168,7 @@ export const customElement = (options) => {
                     const template = t.templateLiteral(quasis, expressions);
                     // TODO
                     // if (!expressions.length) return template;
-                    const { local } = addDependency(path, CONSTANTS.UTILS_PATH, CONSTANTS.UTILS_HTML_LOCAL, CONSTANTS.UTILS_HTML_IMPORTED);
+                    const { local } = addDependency(path, CONSTANTS.UTILS_PATH, CONSTANTS.UTILS_HTML_LOCAL, CONSTANTS.UTILS_HTML_IMPORTED, true);
                     return t.taggedTemplateExpression(t.identifier(local), template);
                 };
                 path.replaceWith(transform(render(path.node)));

@@ -236,7 +236,7 @@ export const document = (options: DocumentOptions): Plugin => {
           });
       })();
 
-      const tags = getTags(context.class!);
+      const tags = getTags(context.class!).filter((tag) => !['part', 'slot'].includes(tag.key!));
 
       const title = capitalCase(context.componentKey!);
 

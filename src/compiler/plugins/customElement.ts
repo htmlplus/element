@@ -256,7 +256,8 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
             path,
             CONSTANTS.UTILS_PATH,
             CONSTANTS.UTILS_HTML_LOCAL,
-            CONSTANTS.UTILS_HTML_IMPORTED
+            CONSTANTS.UTILS_HTML_IMPORTED,
+            true
           );
 
           return t.taggedTemplateExpression(t.identifier(local!), template);

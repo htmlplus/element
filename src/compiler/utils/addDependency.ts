@@ -8,15 +8,12 @@ interface AddDependencyReturns {
   node: ImportDeclaration;
 }
 
-export function addDependency(path: File | any, source: string): AddDependencyReturns;
-export function addDependency(path: File | any, source: string, local: string): AddDependencyReturns;
-export function addDependency(path: File | any, source: string, local: string, imported: string): AddDependencyReturns;
-
 export function addDependency(
   path: File | any,
   source: string,
   local?: string,
-  imported?: string
+  imported?: string,
+  comment?: boolean
 ): AddDependencyReturns {
   const isDefault = local && !imported;
 
@@ -77,7 +74,9 @@ export function addDependency(
     (file.program || file).body.unshift(declaration);
 
     // TODO
-    t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+    if (comment) {
+      t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+    }
   }
 
   return {

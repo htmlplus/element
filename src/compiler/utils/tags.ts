@@ -58,7 +58,7 @@ export const hasTag = (node: Node, name: string): Boolean => {
   return getTags(node).some((tag) => tag.key === name);
 };
 
-export const parseTag = (tag: Tag, spliter: string = '-'): TagParsed => {
+export const parseTag = (tag: Tag, spliter: string = ' - '): TagParsed => {
   const sections = tag.value?.split(spliter) || [];
   const name = sections[0]?.trim();
   const description = sections.slice(1).join(spliter).trim();
