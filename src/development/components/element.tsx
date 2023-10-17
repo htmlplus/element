@@ -4,4 +4,8 @@ import { Element, Property } from '@htmlplus/element';
 export class MyElement {
   @Property()
   value: any;
+  
+  render() {
+    return '<slot />';
+  }
 }

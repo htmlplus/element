@@ -24,6 +24,7 @@ export const DECORATOR_METHOD = 'Method';
 export const LIFECYCLE_ADOPTED = 'adoptedCallback';
 export const LIFECYCLE_CONNECT = 'connectCallback';
 export const LIFECYCLE_CONNECTED = 'connectedCallback';
+export const LIFECYCLE_CONSTRUCTED = 'constructedCallback';
 export const LIFECYCLE_DISCONNECTED = 'disconnectedCallback';
 export const LIFECYCLE_LOADED = 'loadedCallback';
 export const LIFECYCLE_UPDATE = 'updateCallback';
@@ -43,16 +44,17 @@ export const STATIC_TAG = 'TAG';
 export const STYLE_IMPORTED = 'STYLE_IMPORTED';
 
 // types
-export const TYPE_ARRAY = 1;
-export const TYPE_BOOLEAN = 2;
-export const TYPE_DATE = 4;
-export const TYPE_ENUM = 8;
-export const TYPE_FUNCTION = 16;
-export const TYPE_NULL = 32;
-export const TYPE_NUMBER = 64;
-export const TYPE_OBJECT = 128;
-export const TYPE_STRING = 256;
-export const TYPE_UNDEFINED = 512;
+export const TYPE_ARRAY = 2 ** 0;
+export const TYPE_BOOLEAN = 2 ** 1;
+export const TYPE_DATE = 2 ** 2;
+export const TYPE_ENUM = 2 ** 3;
+export const TYPE_FUNCTION = 2 ** 4;
+export const TYPE_NULL = 2 ** 5;
+export const TYPE_NUMBER = 2 ** 6;
+export const TYPE_OBJECT = 2 ** 7;
+export const TYPE_STRING = 2 ** 8;
+export const TYPE_UNDEFINED = 2 ** 9;
+export const TYPE_UNIT = 2 ** 10; // TODO
 
 // utils
 export const UTILS_ATTRIBUTES_IMPORTED = 'attributes';

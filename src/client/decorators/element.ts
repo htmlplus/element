@@ -20,15 +20,18 @@ export function Element() {
 
         this.attachShadow({ mode: 'open' });
 
-        this[CONSTANTS.API_INSTANCE] = new (constructor as any)();
+        const instance = (this[CONSTANTS.API_INSTANCE] = new (constructor as any)());
 
-        Object.keys(members)
-          .filter((key) => members[key].type != CONSTANTS.TYPE_FUNCTION)
-          .forEach((key) => {
-            members[key].default = this[CONSTANTS.API_INSTANCE][key];
-          });
+        Object.keys(members).forEach((key) => {
+          if (members[key].type != CONSTANTS.TYPE_FUNCTION) {
+            members[key].default = instance[key];
+          }
+        });
 
-        this[CONSTANTS.API_INSTANCE][CONSTANTS.API_HOST] = () => this;
+        instance[CONSTANTS.API_HOST] = () => this;
+
+        // TODO
+        call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
       }
 
       static get observedAttributes() {

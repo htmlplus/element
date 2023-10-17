@@ -45,7 +45,8 @@ export function Property(options?: PropertyOptions) {
 
     defineProperty(target, propertyKey, { get, set });
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+    // TODO: check the lifecycle
+    appendToMethod(target, CONSTANTS.LIFECYCLE_CONSTRUCTED, function () {
       const element = host(this);
 
       // TODO: experimental for isolated options
