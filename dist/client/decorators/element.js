@@ -1,6 +1,6 @@
 import { camelCase, paramCase } from 'change-case';
 import * as CONSTANTS from '../../constants/index.js';
-import { call, fromAttribute, getConfig, getMembers, getNamespace, getTag, isServer, request } from '../utils/index.js';
+import { call, getConfig, getMembers, getNamespace, getTag, isServer, request, toProperty } from '../utils/index.js';
 export function Element() {
     return function (constructor) {
         if (isServer())
@@ -38,7 +38,7 @@ export function Element() {
                     return;
                 const name = camelCase(attribute);
                 const type = (_a = members[name]) === null || _a === void 0 ? void 0 : _a.type;
-                const value = fromAttribute(next, type);
+                const value = toProperty(next, type);
                 if (instance[name] === value)
                     return;
                 instance[name] = value;

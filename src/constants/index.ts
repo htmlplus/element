@@ -54,7 +54,6 @@ export const TYPE_NUMBER = 2 ** 6;
 export const TYPE_OBJECT = 2 ** 7;
 export const TYPE_STRING = 2 ** 8;
 export const TYPE_UNDEFINED = 2 ** 9;
-export const TYPE_UNIT = 2 ** 10; // TODO
 
 // utils
 export const UTILS_ATTRIBUTES_IMPORTED = 'attributes';

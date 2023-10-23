@@ -1,6 +1,14 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import { addMember, appendToMethod, defineProperty, host, request, updateAttribute } from '../utils/index.js';
+import {
+  addMember,
+  appendToMethod,
+  defineProperty,
+  host,
+  request,
+  toProperty,
+  updateAttribute
+} from '../utils/index.js';
 
 export interface PropertyOptions {
   /**
@@ -28,16 +36,18 @@ export function Property(options?: PropertyOptions) {
     function set(this, next) {
       const previous = this[symbol];
 
-      if (next === previous) return;
+      const parsed = toProperty(next, options?.type);
 
-      this[symbol] = next;
+      if (parsed === previous) return;
+
+      this[symbol] = parsed;
 
       request(this, name, previous, (skipped) => {
         if (!options?.reflect || skipped) return;
 
         target[CONSTANTS.API_LOCKED] = true;
 
-        updateAttribute(host(this), name, next);
+        updateAttribute(host(this), name, parsed);
 
         target[CONSTANTS.API_LOCKED] = false;
       });

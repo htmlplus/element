@@ -2,7 +2,7 @@ import { camelCase, paramCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import { call, fromAttribute, getConfig, getMembers, getNamespace, getTag, isServer, request } from '../utils/index.js';
+import { call, getConfig, getMembers, getNamespace, getTag, isServer, request, toProperty } from '../utils/index.js';
 
 export function Element() {
   return function (constructor: PlusElement) {
@@ -53,7 +53,7 @@ export function Element() {
 
         const type = members[name]?.type;
 
-        const value = fromAttribute(next, type);
+        const value = toProperty(next, type);
 
         if (instance[name] === value) return;
 

@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { addMember, appendToMethod, defineProperty, host, request, updateAttribute } from '../utils/index.js';
+import { addMember, appendToMethod, defineProperty, host, request, toProperty, updateAttribute } from '../utils/index.js';
 export function Property(options) {
     return function (target, propertyKey) {
         const name = String(propertyKey);
@@ -10,14 +10,15 @@ export function Property(options) {
         }
         function set(next) {
             const previous = this[symbol];
-            if (next === previous)
+            const parsed = toProperty(next, options === null || options === void 0 ? void 0 : options.type);
+            if (parsed === previous)
                 return;
-            this[symbol] = next;
+            this[symbol] = parsed;
             request(this, name, previous, (skipped) => {
                 if (!(options === null || options === void 0 ? void 0 : options.reflect) || skipped)
                     return;
                 target[CONSTANTS.API_LOCKED] = true;
-                updateAttribute(host(this), name, next);
+                updateAttribute(host(this), name, parsed);
                 target[CONSTANTS.API_LOCKED] = false;
             });
         }

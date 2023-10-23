@@ -1,7 +1,9 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { typeOf } from './typeOf.js';
 
-export const fromAttribute = (input, type) => {
+export const toProperty = (input: any, type: number | undefined) => {
+  if (type === undefined) return input;
+
   const string = `${input}`;
 
   if (CONSTANTS.TYPE_BOOLEAN & type) {
@@ -35,7 +37,7 @@ export const fromAttribute = (input, type) => {
       if (typeOf(value) == 'array') {
         return value;
       }
-    } catch {}
+    } catch { }
   }
 
   if (CONSTANTS.TYPE_OBJECT & type) {
@@ -44,7 +46,7 @@ export const fromAttribute = (input, type) => {
       if (typeOf(value) == 'object') {
         return value;
       }
-    } catch {}
+    } catch { }
   }
 
   if (CONSTANTS.TYPE_UNDEFINED & type) {

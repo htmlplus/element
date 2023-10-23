@@ -1,6 +1,8 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { typeOf } from './typeOf.js';
-export const fromAttribute = (input, type) => {
+export const toProperty = (input, type) => {
+    if (type === undefined)
+        return input;
     const string = `${input}`;
     if (CONSTANTS.TYPE_BOOLEAN & type) {
         if (string === '')

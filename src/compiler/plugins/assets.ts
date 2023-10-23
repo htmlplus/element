@@ -37,7 +37,7 @@ export const assets = (options: AssetsOptions): Plugin => {
       if (sources.has(source)) return;
       sources.add(source);
     }
-    
+
     const destination = options.destination?.(context);
 
     fs.copySync(source, destination);

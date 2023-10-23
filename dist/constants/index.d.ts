@@ -38,7 +38,6 @@ export declare const TYPE_NUMBER: number;
 export declare const TYPE_OBJECT: number;
 export declare const TYPE_STRING: number;
 export declare const TYPE_UNDEFINED: number;
-export declare const TYPE_UNIT: number;
 export declare const UTILS_ATTRIBUTES_IMPORTED = "attributes";
 export declare const UTILS_ATTRIBUTES_LOCAL = "UTILS_ATTRIBUTES";
 export declare const UTILS_HOST_IMPORTED = "host";
