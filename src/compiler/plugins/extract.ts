@@ -1,6 +1,6 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import { ClassMethod, ClassProperty } from '@babel/types';
-import { pascalCase, paramCase } from 'change-case';
+import { paramCase } from 'change-case';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';

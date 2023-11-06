@@ -1,5 +1,5 @@
 import { parse } from '@babel/parser';
-import { File, Node } from '@babel/types';
+import t from '@babel/types';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { dirname, resolve } from 'path';
@@ -7,7 +7,7 @@ import { join } from 'path';
 
 import { visitor } from './visitor.js';
 
-export const getType = (directory: string, file: File, node: Node): Node => {
+export const getType = (directory: string, file: t.File, node: t.Node): t.Node => {
   if (!node) return node;
 
   if (node.type != 'TSTypeReference') return node;
@@ -64,7 +64,7 @@ export const getType = (directory: string, file: File, node: Node): Node => {
           });
 
           result = getType(dirname(filePath), path.$ast, node);
-        } catch {}
+        } catch { }
 
         path.stop();
 

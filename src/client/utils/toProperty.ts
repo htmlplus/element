@@ -37,7 +37,7 @@ export const toProperty = (input: any, type: number | undefined) => {
       if (typeOf(value) == 'array') {
         return value;
       }
-    } catch { }
+    } catch {}
   }
 
   if (CONSTANTS.TYPE_OBJECT & type) {
@@ -46,7 +46,7 @@ export const toProperty = (input: any, type: number | undefined) => {
       if (typeOf(value) == 'object') {
         return value;
       }
-    } catch { }
+    } catch {}
   }
 
   if (CONSTANTS.TYPE_UNDEFINED & type) {

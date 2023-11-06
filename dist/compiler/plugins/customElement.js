@@ -1,7 +1,8 @@
+import template from '@babel/template';
 import t from '@babel/types';
-import { pascalCase } from 'change-case';
+import { camelCase, paramCase, pascalCase } from 'change-case';
 import * as CONSTANTS from '../../constants/index.js';
-import { addDependency, getType, print, visitor } from '../utils/index.js';
+import { addDependency, getType, print, toEventTypeAnnotation, toPropertySignature, visitor } from '../utils/index.js';
 export const CUSTOM_ELEMENT_OPTIONS = {
     prefix: undefined,
     typings: true
@@ -165,11 +166,11 @@ export const customElement = (options) => {
                             expressions.push(parts[i]);
                         i += 1;
                     }
-                    const template = t.templateLiteral(quasis, expressions);
+                    const templateLiteral = t.templateLiteral(quasis, expressions);
                     // TODO
                     // if (!expressions.length) return template;
                     const { local } = addDependency(path, CONSTANTS.UTILS_PATH, CONSTANTS.UTILS_HTML_LOCAL, CONSTANTS.UTILS_HTML_IMPORTED, true);
-                    return t.taggedTemplateExpression(t.identifier(local), template);
+                    return t.taggedTemplateExpression(t.identifier(local), templateLiteral);
                 };
                 path.replaceWith(transform(render(path.node)));
             }
@@ -275,65 +276,66 @@ export const customElement = (options) => {
         if (options === null || options === void 0 ? void 0 : options.typings) {
             visitor(ast, {
                 Program(path) {
-                    const { body } = path.node;
-                    body.push(t.exportNamedDeclaration(t.tsInterfaceDeclaration(
-                    // TODO
-                    t.identifier(context.className + 'JSX'), null, [], t.tsInterfaceBody([
-                        ...context.classProperties.map((property) => Object.assign(t.tSPropertySignature(property.key, property.typeAnnotation), {
-                            optional: property.optional,
-                            leadingComments: t.cloneNode(property, true).leadingComments
-                        })),
-                        ...context.classEvents.map((event) => {
-                            var _a, _b;
-                            return Object.assign(t.tSPropertySignature(t.identifier('on' + pascalCase(event.key['name'])), t.tsTypeAnnotation(t.tsFunctionType(undefined, [
-                                Object.assign({}, t.identifier('event'), {
-                                    typeAnnotation: t.tsTypeAnnotation(t.tsTypeReference(t.identifier('CustomEvent'), (_b = (_a = event.typeAnnotation) === null || _a === void 0 ? void 0 : _a['typeAnnotation']) === null || _b === void 0 ? void 0 : _b.typeParameters))
-                                })
-                            ], t.tsTypeAnnotation(t.tsVoidKeyword())))), {
+                    const jsx = [
+                        ...context.classProperties.map((property) => {
+                            return toPropertySignature(property);
+                        }),
+                        ...context.classProperties.map((event) => {
+                            return toPropertySignature(event, {
                                 optional: true,
-                                leadingComments: t.cloneNode(event, true).leadingComments
+                                keyTransformer: (key) => camelCase('on-' + key),
+                                typeAnnotationTransformer: toEventTypeAnnotation
                             });
                         })
-                    ]))));
-                    body.push(Object.assign(t.tsModuleDeclaration(t.identifier('global'), t.tsModuleBlock([
-                        t.tsInterfaceDeclaration(t.identifier(componentInterfaceName), null, [
-                            t.tSExpressionWithTypeArguments(t.identifier('HTMLElement')) // TODO
-                        ], t.tsInterfaceBody([
-                            ...context.classProperties.map((property) => Object.assign(t.tSPropertySignature(property.key, property.typeAnnotation), {
-                                optional: property.optional,
-                                leadingComments: t.cloneNode(property, true).leadingComments
-                            }))
-                        ])),
-                        t.variableDeclaration('var', [
-                            t.variableDeclarator(Object.assign(t.identifier(componentInterfaceName), {
-                                typeAnnotation: t.tSTypeAnnotation(t.tSTypeLiteral([
-                                    t.tSPropertySignature(t.identifier('prototype'), t.tsTypeAnnotation(t.tSTypeReference(t.identifier(componentInterfaceName)))),
-                                    t.tSConstructSignatureDeclaration(null, [], t.tSTypeAnnotation(t.tSTypeReference(t.identifier(componentInterfaceName))))
-                                ]))
-                            }))
-                        ]),
-                        t.tsInterfaceDeclaration(t.identifier('HTMLElementTagNameMap'), null, [], t.tsInterfaceBody([
-                            t.tSPropertySignature(t.stringLiteral(tag), t.tSTypeAnnotation(t.tSIntersectionType([t.tSTypeReference(t.identifier(componentInterfaceName))])))
-                        ])),
-                        t.tSModuleDeclaration(t.identifier('JSX'), t.tSModuleBlock([
-                            t.tSInterfaceDeclaration(t.identifier('IntrinsicElements'), undefined, undefined, t.tSInterfaceBody([
-                                t.tSPropertySignature(t.stringLiteral(tag), t.tSTypeAnnotation(t.tSIntersectionType([
-                                    t.tSTypeReference(t.identifier(context.className + 'JSX')),
-                                    t.tSTypeLiteral([
-                                        t.tSIndexSignature([
-                                            Object.assign({}, t.identifier('key'), {
-                                                typeAnnotation: t.tSTypeAnnotation(t.tSStringKeyword())
-                                            })
-                                        ], t.tSTypeAnnotation(t.tSAnyKeyword()))
-                                    ])
-                                ])))
-                            ]))
-                        ]))
-                    ])), {
-                        declare: true,
-                        global: true
-                    }));
-                    body.push(t.exportNamedDeclaration(t.tsTypeAliasDeclaration(t.identifier(`${context.className}Element`), undefined, t.tsTypeReference(t.tsQualifiedName(t.identifier('globalThis'), t.identifier(componentInterfaceName))))));
+                    ];
+                    const attributeJSX = [
+                        ...context.classProperties.map((property) => {
+                            return toPropertySignature(property, {
+                                keyTransformer: (key) => paramCase(key)
+                            });
+                        }),
+                        ...context.classEvents.map((event) => {
+                            return toPropertySignature(event, {
+                                optional: true,
+                                keyTransformer: (key) => 'on' + paramCase(key),
+                                typeAnnotationTransformer: toEventTypeAnnotation
+                            });
+                        })
+                    ];
+                    const globalInterface = context.classProperties.map((property) => {
+                        return toPropertySignature(property);
+                    });
+                    const ast = template.default.ast(`
+              export interface ${context.className}JSX {
+                ${jsx.map(print).join('')}
+              }
+              export interface ${context.className}AttributeJSX {
+                ${attributeJSX.map(print).join('')}
+              }
+              declare global {
+                interface ${componentInterfaceName} extends HTMLElement {
+                  ${globalInterface.map(print).join('')}
+                }
+                var ${componentInterfaceName}: {
+                  prototype: ${componentInterfaceName};
+                  new (): ${componentInterfaceName};
+                };
+                interface HTMLElementTagNameMap {
+                  "${tag}": ${componentInterfaceName};
+                }
+                namespace JSX {
+                  interface IntrinsicElements {
+                    "${tag}": ${context.className}AttributeJSX & {
+                      [key: string]: any;
+                    };
+                  }
+                }
+              }
+              export type ${context.className}Element = globalThis.${componentInterfaceName}
+            `, {
+                        plugins: ['typescript']
+                    });
+                    path.node.body.push(...ast);
                 }
             });
         }

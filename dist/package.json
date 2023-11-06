@@ -1,6 +1,6 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.7.9",
+  "version": "0.8.0",
   "license": "MIT",
   "sideEffects": false,
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
@@ -34,6 +34,7 @@
   "dependencies": {
     "@babel/generator": "^7.20.4",
     "@babel/parser": "^7.20.3",
+    "@babel/template": "^7.22.15",
     "@babel/traverse": "^7.20.1",
     "@babel/types": "^7.20.2",
     "@types/node": "^18.11.9",
@@ -47,7 +48,6 @@
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "cpy": "^9.0.1",
-    "nodemon": "^2.0.20",
     "prettier": "^2.8.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",

@@ -1,7 +1,7 @@
-import { File, ImportDeclaration } from '@babel/types';
+import t from '@babel/types';
 interface AddDependencyReturns {
     local?: string;
-    node: ImportDeclaration;
+    node: t.ImportDeclaration;
 }
-export declare function addDependency(path: File | any, source: string, local?: string, imported?: string, comment?: boolean): AddDependencyReturns;
+export declare function addDependency(path: t.File | any, source: string, local?: string, imported?: string, comment?: boolean): AddDependencyReturns;
 export {};

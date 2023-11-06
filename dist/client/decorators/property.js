@@ -10,15 +10,14 @@ export function Property(options) {
         }
         function set(next) {
             const previous = this[symbol];
-            const parsed = toProperty(next, options === null || options === void 0 ? void 0 : options.type);
-            if (parsed === previous)
+            if (next === previous)
                 return;
-            this[symbol] = parsed;
+            this[symbol] = next;
             request(this, name, previous, (skipped) => {
                 if (!(options === null || options === void 0 ? void 0 : options.reflect) || skipped)
                     return;
                 target[CONSTANTS.API_LOCKED] = true;
-                updateAttribute(host(this), name, parsed);
+                updateAttribute(host(this), name, next);
                 target[CONSTANTS.API_LOCKED] = false;
             });
         }
@@ -33,7 +32,7 @@ export function Property(options) {
                 return this[propertyKey];
             };
             const set = (input) => {
-                this[propertyKey] = input;
+                this[propertyKey] = toProperty(input, options === null || options === void 0 ? void 0 : options.type);
             };
             // TODO: configurable
             defineProperty(element, propertyKey, { get, set, configurable: true });

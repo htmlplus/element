@@ -1,4 +1,4 @@
-import { Node } from '@babel/types';
+import t from '@babel/types';
 
 export interface Tag {
   key?: string;
@@ -10,11 +10,11 @@ export interface TagParsed {
   description?: string;
 }
 
-export const getTag = (node: Node, key?: string): Tag | undefined => {
+export const getTag = (node: t.Node, key?: string): Tag | undefined => {
   return getTags(node, key).pop();
 };
 
-export const getTags = (node: Node, filter?: string): Array<Tag> => {
+export const getTags = (node: t.Node, filter?: string): Array<Tag> => {
   const tags: Array<Tag> = [];
 
   // TODO
@@ -54,7 +54,7 @@ export const getTags = (node: Node, filter?: string): Array<Tag> => {
   return tags.filter((tag) => !filter || filter === tag.key);
 };
 
-export const hasTag = (node: Node, name: string): Boolean => {
+export const hasTag = (node: t.Node, name: string): Boolean => {
   return getTags(node).some((tag) => tag.key === name);
 };
 

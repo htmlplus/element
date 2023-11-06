@@ -10,4 +10,6 @@ export * from './print.js';
 export * from './removeUnusedImport.js';
 export * from './renderTemplate.js';
 export * from './tags.js';
+export * from './toEventTypeAnnotation.js';
+export * from './toPropertySignature.js';
 export * from './visitor.js';

@@ -1,15 +1,15 @@
-import t, { File, ImportDeclaration } from '@babel/types';
+import t from '@babel/types';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { visitor } from './visitor.js';
 
 interface AddDependencyReturns {
   local?: string;
-  node: ImportDeclaration;
+  node: t.ImportDeclaration;
 }
 
 export function addDependency(
-  path: File | any,
+  path: t.File | any,
   source: string,
   local?: string,
   imported?: string,

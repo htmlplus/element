@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import { paramCase } from 'change-case';
 import path from 'path';
 import * as CONSTANTS from '../../constants/index.js';
