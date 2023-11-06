@@ -381,7 +381,7 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
             ...context.classProperties!.map((property) => {
               return toPropertySignature(property);
             }),
-            ...context.classProperties!.map((event) => {
+            ...context.classEvents!.map((event) => {
               return toPropertySignature(event, {
                 optional: true,
                 keyTransformer: (key) => camelCase('on-' + key),
