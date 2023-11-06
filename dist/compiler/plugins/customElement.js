@@ -333,7 +333,8 @@ export const customElement = (options) => {
               }
               export type ${context.className}Element = globalThis.${componentInterfaceName}
             `, {
-                        plugins: ['typescript']
+                        plugins: ['typescript'],
+                        preserveComments: true
                     });
                     path.node.body.push(...ast);
                 }

@@ -439,7 +439,8 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
               export type ${context.className}Element = globalThis.${componentInterfaceName}
             `,
             {
-              plugins: ['typescript']
+              plugins: ['typescript'],
+              preserveComments: true
             }
           );
 
