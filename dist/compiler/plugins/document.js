@@ -61,8 +61,8 @@ export const document = (options) => {
             const experimental = hasTag(context.class, 'experimental');
             const group = (_b = getTag(context.class, 'group')) === null || _b === void 0 ? void 0 : _b.value;
             const lastModified = glob
-                .sync(path.join(context.directoryPath, '**/*.*'))
-                .map((file) => fs.statSync(file).mtime)
+                .sync('**/*.*', { cwd: context.directoryPath })
+                .map((file) => fs.statSync(path.resolve(context.directoryPath, file)).mtime)
                 .sort((a, b) => (a > b ? 1 : -1))
                 .pop();
             const methods = context.classMethods.map((method) => {

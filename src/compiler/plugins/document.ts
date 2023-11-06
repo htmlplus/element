@@ -83,8 +83,8 @@ export const document = (options: DocumentOptions): Plugin => {
       const group = getTag(context.class!, 'group')?.value;
 
       const lastModified = glob
-        .sync(path.join(context.directoryPath!, '**/*.*'))
-        .map((file) => fs.statSync(file).mtime)
+        .sync('**/*.*', { cwd: context.directoryPath })
+        .map((file) => fs.statSync(path.resolve(context.directoryPath!, file)).mtime)
         .sort((a, b) => (a > b ? 1 : -1))
         .pop();
 
