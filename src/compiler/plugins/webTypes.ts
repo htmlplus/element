@@ -1,4 +1,4 @@
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -52,7 +52,7 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
     for (const context of contexts) {
       const attributes = context.classProperties?.map((property) =>
         Object.assign(common(property), {
-          name: paramCase(property.key['name']),
+          name: kebabCase(property.key['name']),
           value: {
             // kind: TODO
             type: print(getType(context.directoryPath!, context.fileAST!, property.typeAnnotation?.['typeAnnotation']))
@@ -67,7 +67,7 @@ export const webTypes = (options: WebTypesOptions): Plugin => {
 
       const events = context.classEvents?.map((event) =>
         Object.assign(common(event), {
-          name: paramCase(event.key['name']) // TODO
+          name: kebabCase(event.key['name']) // TODO
           // 'value': TODO
         })
       );

@@ -1,4 +1,4 @@
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
 import { getTags, getType, print } from '../utils/index.js';
@@ -31,7 +31,7 @@ export const visualStudioCode = (options) => {
             };
             for (const property of context.classProperties || []) {
                 const attribute = {
-                    name: paramCase(property.key['name']),
+                    name: kebabCase(property.key['name']),
                     description: (_c = getTags(property).find((tag) => !tag.key)) === null || _c === void 0 ? void 0 : _c.value,
                     values: []
                 };

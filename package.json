@@ -1,6 +1,6 @@
 {
   "name": "@htmlplus/element",
-  "version": "0.8.2",
+  "version": "0.8.4",
   "license": "MIT",
   "sideEffects": false,
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
@@ -47,7 +47,7 @@
     "@babel/traverse": "^7.20.1",
     "@babel/types": "^7.20.2",
     "@types/node": "^18.11.9",
-    "change-case": "^4.1.2",
+    "change-case": "^5.1.2",
     "fast-glob": "^3.2.12",
     "fs-extra": "^10.1.0",
     "handlebars": "^4.7.7",

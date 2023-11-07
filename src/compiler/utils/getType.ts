@@ -64,7 +64,7 @@ export const getType = (directory: string, file: t.File, node: t.Node): t.Node =
           });
 
           result = getType(dirname(filePath), path.$ast, node);
-        } catch { }
+        } catch {}
 
         path.stop();
 

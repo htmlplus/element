@@ -1,4 +1,4 @@
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import { typeOf } from './typeOf.js';
 export const classes = (input, smart) => {
     const result = [];
@@ -16,7 +16,7 @@ export const classes = (input, smart) => {
             const keys = Object.keys(input);
             for (const key of keys) {
                 const value = input[key];
-                const name = paramCase(key);
+                const name = kebabCase(key);
                 const type = typeOf(value);
                 if (!smart) {
                     if (!value)

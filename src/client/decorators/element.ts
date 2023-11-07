@@ -1,4 +1,4 @@
-import { camelCase, paramCase } from 'change-case';
+import { camelCase, kebabCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
@@ -37,7 +37,7 @@ export function Element() {
       static get observedAttributes() {
         return Object.keys(members)
           .filter((key) => members[key].type != CONSTANTS.TYPE_FUNCTION)
-          .map((key) => paramCase(key));
+          .map((key) => kebabCase(key));
       }
 
       adoptedCallback() {

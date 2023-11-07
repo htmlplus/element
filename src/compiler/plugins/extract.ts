@@ -1,6 +1,6 @@
 import t from '@babel/types';
 import { ClassMethod, ClassProperty } from '@babel/types';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
@@ -53,7 +53,7 @@ export const extract = (): Plugin => {
 
     context.className = context.class?.id?.name!;
 
-    context.componentKey = paramCase(context.className);
+    context.componentKey = kebabCase(context.className);
 
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_EVENT)

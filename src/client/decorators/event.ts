@@ -1,4 +1,4 @@
-import { camelCase, paramCase, pascalCase } from 'change-case';
+import { kebabCase, pascalCase } from 'change-case';
 
 import { PlusElement } from '../../types';
 import { defineProperty, getFramework, host } from '../utils/index.js';
@@ -38,11 +38,16 @@ export function Event<T = any>(options: EventOptions = {}) {
           let name = options.name || String(propertyKey);
 
           switch (framework) {
+            case 'qwik':
+              name = pascalCase(name).toLowerCase();
+              break;
+            case 'preact':
             case 'react':
+            case 'solid':
               name = pascalCase(name);
               break;
             default:
-              name = paramCase(name);
+              name = kebabCase(name);
               break;
           }
 

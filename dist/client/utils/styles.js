@@ -1,4 +1,4 @@
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import { typeOf } from './typeOf.js';
 export const styles = (input) => {
     switch (typeOf(input)) {
@@ -7,7 +7,7 @@ export const styles = (input) => {
         case 'object':
             return Object.keys(input)
                 .filter((key) => input[key] !== undefined && input[key] !== null)
-                .map((key) => `${key.startsWith('--') ? '--' : ''}${paramCase(key)}: ${input[key]}`)
+                .map((key) => `${key.startsWith('--') ? '--' : ''}${kebabCase(key)}: ${input[key]}`)
                 .join('; ');
         case 'string':
             return input;

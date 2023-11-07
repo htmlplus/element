@@ -1,4 +1,4 @@
-import { capitalCase, paramCase } from 'change-case';
+import { capitalCase, kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
@@ -83,8 +83,8 @@ export const document = (options: DocumentOptions): Plugin => {
       const group = getTag(context.class!, 'group')?.value;
 
       const lastModified = glob
-        .sync(path.join(context.directoryPath!, '**/*.*'))
-        .map((file) => fs.statSync(file).mtime)
+        .sync('**/*.*', { cwd: context.directoryPath })
+        .map((file) => fs.statSync(path.resolve(context.directoryPath!, file)).mtime)
         .sort((a, b) => (a > b ? 1 : -1))
         .pop();
 
@@ -151,7 +151,7 @@ export const document = (options: DocumentOptions): Plugin => {
       const parts = getTags(context.class!, 'part').map((tag) => parseTag(tag));
 
       const properties = context.classProperties!.map((property) => {
-        const attribute = paramCase(property.key['name']);
+        const attribute = kebabCase(property.key['name']);
 
         const deprecated = hasTag(property, 'deprecated');
 

@@ -1,6 +1,6 @@
 import template from '@babel/template';
 import t from '@babel/types';
-import { camelCase, paramCase, pascalCase } from 'change-case';
+import { camelCase, kebabCase, pascalCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { Context, Plugin } from '../../types';
@@ -393,13 +393,13 @@ export const customElement = (options?: CustomElementOptions): Plugin => {
           const attributeJSX = [
             ...context.classProperties!.map((property) => {
               return toPropertySignature(property, {
-                keyTransformer: (key) => paramCase(key)
+                keyTransformer: (key) => kebabCase(key)
               });
             }),
             ...context.classEvents!.map((event) => {
               return toPropertySignature(event, {
                 optional: true,
-                keyTransformer: (key) => 'on' + paramCase(key),
+                keyTransformer: (key) => camelCase('on-' + key),
                 typeAnnotationTransformer: toEventTypeAnnotation
               });
             })

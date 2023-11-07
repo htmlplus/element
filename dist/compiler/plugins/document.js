@@ -1,4 +1,4 @@
-import { capitalCase, paramCase } from 'change-case';
+import { capitalCase, kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
@@ -61,8 +61,8 @@ export const document = (options) => {
             const experimental = hasTag(context.class, 'experimental');
             const group = (_b = getTag(context.class, 'group')) === null || _b === void 0 ? void 0 : _b.value;
             const lastModified = glob
-                .sync(path.join(context.directoryPath, '**/*.*'))
-                .map((file) => fs.statSync(file).mtime)
+                .sync('**/*.*', { cwd: context.directoryPath })
+                .map((file) => fs.statSync(path.resolve(context.directoryPath, file)).mtime)
                 .sort((a, b) => (a > b ? 1 : -1))
                 .pop();
             const methods = context.classMethods.map((method) => {
@@ -122,7 +122,7 @@ export const document = (options) => {
             const parts = getTags(context.class, 'part').map((tag) => parseTag(tag));
             const properties = context.classProperties.map((property) => {
                 var _a, _b, _c;
-                const attribute = paramCase(property.key['name']);
+                const attribute = kebabCase(property.key['name']);
                 const deprecated = hasTag(property, 'deprecated');
                 const description = (_a = getTags(property).find((tag) => !tag.key)) === null || _a === void 0 ? void 0 : _a.value;
                 const experimental = hasTag(property, 'experimental');

@@ -1,4 +1,4 @@
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
 import { getInitializer, getTags, getType, hasTag, parseTag, print } from '../utils/index.js';
@@ -40,7 +40,7 @@ export const webTypes = (options) => {
             const attributes = (_a = context.classProperties) === null || _a === void 0 ? void 0 : _a.map((property) => {
                 var _a;
                 return Object.assign(common(property), {
-                    name: paramCase(property.key['name']),
+                    name: kebabCase(property.key['name']),
                     value: {
                         // kind: TODO
                         type: print(getType(context.directoryPath, context.fileAST, (_a = property.typeAnnotation) === null || _a === void 0 ? void 0 : _a['typeAnnotation']))
@@ -52,7 +52,7 @@ export const webTypes = (options) => {
             });
             const description = (_b = getTags(context.class).find((tag) => !tag.key)) === null || _b === void 0 ? void 0 : _b.value;
             const events = (_c = context.classEvents) === null || _c === void 0 ? void 0 : _c.map((event) => Object.assign(common(event), {
-                name: paramCase(event.key['name']) // TODO
+                name: kebabCase(event.key['name']) // TODO
                 // 'value': TODO
             }));
             const methods = (_d = context.classMethods) === null || _d === void 0 ? void 0 : _d.map((method) => Object.assign(common(method), {
