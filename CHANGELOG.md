@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 
 - Supported events for `angular`, `qwik`, `react`, `solidjs`, `svelte`, and `vue`.
-- Converted kebab-case events to PascalCase in the attribute jsx typing.
+- Converted `kebab-case` events to `PascalCase` in the attribute jsx typing.
 
 ## [0.8.3] - 2023-11-06
 
