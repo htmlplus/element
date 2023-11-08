@@ -163,10 +163,10 @@ const setEvent = (element: Element, name: string, handler: EventHandlerType) => 
 
   const previous = events[name];
 
-  previous && element.removeEventListener(kebabCase(name), previous);
+  previous && element.removeEventListener(pascalCase(name), previous);
 
   element.addEventListener(
-    kebabCase(name),
+    pascalCase(name),
     (events[name] = function callback(event: Event) {
       handler && handler.call(this, event);
     })
@@ -248,7 +248,7 @@ export const proxy = <ElementType, PropType>(
       Object.keys(events).forEach((name) => {
         const handler = events[name];
 
-        (this.element as any).removeEventListener(kebabCase(name), handler);
+        (this.element as any).removeEventListener(pascalCase(name), handler);
       });
 
       delete (this.element as any)['$events'];

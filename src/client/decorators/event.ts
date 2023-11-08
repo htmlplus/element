@@ -39,11 +39,11 @@ export function Event<T = any>(options: EventOptions = {}) {
 
           switch (framework) {
             case 'qwik':
+            case 'solid':
               name = pascalCase(name).toLowerCase();
               break;
             case 'preact':
             case 'react':
-            case 'solid':
               name = pascalCase(name);
               break;
             default:
