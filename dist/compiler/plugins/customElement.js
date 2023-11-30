@@ -2,7 +2,7 @@ import template from '@babel/template';
 import t from '@babel/types';
 import { camelCase, kebabCase, pascalCase } from 'change-case';
 import * as CONSTANTS from '../../constants/index.js';
-import { addDependency, getType, print, toEventTypeAnnotation, toPropertySignature, visitor } from '../utils/index.js';
+import { addDependency, getType, print, visitor } from '../utils/index.js';
 export const CUSTOM_ELEMENT_OPTIONS = {
     prefix: undefined,
     typings: true
@@ -276,61 +276,82 @@ export const customElement = (options) => {
         if (options === null || options === void 0 ? void 0 : options.typings) {
             visitor(ast, {
                 Program(path) {
-                    const jsx = [
-                        ...context.classProperties.map((property) => {
-                            return toPropertySignature(property);
-                        }),
-                        ...context.classEvents.map((event) => {
-                            return toPropertySignature(event, {
-                                optional: true,
-                                keyTransformer: (key) => camelCase('on-' + key),
-                                typeAnnotationTransformer: toEventTypeAnnotation
-                            });
-                        })
-                    ];
-                    const attributeJSX = [
-                        ...context.classProperties.map((property) => {
-                            return toPropertySignature(property, {
-                                keyTransformer: (key) => kebabCase(key)
-                            });
-                        }),
-                        ...context.classEvents.map((event) => {
-                            return toPropertySignature(event, {
-                                optional: true,
-                                keyTransformer: (key) => camelCase('on-' + key),
-                                typeAnnotationTransformer: toEventTypeAnnotation
-                            });
-                        })
-                    ];
-                    const globalInterface = context.classProperties.map((property) => {
-                        return toPropertySignature(property);
+                    const attributes = context.classProperties.map((property) => {
+                        const key = property.key;
+                        const typeAnnotation = property.typeAnnotation;
+                        return Object.assign(t.tSPropertySignature(t.stringLiteral(kebabCase(key.name)), typeAnnotation), {
+                            optional: property.optional,
+                            leadingComments: t.cloneNode(property, true).leadingComments
+                        });
+                    });
+                    const events = context.classEvents.map((event) => {
+                        var _a;
+                        const key = event.key;
+                        const typeAnnotation = event.typeAnnotation;
+                        return Object.assign(t.tSPropertySignature(t.identifier(camelCase('on-' + key.name)), t.tsTypeAnnotation(t.tsFunctionType(undefined, [
+                            Object.assign({}, t.identifier('event'), {
+                                typeAnnotation: t.tsTypeAnnotation(t.tsTypeReference(t.identifier('CustomEvent'), (_a = typeAnnotation === null || typeAnnotation === void 0 ? void 0 : typeAnnotation['typeAnnotation']) === null || _a === void 0 ? void 0 : _a.typeParameters))
+                            })
+                        ], t.tsTypeAnnotation(t.tsVoidKeyword())))), {
+                            optional: true,
+                            leadingComments: t.cloneNode(event, true).leadingComments
+                        });
+                    });
+                    const methods = context.classMethods.map((method) => {
+                        return Object.assign(t.tsMethodSignature(method.key, undefined, method.params, // TODO
+                        method.returnType // TODO
+                        ), {
+                            leadingComments: t.cloneNode(method, true).leadingComments
+                        });
+                    });
+                    const properties = context.classProperties.map((property) => {
+                        const key = property.key;
+                        const typeAnnotation = property.typeAnnotation;
+                        return Object.assign(t.tSPropertySignature(t.identifier(key.name), typeAnnotation), {
+                            optional: property.optional,
+                            leadingComments: t.cloneNode(property, true).leadingComments
+                        });
                     });
                     const ast = template.default.ast(`
-              export interface ${context.className}JSX {
-                ${jsx.map(print).join('')}
+              export interface ${context.className}Attributes {
+                ${attributes.map(print).join('')}
               }
-              export interface ${context.className}AttributeJSX {
-                ${attributeJSX.map(print).join('')}
+
+              export interface ${context.className}Events {
+                ${events.map(print).join('')}
               }
+
+              export interface ${context.className}Methods {
+                ${methods.map(print).join('')}
+              }
+
+              export interface ${context.className}Properties {
+                ${properties.map(print).join('')}
+              }
+
+              export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
+    
               declare global {
-                interface ${componentInterfaceName} extends HTMLElement {
-                  ${globalInterface.map(print).join('')}
-                }
+                interface ${componentInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
+
                 var ${componentInterfaceName}: {
                   prototype: ${componentInterfaceName};
                   new (): ${componentInterfaceName};
                 };
+
                 interface HTMLElementTagNameMap {
                   "${tag}": ${componentInterfaceName};
                 }
+                
                 namespace JSX {
                   interface IntrinsicElements {
-                    "${tag}": ${context.className}AttributeJSX & {
+                    "${tag}": ${context.className}Events & ${context.className}Attributes & {
                       [key: string]: any;
                     };
                   }
                 }
               }
+
               export type ${context.className}Element = globalThis.${componentInterfaceName}
             `, {
                         plugins: ['typescript'],
