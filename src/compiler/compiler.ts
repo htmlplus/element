@@ -48,12 +48,14 @@ export const compiler = (...plugins: Array<Plugin>) => {
     for (const plugin of plugins) {
       if (!plugin.run) continue;
 
-      log(`Plugin '${plugin.name}' is executing on '${path.basename(parsed.dir)}/${parsed.base}' file.`);
+      const source = '.../' + parsed.dir.split('/').slice(-2).concat(parsed.base).join('/');
+
+      log(`Plugin '${plugin.name}' is executing on '${source}' file.`);
 
       try {
         context = (await plugin.run(context, global)) || context;
       } catch (error) {
-        log(`Error in '${plugin.name}' plugin on '${path.basename(parsed.dir)}/${parsed.base}' file.`, true);
+        log(`Error in '${plugin.name}' plugin on '${source}' file.`, true);
         throw error;
       }
 
