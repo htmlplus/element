@@ -1,7 +1,7 @@
-import { compiler } from '../../compiler/index.js';
-import plugins from '../plus.config.js';
+import { transformer } from '../../transformer/index.js';
+import plugins from '../htmlplus.config.js';
 
-const { start, run, finish } = compiler(...plugins);
+const { start, run, finish } = transformer(...plugins);
 
 (async () => {
   await start();

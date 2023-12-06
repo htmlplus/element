@@ -1,6 +1,6 @@
-import { compiler } from '../compiler/index.js';
-export const rollup = (...plugins) => {
-    const { start, run, finish } = compiler(...plugins);
+import { transformer } from '../transformer/index.js';
+export const htmlplus = (...plugins) => {
+    const { start, run, finish } = transformer(...plugins);
     return {
         name: 'htmlplus',
         async buildStart() {

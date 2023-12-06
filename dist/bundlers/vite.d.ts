@@ -1,5 +1,5 @@
-import { Plugin } from '../types';
-export declare const vite: (...plugins: Array<Plugin>) => {
+import { TransformerPlugin } from '../transformer/index.js';
+export declare const htmlplus: (...plugins: Array<TransformerPlugin>) => {
     name: string;
     buildStart(): Promise<void>;
     load(id: any): Promise<string | undefined>;
