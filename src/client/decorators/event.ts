@@ -3,27 +3,40 @@ import { kebabCase, pascalCase } from 'change-case';
 import { PlusElement } from '../../types';
 import { defineProperty, getFramework, host } from '../utils/index.js';
 
+/**
+ * A function type that generates a `CustomEvent`.
+ */
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
+/**
+ * An object value indicating whether the event's
+ * [options](https://developer.mozilla.org/docs/Web/API/Event/Event#options).
+ */
 export interface EventOptions {
   /**
-   * A string custom event name to override the default.
-   */
-  name?: string;
-  /**
-   * A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
+   * A boolean value indicating whether the event bubbles.
+   * The default is `false`.
    */
   bubbles?: boolean;
   /**
-   * A Boolean indicating whether the event is cancelable. default is `false`.
+   * A boolean value indicating whether the event can be cancelled.
+   * The default is `false`.
    */
   cancelable?: boolean;
   /**
-   * A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
+   * A boolean value indicating whether the event will trigger listeners outside of a shadow root
+   * (see [Event.composed](https://developer.mozilla.org/docs/Web/API/Event/composed) for more details).
+   * The default is `false`.
    */
   composed?: boolean;
 }
 
+/**
+ * Provides the capability to dispatch a
+ * [CustomEvent](https://developer.mozilla.org/docs/Web/API/CustomEvent/CustomEvent).
+ *
+ * @param options An object value indicating whether the event's options.
+ */
 export function Event<T = any>(options: EventOptions = {}) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
     defineProperty(target, propertyKey, {
@@ -35,7 +48,7 @@ export function Event<T = any>(options: EventOptions = {}) {
 
           options.bubbles ??= false;
 
-          let name = options.name || String(propertyKey);
+          let name = String(propertyKey);
 
           switch (framework) {
             case 'qwik':
