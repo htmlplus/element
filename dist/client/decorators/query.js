@@ -1,11 +1,7 @@
-import { defineProperty, shadowRoot } from '../utils/index.js';
+import { query, toDecorator } from '../utils/index.js';
+/**
+ * Selects the first element in the shadow dom that matches a specified CSS selector.
+ */
 export function Query(selectors) {
-    return function (target, propertyKey) {
-        defineProperty(target, propertyKey, {
-            get() {
-                var _a;
-                return (_a = shadowRoot(this)) === null || _a === void 0 ? void 0 : _a.querySelector(selectors);
-            }
-        });
-    };
+    return toDecorator(query, selectors);
 }

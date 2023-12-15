@@ -1,6 +1,11 @@
 import { camelCase, kebabCase } from 'change-case';
 import * as CONSTANTS from '../../constants/index.js';
 import { call, getConfig, getMembers, getNamespace, getTag, isServer, request, toProperty } from '../utils/index.js';
+/**
+ * The class marked with this decorator is considered a
+ * [Custom Element](https://mdn.io/using-custom-elements),
+ * and its name, in kebab-case, serves as the element name.
+ */
 export function Element() {
     return function (constructor) {
         if (isServer())

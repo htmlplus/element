@@ -1,5 +1,11 @@
 import { kebabCase, pascalCase } from 'change-case';
 import { defineProperty, getFramework, host } from '../utils/index.js';
+/**
+ * Provides the capability to dispatch a [CustomEvent](https://mdn.io/custom-event)
+ * from an element.
+ *
+ * @param options An object that configures options for the event dispatcher.
+ */
 export function Event(options = {}) {
     return function (target, propertyKey) {
         defineProperty(target, propertyKey, {
@@ -9,7 +15,7 @@ export function Event(options = {}) {
                     const element = host(this);
                     const framework = getFramework(element);
                     (_a = options.bubbles) !== null && _a !== void 0 ? _a : (options.bubbles = false);
-                    let name = options.name || String(propertyKey);
+                    let name = String(propertyKey);
                     switch (framework) {
                         case 'qwik':
                         case 'solid':

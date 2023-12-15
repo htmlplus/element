@@ -1,4 +1,9 @@
 import { PlusElement } from '../../types';
+/**
+ * An object that configures
+ * [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options)
+ * for the event listener.
+ */
 export interface ListenOptions {
     capture?: boolean;
     once?: boolean;
@@ -7,14 +12,11 @@ export interface ListenOptions {
     target?: 'host' | 'body' | 'document' | 'window';
 }
 /**
- * The default options.
- */
-export declare const ListenOptionsDefault: ListenOptions;
-/**
- * Will be called whenever the specified event is delivered to the target.
- * [More](https://mdn.io/addEventListener).
- * @param type A case-sensitive string representing the [event type](https://mdn.io/events) to listen for.
- * @param options An object that specifies characteristics about the event listener.
+ * Will be called whenever the specified event is delivered to the target
+ * [More](https://mdn.io/add-event-listener).
+ *
+ * @param type A case-sensitive string representing the [Event Type](https://mdn.io/events) to listen for.
+ * @param options An object that configures options for the event listener.
  */
 export declare function Listen(type: string, options?: ListenOptions): (target: PlusElement, propertyKey: PropertyKey, descriptor: PropertyDescriptor) => {
     configurable: boolean;

@@ -1,11 +1,7 @@
-import { defineProperty, shadowRoot } from '../utils/index.js';
+import { queryAll, toDecorator } from '../utils/index.js';
+/**
+ * Selects all elements in the shadow dom that match a specified CSS selector.
+ */
 export function QueryAll(selectors) {
-    return function (target, propertyKey) {
-        defineProperty(target, propertyKey, {
-            get() {
-                var _a;
-                return (_a = shadowRoot(this)) === null || _a === void 0 ? void 0 : _a.querySelectorAll(selectors);
-            }
-        });
-    };
+    return toDecorator(queryAll, selectors);
 }

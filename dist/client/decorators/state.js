@@ -1,4 +1,8 @@
 import { defineProperty, request } from '../utils/index.js';
+/**
+ * Applying this decorator to any `class property` will trigger the
+ * element to re-render upon the desired property changes.
+ */
 export function State() {
     return function (target, propertyKey) {
         const name = String(propertyKey);

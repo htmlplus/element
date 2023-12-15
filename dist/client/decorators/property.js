@@ -1,5 +1,9 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { addMember, appendToMethod, defineProperty, host, request, toProperty, updateAttribute } from '../utils/index.js';
+/**
+ * Creates a reactive property, reflecting a corresponding attribute value,
+ * and updates the element when the property is set.
+ */
 export function Property(options) {
     return function (target, propertyKey) {
         const name = String(propertyKey);

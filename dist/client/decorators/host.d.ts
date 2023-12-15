@@ -1,2 +1,4 @@
-import { PlusElement } from '../../types';
-export declare function Host(): (target: PlusElement, propertyKey: PropertyKey) => void;
+/**
+ * Indicates the host of the element.
+ */
+export declare function Host(): (target: import("../../types/index.js").PlusElement, propertyKey: PropertyKey) => void;
