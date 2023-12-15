@@ -1,12 +1,8 @@
-import { PlusElement } from '../../types';
-import { defineProperty, host } from '../utils/index.js';
+import { host, toDecorator } from '../utils/index.js';
 
+/**
+ * Indicates the host of the element.
+ */
 export function Host() {
-  return function (target: PlusElement, propertyKey: PropertyKey) {
-    defineProperty(target, propertyKey, {
-      get() {
-        return host(this);
-      }
-    });
-  };
+  return toDecorator(host);
 }

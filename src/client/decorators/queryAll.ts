@@ -1,12 +1,8 @@
-import { PlusElement } from '../../types';
-import { defineProperty, shadowRoot } from '../utils/index.js';
+import { queryAll, toDecorator } from '../utils/index.js';
 
+/**
+ * Selects all elements in the shadow dom that match a specified CSS selector.
+ */
 export function QueryAll(selectors: string) {
-  return function (target: PlusElement, propertyKey: PropertyKey) {
-    defineProperty(target, propertyKey, {
-      get() {
-        return shadowRoot(this)?.querySelectorAll(selectors);
-      }
-    });
-  };
+  return toDecorator(queryAll, selectors);
 }

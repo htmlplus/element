@@ -10,17 +10,24 @@ import {
   updateAttribute
 } from '../utils/index.js';
 
+/**
+ * The configuration for property decorator.
+ */
 export interface PropertyOptions {
   /**
    * Whether property value is reflected back to the associated attribute. default is `false`.
    */
   reflect?: boolean;
   /**
-   * TODO
+   * Do not set the value to this property. This value is automatically set during transpiling.
    */
   type?: number;
 }
 
+/**
+ * Creates a reactive property, reflecting a corresponding attribute value,
+ * and updates the element when the property is set.
+ */
 export function Property(options?: PropertyOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
     const name = String(propertyKey);

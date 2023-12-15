@@ -3,6 +3,11 @@ import { PlusElement } from '../../types';
 import { appendToMethod, host, on, off } from '../utils/index.js';
 import { Bind } from './bind.js';
 
+/**
+ * An object that configures
+ * [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options)
+ * for the event listener.
+ */
 export interface ListenOptions {
   capture?: boolean;
   once?: boolean;
@@ -12,24 +17,21 @@ export interface ListenOptions {
 }
 
 /**
- * The default options.
- */
-export const ListenOptionsDefault: ListenOptions = {
-  target: 'host'
-};
-
-/**
- * Will be called whenever the specified event is delivered to the target.
- * [More](https://mdn.io/addEventListener).
- * @param type A case-sensitive string representing the [event type](https://mdn.io/events) to listen for.
- * @param options An object that specifies characteristics about the event listener.
+ * Will be called whenever the specified event is delivered to the target
+ * [More](https://mdn.io/add-event-listener).
+ *
+ * @param type A case-sensitive string representing the [Event Type](https://mdn.io/events) to listen for.
+ * @param options An object that configures options for the event listener.
  */
 export function Listen(type: string, options?: ListenOptions) {
   return function (target: PlusElement, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
-    options = Object.assign({}, ListenOptionsDefault, options);
+    options = {
+      target: 'host',
+      ...options
+    };
 
     const element = (instance) => {
-      switch (options?.target) {
+      switch (options!.target) {
         case 'body':
           return window.document.body;
         case 'document':

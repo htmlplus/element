@@ -1,12 +1,8 @@
-import { PlusElement } from '../../types';
-import { defineProperty, shadowRoot } from '../utils/index.js';
+import { query, toDecorator } from '../utils/index.js';
 
+/**
+ * Selects the first element in the shadow dom that matches a specified CSS selector.
+ */
 export function Query(selectors: string) {
-  return function (target: PlusElement, propertyKey: PropertyKey) {
-    defineProperty(target, propertyKey, {
-      get() {
-        return shadowRoot(this)?.querySelector(selectors);
-      }
-    });
-  };
+  return toDecorator(query, selectors);
 }
