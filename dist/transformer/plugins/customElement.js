@@ -14,8 +14,8 @@ export const customElement = (options) => {
     const run = (context) => {
         const ast = t.cloneNode(context.fileAST, true);
         // TODO
-        const tag = ((options === null || options === void 0 ? void 0 : options.prefix) || '') + context.componentKey;
-        const componentInterfaceName = `HTML${pascalCase(tag)}Element`;
+        const tag = ((options === null || options === void 0 ? void 0 : options.prefix) || '') + context.elementKey;
+        const elementInterfaceName = `HTML${pascalCase(tag)}Element`;
         // attaches name
         visitor(ast, {
             ClassDeclaration(path) {
@@ -333,15 +333,15 @@ export const customElement = (options) => {
               export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
     
               declare global {
-                interface ${componentInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
+                interface ${elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
 
-                var ${componentInterfaceName}: {
-                  prototype: ${componentInterfaceName};
-                  new (): ${componentInterfaceName};
+                var ${elementInterfaceName}: {
+                  prototype: ${elementInterfaceName};
+                  new (): ${elementInterfaceName};
                 };
 
                 interface HTMLElementTagNameMap {
-                  "${tag}": ${componentInterfaceName};
+                  "${tag}": ${elementInterfaceName};
                 }
                 
                 namespace JSX {
@@ -353,7 +353,7 @@ export const customElement = (options) => {
                 }
               }
 
-              export type ${context.className}Element = globalThis.${componentInterfaceName}
+              export type ${context.className}Element = globalThis.${elementInterfaceName}
             `, {
                         plugins: ['typescript'],
                         preserveComments: true

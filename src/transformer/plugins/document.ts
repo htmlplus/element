@@ -20,7 +20,7 @@ export const document = (options: DocumentOptions): TransformerPlugin => {
 
   const finish = (global: TransformerPluginGlobal) => {
     const json = {
-      components: [] as any
+      elements: [] as any
     };
 
     for (const context of global.contexts) {
@@ -238,15 +238,15 @@ export const document = (options: DocumentOptions): TransformerPlugin => {
 
       const tags = getTags(context.class!).filter((tag) => !['part', 'slot'].includes(tag.key!));
 
-      const title = capitalCase(context.componentKey!);
+      const title = capitalCase(context.elementKey!);
 
-      const component = {
+      const element = {
         events,
         group,
         deprecated,
         description,
         experimental,
-        key: context.componentKey!,
+        key: context.elementKey!,
         lastModified,
         methods,
         parts,
@@ -258,12 +258,12 @@ export const document = (options: DocumentOptions): TransformerPlugin => {
         title
       };
 
-      const transformed = options.transformer?.(context, component) || component;
+      const transformed = options.transformer?.(context, element) || element;
 
-      json.components.push(transformed);
+      json.elements.push(transformed);
     }
 
-    json.components = json.components.sort((a, b) => (a.title > b.title ? 1 : -1));
+    json.elements = json.elements.sort((a, b) => (a.title > b.title ? 1 : -1));
 
     const dirname = path.dirname(options.destination);
 

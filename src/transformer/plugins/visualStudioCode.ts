@@ -10,7 +10,7 @@ export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {};
 export interface VisualStudioCodeOptions {
   destination: string;
   reference?: (context: TransformerPluginContext) => string;
-  transformer?: (context: TransformerPluginContext, component: any) => any;
+  transformer?: (context: TransformerPluginContext, element: any) => any;
 }
 
 export const visualStudioCode = (options: VisualStudioCodeOptions): TransformerPlugin => {
@@ -20,7 +20,7 @@ export const visualStudioCode = (options: VisualStudioCodeOptions): TransformerP
 
   const finish = (global: TransformerPluginGlobal) => {
     const contexts = global.contexts.sort((a, b) => {
-      return a.componentKey!.toUpperCase() > b.componentKey!.toUpperCase() ? +1 : -1;
+      return a.elementKey!.toUpperCase() > b.elementKey!.toUpperCase() ? +1 : -1;
     });
 
     const json = {
@@ -33,7 +33,7 @@ export const visualStudioCode = (options: VisualStudioCodeOptions): TransformerP
       const description = getTags(context.class!).find((tag) => !tag.key)?.value;
 
       const tag = {
-        name: context.componentKey!,
+        name: context.elementKey!,
         description: description,
         attributes: [] as any,
         references: [

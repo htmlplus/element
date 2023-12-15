@@ -4,10 +4,10 @@ export interface CustomElementReactOptions {
     compact?: boolean;
     destination: string;
     eventName?: (eventName: string) => string;
-    importerComponent: (context: TransformerPluginContext) => {
+    importerElement: (context: TransformerPluginContext) => {
         source: string;
     };
-    importerComponentType: (context: TransformerPluginContext) => {
+    importerElementType: (context: TransformerPluginContext) => {
         source: string;
         imported: string;
         local: string;

@@ -26,8 +26,8 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
     const ast = t.cloneNode(context.fileAST!, true);
 
     // TODO
-    const tag = (options?.prefix || '') + context.componentKey!;
-    const componentInterfaceName = `HTML${pascalCase(tag)}Element`;
+    const tag = (options?.prefix || '') + context.elementKey!;
+    const elementInterfaceName = `HTML${pascalCase(tag)}Element`;
 
     // attaches name
     visitor(ast, {
@@ -467,15 +467,15 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
               export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
     
               declare global {
-                interface ${componentInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
+                interface ${elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
 
-                var ${componentInterfaceName}: {
-                  prototype: ${componentInterfaceName};
-                  new (): ${componentInterfaceName};
+                var ${elementInterfaceName}: {
+                  prototype: ${elementInterfaceName};
+                  new (): ${elementInterfaceName};
                 };
 
                 interface HTMLElementTagNameMap {
-                  "${tag}": ${componentInterfaceName};
+                  "${tag}": ${elementInterfaceName};
                 }
                 
                 namespace JSX {
@@ -487,7 +487,7 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
                 }
               }
 
-              export type ${context.className}Element = globalThis.${componentInterfaceName}
+              export type ${context.className}Element = globalThis.${elementInterfaceName}
             `,
             {
               plugins: ['typescript'],

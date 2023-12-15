@@ -1,6 +1,6 @@
 import { merge } from './merge.js';
 let defaults = {
-    component: {}
+    element: {}
 };
 export const getConfig = (namespace, ...parameters) => {
     if (typeof window == 'undefined')

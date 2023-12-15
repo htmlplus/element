@@ -9,7 +9,7 @@ export const visualStudioCode = (options) => {
     const finish = (global) => {
         var _a, _b, _c, _d, _e;
         const contexts = global.contexts.sort((a, b) => {
-            return a.componentKey.toUpperCase() > b.componentKey.toUpperCase() ? +1 : -1;
+            return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? +1 : -1;
         });
         const json = {
             $schema: 'TODO',
@@ -19,7 +19,7 @@ export const visualStudioCode = (options) => {
         for (const context of contexts) {
             const description = (_a = getTags(context.class).find((tag) => !tag.key)) === null || _a === void 0 ? void 0 : _a.value;
             const tag = {
-                name: context.componentKey,
+                name: context.elementKey,
                 description: description,
                 attributes: [],
                 references: [

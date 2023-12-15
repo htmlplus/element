@@ -13,7 +13,7 @@ export const customElementReact = (options) => {
         const config = { cwd: __dirname(import.meta.url) };
         const isEmpty = isDirectoryEmpty(options.destination);
         const skip = [];
-        const getKey = (component) => component.className;
+        const getKey = (element) => element.className;
         for (const key in globalNew.contexts) {
             const context = globalNew.contexts[key];
             const classEvents = context.classEvents.map((classEvent) => {
@@ -24,43 +24,43 @@ export const customElementReact = (options) => {
                     to });
             });
             const fileName = context.fileName;
-            const importerComponent = options.importerComponent(context);
-            const importerComponentType = options.importerComponentType(context);
+            const importerElement = options.importerElement(context);
+            const importerElementType = options.importerElementType(context);
             const state = Object.assign(Object.assign({}, context), { classEvents,
                 fileName,
-                importerComponent,
-                importerComponentType,
+                importerElement,
+                importerElementType,
                 options });
             const patterns = [
-                'templates/src/components/*fileName*.ts.hbs',
-                '!templates/src/components/*fileName*.compact.ts.hbs'
+                'templates/src/elements/*fileName*.ts.hbs',
+                '!templates/src/elements/*fileName*.compact.ts.hbs'
             ];
             renderTemplate(patterns, options.destination, config)(state);
         }
         if (options.compact) {
             globalNew.groups = Object.values(globalNew.contexts)
                 .sort((a, b) => getKey(b).length - getKey(a).length)
-                .map((component, index, components) => ({
-                key: getKey(component),
-                components: components.filter((current) => getKey(current).startsWith(getKey(component)))
+                .map((element, index, elements) => ({
+                key: getKey(element),
+                elements: elements.filter((current) => getKey(current).startsWith(getKey(element)))
             }))
-                .sort((a, b) => b.components.length - a.components.length)
+                .sort((a, b) => b.elements.length - a.elements.length)
                 .filter((group) => {
                 if (skip.includes(group.key))
                     return;
-                group.components.forEach((component) => skip.push(getKey(component)));
+                group.elements.forEach((element) => skip.push(getKey(element)));
                 return true;
             })
                 .map((group) => {
-                const all = group.components
+                const all = group.elements
                     .reverse()
-                    .map((component, index) => {
-                    const componentClassNameInCategory = getKey(component).replace(group.key, '');
-                    const importerComponent = options.importerComponent(component);
-                    const importerComponentType = options.importerComponentType(component);
-                    return Object.assign(Object.assign({}, component), { componentClassNameInCategory,
-                        importerComponent,
-                        importerComponentType });
+                    .map((element, index) => {
+                    const elementClassNameInCategory = getKey(element).replace(group.key, '');
+                    const importerElement = options.importerElement(element);
+                    const importerElementType = options.importerElementType(element);
+                    return Object.assign(Object.assign({}, element), { elementClassNameInCategory,
+                        importerElement,
+                        importerElementType });
                 })
                     // TODO: experimental
                     .sort((a, b) => (getKey(b) < getKey(a) ? 0 : -1));
@@ -76,20 +76,20 @@ export const customElementReact = (options) => {
                 if (group.single)
                     continue;
                 const state = Object.assign({ fileName: group.root.fileName, options }, group);
-                const patterns = ['templates/src/components/*fileName*.compact.ts.hbs'];
+                const patterns = ['templates/src/elements/*fileName*.compact.ts.hbs'];
                 renderTemplate(patterns, options.destination, config)(state);
             }
         }
         if (isEmpty) {
             const patterns = [
                 'templates/**',
-                '!templates/src/components/*fileName*.ts.hbs',
-                '!templates/src/components/*fileName*.compact.ts.hbs'
+                '!templates/src/elements/*fileName*.ts.hbs',
+                '!templates/src/elements/*fileName*.compact.ts.hbs'
             ];
             renderTemplate(patterns, options.destination, config)(globalNew);
         }
         if (!isEmpty) {
-            const patterns = ['templates/src/proxy*', 'templates/src/components/index*'];
+            const patterns = ['templates/src/proxy*', 'templates/src/elements/index*'];
             renderTemplate(patterns, options.destination, config)(globalNew);
         }
     };

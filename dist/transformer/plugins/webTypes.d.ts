@@ -5,6 +5,6 @@ export interface WebTypesOptions {
     packageName: string;
     packageVersion: string;
     reference?: (context: TransformerPluginContext) => string;
-    transformer?: (context: TransformerPluginContext, component: any) => any;
+    transformer?: (context: TransformerPluginContext, element: any) => any;
 }
 export declare const webTypes: (options: WebTypesOptions) => TransformerPlugin;

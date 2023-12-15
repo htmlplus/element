@@ -23,12 +23,12 @@ export interface TransformerPluginContext {
   classRender?: ClassMethod;
   classStates?: Array<ClassProperty>;
 
-  // component
-  componentKey?: string;
-
   // directory
   directoryName?: string;
   directoryPath?: string;
+
+  // element
+  elementKey?: string;
 
   // file
   fileAST?: File;

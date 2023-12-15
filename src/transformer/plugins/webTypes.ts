@@ -12,7 +12,7 @@ export interface WebTypesOptions {
   packageName: string;
   packageVersion: string;
   reference?: (context: TransformerPluginContext) => string;
-  transformer?: (context: TransformerPluginContext, component: any) => any;
+  transformer?: (context: TransformerPluginContext, element: any) => any;
 }
 
 export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
@@ -22,7 +22,7 @@ export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
 
   const finish = (global: TransformerPluginGlobal) => {
     const contexts = global.contexts.sort((a, b) => {
-      return a.componentKey!.toUpperCase() > b.componentKey!.toUpperCase() ? +1 : -1;
+      return a.elementKey!.toUpperCase() > b.elementKey!.toUpperCase() ? +1 : -1;
     });
 
     const json = {
@@ -93,8 +93,8 @@ export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
         };
       });
 
-      const component = {
-        'name': context.componentKey,
+      const element = {
+        'name': context.elementKey,
         'description': description,
         'doc-url': options.reference?.(context),
         'deprecated': hasTag(context.class!, 'deprecated'),
@@ -107,7 +107,7 @@ export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
         slots
       };
 
-      const transformed = options.transformer?.(context, component) || component;
+      const transformed = options.transformer?.(context, element) || element;
 
       json.contributions.html.elements.push(transformed);
     }

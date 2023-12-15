@@ -9,8 +9,8 @@ export interface CustomElementReactOptions {
   compact?: boolean;
   destination: string;
   eventName?: (eventName: string) => string;
-  importerComponent: (context: TransformerPluginContext) => { source: string };
-  importerComponentType: (context: TransformerPluginContext) => { source: string; imported: string; local: string };
+  importerElement: (context: TransformerPluginContext) => { source: string };
+  importerElementType: (context: TransformerPluginContext) => { source: string; imported: string; local: string };
 }
 
 export const customElementReact = (options: CustomElementReactOptions): TransformerPlugin => {
@@ -31,7 +31,7 @@ export const customElementReact = (options: CustomElementReactOptions): Transfor
 
     const skip: Array<string> = [];
 
-    const getKey = (component) => component.className;
+    const getKey = (element) => element.className;
 
     for (const key in globalNew.contexts) {
       const context = globalNew.contexts[key];
@@ -48,22 +48,22 @@ export const customElementReact = (options: CustomElementReactOptions): Transfor
 
       const fileName = context.fileName;
 
-      const importerComponent = options.importerComponent(context);
+      const importerElement = options.importerElement(context);
 
-      const importerComponentType = options.importerComponentType(context);
+      const importerElementType = options.importerElementType(context);
 
       const state = {
         ...context,
         classEvents,
         fileName,
-        importerComponent,
-        importerComponentType,
+        importerElement,
+        importerElementType,
         options
       };
 
       const patterns = [
-        'templates/src/components/*fileName*.ts.hbs',
-        '!templates/src/components/*fileName*.compact.ts.hbs'
+        'templates/src/elements/*fileName*.ts.hbs',
+        '!templates/src/elements/*fileName*.compact.ts.hbs'
       ];
 
       renderTemplate(patterns, options.destination, config)(state);
@@ -72,31 +72,31 @@ export const customElementReact = (options: CustomElementReactOptions): Transfor
     if (options.compact) {
       globalNew.groups = Object.values<any>(globalNew.contexts)
         .sort((a, b) => getKey(b).length - getKey(a).length)
-        .map((component, index, components) => ({
-          key: getKey(component),
-          components: components.filter((current) => getKey(current).startsWith(getKey(component)))
+        .map((element, index, elements) => ({
+          key: getKey(element),
+          elements: elements.filter((current) => getKey(current).startsWith(getKey(element)))
         }))
-        .sort((a, b) => b.components.length - a.components.length)
+        .sort((a, b) => b.elements.length - a.elements.length)
         .filter((group) => {
           if (skip.includes(group.key)) return;
-          group.components.forEach((component) => skip.push(getKey(component)));
+          group.elements.forEach((element) => skip.push(getKey(element)));
           return true;
         })
         .map((group) => {
-          const all = group.components
+          const all = group.elements
             .reverse()
-            .map((component, index) => {
-              const componentClassNameInCategory = getKey(component).replace(group.key, '');
+            .map((element, index) => {
+              const elementClassNameInCategory = getKey(element).replace(group.key, '');
 
-              const importerComponent = options.importerComponent(component);
+              const importerElement = options.importerElement(element);
 
-              const importerComponentType = options.importerComponentType(component);
+              const importerElementType = options.importerElementType(element);
 
               return {
-                ...component,
-                componentClassNameInCategory,
-                importerComponent,
-                importerComponentType
+                ...element,
+                elementClassNameInCategory,
+                importerElement,
+                importerElementType
               };
             })
             // TODO: experimental
@@ -117,7 +117,7 @@ export const customElementReact = (options: CustomElementReactOptions): Transfor
           options,
           ...group
         };
-        const patterns = ['templates/src/components/*fileName*.compact.ts.hbs'];
+        const patterns = ['templates/src/elements/*fileName*.compact.ts.hbs'];
         renderTemplate(patterns, options.destination, config)(state);
       }
     }
@@ -125,14 +125,14 @@ export const customElementReact = (options: CustomElementReactOptions): Transfor
     if (isEmpty) {
       const patterns = [
         'templates/**',
-        '!templates/src/components/*fileName*.ts.hbs',
-        '!templates/src/components/*fileName*.compact.ts.hbs'
+        '!templates/src/elements/*fileName*.ts.hbs',
+        '!templates/src/elements/*fileName*.compact.ts.hbs'
       ];
       renderTemplate(patterns, options.destination, config)(globalNew);
     }
 
     if (!isEmpty) {
-      const patterns = ['templates/src/proxy*', 'templates/src/components/index*'];
+      const patterns = ['templates/src/proxy*', 'templates/src/elements/index*'];
       renderTemplate(patterns, options.destination, config)(globalNew);
     }
   };

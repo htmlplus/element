@@ -53,7 +53,7 @@ export const extract = (): TransformerPlugin => {
 
     context.className = context.class?.id?.name!;
 
-    context.componentKey = kebabCase(context.className);
+    context.elementKey = kebabCase(context.className);
 
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_EVENT)

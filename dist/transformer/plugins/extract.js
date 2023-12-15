@@ -38,7 +38,7 @@ export const extract = () => {
         context.fileExtension = path.extname(context.filePath);
         context.fileName = path.basename(context.filePath, context.fileExtension);
         context.className = (_b = (_a = context.class) === null || _a === void 0 ? void 0 : _a.id) === null || _b === void 0 ? void 0 : _b.name;
-        context.componentKey = kebabCase(context.className);
+        context.elementKey = kebabCase(context.className);
         context.classEvents = (context.classMembers || []).filter((member) => hasDecorator(member, CONSTANTS.DECORATOR_EVENT));
         context.classMethods = (context.classMembers || []).filter((member) => hasDecorator(member, CONSTANTS.DECORATOR_METHOD));
         context.classProperties = (context.classMembers || []).filter((member) => hasDecorator(member, CONSTANTS.DECORATOR_PROPERTY));

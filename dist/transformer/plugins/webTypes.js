@@ -9,7 +9,7 @@ export const webTypes = (options) => {
     const finish = (global) => {
         var _a, _b, _c, _d, _e, _f, _g;
         const contexts = global.contexts.sort((a, b) => {
-            return a.componentKey.toUpperCase() > b.componentKey.toUpperCase() ? +1 : -1;
+            return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? +1 : -1;
         });
         const json = {
             '$schema': 'http://json.schemastore.org/web-types',
@@ -69,8 +69,8 @@ export const webTypes = (options) => {
                     description
                 };
             });
-            const component = {
-                'name': context.componentKey,
+            const element = {
+                'name': context.elementKey,
                 'description': description,
                 'doc-url': (_f = options.reference) === null || _f === void 0 ? void 0 : _f.call(options, context),
                 'deprecated': hasTag(context.class, 'deprecated'),
@@ -82,7 +82,7 @@ export const webTypes = (options) => {
                 attributes,
                 slots
             };
-            const transformed = ((_g = options.transformer) === null || _g === void 0 ? void 0 : _g.call(options, context, component)) || component;
+            const transformed = ((_g = options.transformer) === null || _g === void 0 ? void 0 : _g.call(options, context, element)) || element;
             json.contributions.html.elements.push(transformed);
         }
         const dirname = path.dirname(options.destination);

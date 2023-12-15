@@ -10,7 +10,7 @@ export const document = (options) => {
     const finish = (global) => {
         var _a, _b, _c;
         const json = {
-            components: []
+            elements: []
         };
         for (const context of global.contexts) {
             const deprecated = hasTag(context.class, 'deprecated');
@@ -196,14 +196,14 @@ export const document = (options) => {
                 });
             })();
             const tags = getTags(context.class).filter((tag) => !['part', 'slot'].includes(tag.key));
-            const title = capitalCase(context.componentKey);
-            const component = {
+            const title = capitalCase(context.elementKey);
+            const element = {
                 events,
                 group,
                 deprecated,
                 description,
                 experimental,
-                key: context.componentKey,
+                key: context.elementKey,
                 lastModified,
                 methods,
                 parts,
@@ -214,10 +214,10 @@ export const document = (options) => {
                 tags,
                 title
             };
-            const transformed = ((_c = options.transformer) === null || _c === void 0 ? void 0 : _c.call(options, context, component)) || component;
-            json.components.push(transformed);
+            const transformed = ((_c = options.transformer) === null || _c === void 0 ? void 0 : _c.call(options, context, element)) || element;
+            json.elements.push(transformed);
         }
-        json.components = json.components.sort((a, b) => (a.title > b.title ? 1 : -1));
+        json.elements = json.elements.sort((a, b) => (a.title > b.title ? 1 : -1));
         const dirname = path.dirname(options.destination);
         fs.ensureDirSync(dirname);
         fs.writeJSONSync(options.destination, json, { encoding: 'utf8', spaces: 2 });

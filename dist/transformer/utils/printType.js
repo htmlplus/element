@@ -2,8 +2,8 @@ import { print } from './print.js';
 // TODO
 // args types
 // return type
-// components\grid-item\grid-item.types.ts
-// components\portal\portal.tsx
+// elements\grid-item\grid-item.types.ts
+// elements\portal\portal.tsx
 export const printType = (ast) => {
     if (!ast)
         return ast;

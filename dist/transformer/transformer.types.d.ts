@@ -15,9 +15,9 @@ export interface TransformerPluginContext {
     classProperties?: Array<ClassProperty>;
     classRender?: ClassMethod;
     classStates?: Array<ClassProperty>;
-    componentKey?: string;
     directoryName?: string;
     directoryPath?: string;
+    elementKey?: string;
     fileAST?: File;
     fileContent?: string;
     fileExtension?: string;

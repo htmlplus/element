@@ -1,14 +1,14 @@
 /**************************************************
  * THIS FILE IS AUTO-GENERATED, DO NOT EDIT MANUALY
  **************************************************/
-import { {{className}} as {{className}}Core } from '{{importerComponent.source}}';
-import type { {{className}}Element, {{importerComponentType.imported}} as {{importerComponentType.local}} } from '{{importerComponentType.source}}';
+import { {{className}} as {{className}}Core } from '{{importerElement.source}}';
+import type { {{className}}Element, {{importerElementType.imported}} as {{importerElementType.local}} } from '{{importerElementType.source}}';
 
 import { proxy } from '../proxy';
 import type { Rename } from '../proxy';
 
 type Renamed = Rename<
-  {{importerComponentType.local}},
+  {{importerElementType.local}},
   {
     {{#each classEvents}}
     {{from}}: '{{to}}';

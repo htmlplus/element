@@ -1,14 +1,14 @@
 import { merge } from './merge.js';
 
 let defaults: Config = {
-  component: {}
+  element: {}
 };
 
 export interface Config {
   asset?: {
     [key: string]: any;
   };
-  component?: {
+  element?: {
     [key: string]: {
       property?: {
         [key: string]: any;
