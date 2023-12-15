@@ -6,6 +6,6 @@ export class MyElement {
   value: any;
   
   render() {
-    return '<slot />';
+    return <div><slot /></div>;
   }
 }

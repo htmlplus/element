@@ -1,7 +1,7 @@
 import { createServer } from 'vite';
 
-import { htmlplus } from '../../bundlers/vite.js';
-import plugins from '../htmlplus.config.js';
+import { htmlplus } from '../bundlers/vite.js';
+import plugins from './htmlplus.config.js';
 
 createServer({
   server: {
@@ -17,7 +17,7 @@ createServer({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: '$color: pink;\n'
+        additionalData: ''
       }
     }
   },
