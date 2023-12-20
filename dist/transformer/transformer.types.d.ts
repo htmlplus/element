@@ -4,7 +4,8 @@ export interface TransformerPluginContext {
     customElementNames?: Array<string>;
     isInvalid?: boolean;
     script?: string;
-    assets?: string;
+    assetsDestination?: string;
+    assetsSource?: string;
     class?: ClassDeclaration;
     classEvents?: Array<ClassProperty>;
     classHasMount?: boolean;
@@ -24,10 +25,12 @@ export interface TransformerPluginContext {
     fileName?: string;
     filePath?: string;
     readmeContent?: string;
+    readmeExtension?: string;
+    readmeName?: string;
     readmePath?: string;
     styleContent?: string;
-    styleDependencies?: Array<string>;
-    styleParsed?: string;
+    styleExtension?: string;
+    styleName?: string;
     stylePath?: string;
 }
 export interface TransformerPluginGlobal {

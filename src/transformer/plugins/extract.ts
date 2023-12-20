@@ -1,7 +1,6 @@
 import t from '@babel/types';
 import { ClassMethod, ClassProperty } from '@babel/types';
 import { kebabCase } from 'change-case';
-import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
@@ -42,14 +41,6 @@ export const extract = (): TransformerPlugin => {
           .sort();
       }
     });
-
-    context.directoryPath = path.dirname(context.filePath!);
-
-    context.directoryName = path.basename(context.directoryPath!);
-
-    context.fileExtension = path.extname(context.filePath!);
-
-    context.fileName = path.basename(context.filePath!, context.fileExtension);
 
     context.className = context.class?.id?.name!;
 

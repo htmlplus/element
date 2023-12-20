@@ -6,14 +6,16 @@ import path from 'path';
 import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
 import { getInitializer, getTag, getTags, getTypeReference, hasTag, parseTag, print } from '../utils/index.js';
 
-export const DOCUMENT_OPTIONS: Partial<DocumentOptions> = {};
+export const DOCUMENT_OPTIONS: Partial<DocumentOptions> = {
+  destination: path.join('dist', 'document.json')
+};
 
 export interface DocumentOptions {
   destination: string;
   transformer?: (context: TransformerPluginContext, element: any) => any;
 }
 
-export const document = (options: DocumentOptions): TransformerPlugin => {
+export const document = (options?: DocumentOptions): TransformerPlugin => {
   const name = 'document';
 
   options = Object.assign({}, DOCUMENT_OPTIONS, options);
@@ -84,7 +86,7 @@ export const document = (options: DocumentOptions): TransformerPlugin => {
 
       const lastModified = glob
         .sync('**/*.*', { cwd: context.directoryPath })
-        .map((file) => fs.statSync(path.resolve(context.directoryPath!, file)).mtime)
+        .map((file) => fs.statSync(path.join(context.directoryPath!, file)).mtime)
         .sort((a, b) => (a > b ? 1 : -1))
         .pop();
 
@@ -215,18 +217,16 @@ export const document = (options: DocumentOptions): TransformerPlugin => {
         if (!context.stylePath) return [];
         return fs
           .readFileSync(context.stylePath!, 'utf8')
-          .split('@prop')
+          .split('@Property()')
           .slice(1)
           .map((section) => {
-            let [description, name] = section.split(/\n/);
+            const [first, second] = section.split(/\n/);
 
-            name = name.split(':').slice(0, -1).join(':').trim();
+            const description = first.replace('*/', '').trim();
 
-            description = description.trim();
+            const name = second.split(':')[0].trim();
 
-            let [initializer] = context.styleParsed?.split(name).slice(1, 2) || [];
-
-            if (initializer) initializer = initializer.split(/;|}/)[0].replace(':', '').trim();
+            const initializer = second.split(':').slice(1).join(':').replace(';', '').trim();
 
             return {
               description,
@@ -258,18 +258,18 @@ export const document = (options: DocumentOptions): TransformerPlugin => {
         title
       };
 
-      const transformed = options.transformer?.(context, element) || element;
+      const transformed = options!.transformer?.(context, element) || element;
 
       json.elements.push(transformed);
     }
 
     json.elements = json.elements.sort((a, b) => (a.title > b.title ? 1 : -1));
 
-    const dirname = path.dirname(options.destination);
+    const dirname = path.dirname(options!.destination);
 
     fs.ensureDirSync(dirname);
 
-    fs.writeJSONSync(options.destination, json, { encoding: 'utf8', spaces: 2 });
+    fs.writeJSONSync(options!.destination, json, { encoding: 'utf8', spaces: 2 });
   };
 
   return { name, finish };

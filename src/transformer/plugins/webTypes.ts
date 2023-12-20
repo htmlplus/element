@@ -5,17 +5,21 @@ import path from 'path';
 import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
 import { getInitializer, getTags, getType, hasTag, parseTag, print } from '../utils/index.js';
 
-export const WEB_TYPES_OPTIONS: Partial<WebTypesOptions> = {};
+export const WEB_TYPES_OPTIONS: Partial<WebTypesOptions> = {
+  destination: path.join('dist', 'web-types.json'),
+  packageName: '',
+  packageVersion: ''
+};
 
 export interface WebTypesOptions {
-  destination: string;
-  packageName: string;
-  packageVersion: string;
+  destination?: string;
+  packageName?: string;
+  packageVersion?: string;
   reference?: (context: TransformerPluginContext) => string;
   transformer?: (context: TransformerPluginContext, element: any) => any;
 }
 
-export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
+export const webTypes = (options?: WebTypesOptions): TransformerPlugin => {
   const name = 'webTypes';
 
   options = Object.assign({}, WEB_TYPES_OPTIONS, options);
@@ -27,12 +31,12 @@ export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
 
     const json = {
       '$schema': 'http://json.schemastore.org/web-types',
-      'name': options.packageName,
-      'version': options.packageVersion,
+      'name': options!.packageName,
+      'version': options!.packageVersion,
       'description-markup': 'markdown',
       'framework-config': {
         'enable-when': {
-          'node-packages': [options.packageName]
+          'node-packages': [options!.packageName]
         }
       },
       'contributions': {
@@ -96,7 +100,7 @@ export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
       const element = {
         'name': context.elementKey,
         'description': description,
-        'doc-url': options.reference?.(context),
+        'doc-url': options!.reference?.(context),
         'deprecated': hasTag(context.class!, 'deprecated'),
         'experimental': hasTag(context.class!, 'experimental'),
         'js': {
@@ -107,16 +111,16 @@ export const webTypes = (options: WebTypesOptions): TransformerPlugin => {
         slots
       };
 
-      const transformed = options.transformer?.(context, element) || element;
+      const transformed = options!.transformer?.(context, element) || element;
 
       json.contributions.html.elements.push(transformed);
     }
 
-    const dirname = path.dirname(options.destination);
+    const dirname = path.dirname(options!.destination!);
 
     fs.ensureDirSync(dirname);
 
-    fs.writeJSONSync(options.destination, json, { encoding: 'utf8', spaces: 2 });
+    fs.writeJSONSync(options!.destination, json, { encoding: 'utf8', spaces: 2 });
   };
 
   return { name, finish };

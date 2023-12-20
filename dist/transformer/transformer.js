@@ -28,7 +28,7 @@ export const transformer = (...plugins) => {
         log(`Plugins started successfully.`, true);
     };
     const run = async (filePath) => {
-        const key = filePath.split(/[\/|\\]/g).pop();
+        const key = path.join(filePath).split(path.sep).pop();
         let context = {
             filePath
         };
@@ -36,11 +36,7 @@ export const transformer = (...plugins) => {
         for (const plugin of plugins) {
             if (!plugin.run)
                 continue;
-            const source = parsed.dir
-                .split(/[\/|\\]/g)
-                .slice(-2)
-                .concat(parsed.base)
-                .join('/');
+            const source = path.join(parsed.dir).split(path.sep).slice(-2).concat(parsed.base).join('/');
             log(`Plugin '${plugin.name}' is executing on '${source}' file.`);
             try {
                 context = (await plugin.run(context, global)) || context;

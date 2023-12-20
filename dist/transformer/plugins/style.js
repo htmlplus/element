@@ -18,8 +18,8 @@ export const style = (options) => {
     const name = 'style';
     options = Object.assign({}, STYLE_OPTIONS, options);
     const run = (context) => {
-        var _a;
-        const sources = [(_a = options === null || options === void 0 ? void 0 : options.source) === null || _a === void 0 ? void 0 : _a.call(options, context)].flat();
+        var _a, _b;
+        const sources = [(_b = (_a = options).source) === null || _b === void 0 ? void 0 : _b.call(_a, context)].flat();
         for (const source of sources) {
             if (!source)
                 continue;
@@ -30,6 +30,9 @@ export const style = (options) => {
         }
         if (!context.stylePath)
             return;
+        context.styleContent = fs.readFileSync(context.stylePath, 'utf8');
+        context.styleExtension = path.extname(context.stylePath);
+        context.styleName = path.basename(context.stylePath, context.styleExtension);
         const { local } = addDependency(context.fileAST, context.stylePath, CONSTANTS.STYLE_IMPORTED, undefined, true);
         // TODO: remove 'local!'
         const property = t.classProperty(t.identifier(CONSTANTS.STATIC_STYLES), t.identifier(local), undefined, null, undefined, true);

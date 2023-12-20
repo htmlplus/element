@@ -28,16 +28,25 @@ export const style = (options?: StyleOptions): TransformerPlugin => {
   options = Object.assign({}, STYLE_OPTIONS, options);
 
   const run = (context: TransformerPluginContext) => {
-    const sources = [options?.source?.(context)].flat();
+    const sources = [options!.source?.(context)].flat();
 
     for (const source of sources) {
       if (!source) continue;
+
       if (!fs.existsSync(source)) continue;
+
       context.stylePath = source;
+
       break;
     }
 
     if (!context.stylePath) return;
+
+    context.styleContent = fs.readFileSync(context.stylePath, 'utf8');
+
+    context.styleExtension = path.extname(context.stylePath);
+
+    context.styleName = path.basename(context.stylePath, context.styleExtension);
 
     const { local } = addDependency(context.fileAST!, context.stylePath, CONSTANTS.STYLE_IMPORTED, undefined, true);
 

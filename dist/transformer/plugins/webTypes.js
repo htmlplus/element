@@ -2,12 +2,16 @@ import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
 import { getInitializer, getTags, getType, hasTag, parseTag, print } from '../utils/index.js';
-export const WEB_TYPES_OPTIONS = {};
+export const WEB_TYPES_OPTIONS = {
+    destination: path.join('dist', 'web-types.json'),
+    packageName: '',
+    packageVersion: ''
+};
 export const webTypes = (options) => {
     const name = 'webTypes';
     options = Object.assign({}, WEB_TYPES_OPTIONS, options);
     const finish = (global) => {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         const contexts = global.contexts.sort((a, b) => {
             return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? +1 : -1;
         });
@@ -72,7 +76,7 @@ export const webTypes = (options) => {
             const element = {
                 'name': context.elementKey,
                 'description': description,
-                'doc-url': (_f = options.reference) === null || _f === void 0 ? void 0 : _f.call(options, context),
+                'doc-url': (_g = (_f = options).reference) === null || _g === void 0 ? void 0 : _g.call(_f, context),
                 'deprecated': hasTag(context.class, 'deprecated'),
                 'experimental': hasTag(context.class, 'experimental'),
                 'js': {
@@ -82,7 +86,7 @@ export const webTypes = (options) => {
                 attributes,
                 slots
             };
-            const transformed = ((_g = options.transformer) === null || _g === void 0 ? void 0 : _g.call(options, context, element)) || element;
+            const transformed = ((_j = (_h = options).transformer) === null || _j === void 0 ? void 0 : _j.call(_h, context, element)) || element;
             json.contributions.html.elements.push(transformed);
         }
         const dirname = path.dirname(options.destination);

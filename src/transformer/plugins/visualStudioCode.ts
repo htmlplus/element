@@ -5,15 +5,17 @@ import path from 'path';
 import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
 import { getTags, getType, print } from '../utils/index.js';
 
-export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {};
+export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {
+  destination: path.join('dist', 'visual-studio-code.json')
+};
 
 export interface VisualStudioCodeOptions {
-  destination: string;
+  destination?: string;
   reference?: (context: TransformerPluginContext) => string;
   transformer?: (context: TransformerPluginContext, element: any) => any;
 }
 
-export const visualStudioCode = (options: VisualStudioCodeOptions): TransformerPlugin => {
+export const visualStudioCode = (options?: VisualStudioCodeOptions): TransformerPlugin => {
   const name = 'visualStudioCode';
 
   options = Object.assign({}, VISUAL_STUDIO_CODE_OPTIONS, options);
@@ -39,7 +41,7 @@ export const visualStudioCode = (options: VisualStudioCodeOptions): TransformerP
         references: [
           {
             name: 'Source code',
-            url: options.reference?.(context)
+            url: options!.reference?.(context)
           }
         ]
       };
@@ -91,16 +93,16 @@ export const visualStudioCode = (options: VisualStudioCodeOptions): TransformerP
         tag.attributes.push(attribute);
       }
 
-      const transformed = options.transformer?.(context, tag) || tag;
+      const transformed = options!.transformer?.(context, tag) || tag;
 
       json.tags.push(transformed);
     }
 
-    const dirname = path.dirname(options.destination);
+    const dirname = path.dirname(options!.destination!);
 
     fs.ensureDirSync(dirname);
 
-    fs.writeJSONSync(options.destination, json, { encoding: 'utf8', spaces: 2 });
+    fs.writeJSONSync(options!.destination, json, { encoding: 'utf8', spaces: 2 });
   };
 
   return { name, finish };

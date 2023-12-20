@@ -5,7 +5,9 @@ import path from 'path';
 export const renderTemplate = (source, destination, options) => (context) => {
     const files = glob.sync(source, options);
     for (const file of files) {
+        // TODO
         const from = path.resolve((options === null || options === void 0 ? void 0 : options.cwd) || '', file);
+        // TODO
         const to = path.join(destination, path
             .normalize(file)
             .split(path.sep)

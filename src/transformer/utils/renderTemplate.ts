@@ -7,8 +7,10 @@ export const renderTemplate = (source: string | Array<string>, destination: stri
   const files: any = glob.sync(source, options);
 
   for (const file of files) {
+    // TODO
     const from = path.resolve(options?.cwd || '', file);
 
+    // TODO
     const to = path.join(
       destination,
       path

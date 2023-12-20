@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import path from 'path';
 
 import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
 
@@ -17,7 +18,17 @@ export const read = (options?: ReadOptions): TransformerPlugin => {
   options = Object.assign({}, READ_OPTIONS, options);
 
   const run = (context: TransformerPluginContext) => {
-    context.fileContent = context.fileContent ?? fs.readFileSync(context.filePath!, options);
+    if (!context.filePath) return;
+
+    context.fileContent ??= fs.readFileSync(context.filePath, options);
+
+    context.fileExtension = path.extname(context.filePath);
+
+    context.fileName = path.basename(context.filePath, context.fileExtension);
+
+    context.directoryPath = path.dirname(context.filePath);
+
+    context.directoryName = path.basename(context.directoryPath);
   };
 
   return { name, run };

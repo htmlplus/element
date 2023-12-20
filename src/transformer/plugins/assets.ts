@@ -6,7 +6,7 @@ import { TransformerPlugin, TransformerPluginContext } from '../transformer.type
 export const ASSETS_OPTIONS: Partial<AssetsOptions> = {
   once: true,
   destination(context) {
-    return `assets/${context.fileName}`;
+    return path.join('dist', 'assets', context.fileName!);
   },
   source(context) {
     return path.join(context.directoryPath!, 'assets');
@@ -15,11 +15,11 @@ export const ASSETS_OPTIONS: Partial<AssetsOptions> = {
 
 export interface AssetsOptions {
   once?: boolean;
-  destination: (context: TransformerPluginContext) => string;
+  destination?: (context: TransformerPluginContext) => string;
   source?: (context: TransformerPluginContext) => string;
 }
 
-export const assets = (options: AssetsOptions): TransformerPlugin => {
+export const assets = (options?: AssetsOptions): TransformerPlugin => {
   const name = 'assets';
 
   options = Object.assign({}, ASSETS_OPTIONS, options);
@@ -27,22 +27,19 @@ export const assets = (options: AssetsOptions): TransformerPlugin => {
   const sources = new Set<string>();
 
   const run = (context: TransformerPluginContext) => {
-    const source = options.source?.(context);
+    context.assetsDestination = options!.destination?.(context);
 
-    if (!source) return;
+    context.assetsSource = options!.source?.(context);
 
-    if (!fs.existsSync(source)) return;
+    if (!context.assetsSource) return;
 
-    if (options.once) {
-      if (sources.has(source)) return;
-      sources.add(source);
-    }
+    if (!fs.existsSync(context.assetsSource)) return;
 
-    const destination = options.destination?.(context);
+    if (options!.once && sources.has(context.assetsSource)) return;
 
-    fs.copySync(source, destination);
+    sources.add(context.assetsSource);
 
-    context.assets = source;
+    fs.copySync(context.assetsSource, context.assetsDestination);
   };
 
   return { name, run };

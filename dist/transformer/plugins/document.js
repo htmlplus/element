@@ -3,12 +3,14 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
 import { getInitializer, getTag, getTags, getTypeReference, hasTag, parseTag, print } from '../utils/index.js';
-export const DOCUMENT_OPTIONS = {};
+export const DOCUMENT_OPTIONS = {
+    destination: path.join('dist', 'document.json')
+};
 export const document = (options) => {
     const name = 'document';
     options = Object.assign({}, DOCUMENT_OPTIONS, options);
     const finish = (global) => {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         const json = {
             elements: []
         };
@@ -62,7 +64,7 @@ export const document = (options) => {
             const group = (_b = getTag(context.class, 'group')) === null || _b === void 0 ? void 0 : _b.value;
             const lastModified = glob
                 .sync('**/*.*', { cwd: context.directoryPath })
-                .map((file) => fs.statSync(path.resolve(context.directoryPath, file)).mtime)
+                .map((file) => fs.statSync(path.join(context.directoryPath, file)).mtime)
                 .sort((a, b) => (a > b ? 1 : -1))
                 .pop();
             const methods = context.classMethods.map((method) => {
@@ -178,16 +180,13 @@ export const document = (options) => {
                     return [];
                 return fs
                     .readFileSync(context.stylePath, 'utf8')
-                    .split('@prop')
+                    .split('@Property()')
                     .slice(1)
                     .map((section) => {
-                    var _a;
-                    let [description, name] = section.split(/\n/);
-                    name = name.split(':').slice(0, -1).join(':').trim();
-                    description = description.trim();
-                    let [initializer] = ((_a = context.styleParsed) === null || _a === void 0 ? void 0 : _a.split(name).slice(1, 2)) || [];
-                    if (initializer)
-                        initializer = initializer.split(/;|}/)[0].replace(':', '').trim();
+                    const [first, second] = section.split(/\n/);
+                    const description = first.replace('*/', '').trim();
+                    const name = second.split(':')[0].trim();
+                    const initializer = second.split(':').slice(1).join(':').replace(';', '').trim();
                     return {
                         description,
                         initializer,
@@ -214,7 +213,7 @@ export const document = (options) => {
                 tags,
                 title
             };
-            const transformed = ((_c = options.transformer) === null || _c === void 0 ? void 0 : _c.call(options, context, element)) || element;
+            const transformed = ((_d = (_c = options).transformer) === null || _d === void 0 ? void 0 : _d.call(_c, context, element)) || element;
             json.elements.push(transformed);
         }
         json.elements = json.elements.sort((a, b) => (a.title > b.title ? 1 : -1));

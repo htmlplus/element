@@ -2,7 +2,7 @@ import { TransformerPlugin, TransformerPluginContext } from '../transformer.type
 export declare const ASSETS_OPTIONS: Partial<AssetsOptions>;
 export interface AssetsOptions {
     once?: boolean;
-    destination: (context: TransformerPluginContext) => string;
+    destination?: (context: TransformerPluginContext) => string;
     source?: (context: TransformerPluginContext) => string;
 }
-export declare const assets: (options: AssetsOptions) => TransformerPlugin;
+export declare const assets: (options?: AssetsOptions) => TransformerPlugin;

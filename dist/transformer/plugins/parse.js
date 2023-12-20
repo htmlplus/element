@@ -8,7 +8,7 @@ export const parse = (options) => {
     options = Object.assign({}, PARSE_OPTIONS, options);
     const run = (context) => {
         var _a;
-        context.fileAST = (_a = context.fileAST) !== null && _a !== void 0 ? _a : parser(context.fileContent, options);
+        (_a = context.fileAST) !== null && _a !== void 0 ? _a : (context.fileAST = parser(context.fileContent, options));
     };
     return { name, run };
 };

@@ -9,7 +9,8 @@ export interface TransformerPluginContext {
   script?: string;
 
   // assets
-  assets?: string;
+  assetsDestination?: string;
+  assetsSource?: string;
 
   // class
   class?: ClassDeclaration;
@@ -39,12 +40,14 @@ export interface TransformerPluginContext {
 
   // readme
   readmeContent?: string;
+  readmeExtension?: string;
+  readmeName?: string;
   readmePath?: string;
 
   // style
   styleContent?: string;
-  styleDependencies?: Array<string>;
-  styleParsed?: string;
+  styleExtension?: string;
+  styleName?: string;
   stylePath?: string;
 }
 

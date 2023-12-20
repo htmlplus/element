@@ -4,4 +4,4 @@ export interface DocumentOptions {
     destination: string;
     transformer?: (context: TransformerPluginContext, element: any) => any;
 }
-export declare const document: (options: DocumentOptions) => TransformerPlugin;
+export declare const document: (options?: DocumentOptions) => TransformerPlugin;
