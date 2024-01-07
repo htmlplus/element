@@ -5,13 +5,18 @@ type Slots = {
   [key: string]: boolean;
 };
 
+/**
+ * Returns the slots name.
+ */
 export const slots = (target: PlusElement): Slots => {
   const slots = {};
 
   const children = Array.from(host(target).childNodes);
 
   for (const child of children) {
-    const name = child['slot'] || (child.nodeValue?.trim() && 'default');
+    if (child.nodeName == '#comment') continue;
+
+    const name = child['slot'] || (child.nodeValue?.trim() && 'default') || ('slot' in child && 'default');
 
     if (!name) continue;
 
