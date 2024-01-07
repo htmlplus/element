@@ -6,7 +6,7 @@ const { start, run, finish } = transformer(...plugins);
 (async () => {
   await start();
 
-  const result = await run('./src/development/element.tsx');
+  const result = await run('./src/development/my-counter.tsx');
 
   console.log(result.script);
 
