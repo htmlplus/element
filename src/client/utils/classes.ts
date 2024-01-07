@@ -2,16 +2,17 @@ import { kebabCase } from 'change-case';
 
 import { typeOf } from './typeOf.js';
 
+/**
+ * TODO
+ */
 export const classes = (input: any, smart?: boolean): string => {
   const result: Array<string> = [];
 
   switch (typeOf(input)) {
     case 'array': {
-      input.forEach((item) => {
-        const value = classes(item, smart);
-        if (!value) return;
-        result.push(value);
-      });
+      for (const item of input) {
+        result.push(classes(item, smart));
+      }
       break;
     }
 
@@ -20,40 +21,24 @@ export const classes = (input: any, smart?: boolean): string => {
 
       for (const key of keys) {
         const value = input[key];
+
         const name = kebabCase(key);
+
         const type = typeOf(value);
 
         if (!smart) {
-          if (!value) continue;
-          result.push(name);
+          value && result.push(name);
           continue;
         }
 
         switch (type) {
           case 'boolean': {
-            if (!value) continue;
-            result.push(`${name}`);
+            value && result.push(`${name}`);
             break;
           }
-
-          case 'number': {
-            result.push(`${name}-${value}`);
-            break;
-          }
-
+          case 'number':
           case 'string': {
-            switch (value) {
-              case '':
-              case 'true':
-                result.push(`${name}`);
-                break;
-              case 'false':
-                break;
-              default:
-                result.push(`${name}-${value}`);
-                break;
-            }
-
+            result.push(`${name}-${value}`);
             break;
           }
         }
@@ -68,5 +53,5 @@ export const classes = (input: any, smart?: boolean): string => {
     }
   }
 
-  return result.join(' ');
+  return result.filter((item) => item).join(' ');
 };
