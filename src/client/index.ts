@@ -7,7 +7,6 @@ export {
   host,
   isCSSColor,
   isRTL,
-  isServer,
   query,
   queryAll,
   on,
@@ -15,5 +14,7 @@ export {
   slots,
   styles,
   toUnit,
-  setConfig
+  setConfig,
+  type Config,
+  type ConfigOptions
 } from './utils/index.js';
