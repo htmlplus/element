@@ -69,7 +69,7 @@ export function Element() {
         const instance = this[CONSTANTS.API_INSTANCE];
 
         // TODO: experimental for global config
-        Object.assign(instance, getConfig(getNamespace(instance), 'element', getTag(instance)!, 'property'));
+        Object.assign(instance, getConfig(getNamespace(instance))('element', getTag(instance)!, 'property'));
 
         const connect = () => {
           instance[CONSTANTS.API_CONNECTED] = true;
