@@ -13,9 +13,9 @@ export const htmlplus = (...plugins: Array<TransformerPlugin>) => {
     async load(id) {
       if (!id.endsWith('.tsx')) return;
 
-      const { isInvalid, script } = await run(id);
+      const { script, skipped } = await run(id);
 
-      if (isInvalid) return;
+      if (skipped) return;
 
       return script;
     },

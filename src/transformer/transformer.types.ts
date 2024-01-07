@@ -4,8 +4,7 @@ type Return<T> = void | T | Promise<void | T>;
 
 export interface TransformerPluginContext {
   // TODO
-  customElementNames?: Array<string>;
-  isInvalid?: boolean;
+  skipped?: boolean;
   script?: string;
 
   // assets

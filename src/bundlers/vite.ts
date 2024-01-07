@@ -15,9 +15,9 @@ export const htmlplus = (...plugins: Array<TransformerPlugin>) => {
     async load(id) {
       if (!id.endsWith('.tsx')) return;
 
-      let { isInvalid, script, stylePath } = await run(id);
+      let { script, skipped, stylePath } = await run(id);
 
-      if (isInvalid) return;
+      if (skipped) return;
 
       if (script && stylePath) {
         script = script.replace(path.basename(stylePath), `${path.basename(stylePath)}?inline`);

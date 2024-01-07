@@ -61,7 +61,7 @@ export const transformer = (...plugins: TransformerPlugin[]) => {
       try {
         context = (await plugin.run(context, global)) || context;
       } catch (error) {
-        log(`Error in '${plugin.name}' plugin on '${source}' file.`, true);
+        log(`Error in '${plugin.name}' plugin on '${source}' file.\n`, true);
         throw error;
       }
 
@@ -72,15 +72,9 @@ export const transformer = (...plugins: TransformerPlugin[]) => {
         .concat(context);
 
       log(`Plugin '${plugin.name}' executed successfully on '${source}' file.`);
-
-      if (context.isInvalid) break;
     }
 
     logger.stop();
-
-    if (context.isInvalid) {
-      log(`File '${key}' break executing because file is invalid.`, true);
-    }
 
     return context;
   };
