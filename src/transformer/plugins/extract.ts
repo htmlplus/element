@@ -24,27 +24,12 @@ export const extract = (): TransformerPlugin => {
 
           path.skip();
         }
-      },
-      JSXElement(path) {
-        const { openingElement } = path.node;
-
-        const name = openingElement.name.name;
-
-        if (!/-/g.test(name)) return;
-
-        context.customElementNames ??= [];
-
-        context.customElementNames.push(name);
-
-        context.customElementNames = context.customElementNames
-          .filter((item, index, items) => items.indexOf(item) === index)
-          .sort();
       }
     });
 
-    context.className = context.class?.id?.name!;
+    context.className = context.class?.id?.name;
 
-    context.elementKey = kebabCase(context.className);
+    context.elementKey = kebabCase(context.className || '');
 
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_EVENT)
