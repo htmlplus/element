@@ -18,22 +18,10 @@ export const extract = () => {
                     }
                     path.skip();
                 }
-            },
-            JSXElement(path) {
-                var _a;
-                const { openingElement } = path.node;
-                const name = openingElement.name.name;
-                if (!/-/g.test(name))
-                    return;
-                (_a = context.customElementNames) !== null && _a !== void 0 ? _a : (context.customElementNames = []);
-                context.customElementNames.push(name);
-                context.customElementNames = context.customElementNames
-                    .filter((item, index, items) => items.indexOf(item) === index)
-                    .sort();
             }
         });
         context.className = (_b = (_a = context.class) === null || _a === void 0 ? void 0 : _a.id) === null || _b === void 0 ? void 0 : _b.name;
-        context.elementKey = kebabCase(context.className);
+        context.elementKey = kebabCase(context.className || '');
         context.classEvents = (context.classMembers || []).filter((member) => hasDecorator(member, CONSTANTS.DECORATOR_EVENT));
         context.classMethods = (context.classMembers || []).filter((member) => hasDecorator(member, CONSTANTS.DECORATOR_METHOD));
         context.classProperties = (context.classMembers || []).filter((member) => hasDecorator(member, CONSTANTS.DECORATOR_PROPERTY));

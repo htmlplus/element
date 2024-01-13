@@ -29,6 +29,8 @@ export interface TransformerPluginContext {
 
   // element
   elementKey?: string;
+  elementInterfaceName?: string;
+  elementTagName?: string;
 
   // file
   fileAST?: File;
@@ -36,6 +38,11 @@ export interface TransformerPluginContext {
   fileExtension?: string;
   fileName?: string;
   filePath?: string;
+
+  // metadata
+  metadata?: {
+    [key: string]: any;
+  };
 
   // readme
   readmeContent?: string;

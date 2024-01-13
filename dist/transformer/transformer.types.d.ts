@@ -1,8 +1,7 @@
 import { ClassBody, ClassDeclaration, ClassMethod, ClassProperty, File } from '@babel/types';
 type Return<T> = void | T | Promise<void | T>;
 export interface TransformerPluginContext {
-    customElementNames?: Array<string>;
-    isInvalid?: boolean;
+    skipped?: boolean;
     script?: string;
     assetsDestination?: string;
     assetsSource?: string;
@@ -19,11 +18,16 @@ export interface TransformerPluginContext {
     directoryName?: string;
     directoryPath?: string;
     elementKey?: string;
+    elementInterfaceName?: string;
+    elementTagName?: string;
     fileAST?: File;
     fileContent?: string;
     fileExtension?: string;
     fileName?: string;
     filePath?: string;
+    metadata?: {
+        [key: string]: any;
+    };
     readmeContent?: string;
     readmeExtension?: string;
     readmeName?: string;

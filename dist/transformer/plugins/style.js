@@ -18,8 +18,7 @@ export const style = (options) => {
     const name = 'style';
     options = Object.assign({}, STYLE_OPTIONS, options);
     const run = (context) => {
-        var _a, _b;
-        const sources = [(_b = (_a = options).source) === null || _b === void 0 ? void 0 : _b.call(_a, context)].flat();
+        const sources = [options.source(context)].flat();
         for (const source of sources) {
             if (!source)
                 continue;

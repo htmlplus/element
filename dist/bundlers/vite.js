@@ -10,8 +10,8 @@ export const htmlplus = (...plugins) => {
         async load(id) {
             if (!id.endsWith('.tsx'))
                 return;
-            let { isInvalid, script, stylePath } = await run(id);
-            if (isInvalid)
+            let { script, skipped, stylePath } = await run(id);
+            if (skipped)
                 return;
             if (script && stylePath) {
                 script = script.replace(path.basename(stylePath), `${path.basename(stylePath)}?inline`);

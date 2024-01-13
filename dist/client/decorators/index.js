@@ -4,7 +4,6 @@ export * from './element.js';
 export * from './event.js';
 export * from './host.js';
 export * from './isRTL.js';
-export * from './isServer.js';
 export * from './listen.js';
 export * from './method.js';
 export * from './property.js';

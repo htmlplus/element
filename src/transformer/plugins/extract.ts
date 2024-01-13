@@ -33,31 +33,31 @@ export const extract = (): TransformerPlugin => {
 
     context.classEvents = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_EVENT)
-    ) as Array<ClassProperty>;
+    ) as any;
 
     context.classMethods = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_METHOD)
-    ) as Array<ClassMethod>;
+    ) as any;
 
     context.classProperties = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_PROPERTY)
-    ) as Array<ClassProperty>;
+    ) as any;
 
     context.classStates = (context.classMembers || []).filter((member) =>
       hasDecorator(member, CONSTANTS.DECORATOR_STATE)
-    ) as Array<ClassProperty>;
+    ) as any;
 
     context.classHasMount = (context.classMembers || []).some(
       (member) => member['key'].name == CONSTANTS.LIFECYCLE_CONNECTED
-    );
+    ) as any;
 
     context.classHasUnmount = (context.classMembers || []).some(
       (member) => member['key'].name == CONSTANTS.LIFECYCLE_DISCONNECTED
-    );
+    ) as any;
 
     context.classRender = (context.classMembers || []).find(
       (member) => member['key'].name == CONSTANTS.METHOD_RENDER
-    ) as ClassMethod;
+    ) as any;
   };
 
   return { name, run };

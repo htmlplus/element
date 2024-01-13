@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
 
+import * as CONSTANTS from '../../constants/index.js';
 import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
 import { getInitializer, getTag, getTags, getTypeReference, hasTag, parseTag, print } from '../utils/index.js';
 
@@ -217,7 +218,7 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
         if (!context.stylePath) return [];
         return fs
           .readFileSync(context.stylePath!, 'utf8')
-          .split('@Property()')
+          .split(CONSTANTS.CSS_DECORATOR_PROPERTY)
           .slice(1)
           .map((section) => {
             const [first, second] = section.split(/\n/);

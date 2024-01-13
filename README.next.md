@@ -9,6 +9,7 @@ A powerful tool for building a scalable, reusable, fast, and lightweight `UI Com
 - [First Element](#first-element)
 - [Decorators](#decorators)
 - [Utilities](#utilities)
+- [JSX](#jsx)
 - [Lifecycles](#lifecycles)
 - [Bundlers](#bundlers)
 - [Transformer](#transformer)
@@ -212,6 +213,29 @@ In the `index.html` file.
   
 Provides the capability to dispatch a [CustomEvent](https://mdn.io/custom-event) from an element.
 
+Parameters:
+
+- `options` (Optional)
+  <br />
+  An object that configures [options](https://developer.mozilla.org/docs/Web/API/Event/EventEvent#options) for the event dispatcher.
+  <br />
+  <br />
+  - `bubbles` (Optional)
+    <br />
+    A boolean value indicating whether the event bubbles. The default is `false`.
+    <br />
+    <br />
+  - `cancelable` (Optional)
+    <br />
+    A boolean value indicating whether the event can be cancelled. The default is `false`.
+    <br />
+    <br />
+  - `composed` (Optional)
+    <br />
+    A boolean value indicating whether the event will trigger listeners outside of a shadow root (see [Event.composed](https://mdn.io/event-composed) for more details). The default is `false`.
+    <br />
+    <br />
+
 In the `my-button.tsx` file.
 
 ```tsx
@@ -324,6 +348,44 @@ In the `index.html` file.
 
 Will be called whenever the specified event is delivered to the target [More](https://mdn.io/add-event-listener).
 
+Parameters:
+
+- `type`
+  <br />
+  A case-sensitive string representing the [Event Type](https://mdn.io/events) to listen for.
+  <br />
+  <br />
+- `options` (Optional)
+  <br />
+  An object that configures [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options) for the event listener.
+  <br />
+  <br />
+  - `capture` (Optional)
+    <br />
+    TODO
+    <br />
+    <br />
+  - `once` (Optional)
+    <br />
+    TODO
+    <br />
+    <br />
+  - `passive` (Optional)
+    <br />
+    TODO
+    <br />
+    <br />
+  - `signal` (Optional)
+    <br />
+    TODO
+    <br />
+    <br />
+  - `target` (Optional)
+    <br />
+    TODO
+    <br />
+    <br />
+
 In the `my-button.tsx` file.
 
 ```tsx
@@ -398,6 +460,24 @@ In the `index.html` file.
   <summary>Property</summary>
 
 Creates a reactive property, reflecting a corresponding attribute value, and updates the element when the property is set.
+
+Parameters:
+
+- `options` (Optional)
+  <br />
+  The configuration for property decorator.
+  <br />
+  <br />
+  - `reflect` (Optional)
+    <br />
+    Whether property value is reflected back to the associated attribute. default is `false`.
+    <br />
+    <br />
+  - `type` (Optional)
+    <br />
+    Do not set the value to this property. This value is automatically set during transpiling.
+    <br />
+    <br />
 
 In the `say-greeting.tsx` file.
 
@@ -744,12 +824,94 @@ TODO
 
 </details>
 
-## Lifecycles
+## JSX
 
 TODO
 
 <details>
-  <summary>TODO</summary>
+  <summary>host</summary>
+
+TODO
+
+</details>
+
+<details>
+  <summary>part</summary>
+
+TODO
+
+</details>
+
+## Lifecycles
+
+Elements encompass several lifecycle methods, each triggered at different stages in the element's life cycle, enabling developers to control the element's behavior and perform customized actions.
+
+<details>
+  <summary>adoptedCallback</summary>
+
+TODO
+
+</details>
+
+<details>
+  <summary>connectCallback</summary>
+
+TODO
+
+</details>
+
+<details>
+  <summary>connectedCallback</summary>
+
+A lifecycle callback method that is called each time the element is added to the document.
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  connectedCallback() {
+    console.log('Element is connected!');
+  }
+}
+```
+
+</details>
+
+<details>
+  <summary>disconnectedCallback</summary>
+
+TODO
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  disconnectedCallback() {
+    console.log('Element is disconnected!');
+  }
+}
+```
+
+</details>
+
+<details>
+  <summary>loadedCallback</summary>
+
+TODO
+
+</details>
+
+<details>
+  <summary>updateCallback</summary>
+
+TODO
+
+</details>
+
+<details>
+  <summary>updatedCallback</summary>
 
 TODO
 
@@ -778,7 +940,7 @@ TODO
 TODO
 
 <details>
-  <summary>TODO</summary>
+  <summary>Getting Started</summary>
 
 TODO
 

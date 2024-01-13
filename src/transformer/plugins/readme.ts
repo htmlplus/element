@@ -20,7 +20,7 @@ export const readme = (options?: ReadmeOptions): TransformerPlugin => {
 
   const finish = (global: TransformerPluginGlobal) => {
     for (const context of global.contexts) {
-      context.readmePath = options!.source?.(context);
+      context.readmePath = options!.source!(context);
 
       if (!context.readmePath) continue;
 

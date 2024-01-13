@@ -1,5 +1,8 @@
 import { kebabCase } from 'change-case';
 import { typeOf } from './typeOf.js';
+/**
+ * Converts a JavaScript object containing CSS styles to a CSS string.
+ */
 export const styles = (input) => {
     switch (typeOf(input)) {
         case 'array':

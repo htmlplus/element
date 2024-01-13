@@ -1,9 +1,10 @@
+import t from '@babel/types';
 import * as CONSTANTS from '../../constants/index.js';
-import { hasDecorator, visitor } from '../utils/index.js';
+import { visitor } from '../utils/index.js';
 export const validate = () => {
     const name = 'validate';
     const run = (context) => {
-        let hasValidImport;
+        context.skipped = true;
         visitor(context.fileAST, {
             ImportDeclaration(path) {
                 var _a;
@@ -12,26 +13,26 @@ export const validate = () => {
                 for (const specifier of path.node.specifiers) {
                     if (specifier.imported.name !== CONSTANTS.DECORATOR_ELEMENT)
                         continue;
-                    hasValidImport = true;
-                    path.stop();
+                    const binding = path.scope.getBinding(specifier.imported.name);
+                    if (binding.references == 0)
+                        break;
+                    if (binding.references > 1) {
+                        throw new Error('In each file, only one custom element can be defined. \n' +
+                            'If more than one @Element() decorator is used in the file, it will result in an error.\n');
+                    }
+                    context.skipped = false;
+                    const reference = binding.referencePaths[0];
+                    if (t.isCallExpression(reference.parent) &&
+                        t.isDecorator(reference.parentPath.parent) &&
+                        t.isClassDeclaration(reference.parentPath.parentPath.parent) &&
+                        t.isExportNamedDeclaration(reference.parentPath.parentPath.parentPath.parent))
+                        break;
+                    throw new Error('It appears that the class annotated with the @Element() decorator is not being exported correctly.');
                 }
+                path.stop();
             }
         });
-        let hasValidExport;
-        visitor(context.fileAST, {
-            ExportNamedDeclaration(path) {
-                if (hasValidExport) {
-                    hasValidExport = false;
-                    return path.stop();
-                }
-                if (path.node.declaration.type !== 'ClassDeclaration')
-                    return;
-                if (!hasDecorator(path.node.declaration, CONSTANTS.DECORATOR_ELEMENT))
-                    return;
-                hasValidExport = true;
-            }
-        });
-        context.isInvalid = !hasValidImport || !hasValidExport;
+        context.skipped;
     };
     return { name, run };
 };

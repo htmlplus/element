@@ -9,8 +9,8 @@ export const htmlplus = (...plugins) => {
         async load(id) {
             if (!id.endsWith('.tsx'))
                 return;
-            const { isInvalid, script } = await run(id);
-            if (isInvalid)
+            const { script, skipped } = await run(id);
+            if (skipped)
                 return;
             return script;
         },

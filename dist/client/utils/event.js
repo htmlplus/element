@@ -1,4 +1,7 @@
 const outsides = [];
+/**
+ * TODO
+ */
 export const off = (target, type, handler, options) => {
     if (type != 'outside')
         return target.removeEventListener(type, handler, options);
@@ -9,6 +12,9 @@ export const off = (target, type, handler, options) => {
     off(document, outside.type, outside.callback, outside.options);
     outsides.splice(index, 1);
 };
+/**
+ * TODO
+ */
 export const on = (target, type, handler, options) => {
     if (type != 'outside')
         return target.addEventListener(type, handler, options);

@@ -14,15 +14,16 @@ export const customElement = (options) => {
     const run = (context) => {
         const ast = t.cloneNode(context.fileAST, true);
         // TODO
-        const tag = ((options === null || options === void 0 ? void 0 : options.prefix) || '') + context.elementKey;
-        const elementInterfaceName = `HTML${pascalCase(tag)}Element`;
+        context.elementTagName = `${options.prefix || ''}${context.elementKey}`;
+        // TODO
+        context.elementInterfaceName = `HTML${pascalCase(context.elementTagName)}Element`;
         // attaches name
         visitor(ast, {
             ClassDeclaration(path) {
                 const { body, id } = path.node;
                 if (id.name != context.className)
                     return;
-                const node = t.classProperty(t.identifier(CONSTANTS.STATIC_TAG), t.stringLiteral(tag), undefined, undefined, undefined, true);
+                const node = t.classProperty(t.identifier(CONSTANTS.STATIC_TAG), t.stringLiteral(context.elementTagName), undefined, undefined, undefined, true);
                 t.addComment(node, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_PROPERTY, true);
                 body.body.unshift(node);
             }
@@ -273,7 +274,7 @@ export const customElement = (options) => {
             }
         });
         // attaches typings
-        if (options === null || options === void 0 ? void 0 : options.typings) {
+        if (options.typings) {
             visitor(ast, {
                 Program(path) {
                     const attributes = context.classProperties.map((property) => {
@@ -333,27 +334,27 @@ export const customElement = (options) => {
               export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
     
               declare global {
-                interface ${elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
+                interface ${context.elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
 
-                var ${elementInterfaceName}: {
-                  prototype: ${elementInterfaceName};
-                  new (): ${elementInterfaceName};
+                var ${context.elementInterfaceName}: {
+                  prototype: ${context.elementInterfaceName};
+                  new (): ${context.elementInterfaceName};
                 };
 
                 interface HTMLElementTagNameMap {
-                  "${tag}": ${elementInterfaceName};
+                  "${context.elementTagName}": ${context.elementInterfaceName};
                 }
                 
                 namespace JSX {
                   interface IntrinsicElements {
-                    "${tag}": ${context.className}Events & ${context.className}Attributes & {
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & {
                       [key: string]: any;
                     };
                   }
                 }
               }
 
-              export type ${context.className}Element = globalThis.${elementInterfaceName}
+              export type ${context.className}Element = globalThis.${context.elementInterfaceName}
             `, {
                         plugins: ['typescript'],
                         preserveComments: true
@@ -362,7 +363,6 @@ export const customElement = (options) => {
                 }
             });
         }
-        // TODO
         context.script = print(ast);
     };
     return { name, run };

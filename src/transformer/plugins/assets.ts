@@ -27,9 +27,9 @@ export const assets = (options?: AssetsOptions): TransformerPlugin => {
   const sources = new Set<string>();
 
   const run = (context: TransformerPluginContext) => {
-    context.assetsDestination = options!.destination?.(context);
+    context.assetsDestination = options!.destination!(context);
 
-    context.assetsSource = options!.source?.(context);
+    context.assetsSource = options!.source!(context);
 
     if (!context.assetsSource) return;
 

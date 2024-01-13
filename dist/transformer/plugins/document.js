@@ -2,6 +2,7 @@ import { capitalCase, kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
+import * as CONSTANTS from '../../constants/index.js';
 import { getInitializer, getTag, getTags, getTypeReference, hasTag, parseTag, print } from '../utils/index.js';
 export const DOCUMENT_OPTIONS = {
     destination: path.join('dist', 'document.json')
@@ -180,7 +181,7 @@ export const document = (options) => {
                     return [];
                 return fs
                     .readFileSync(context.stylePath, 'utf8')
-                    .split('@Property()')
+                    .split(CONSTANTS.CSS_DECORATOR_PROPERTY)
                     .slice(1)
                     .map((section) => {
                     const [first, second] = section.split(/\n/);

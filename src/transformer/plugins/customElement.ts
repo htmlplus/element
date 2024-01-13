@@ -26,8 +26,10 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
     const ast = t.cloneNode(context.fileAST!, true);
 
     // TODO
-    const tag = (options?.prefix || '') + context.elementKey!;
-    const elementInterfaceName = `HTML${pascalCase(tag)}Element`;
+    context.elementTagName = `${options!.prefix || ''}${context.elementKey}`;
+
+    // TODO
+    context.elementInterfaceName = `HTML${pascalCase(context.elementTagName)}Element`;
 
     // attaches name
     visitor(ast, {
@@ -38,7 +40,7 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
 
         const node = t.classProperty(
           t.identifier(CONSTANTS.STATIC_TAG),
-          t.stringLiteral(tag),
+          t.stringLiteral(context.elementTagName!),
           undefined,
           undefined,
           undefined,
@@ -374,7 +376,7 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
     });
 
     // attaches typings
-    if (options?.typings) {
+    if (options!.typings) {
       visitor(ast, {
         Program(path) {
           const attributes = context.classProperties!.map((property) => {
@@ -467,27 +469,27 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
               export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
     
               declare global {
-                interface ${elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
+                interface ${context.elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
 
-                var ${elementInterfaceName}: {
-                  prototype: ${elementInterfaceName};
-                  new (): ${elementInterfaceName};
+                var ${context.elementInterfaceName}: {
+                  prototype: ${context.elementInterfaceName};
+                  new (): ${context.elementInterfaceName};
                 };
 
                 interface HTMLElementTagNameMap {
-                  "${tag}": ${elementInterfaceName};
+                  "${context.elementTagName}": ${context.elementInterfaceName};
                 }
                 
                 namespace JSX {
                   interface IntrinsicElements {
-                    "${tag}": ${context.className}Events & ${context.className}Attributes & {
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & {
                       [key: string]: any;
                     };
                   }
                 }
               }
 
-              export type ${context.className}Element = globalThis.${elementInterfaceName}
+              export type ${context.className}Element = globalThis.${context.elementInterfaceName}
             `,
             {
               plugins: ['typescript'],
@@ -500,7 +502,6 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
       });
     }
 
-    // TODO
     context.script = print(ast);
   };
 

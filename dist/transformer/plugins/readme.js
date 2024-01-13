@@ -9,9 +9,8 @@ export const readme = (options) => {
     const name = 'readme';
     options = Object.assign({}, README_OPTIONS, options);
     const finish = (global) => {
-        var _a, _b;
         for (const context of global.contexts) {
-            context.readmePath = (_b = (_a = options).source) === null || _b === void 0 ? void 0 : _b.call(_a, context);
+            context.readmePath = options.source(context);
             if (!context.readmePath)
                 continue;
             if (!fs.existsSync(context.readmePath))

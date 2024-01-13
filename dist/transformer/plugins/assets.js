@@ -14,9 +14,8 @@ export const assets = (options) => {
     options = Object.assign({}, ASSETS_OPTIONS, options);
     const sources = new Set();
     const run = (context) => {
-        var _a, _b, _c, _d;
-        context.assetsDestination = (_b = (_a = options).destination) === null || _b === void 0 ? void 0 : _b.call(_a, context);
-        context.assetsSource = (_d = (_c = options).source) === null || _d === void 0 ? void 0 : _d.call(_c, context);
+        context.assetsDestination = options.destination(context);
+        context.assetsSource = options.source(context);
         if (!context.assetsSource)
             return;
         if (!fs.existsSync(context.assetsSource))

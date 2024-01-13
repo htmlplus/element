@@ -28,7 +28,7 @@ export const style = (options?: StyleOptions): TransformerPlugin => {
   options = Object.assign({}, STYLE_OPTIONS, options);
 
   const run = (context: TransformerPluginContext) => {
-    const sources = [options!.source?.(context)].flat();
+    const sources = [options!.source!(context)].flat();
 
     for (const source of sources) {
       if (!source) continue;

@@ -13,6 +13,9 @@ export const API_STACKS = Symbol();
 export const COMMENT_AUTO_ADDED_DEPENDENCY = ' THIS DEPENDENCY IS AUTO-ADDED, DO NOT EDIT MANUALY';
 export const COMMENT_AUTO_ADDED_PROPERTY = ' THIS PROPERTY IS AUTO-ADDED, DO NOT EDIT MANUALY';
 
+// CSS decorators
+export const CSS_DECORATOR_PROPERTY = '@Property()';
+
 // decorators
 export const DECORATOR_ELEMENT = 'Element';
 export const DECORATOR_EVENT = 'Event';
