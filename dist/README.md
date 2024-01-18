@@ -382,7 +382,7 @@ Parameters:
     <br />
   - `target` (Optional)
     <br />
-    The target element.
+    The target element, defaults to `host`.
     <br />
     <br />
 

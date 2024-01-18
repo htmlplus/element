@@ -33,7 +33,7 @@ export interface ListenOptions {
      */
     signal?: AbortSignal;
     /**
-     * The target element.
+     * The target element, defaults to `host`.
      */
     target?: 'host' | 'body' | 'document' | 'window';
 }
