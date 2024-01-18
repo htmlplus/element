@@ -21,7 +21,17 @@ export const validate = (): TransformerPlugin => {
 
           if (binding.references == 0) break;
 
-          if (binding.references > 1) {
+          const referencePaths = binding.referencePaths.filter((referencePath) => {
+            if (
+              t.isCallExpression(referencePath.parent) &&
+              t.isDecorator(referencePath.parentPath.parent) &&
+              t.isClassDeclaration(referencePath.parentPath.parentPath.parent) &&
+              t.isExportNamedDeclaration(referencePath.parentPath.parentPath.parentPath.parent)
+            )
+              return true;
+          });
+
+          if (referencePaths.length > 1) {
             throw new Error(
               'In each file, only one custom element can be defined. \n' +
                 'If more than one @Element() decorator is used in the file, it will result in an error.\n'
@@ -30,15 +40,7 @@ export const validate = (): TransformerPlugin => {
 
           context.skipped = false;
 
-          const reference = binding.referencePaths[0];
-
-          if (
-            t.isCallExpression(reference.parent) &&
-            t.isDecorator(reference.parentPath.parent) &&
-            t.isClassDeclaration(reference.parentPath.parentPath.parent) &&
-            t.isExportNamedDeclaration(reference.parentPath.parentPath.parentPath.parent)
-          )
-            break;
+          if (referencePaths.length == 1) break;
 
           throw new Error(
             'It appears that the class annotated with the @Element() decorator is not being exported correctly.'
