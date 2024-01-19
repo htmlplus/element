@@ -32,8 +32,8 @@ export const customElementReact = (options) => {
                 importerElementType,
                 options });
             const patterns = [
-                'templates/src/elements/*fileName*.ts.hbs',
-                '!templates/src/elements/*fileName*.compact.ts.hbs'
+                'templates/src/components/*fileName*.ts.hbs',
+                '!templates/src/components/*fileName*.compact.ts.hbs'
             ];
             renderTemplate(patterns, options.destination, config)(state);
         }
@@ -76,20 +76,20 @@ export const customElementReact = (options) => {
                 if (group.single)
                     continue;
                 const state = Object.assign({ fileName: group.root.fileName, options }, group);
-                const patterns = ['templates/src/elements/*fileName*.compact.ts.hbs'];
+                const patterns = ['templates/src/components/*fileName*.compact.ts.hbs'];
                 renderTemplate(patterns, options.destination, config)(state);
             }
         }
         if (isEmpty) {
             const patterns = [
                 'templates/**',
-                '!templates/src/elements/*fileName*.ts.hbs',
-                '!templates/src/elements/*fileName*.compact.ts.hbs'
+                '!templates/src/components/*fileName*.ts.hbs',
+                '!templates/src/components/*fileName*.compact.ts.hbs'
             ];
             renderTemplate(patterns, options.destination, config)(globalNew);
         }
         if (!isEmpty) {
-            const patterns = ['templates/src/proxy*', 'templates/src/elements/index*'];
+            const patterns = ['templates/src/proxy*', 'templates/src/components/index*'];
             renderTemplate(patterns, options.destination, config)(globalNew);
         }
     };
