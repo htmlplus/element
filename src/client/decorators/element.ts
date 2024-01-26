@@ -2,7 +2,7 @@ import { camelCase, kebabCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import { call, getConfig, getMembers, getNamespace, getTag, isServer, request, toProperty } from '../utils/index.js';
+import { call, getConfig, getMembers, getTag, isServer, request, toProperty } from '../utils/index.js';
 
 /**
  * The class marked with this decorator is considered a
@@ -69,7 +69,7 @@ export function Element() {
         const instance = this[CONSTANTS.API_INSTANCE];
 
         // TODO: experimental for global config
-        Object.assign(instance, getConfig(getNamespace(instance))('element', getTag(instance)!, 'property'));
+        Object.assign(instance, getConfig('element', getTag(instance)!, 'property'));
 
         const connect = () => {
           instance[CONSTANTS.API_CONNECTED] = true;

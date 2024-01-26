@@ -38,30 +38,26 @@ export interface ConfigOptions {
 /**
  * TODO
  */
-export const getConfig =
-  (namespace: string) =>
-  (...keys: string[]): any => {
-    if (isServer()) return;
+export const getConfig = (...keys: string[]): any => {
+  if (isServer()) return;
 
-    let config = window[namespace];
+  let config = window[`$htmlplus$`];
 
-    for (const key of keys) {
-      if (!config) break;
-      config = config[key];
-    }
+  for (const key of keys) {
+    if (!config) break;
+    config = config[key];
+  }
 
-    return config;
-  };
+  return config;
+};
 
 /**
  * TODO
  */
-export const setConfig =
-  (namespace: string) =>
-  (config: Config, options?: ConfigOptions): void => {
-    if (isServer()) return;
+export const setConfig = (config: Config, options?: ConfigOptions): void => {
+  if (isServer()) return;
 
-    const previous = options?.override ? {} : window[namespace];
+  const previous = options?.override ? {} : window[`$htmlplus$`];
 
-    window[namespace] = merge({}, DEFAULTS, previous, config);
-  };
+  window[`$htmlplus$`] = merge({}, DEFAULTS, previous, config);
+};

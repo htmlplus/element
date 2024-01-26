@@ -29,8 +29,8 @@ export interface ConfigOptions {
 /**
  * TODO
  */
-export declare const getConfig: (namespace: string) => (...keys: string[]) => any;
+export declare const getConfig: (...keys: string[]) => any;
 /**
  * TODO
  */
-export declare const setConfig: (namespace: string) => (config: Config, options?: ConfigOptions) => void;
+export declare const setConfig: (config: Config, options?: ConfigOptions) => void;

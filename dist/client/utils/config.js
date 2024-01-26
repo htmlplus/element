@@ -6,10 +6,10 @@ const DEFAULTS = {
 /**
  * TODO
  */
-export const getConfig = (namespace) => (...keys) => {
+export const getConfig = (...keys) => {
     if (isServer())
         return;
-    let config = window[namespace];
+    let config = window[`$htmlplus$`];
     for (const key of keys) {
         if (!config)
             break;
@@ -20,9 +20,9 @@ export const getConfig = (namespace) => (...keys) => {
 /**
  * TODO
  */
-export const setConfig = (namespace) => (config, options) => {
+export const setConfig = (config, options) => {
     if (isServer())
         return;
-    const previous = (options === null || options === void 0 ? void 0 : options.override) ? {} : window[namespace];
-    window[namespace] = merge({}, DEFAULTS, previous, config);
+    const previous = (options === null || options === void 0 ? void 0 : options.override) ? {} : window[`$htmlplus$`];
+    window[`$htmlplus$`] = merge({}, DEFAULTS, previous, config);
 };

@@ -9,7 +9,6 @@ export * from './direction.js';
 export * from './event.js';
 export * from './getFramework.js';
 export * from './getMembers.js';
-export * from './getNamespace.js';
 export * from './getStyles.js';
 export * from './getTag.js';
 export * from './host.js';
