@@ -57,7 +57,6 @@ export function Event<T = any>(options: EventOptions = {}) {
               name = pascalCase(name).toLowerCase();
               break;
             case 'preact':
-            case 'react':
               name = pascalCase(name);
               break;
             default:
