@@ -3,27 +3,41 @@ import { kebabCase, pascalCase } from 'change-case';
 import { PlusElement } from '../../types';
 import { defineProperty, getFramework, host } from '../utils/index.js';
 
+/**
+ * A function type that generates a `CustomEvent`.
+ */
 export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
 
+/**
+ * An object that configures
+ * [options](https://developer.mozilla.org/docs/Web/API/Event/EventEvent#options)
+ * for the event dispatcher.
+ */
 export interface EventOptions {
   /**
-   * A string custom event name to override the default.
-   */
-  name?: string;
-  /**
-   * A Boolean indicating whether the event bubbles up through the DOM or not. default is `false`.
+   * A boolean value indicating whether the event bubbles.
+   * The default is `false`.
    */
   bubbles?: boolean;
   /**
-   * A Boolean indicating whether the event is cancelable. default is `false`.
+   * A boolean value indicating whether the event can be cancelled.
+   * The default is `false`.
    */
   cancelable?: boolean;
   /**
-   * A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM. The default is false.
+   * A boolean value indicating whether the event will trigger listeners outside of a shadow root
+   * (see [Event.composed](https://mdn.io/event-composed) for more details).
+   * The default is `false`.
    */
   composed?: boolean;
 }
 
+/**
+ * Provides the capability to dispatch a [CustomEvent](https://mdn.io/custom-event)
+ * from an element.
+ *
+ * @param options An object that configures options for the event dispatcher.
+ */
 export function Event<T = any>(options: EventOptions = {}) {
   return function (target: PlusElement, propertyKey: PropertyKey) {
     defineProperty(target, propertyKey, {
@@ -35,7 +49,7 @@ export function Event<T = any>(options: EventOptions = {}) {
 
           options.bubbles ??= false;
 
-          let name = options.name || String(propertyKey);
+          let name = String(propertyKey);
 
           switch (framework) {
             case 'qwik':
@@ -43,7 +57,6 @@ export function Event<T = any>(options: EventOptions = {}) {
               name = pascalCase(name).toLowerCase();
               break;
             case 'preact':
-            case 'react':
               name = pascalCase(name);
               break;
             default:

@@ -1,8 +1,11 @@
+/**
+ * TODO
+ */
 export interface Config {
     asset?: {
         [key: string]: any;
     };
-    component?: {
+    element?: {
         [key: string]: {
             property?: {
                 [key: string]: any;
@@ -10,5 +13,24 @@ export interface Config {
         };
     };
 }
-export declare const getConfig: (namespace: string, ...parameters: string[]) => any;
-export declare const setConfig: (namespace: string, config: Config, override?: boolean) => void;
+/**
+ * TODO
+ */
+export interface ConfigOptions {
+    /**
+     * TODO
+     */
+    force?: boolean;
+    /**
+     * TODO
+     */
+    override?: boolean;
+}
+/**
+ * TODO
+ */
+export declare const getConfig: (...keys: string[]) => any;
+/**
+ * TODO
+ */
+export declare const setConfig: (config: Config, options?: ConfigOptions) => void;

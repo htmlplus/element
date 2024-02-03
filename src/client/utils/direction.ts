@@ -1,8 +1,10 @@
 import { PlusElement } from '../../types';
 import { host } from './host.js';
 
-export type Direction = 'ltr' | 'rtl';
-
-export const direction = (target: PlusElement): Direction => {
-  return getComputedStyle(host(target)).getPropertyValue('direction').toLowerCase() as Direction;
+/**
+ * Indicates whether the [Direction](https://mdn.io/css-direction)
+ * of the element is `Right-To-Left` or `Left-To-Right`.
+ */
+export const direction = (target: PlusElement): 'ltr' | 'rtl' => {
+  return getComputedStyle(host(target)).getPropertyValue('direction') as any;
 };

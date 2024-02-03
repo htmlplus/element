@@ -16,6 +16,9 @@ type EventOptions = boolean | AddEventListenerOptions;
 
 type EventListener = (target: EventTarget, type: EventType, handler: EventHandler, options?: EventOptions) => void;
 
+/**
+ * TODO
+ */
 export const off: EventListener = (target, type, handler, options) => {
   if (type != 'outside') return target.removeEventListener(type, handler, options);
 
@@ -32,6 +35,9 @@ export const off: EventListener = (target, type, handler, options) => {
   outsides.splice(index, 1);
 };
 
+/**
+ * TODO
+ */
 export const on: EventListener = (target, type, handler, options) => {
   if (type != 'outside') return target.addEventListener(type, handler, options);
 

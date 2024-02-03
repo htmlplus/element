@@ -1,7 +1,7 @@
 import path from 'path';
-import { compiler } from '../compiler/index.js';
-export const vite = (...plugins) => {
-    const { start, run, finish } = compiler(...plugins);
+import { transformer } from '../transformer/index.js';
+export const htmlplus = (...plugins) => {
+    const { start, run, finish } = transformer(...plugins);
     return {
         name: 'htmlplus',
         async buildStart() {
@@ -10,8 +10,8 @@ export const vite = (...plugins) => {
         async load(id) {
             if (!id.endsWith('.tsx'))
                 return;
-            let { isInvalid, script, stylePath } = await run(id);
-            if (isInvalid)
+            let { script, skipped, stylePath } = await run(id);
+            if (skipped)
                 return;
             if (script && stylePath) {
                 script = script.replace(path.basename(stylePath), `${path.basename(stylePath)}?inline`);

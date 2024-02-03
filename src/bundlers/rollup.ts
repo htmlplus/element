@@ -1,19 +1,25 @@
-import { compiler } from '../compiler/index.js';
-import { Plugin } from '../types';
+import { TransformerPlugin, transformer } from '../transformer/index.js';
 
-export const rollup = (...plugins: Array<Plugin>) => {
-  const { start, run, finish } = compiler(...plugins);
+export const htmlplus = (...plugins: Array<TransformerPlugin>) => {
+  const { start, run, finish } = transformer(...plugins);
+
   return {
     name: 'htmlplus',
+
     async buildStart() {
       await start();
     },
+
     async load(id) {
       if (!id.endsWith('.tsx')) return;
-      const { isInvalid, script } = await run(id);
-      if (isInvalid) return;
+
+      const { script, skipped } = await run(id);
+
+      if (skipped) return;
+
       return script;
     },
+
     async buildEnd(error?: Error) {
       if (error) throw error;
       await finish();

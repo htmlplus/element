@@ -2,8 +2,13 @@ import { camelCase, kebabCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import { call, getConfig, getMembers, getNamespace, getTag, isServer, request, toProperty } from '../utils/index.js';
+import { call, getConfig, getMembers, getTag, isServer, request, toProperty } from '../utils/index.js';
 
+/**
+ * The class marked with this decorator is considered a
+ * [Custom Element](https://mdn.io/using-custom-elements),
+ * and its name, in kebab-case, serves as the element name.
+ */
 export function Element() {
   return function (constructor: PlusElement) {
     if (isServer()) return;
@@ -64,7 +69,7 @@ export function Element() {
         const instance = this[CONSTANTS.API_INSTANCE];
 
         // TODO: experimental for global config
-        Object.assign(instance, getConfig(getNamespace(instance), 'component', getTag(instance)!, 'property'));
+        Object.assign(instance, getConfig('element', getTag(instance)!, 'property'));
 
         const connect = () => {
           instance[CONSTANTS.API_CONNECTED] = true;

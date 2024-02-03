@@ -1,6 +1,6 @@
-import { compiler } from '../compiler/index.js';
-export const rollup = (...plugins) => {
-    const { start, run, finish } = compiler(...plugins);
+import { transformer } from '../transformer/index.js';
+export const htmlplus = (...plugins) => {
+    const { start, run, finish } = transformer(...plugins);
     return {
         name: 'htmlplus',
         async buildStart() {
@@ -9,8 +9,8 @@ export const rollup = (...plugins) => {
         async load(id) {
             if (!id.endsWith('.tsx'))
                 return;
-            const { isInvalid, script } = await run(id);
-            if (isInvalid)
+            const { script, skipped } = await run(id);
+            if (skipped)
                 return;
             return script;
         },

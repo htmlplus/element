@@ -1,20 +1,28 @@
+import { isServer } from './isServer.js';
 import { merge } from './merge.js';
-let defaults = {
-    component: {}
+const DEFAULTS = {
+    element: {}
 };
-export const getConfig = (namespace, ...parameters) => {
-    if (typeof window == 'undefined')
+/**
+ * TODO
+ */
+export const getConfig = (...keys) => {
+    if (isServer())
         return;
-    let config = window[namespace];
-    for (const parameter of parameters) {
+    let config = window[`$htmlplus$`];
+    for (const key of keys) {
         if (!config)
             break;
-        config = config[parameter];
+        config = config[key];
     }
     return config;
 };
-export const setConfig = (namespace, config, override) => {
-    if (typeof window == 'undefined')
+/**
+ * TODO
+ */
+export const setConfig = (config, options) => {
+    if (isServer())
         return;
-    window[namespace] = merge({}, defaults, override ? {} : window[namespace], config);
+    const previous = (options === null || options === void 0 ? void 0 : options.override) ? {} : window[`$htmlplus$`];
+    window[`$htmlplus$`] = merge({}, DEFAULTS, previous, config);
 };

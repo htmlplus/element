@@ -8,6 +8,7 @@ export declare const API_RENDER_COMPLETED: unique symbol;
 export declare const API_STACKS: unique symbol;
 export declare const COMMENT_AUTO_ADDED_DEPENDENCY = " THIS DEPENDENCY IS AUTO-ADDED, DO NOT EDIT MANUALY";
 export declare const COMMENT_AUTO_ADDED_PROPERTY = " THIS PROPERTY IS AUTO-ADDED, DO NOT EDIT MANUALY";
+export declare const CSS_DECORATOR_PROPERTY = "@Property()";
 export declare const DECORATOR_ELEMENT = "Element";
 export declare const DECORATOR_EVENT = "Event";
 export declare const DECORATOR_PROPERTY = "Property";

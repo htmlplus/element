@@ -1,7 +1,7 @@
 import { PlusElement } from '../../types';
 /**
  * Updates the DOM with a scheduled task.
- * @param target The component instance.
+ * @param target The element instance.
  * @param name Property/State name.
  * @param previous The previous value of Property/State.
  * @param callback Invoked when the rendering phase is completed.

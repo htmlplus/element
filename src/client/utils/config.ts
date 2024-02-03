@@ -1,14 +1,18 @@
+import { isServer } from './isServer.js';
 import { merge } from './merge.js';
 
-let defaults: Config = {
-  component: {}
+const DEFAULTS: Config = {
+  element: {}
 };
 
+/**
+ * TODO
+ */
 export interface Config {
   asset?: {
     [key: string]: any;
   };
-  component?: {
+  element?: {
     [key: string]: {
       property?: {
         [key: string]: any;
@@ -17,20 +21,43 @@ export interface Config {
   };
 }
 
-export const getConfig = (namespace: string, ...parameters: string[]): any => {
-  if (typeof window == 'undefined') return;
+/**
+ * TODO
+ */
+export interface ConfigOptions {
+  /**
+   * TODO
+   */
+  force?: boolean;
+  /**
+   * TODO
+   */
+  override?: boolean;
+}
 
-  let config = window[namespace];
+/**
+ * TODO
+ */
+export const getConfig = (...keys: string[]): any => {
+  if (isServer()) return;
 
-  for (const parameter of parameters) {
+  let config = window[`$htmlplus$`];
+
+  for (const key of keys) {
     if (!config) break;
-    config = config[parameter];
+    config = config[key];
   }
 
   return config;
 };
 
-export const setConfig = (namespace: string, config: Config, override?: boolean) => {
-  if (typeof window == 'undefined') return;
-  window[namespace] = merge({}, defaults, override ? {} : window[namespace], config);
+/**
+ * TODO
+ */
+export const setConfig = (config: Config, options?: ConfigOptions): void => {
+  if (isServer()) return;
+
+  const previous = options?.override ? {} : window[`$htmlplus$`];
+
+  window[`$htmlplus$`] = merge({}, DEFAULTS, previous, config);
 };
