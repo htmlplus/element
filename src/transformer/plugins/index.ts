@@ -1,6 +1,5 @@
 export * from './assets.js';
 export * from './copy.js';
-export * from './customElementReact/index.js';
 export * from './customElement.js';
 export * from './document.js';
 export * from './extract.js';
