@@ -1,5 +1,5 @@
 import { kebabCase, pascalCase } from 'change-case';
-import { defineProperty, getFramework, host } from '../utils/index.js';
+import { defineProperty, getConfig, getFramework, host } from '../utils/index.js';
 /**
  * Provides the capability to dispatch a [CustomEvent](https://mdn.io/custom-event)
  * from an element.
@@ -11,24 +11,26 @@ export function Event(options = {}) {
         defineProperty(target, propertyKey, {
             get() {
                 return (detail) => {
-                    var _a;
+                    var _a, _b;
                     const element = host(this);
                     const framework = getFramework(element);
                     (_a = options.bubbles) !== null && _a !== void 0 ? _a : (options.bubbles = false);
-                    let name = String(propertyKey);
+                    let type = String(propertyKey);
                     switch (framework) {
                         case 'qwik':
                         case 'solid':
-                            name = pascalCase(name).toLowerCase();
+                            type = pascalCase(type).toLowerCase();
                             break;
                         case 'preact':
-                            name = pascalCase(name);
+                            type = pascalCase(type);
                             break;
                         default:
-                            name = kebabCase(name);
+                            type = kebabCase(type);
                             break;
                     }
-                    const event = new CustomEvent(name, Object.assign(Object.assign({}, options), { detail }));
+                    let event;
+                    event || (event = (_b = getConfig('event', 'resolver')) === null || _b === void 0 ? void 0 : _b({ detail, element, framework, options, type }));
+                    event || (event = new CustomEvent(type, Object.assign(Object.assign({}, options), { detail })));
                     element.dispatchEvent(event);
                     return event;
                 };

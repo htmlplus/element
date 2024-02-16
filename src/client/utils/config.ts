@@ -9,6 +9,9 @@ const DEFAULTS: Config = {
  * TODO
  */
 export interface Config {
+  event?: {
+    resolver?: (parameters: any) => CustomEvent | undefined;
+  };
   asset?: {
     [key: string]: any;
   };

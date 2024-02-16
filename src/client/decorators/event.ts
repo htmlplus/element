@@ -1,7 +1,7 @@
 import { kebabCase, pascalCase } from 'change-case';
 
 import { PlusElement } from '../../types';
-import { defineProperty, getFramework, host } from '../utils/index.js';
+import { defineProperty, getConfig, getFramework, host } from '../utils/index.js';
 
 /**
  * A function type that generates a `CustomEvent`.
@@ -49,22 +49,26 @@ export function Event<T = any>(options: EventOptions = {}) {
 
           options.bubbles ??= false;
 
-          let name = String(propertyKey);
+          let type = String(propertyKey);
 
           switch (framework) {
             case 'qwik':
             case 'solid':
-              name = pascalCase(name).toLowerCase();
+              type = pascalCase(type).toLowerCase();
               break;
             case 'preact':
-              name = pascalCase(name);
+              type = pascalCase(type);
               break;
             default:
-              name = kebabCase(name);
+              type = kebabCase(type);
               break;
           }
 
-          const event = new CustomEvent(name, { ...options, detail });
+          let event: CustomEvent<T>;
+
+          event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
+
+          event ||= new CustomEvent(type, { ...options, detail });
 
           element.dispatchEvent(event);
 
