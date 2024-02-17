@@ -1,4 +1,4 @@
-import glob from 'fast-glob';
+import { glob } from 'glob';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import path from 'path';

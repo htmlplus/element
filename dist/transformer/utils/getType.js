@@ -1,5 +1,5 @@
 import { parse } from '@babel/parser';
-import glob from 'fast-glob';
+import { glob } from 'glob';
 import fs from 'fs-extra';
 import { dirname, resolve } from 'path';
 import { join } from 'path';

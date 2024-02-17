@@ -1,6 +1,6 @@
 import { capitalCase, kebabCase } from 'change-case';
 import fs from 'fs-extra';
-import glob from 'glob';
+import { glob } from 'glob';
 import path from 'path';
 import * as CONSTANTS from '../../constants/index.js';
 import { getInitializer, getTag, getTags, getTypeReference, hasTag, parseTag, print } from '../utils/index.js';
