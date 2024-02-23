@@ -12,7 +12,6 @@ export {
   on,
   off,
   slots,
-  styles,
   toUnit,
   setConfig,
   type Config,

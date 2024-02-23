@@ -1,6 +1,6 @@
 export const PACKAGE_NAME = '@htmlplus/element';
 
-// apis
+// APIs
 export const API_CONNECTED = Symbol();
 export const API_HOST = Symbol();
 export const API_INSTANCE = Symbol();
@@ -10,11 +10,10 @@ export const API_RENDER_COMPLETED = Symbol();
 export const API_STACKS = Symbol();
 
 // comments
-export const COMMENT_AUTO_ADDED_DEPENDENCY = ' THIS DEPENDENCY IS AUTO-ADDED, DO NOT EDIT MANUALY';
-export const COMMENT_AUTO_ADDED_PROPERTY = ' THIS PROPERTY IS AUTO-ADDED, DO NOT EDIT MANUALY';
+export const COMMENT_AUTO_ADDED = ' THIS IS AUTO-ADDED, DO NOT EDIT MANUALY';
 
 // CSS decorators
-export const CSS_DECORATOR_PROPERTY = '@Property()';
+export const DECORATOR_CSS_VARIABLE = '@Property()';
 
 // decorators
 export const DECORATOR_ELEMENT = 'Element';
@@ -22,6 +21,9 @@ export const DECORATOR_EVENT = 'Event';
 export const DECORATOR_PROPERTY = 'Property';
 export const DECORATOR_STATE = 'State';
 export const DECORATOR_METHOD = 'Method';
+
+// element
+export const ELEMENT_HOST_NAME = 'host';
 
 // lifecycle
 export const LIFECYCLE_ADOPTED = 'adoptedCallback';

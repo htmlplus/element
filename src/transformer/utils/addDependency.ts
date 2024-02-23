@@ -75,7 +75,7 @@ export function addDependency(
 
     // TODO
     if (comment) {
-      t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+      t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
     }
   }
 

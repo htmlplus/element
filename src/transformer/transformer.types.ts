@@ -3,7 +3,7 @@ import { ClassBody, ClassDeclaration, ClassMethod, ClassProperty, File } from '@
 type Return<T> = void | T | Promise<void | T>;
 
 export interface TransformerPluginContext {
-  // TODO
+  // general
   skipped?: boolean;
   script?: string;
 

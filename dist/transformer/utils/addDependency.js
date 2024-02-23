@@ -55,7 +55,7 @@ export function addDependency(path, source, local, imported, comment) {
         (file.program || file).body.unshift(declaration);
         // TODO
         if (comment) {
-            t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_DEPENDENCY, true);
+            t.addComment(declaration, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
         }
     }
     return {

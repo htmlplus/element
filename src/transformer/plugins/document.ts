@@ -218,7 +218,7 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
         if (!context.stylePath) return [];
         return fs
           .readFileSync(context.stylePath!, 'utf8')
-          .split(CONSTANTS.CSS_DECORATOR_PROPERTY)
+          .split(CONSTANTS.DECORATOR_CSS_VARIABLE)
           .slice(1)
           .map((section) => {
             const [first, second] = section.split(/\n/);

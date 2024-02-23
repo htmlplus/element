@@ -13,22 +13,20 @@ export const customElement = (options) => {
     options = Object.assign({}, CUSTOM_ELEMENT_OPTIONS, options);
     const run = (context) => {
         const ast = t.cloneNode(context.fileAST, true);
-        // TODO
         context.elementTagName = `${options.prefix || ''}${context.elementKey}`;
-        // TODO
         context.elementInterfaceName = `HTML${pascalCase(context.elementTagName)}Element`;
-        // attaches name
+        // attach tag name
         visitor(ast, {
             ClassDeclaration(path) {
                 const { body, id } = path.node;
                 if (id.name != context.className)
                     return;
                 const node = t.classProperty(t.identifier(CONSTANTS.STATIC_TAG), t.stringLiteral(context.elementTagName), undefined, undefined, undefined, true);
-                t.addComment(node, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_PROPERTY, true);
+                t.addComment(node, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
                 body.body.unshift(node);
             }
         });
-        // attaches style mapper for 'style' attribute
+        // attach style mapper for 'style' attribute
         visitor(ast, {
             JSXAttribute(path) {
                 const { name, value } = path.node;
@@ -44,7 +42,7 @@ export const customElement = (options) => {
                 path.skip();
             }
         });
-        // replaces 'className' attribute with 'class'
+        // replace 'className' attribute with 'class'
         visitor(ast, {
             JSXAttribute(path) {
                 const { name, value } = path.node;
@@ -66,7 +64,8 @@ export const customElement = (options) => {
                 path.replaceWith(t.jsxAttribute(t.jsxIdentifier(name.name.toLowerCase()), value));
             }
         });
-        // converts 'jsx' to 'uhtml' syntax
+        // TODO
+        // convert 'jsx' to 'uhtml' syntax
         visitor(ast, {
             enter(path) {
                 const { type } = path.node;
@@ -95,7 +94,7 @@ export const customElement = (options) => {
                     switch (node.type) {
                         case 'JSXElement':
                             const attributes = node.openingElement.attributes;
-                            const isHost = node.openingElement.name.name == 'host';
+                            const isHost = node.openingElement.name.name == CONSTANTS.ELEMENT_HOST_NAME;
                             // TODO
                             if (isHost) {
                                 const children = node.children.map(render).flat();
@@ -176,7 +175,7 @@ export const customElement = (options) => {
                 path.replaceWith(transform(render(path.node)));
             }
         });
-        // adds type to properties
+        // add type to properties
         visitor(ast, {
             Decorator(path) {
                 var _a, _b;
@@ -273,7 +272,7 @@ export const customElement = (options) => {
                 argument.properties.push(t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE), t.numericLiteral(type)));
             }
         });
-        // attaches typings
+        // attach typings
         if (options.typings) {
             visitor(ast, {
                 Program(path) {

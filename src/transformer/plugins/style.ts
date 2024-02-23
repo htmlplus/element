@@ -60,7 +60,7 @@ export const style = (options?: StyleOptions): TransformerPlugin => {
       true
     );
 
-    t.addComment(property, 'leading', CONSTANTS.COMMENT_AUTO_ADDED_PROPERTY, true);
+    t.addComment(property, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
 
     context.class!.body.body.unshift(property);
   };
