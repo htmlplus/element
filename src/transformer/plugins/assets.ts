@@ -28,9 +28,9 @@ export const assets = (options?: AssetsOptions): TransformerPlugin => {
 
       context.assetsSource = options!.source!(context);
 
-      if (!context.assetsSource) return;
+      if (!context.assetsSource) break;
 
-      if (!fs.existsSync(context.assetsSource)) return;
+      if (!fs.existsSync(context.assetsSource)) break;
 
       fs.copySync(context.assetsSource, context.assetsDestination);
     }
