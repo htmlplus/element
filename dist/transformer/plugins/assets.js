@@ -16,9 +16,9 @@ export const assets = (options) => {
             context.assetsDestination = options.destination(context);
             context.assetsSource = options.source(context);
             if (!context.assetsSource)
-                return;
+                continue;
             if (!fs.existsSync(context.assetsSource))
-                return;
+                continue;
             fs.copySync(context.assetsSource, context.assetsDestination);
         }
     };
