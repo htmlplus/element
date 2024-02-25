@@ -1,22 +1,22 @@
 export interface QueueOptions {
   canStart?: () => boolean;
   canRun?: () => boolean;
-  run: () => void;
+  handler: () => void;
 }
 
 export const task = (options: QueueOptions) => {
-  let isPending, promise!: Promise<boolean>;
+  let running, promise!: Promise<boolean>;
 
   const run = () => {
     if (options.canStart && !options.canStart()) return Promise.resolve(false);
 
-    if (!isPending) promise = enqueue();
+    if (!running) promise = enqueue();
 
     return promise;
   };
 
   const enqueue = async (): Promise<boolean> => {
-    isPending = true;
+    running = true;
 
     try {
       await promise;
@@ -25,18 +25,18 @@ export const task = (options: QueueOptions) => {
     }
 
     // TODO: maybe is optional
-    if (!isPending) return promise;
+    if (!running) return promise;
 
     try {
-      if (options.canRun && !options.canRun()) return (isPending = false);
+      if (options.canRun && !options.canRun()) return (running = false);
 
-      options.run();
+      options.handler();
 
-      isPending = false;
+      running = false;
 
       return true;
     } catch (error) {
-      isPending = false;
+      running = false;
       throw error;
     }
   };
