@@ -1,3 +1,10 @@
+## [2.1.5](https://github.com/htmlplus/element/compare/v2.1.4...v2.1.5) (2024-02-25)
+
+
+### Bug Fixes
+
+* Format code styles ([8a1157c](https://github.com/htmlplus/element/commit/8a1157cc4d4c3b6c984a6f8556f83926b5ae3e64))
+
 ## [2.1.4](https://github.com/htmlplus/element/compare/v2.1.3...v2.1.4) (2024-02-23)
 
 
