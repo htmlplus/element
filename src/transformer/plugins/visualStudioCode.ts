@@ -2,7 +2,11 @@ import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
+import {
+  TransformerPlugin,
+  TransformerPluginContext,
+  TransformerPluginGlobal
+} from '../transformer.types';
 import { getTags, getType, print } from '../utils/index.js';
 
 export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {
@@ -54,7 +58,11 @@ export const visualStudioCode = (options?: VisualStudioCodeOptions): Transformer
         };
 
         const type = print(
-          getType(context.directoryPath!, context.fileAST!, property.typeAnnotation?.['typeAnnotation'])
+          getType(
+            context.directoryPath!,
+            context.fileAST!,
+            property.typeAnnotation?.['typeAnnotation']
+          )
         );
 
         const sections = type.split('|');

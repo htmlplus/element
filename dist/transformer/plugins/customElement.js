@@ -48,7 +48,10 @@ export const customElement = (options) => {
                 const { name, value } = path.node;
                 if (name.name != 'className')
                     return;
-                const hasClass = path.parentPath.node.attributes.some((attribute) => { var _a; return ((_a = attribute.name) === null || _a === void 0 ? void 0 : _a.name) == 'class'; });
+                const hasClass = path.parentPath.node.attributes.some((attribute) => {
+                    var _a;
+                    return ((_a = attribute.name) === null || _a === void 0 ? void 0 : _a.name) == 'class';
+                });
                 if (hasClass)
                     return path.remove();
                 path.replaceWith(t.jsxAttribute(t.jsxIdentifier('class'), value));
@@ -108,7 +111,9 @@ export const customElement = (options) => {
                             const children = node.children.map(render).flat();
                             const parts = [];
                             parts.push('<', name);
-                            const hasSpreadAttribute = attributes.some((attribute) => attribute.type == 'JSXSpreadAttribute');
+                            const hasSpreadAttribute = attributes.some((attribute) => {
+                                return attribute.type == 'JSXSpreadAttribute';
+                            });
                             if (hasSpreadAttribute) {
                                 parts.push(' ', TODO(t.identifier('TODO'), attributes));
                             }
@@ -251,7 +256,8 @@ export const customElement = (options) => {
                             break;
                     }
                     // TODO
-                    if ((input === null || input === void 0 ? void 0 : input.type) == 'TSParenthesizedType' && ((_a = input === null || input === void 0 ? void 0 : input.typeAnnotation) === null || _a === void 0 ? void 0 : _a.type) == 'TSIntersectionType') {
+                    if ((input === null || input === void 0 ? void 0 : input.type) == 'TSParenthesizedType' &&
+                        ((_a = input === null || input === void 0 ? void 0 : input.typeAnnotation) === null || _a === void 0 ? void 0 : _a.type) == 'TSIntersectionType') {
                         let types = input.types || input.typeAnnotation.types;
                         if (types.length != 2)
                             return;

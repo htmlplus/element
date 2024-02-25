@@ -16,7 +16,8 @@ export const slots = (target: PlusElement): Slots => {
   for (const child of children) {
     if (child.nodeName == '#comment') continue;
 
-    const name = child['slot'] || (child.nodeValue?.trim() && 'default') || ('slot' in child && 'default');
+    const name =
+      child['slot'] || (child.nodeValue?.trim() && 'default') || ('slot' in child && 'default');
 
     if (!name) continue;
 

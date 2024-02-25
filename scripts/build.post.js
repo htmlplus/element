@@ -1,7 +1,7 @@
 import cpy from 'cpy';
 import fs from 'fs';
 
-cpy(['src/**/*.hbs', 'package-lock.json', 'README.md'], 'dist');
+cpy(['package-lock.json', 'README.md'], 'dist');
 
 const raw = fs.readFileSync('package.json', 'utf8');
 const parsed = JSON.parse(raw);

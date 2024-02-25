@@ -19,7 +19,8 @@ export const extract = (): TransformerPlugin => {
 
           // TODO
           if (path.parentPath.isExportNamedDeclaration() && !context.class?.leadingComments) {
-            context.class!['_leadingComments'] = t.cloneNode(path.parentPath.node, true).leadingComments || [];
+            context.class!['_leadingComments'] =
+              t.cloneNode(path.parentPath.node, true).leadingComments || [];
           }
 
           path.skip();

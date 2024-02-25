@@ -4,8 +4,20 @@ import { glob } from 'glob';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
-import { getInitializer, getTag, getTags, getTypeReference, hasTag, parseTag, print } from '../utils/index.js';
+import {
+  TransformerPlugin,
+  TransformerPluginContext,
+  TransformerPluginGlobal
+} from '../transformer.types';
+import {
+  getInitializer,
+  getTag,
+  getTags,
+  getTypeReference,
+  hasTag,
+  parseTag,
+  print
+} from '../utils/index.js';
 
 export const DOCUMENT_OPTIONS: Partial<DocumentOptions> = {
   destination: path.join('dist', 'document.json')
@@ -110,12 +122,18 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           required: !param['optional'],
           name: param['name'],
           type: print(param?.['typeAnnotation']?.typeAnnotation) || undefined,
-          typeReference: getTypeReference(context.fileAST!, param?.['typeAnnotation']?.typeAnnotation)
+          typeReference: getTypeReference(
+            context.fileAST!,
+            param?.['typeAnnotation']?.typeAnnotation
+          )
         }));
 
         const returns = print(method.returnType?.['typeAnnotation']) || 'void';
 
-        const returnsReference = getTypeReference(context.fileAST!, method.returnType?.['typeAnnotation']);
+        const returnsReference = getTypeReference(
+          context.fileAST!,
+          method.returnType?.['typeAnnotation']
+        );
 
         const tags = getTags(method);
 
@@ -193,7 +211,10 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
 
         const type = print(property.typeAnnotation?.['typeAnnotation']);
 
-        const typeReference = getTypeReference(context.fileAST!, property.typeAnnotation?.['typeAnnotation']);
+        const typeReference = getTypeReference(
+          context.fileAST!,
+          property.typeAnnotation?.['typeAnnotation']
+        );
 
         return {
           attribute,

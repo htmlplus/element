@@ -14,7 +14,12 @@ type EventHandler = EventListenerOrEventListenerObject;
 
 type EventOptions = boolean | AddEventListenerOptions;
 
-type EventListener = (target: EventTarget, type: EventType, handler: EventHandler, options?: EventOptions) => void;
+type EventListener = (
+  target: EventTarget,
+  type: EventType,
+  handler: EventHandler,
+  options?: EventOptions
+) => void;
 
 /**
  * TODO
@@ -22,9 +27,9 @@ type EventListener = (target: EventTarget, type: EventType, handler: EventHandle
 export const off: EventListener = (target, type, handler, options) => {
   if (type != 'outside') return target.removeEventListener(type, handler, options);
 
-  const index = outsides.findIndex(
-    (outside) => outside.target == target && outside.handler == handler && outside.options == options
-  );
+  const index = outsides.findIndex((outside) => {
+    return outside.target == target && outside.handler == handler && outside.options == options;
+  });
 
   const outside = outsides[index];
 

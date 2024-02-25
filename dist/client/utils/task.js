@@ -1,14 +1,14 @@
 export const task = (options) => {
-    let isPending, promise;
+    let running, promise;
     const run = () => {
         if (options.canStart && !options.canStart())
             return Promise.resolve(false);
-        if (!isPending)
+        if (!running)
             promise = enqueue();
         return promise;
     };
     const enqueue = async () => {
-        isPending = true;
+        running = true;
         try {
             await promise;
         }
@@ -16,17 +16,17 @@ export const task = (options) => {
             Promise.reject(error);
         }
         // TODO: maybe is optional
-        if (!isPending)
+        if (!running)
             return promise;
         try {
             if (options.canRun && !options.canRun())
-                return (isPending = false);
-            options.run();
-            isPending = false;
+                return (running = false);
+            options.handler();
+            running = false;
             return true;
         }
         catch (error) {
-            isPending = false;
+            running = false;
             throw error;
         }
     };

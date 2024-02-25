@@ -1,6 +1,6 @@
 import { parse } from '@babel/parser';
-import { glob } from 'glob';
 import fs from 'fs-extra';
+import { glob } from 'glob';
 import { dirname, resolve } from 'path';
 import { join } from 'path';
 import { visitor } from './visitor.js';

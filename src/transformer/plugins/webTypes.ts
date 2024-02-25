@@ -2,7 +2,11 @@ import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
+import {
+  TransformerPlugin,
+  TransformerPluginContext,
+  TransformerPluginGlobal
+} from '../transformer.types';
 import { getInitializer, getTags, getType, hasTag, parseTag, print } from '../utils/index.js';
 
 export const WEB_TYPES_OPTIONS: Partial<WebTypesOptions> = {
@@ -59,7 +63,13 @@ export const webTypes = (options?: WebTypesOptions): TransformerPlugin => {
           name: kebabCase(property.key['name']),
           value: {
             // kind: TODO
-            type: print(getType(context.directoryPath!, context.fileAST!, property.typeAnnotation?.['typeAnnotation']))
+            type: print(
+              getType(
+                context.directoryPath!,
+                context.fileAST!,
+                property.typeAnnotation?.['typeAnnotation']
+              )
+            )
             // required: TODO
             // default: TODO
           },

@@ -48,7 +48,13 @@ export const style = (options?: StyleOptions): TransformerPlugin => {
 
     context.styleName = path.basename(context.stylePath, context.styleExtension);
 
-    const { local } = addDependency(context.fileAST!, context.stylePath, CONSTANTS.STYLE_IMPORTED, undefined, true);
+    const { local } = addDependency(
+      context.fileAST!,
+      context.stylePath,
+      CONSTANTS.STYLE_IMPORTED,
+      undefined,
+      true
+    );
 
     // TODO: remove 'local!'
     const property = t.classProperty(

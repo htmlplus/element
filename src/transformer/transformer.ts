@@ -1,7 +1,11 @@
 import ora from 'ora';
 import path from 'path';
 
-import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from './transformer.types';
+import {
+  TransformerPlugin,
+  TransformerPluginContext,
+  TransformerPluginGlobal
+} from './transformer.types';
 
 const logger = ora({
   color: 'yellow'

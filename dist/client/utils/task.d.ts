@@ -1,6 +1,6 @@
 export interface QueueOptions {
     canStart?: () => boolean;
     canRun?: () => boolean;
-    run: () => void;
+    handler: () => void;
 }
 export declare const task: (options: QueueOptions) => () => Promise<boolean>;

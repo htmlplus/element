@@ -14,7 +14,8 @@ export const extract = () => {
                     context.classMembers = ((_b = (_a = context.class) === null || _a === void 0 ? void 0 : _a.body) === null || _b === void 0 ? void 0 : _b.body) || [];
                     // TODO
                     if (path.parentPath.isExportNamedDeclaration() && !((_c = context.class) === null || _c === void 0 ? void 0 : _c.leadingComments)) {
-                        context.class['_leadingComments'] = t.cloneNode(path.parentPath.node, true).leadingComments || [];
+                        context.class['_leadingComments'] =
+                            t.cloneNode(path.parentPath.node, true).leadingComments || [];
                     }
                     path.skip();
                 }

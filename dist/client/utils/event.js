@@ -5,7 +5,9 @@ const outsides = [];
 export const off = (target, type, handler, options) => {
     if (type != 'outside')
         return target.removeEventListener(type, handler, options);
-    const index = outsides.findIndex((outside) => outside.target == target && outside.handler == handler && outside.options == options);
+    const index = outsides.findIndex((outside) => {
+        return outside.target == target && outside.handler == handler && outside.options == options;
+    });
     const outside = outsides[index];
     if (!outside)
         return;

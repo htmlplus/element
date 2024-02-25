@@ -88,7 +88,9 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
 
         if (name.name != 'className') return;
 
-        const hasClass = path.parentPath.node.attributes.some((attribute) => attribute.name?.name == 'class');
+        const hasClass = path.parentPath.node.attributes.some((attribute) => {
+          return attribute.name?.name == 'class';
+        });
 
         if (hasClass) return path.remove();
 
@@ -179,7 +181,9 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
 
               parts.push('<', name);
 
-              const hasSpreadAttribute = attributes.some((attribute) => attribute.type == 'JSXSpreadAttribute');
+              const hasSpreadAttribute = attributes.some((attribute) => {
+                return attribute.type == 'JSXSpreadAttribute';
+              });
 
               if (hasSpreadAttribute) {
                 parts.push(' ', TODO(t.identifier('TODO'), attributes));
@@ -349,7 +353,10 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           }
 
           // TODO
-          if (input?.type == 'TSParenthesizedType' && input?.typeAnnotation?.type == 'TSIntersectionType') {
+          if (
+            input?.type == 'TSParenthesizedType' &&
+            input?.typeAnnotation?.type == 'TSIntersectionType'
+          ) {
             let types = input.types || input.typeAnnotation.types;
 
             if (types.length != 2) return;
@@ -362,7 +369,9 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           }
         };
 
-        extract(getType(context.directoryPath!, ast, path.parentPath.node.typeAnnotation?.typeAnnotation));
+        extract(
+          getType(context.directoryPath!, ast, path.parentPath.node.typeAnnotation?.typeAnnotation)
+        );
 
         if (!expression.arguments.length) {
           expression.arguments.push(t.objectExpression([]));
@@ -374,7 +383,9 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           return property.key.name != CONSTANTS.STATIC_MEMBERS_TYPE;
         });
 
-        argument.properties.push(t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE), t.numericLiteral(type)));
+        argument.properties.push(
+          t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE), t.numericLiteral(type))
+        );
       }
     });
 
@@ -387,10 +398,13 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
 
             const typeAnnotation = property.typeAnnotation as t.TSTypeAnnotation;
 
-            return Object.assign(t.tSPropertySignature(t.stringLiteral(kebabCase(key.name)), typeAnnotation), {
-              optional: property.optional,
-              leadingComments: t.cloneNode(property, true).leadingComments
-            });
+            return Object.assign(
+              t.tSPropertySignature(t.stringLiteral(kebabCase(key.name)), typeAnnotation),
+              {
+                optional: property.optional,
+                leadingComments: t.cloneNode(property, true).leadingComments
+              }
+            );
           });
 
           const events = context.classEvents!.map((event) => {

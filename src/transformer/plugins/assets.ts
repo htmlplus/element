@@ -1,7 +1,11 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal } from '../transformer.types';
+import {
+  TransformerPlugin,
+  TransformerPluginContext,
+  TransformerPluginGlobal
+} from '../transformer.types';
 
 export const ASSETS_OPTIONS: Partial<AssetsOptions> = {
   destination(context) {

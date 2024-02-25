@@ -65,6 +65,9 @@ export interface TransformerPlugin {
   name: string;
   options?: any;
   start?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
-  run?: (context: TransformerPluginContext, global: TransformerPluginGlobal) => Return<TransformerPluginContext>;
+  run?: (
+    context: TransformerPluginContext,
+    global: TransformerPluginGlobal
+  ) => Return<TransformerPluginContext>;
   finish?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
 }
