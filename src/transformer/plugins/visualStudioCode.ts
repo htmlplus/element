@@ -7,7 +7,7 @@ import {
   TransformerPluginContext,
   TransformerPluginGlobal
 } from '../transformer.types';
-import { getTags, getType, print } from '../utils/index.js';
+import { extractFromComment, getType, print } from '../utils/index.js';
 
 export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {
   destination: path.join('dist', 'visual-studio-code.json')
@@ -36,26 +36,28 @@ export const visualStudioCode = (options?: VisualStudioCodeOptions): Transformer
     };
 
     for (const context of contexts) {
-      const description = getTags(context.class!).find((tag) => !tag.key)?.value;
-
-      const tag = {
-        name: context.elementKey!,
-        description: description,
-        attributes: [] as any,
-        references: [
-          {
-            name: 'Source code',
-            url: options!.reference?.(context)
-          }
-        ]
-      };
+      const tag = Object.assign(
+        {
+          name: context.elementKey!,
+          attributes: [] as any,
+          references: [
+            {
+              name: 'Source code',
+              url: options!.reference?.(context)
+            }
+          ]
+        },
+        extractFromComment(context.class!, ['description'])
+      );
 
       for (const property of context.classProperties || []) {
-        const attribute = {
-          name: kebabCase(property.key['name']),
-          description: getTags(property).find((tag) => !tag.key)?.value,
-          values: [] as any
-        };
+        const attribute = Object.assign(
+          {
+            name: kebabCase(property.key['name']),
+            values: [] as any
+          },
+          extractFromComment(property, ['description'])
+        );
 
         const type = print(
           getType(

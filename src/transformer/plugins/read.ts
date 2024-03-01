@@ -20,7 +20,7 @@ export const read = (options?: ReadOptions): TransformerPlugin => {
   const run = (context: TransformerPluginContext) => {
     if (!context.filePath) return;
 
-    context.fileContent ??= fs.readFileSync(context.filePath, options);
+    context.fileContent = fs.readFileSync(context.filePath, options);
 
     context.fileExtension = path.extname(context.filePath);
 

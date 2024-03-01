@@ -1,7 +1,7 @@
 import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
-import { getInitializer, getTags, getType, hasTag, parseTag, print } from '../utils/index.js';
+import { extractFromComment, getInitializer, getType, print } from '../utils/index.js';
 export const WEB_TYPES_OPTIONS = {
     destination: path.join('dist', 'web-types.json'),
     packageName: '',
@@ -11,7 +11,7 @@ export const webTypes = (options) => {
     const name = 'webTypes';
     options = Object.assign({}, WEB_TYPES_OPTIONS, options);
     const finish = (global) => {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         const contexts = global.contexts.sort((a, b) => {
             return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? +1 : -1;
         });
@@ -31,19 +31,10 @@ export const webTypes = (options) => {
                 }
             }
         };
-        const common = (member) => {
-            var _a;
-            return ({
-                name: member.key['name'],
-                description: (_a = getTags(member).find((tag) => !tag.key)) === null || _a === void 0 ? void 0 : _a.value,
-                deprecated: hasTag(member, 'deprecated'),
-                experimental: hasTag(member, 'experimental')
-            });
-        };
         for (const context of contexts) {
             const attributes = (_a = context.classProperties) === null || _a === void 0 ? void 0 : _a.map((property) => {
                 var _a;
-                return Object.assign(common(property), {
+                return Object.assign({
                     name: kebabCase(property.key['name']),
                     value: {
                         // kind: TODO
@@ -52,41 +43,31 @@ export const webTypes = (options) => {
                         // default: TODO
                     },
                     default: getInitializer(property.value)
-                });
+                }, extractFromComment(property, ['description', 'deprecated', 'experimental']));
             });
-            const description = (_b = getTags(context.class).find((tag) => !tag.key)) === null || _b === void 0 ? void 0 : _b.value;
-            const events = (_c = context.classEvents) === null || _c === void 0 ? void 0 : _c.map((event) => Object.assign(common(event), {
+            const events = (_b = context.classEvents) === null || _b === void 0 ? void 0 : _b.map((event) => Object.assign({
                 name: kebabCase(event.key['name']) // TODO
                 // 'value': TODO
-            }));
-            const methods = (_d = context.classMethods) === null || _d === void 0 ? void 0 : _d.map((method) => Object.assign(common(method), {
-            // 'value': TODO
-            }));
-            const properties = (_e = context.classProperties) === null || _e === void 0 ? void 0 : _e.map((property) => Object.assign(common(property), {
+            }, extractFromComment(event, ['description', 'deprecated', 'experimental'])));
+            const methods = (_c = context.classMethods) === null || _c === void 0 ? void 0 : _c.map((method) => Object.assign({
+                name: method.key['name']
+                // 'value': TODO
+            }, extractFromComment(method, ['description', 'deprecated', 'experimental'])));
+            const properties = (_d = context.classProperties) === null || _d === void 0 ? void 0 : _d.map((property) => Object.assign({
+                name: property.key['name'],
                 // 'value': TODO
                 default: getInitializer(property.value)
-            }));
-            const slots = getTags(context.class, 'slot').map((tag) => {
-                const { description, name } = parseTag(tag);
-                return {
-                    name,
-                    description
-                };
-            });
-            const element = {
+            }, extractFromComment(property, ['description', 'deprecated', 'experimental'])));
+            const element = Object.assign({
                 'name': context.elementKey,
-                'description': description,
-                'doc-url': (_g = (_f = options).reference) === null || _g === void 0 ? void 0 : _g.call(_f, context),
-                'deprecated': hasTag(context.class, 'deprecated'),
-                'experimental': hasTag(context.class, 'experimental'),
+                'doc-url': (_f = (_e = options).reference) === null || _f === void 0 ? void 0 : _f.call(_e, context),
                 'js': {
                     events,
                     properties: [].concat(properties, methods)
                 },
-                attributes,
-                slots
-            };
-            const transformed = ((_j = (_h = options).transformer) === null || _j === void 0 ? void 0 : _j.call(_h, context, element)) || element;
+                attributes
+            }, extractFromComment(context.class, ['description', 'deprecated', 'experimental', 'slots']));
+            const transformed = ((_h = (_g = options).transformer) === null || _h === void 0 ? void 0 : _h.call(_g, context, element)) || element;
             json.contributions.html.elements.push(transformed);
         }
         const dirname = path.dirname(options.destination);

@@ -9,15 +9,7 @@ import {
   TransformerPluginContext,
   TransformerPluginGlobal
 } from '../transformer.types';
-import {
-  getInitializer,
-  getTag,
-  getTags,
-  getTypeReference,
-  hasTag,
-  parseTag,
-  print
-} from '../utils/index.js';
+import { extractFromComment, getInitializer, getTypeReference, print } from '../utils/index.js';
 
 export const DOCUMENT_OPTIONS: Partial<DocumentOptions> = {
   destination: path.join('dist', 'document.json')
@@ -39,13 +31,10 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
     };
 
     for (const context of global.contexts) {
-      const deprecated = hasTag(context.class!, 'deprecated');
-
-      const description = getTags(context.class!).find((tag) => !tag.key)?.value;
-
       const events = context.classEvents!.map((event) => {
         const cancelable = (() => {
           if (!event.decorators) return false;
+
           try {
             for (const decorator of event.decorators) {
               for (const argument of decorator.expression['arguments']) {
@@ -58,12 +47,9 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
               }
             }
           } catch {}
+
           return false;
         })();
-
-        const deprecated = hasTag(event, 'deprecated');
-
-        const description = getTags(event).find((tag) => !tag.key)?.value;
 
         const detail = print(event.typeAnnotation?.['typeAnnotation']);
 
@@ -72,30 +58,18 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           event.typeAnnotation?.['typeAnnotation'].typeParameters.params[0]
         );
 
-        const experimental = hasTag(event, 'experimental');
-
-        const model = hasTag(event, 'model');
-
         const name = event.key['name'];
 
-        const tags = getTags(event);
-
-        return {
-          cancelable,
-          deprecated,
-          description,
-          detail,
-          detailReference,
-          experimental,
-          model,
-          name,
-          tags
-        };
+        return Object.assign(
+          {
+            cancelable,
+            detail,
+            detailReference,
+            name
+          },
+          extractFromComment(event)
+        );
       });
-
-      const experimental = hasTag(context.class!, 'experimental');
-
-      const group = getTag(context.class!, 'group')?.value;
 
       const lastModified = glob
         .sync('**/*.*', { cwd: context.directoryPath })
@@ -106,19 +80,13 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
       const methods = context.classMethods!.map((method) => {
         const async = method.async;
 
-        const description = getTags(method).find((tag) => !tag.key)?.value;
-
-        const deprecated = hasTag(method, 'deprecated');
-
-        const experimental = hasTag(method, 'experimental');
-
         const name = method.key['name'];
+
+        const comments = extractFromComment(method);
 
         // TODO
         const parameters = method.params.map((param) => ({
-          description: getTags(method, 'param')
-            .map((tag) => parseTag(tag, ' '))
-            .find((tag) => tag.name == param['name'])?.description,
+          description: comments.params?.find((item) => item.name == param['name'])?.description,
           required: !param['optional'],
           name: param['name'],
           type: print(param?.['typeAnnotation']?.typeAnnotation) || undefined,
@@ -128,14 +96,15 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           )
         }));
 
+        // TODO
+        delete comments.params;
+
         const returns = print(method.returnType?.['typeAnnotation']) || 'void';
 
         const returnsReference = getTypeReference(
           context.fileAST!,
           method.returnType?.['typeAnnotation']
         );
-
-        const tags = getTags(method);
 
         const signature = [
           method.key['name'],
@@ -155,41 +124,45 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           returns
         ].join('');
 
-        return {
-          async,
-          description,
-          deprecated,
-          experimental,
-          name,
-          parameters,
-          returns,
-          returnsReference,
-          tags,
-          signature
-        };
+        return Object.assign(
+          {
+            async,
+            name,
+            parameters,
+            returns,
+            returnsReference,
+            signature
+          },
+          comments,
+          // TODO
+          {
+            returns
+          },
+          // TODO
+          returns != 'void' &&
+            comments.returns && {
+              tags: [
+                {
+                  key: 'returns',
+                  value: `${comments.returns}`
+                }
+              ]
+            }
+        );
       });
-
-      const parts = getTags(context.class!, 'part').map((tag) => parseTag(tag));
 
       const properties = context.classProperties!.map((property) => {
         const attribute = kebabCase(property.key['name']);
 
-        const deprecated = hasTag(property, 'deprecated');
-
-        const description = getTags(property).find((tag) => !tag.key)?.value;
-
-        const experimental = hasTag(property, 'experimental');
-
         // TODO
         const initializer = getInitializer(property.value!);
-
-        const model = hasTag(property, 'model');
 
         const name = property.key['name'];
 
         // TODO
         const reflects = (() => {
           if (!property.decorators) return false;
+
           try {
             for (const decorator of property.decorators) {
               for (const argument of decorator.expression['arguments']) {
@@ -202,12 +175,11 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
               }
             }
           } catch {}
+
           return false;
         })();
 
         const required = !property.optional;
-
-        const tags = getTags(property);
 
         const type = print(property.typeAnnotation?.['typeAnnotation']);
 
@@ -216,29 +188,24 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           property.typeAnnotation?.['typeAnnotation']
         );
 
-        return {
-          attribute,
-          deprecated,
-          description,
-          experimental,
-          initializer,
-          model,
-          name,
-          reflects,
-          required,
-          tags,
-          type,
-          typeReference
-        };
+        return Object.assign(
+          {
+            attribute,
+            initializer,
+            name,
+            reflects,
+            required,
+            type,
+            typeReference
+          },
+          extractFromComment(property)
+        );
       });
-
-      const slots = getTags(context.class!, 'slot').map((tag) => parseTag(tag));
 
       // TODO
       const styles = (() => {
-        if (!context.stylePath) return [];
-        return fs
-          .readFileSync(context.stylePath!, 'utf8')
+        if (!context.styleContent) return [];
+        return context.styleContent
           .split(CONSTANTS.DECORATOR_CSS_VARIABLE)
           .slice(1)
           .map((section) => {
@@ -258,27 +225,21 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           });
       })();
 
-      const tags = getTags(context.class!).filter((tag) => !['part', 'slot'].includes(tag.key!));
-
       const title = capitalCase(context.elementKey!);
 
-      const element = {
-        events,
-        group,
-        deprecated,
-        description,
-        experimental,
-        key: context.elementKey!,
-        lastModified,
-        methods,
-        parts,
-        properties,
-        readmeContent: context.readmeContent,
-        slots,
-        styles,
-        tags,
-        title
-      };
+      const element = Object.assign(
+        {
+          events,
+          key: context.elementKey!,
+          lastModified,
+          methods,
+          properties,
+          readmeContent: context.readmeContent,
+          styles,
+          title
+        },
+        extractFromComment(context.class!)
+      );
 
       const transformed = options!.transformer?.(context, element) || element;
 

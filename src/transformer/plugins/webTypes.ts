@@ -7,7 +7,7 @@ import {
   TransformerPluginContext,
   TransformerPluginGlobal
 } from '../transformer.types';
-import { getInitializer, getTags, getType, hasTag, parseTag, print } from '../utils/index.js';
+import { extractFromComment, getInitializer, getType, print } from '../utils/index.js';
 
 export const WEB_TYPES_OPTIONS: Partial<WebTypesOptions> = {
   destination: path.join('dist', 'web-types.json'),
@@ -50,76 +50,72 @@ export const webTypes = (options?: WebTypesOptions): TransformerPlugin => {
       }
     };
 
-    const common = (member) => ({
-      name: member.key['name'],
-      description: getTags(member).find((tag) => !tag.key)?.value,
-      deprecated: hasTag(member, 'deprecated'),
-      experimental: hasTag(member, 'experimental')
-    });
-
     for (const context of contexts) {
       const attributes = context.classProperties?.map((property) =>
-        Object.assign(common(property), {
-          name: kebabCase(property.key['name']),
-          value: {
-            // kind: TODO
-            type: print(
-              getType(
-                context.directoryPath!,
-                context.fileAST!,
-                property.typeAnnotation?.['typeAnnotation']
+        Object.assign(
+          {
+            name: kebabCase(property.key['name']),
+            value: {
+              // kind: TODO
+              type: print(
+                getType(
+                  context.directoryPath!,
+                  context.fileAST!,
+                  property.typeAnnotation?.['typeAnnotation']
+                )
               )
-            )
-            // required: TODO
-            // default: TODO
+              // required: TODO
+              // default: TODO
+            },
+            default: getInitializer(property.value!)
           },
-          default: getInitializer(property.value!)
-        })
+          extractFromComment(property, ['description', 'deprecated', 'experimental'])
+        )
       );
 
-      const description = getTags(context.class!).find((tag) => !tag.key)?.value;
-
       const events = context.classEvents?.map((event) =>
-        Object.assign(common(event), {
-          name: kebabCase(event.key['name']) // TODO
-          // 'value': TODO
-        })
+        Object.assign(
+          {
+            name: kebabCase(event.key['name']) // TODO
+            // 'value': TODO
+          },
+          extractFromComment(event, ['description', 'deprecated', 'experimental'])
+        )
       );
 
       const methods = context.classMethods?.map((method) =>
-        Object.assign(common(method), {
-          // 'value': TODO
-        })
+        Object.assign(
+          {
+            name: method.key['name']
+            // 'value': TODO
+          },
+          extractFromComment(method, ['description', 'deprecated', 'experimental'])
+        )
       );
 
       const properties = context.classProperties?.map((property) =>
-        Object.assign(common(property), {
-          // 'value': TODO
-          default: getInitializer(property.value!)
-        })
+        Object.assign(
+          {
+            name: property.key['name'],
+            // 'value': TODO
+            default: getInitializer(property.value!)
+          },
+          extractFromComment(property, ['description', 'deprecated', 'experimental'])
+        )
       );
 
-      const slots = getTags(context.class!, 'slot').map((tag) => {
-        const { description, name } = parseTag(tag);
-        return {
-          name,
-          description
-        };
-      });
-
-      const element = {
-        'name': context.elementKey,
-        'description': description,
-        'doc-url': options!.reference?.(context),
-        'deprecated': hasTag(context.class!, 'deprecated'),
-        'experimental': hasTag(context.class!, 'experimental'),
-        'js': {
-          events,
-          properties: ([] as any).concat(properties, methods)
+      const element = Object.assign(
+        {
+          'name': context.elementKey,
+          'doc-url': options!.reference?.(context),
+          'js': {
+            events,
+            properties: ([] as any).concat(properties, methods)
+          },
+          attributes
         },
-        attributes,
-        slots
-      };
+        extractFromComment(context.class!, ['description', 'deprecated', 'experimental', 'slots'])
+      );
 
       const transformed = options!.transformer?.(context, element) || element;
 

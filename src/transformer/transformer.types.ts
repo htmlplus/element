@@ -14,13 +14,10 @@ export interface TransformerPluginContext {
   // class
   class?: ClassDeclaration;
   classEvents?: Array<ClassProperty>;
-  classHasMount?: boolean;
-  classHasUnmount?: boolean;
   classMembers?: ClassBody['body'];
   classMethods?: Array<ClassMethod>;
   className?: string;
   classProperties?: Array<ClassProperty>;
-  classRender?: ClassMethod;
   classStates?: Array<ClassProperty>;
 
   // directory
@@ -59,6 +56,9 @@ export interface TransformerPluginContext {
 
 export interface TransformerPluginGlobal {
   contexts: Array<TransformerPluginContext>;
+  metadata?: {
+    [key: string]: any;
+  };
 }
 
 export interface TransformerPlugin {

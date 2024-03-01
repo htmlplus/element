@@ -15,7 +15,7 @@ export const parse = (options?: ParseOptions): TransformerPlugin => {
   options = Object.assign({}, PARSE_OPTIONS, options);
 
   const run = (context: TransformerPluginContext) => {
-    context.fileAST ??= parser(context.fileContent!, options);
+    context.fileAST = parser(context.fileContent!, options);
   };
 
   return { name, run };
