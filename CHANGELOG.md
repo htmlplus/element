@@ -1,3 +1,10 @@
+## [2.1.6](https://github.com/htmlplus/element/compare/v2.1.5...v2.1.6) (2024-03-01)
+
+
+### Bug Fixes
+
+* Update plugins logic ([0cc55d6](https://github.com/htmlplus/element/commit/0cc55d65480a3fab54acb36b82ce6d2e37a7a702))
+
 ## [2.1.5](https://github.com/htmlplus/element/compare/v2.1.4...v2.1.5) (2024-02-25)
 
 
