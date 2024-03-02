@@ -47,6 +47,11 @@ export function Element() {
         call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
       }
 
+      // TODO
+      static get formAssociated() {
+        return constructor['formAssociated'];
+      }
+
       static get observedAttributes() {
         return Object.keys(members)
           .filter((key) => members[key].type != CONSTANTS.TYPE_FUNCTION)
