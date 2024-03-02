@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/htmlplus/element/compare/v2.1.6...v2.2.0) (2024-03-02)
+
+
+### Features
+
+* Add formAssociated static property ([20b6603](https://github.com/htmlplus/element/commit/20b66035cfa2d813f2e6d88da42250e580cc4f3f))
+
 ## [2.1.6](https://github.com/htmlplus/element/compare/v2.1.5...v2.1.6) (2024-03-01)
 
 
