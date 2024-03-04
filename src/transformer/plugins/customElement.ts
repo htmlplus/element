@@ -380,11 +380,11 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
         const [argument] = expression.arguments;
 
         argument.properties = argument.properties.filter((property) => {
-          return property.key.name != CONSTANTS.STATIC_MEMBERS_TYPE;
+          return property.key.name != CONSTANTS.DECORATOR_PROPERTY_TYPE;
         });
 
         argument.properties.push(
-          t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE), t.numericLiteral(type))
+          t.objectProperty(t.identifier(CONSTANTS.DECORATOR_PROPERTY_TYPE), t.numericLiteral(type))
         );
       }
     });

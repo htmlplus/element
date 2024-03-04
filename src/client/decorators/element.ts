@@ -1,16 +1,8 @@
-import { camelCase, kebabCase } from 'change-case';
+import { camelCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { PlusElement } from '../../types';
-import {
-  call,
-  getConfig,
-  getMembers,
-  getTag,
-  isServer,
-  request,
-  toProperty
-} from '../utils/index.js';
+import { call, getConfig, getTag, isServer, request } from '../utils/index.js';
 
 /**
  * The class marked with this decorator is considered a
@@ -25,8 +17,6 @@ export function Element() {
 
     if (customElements.get(tag!)) return;
 
-    const members = getMembers(constructor);
-
     class Plus extends HTMLElement {
       constructor() {
         super();
@@ -34,12 +24,6 @@ export function Element() {
         this.attachShadow({ mode: 'open' });
 
         const instance = (this[CONSTANTS.API_INSTANCE] = new (constructor as any)());
-
-        Object.keys(members).forEach((key) => {
-          if (members[key].type != CONSTANTS.TYPE_FUNCTION) {
-            members[key].default = instance[key];
-          }
-        });
 
         instance[CONSTANTS.API_HOST] = () => this;
 
@@ -52,10 +36,9 @@ export function Element() {
         return constructor['formAssociated'];
       }
 
+      // TODO
       static get observedAttributes() {
-        return Object.keys(members)
-          .filter((key) => members[key].type != CONSTANTS.TYPE_FUNCTION)
-          .map((key) => kebabCase(key));
+        return constructor['observedAttributes'];
       }
 
       adoptedCallback() {
@@ -69,13 +52,10 @@ export function Element() {
 
         const name = camelCase(attribute);
 
-        const type = members[name]?.type;
-
-        const value = toProperty(next, type);
-
-        if (instance[name] === value) return;
-
-        instance[name] = value;
+        // ensures the integrity of readonly properties to prevent potential errors.
+        try {
+          this[name] = next;
+        } catch {}
       }
 
       connectedCallback() {

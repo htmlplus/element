@@ -58,7 +58,7 @@ export const style = (options?: StyleOptions): TransformerPlugin => {
 
     // TODO: remove 'local!'
     const property = t.classProperty(
-      t.identifier(CONSTANTS.STATIC_STYLES),
+      t.identifier(CONSTANTS.STATIC_STYLE),
       t.identifier(local!),
       undefined,
       null,

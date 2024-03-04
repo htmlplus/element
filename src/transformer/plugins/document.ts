@@ -159,6 +159,8 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
 
         const name = property.key['name'];
 
+        const readonly = property['kind'] == 'get';
+
         // TODO
         const reflects = (() => {
           if (!property.decorators) return false;
@@ -179,9 +181,12 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           return false;
         })();
 
-        const required = !property.optional;
+        const required = 'optional' in property && !property.optional;
 
-        const type = print(property.typeAnnotation?.['typeAnnotation']);
+        // TODO
+        const type = property['returnType']
+          ? print(property['returnType']?.['typeAnnotation'])
+          : print(property.typeAnnotation?.['typeAnnotation']);
 
         const typeReference = getTypeReference(
           context.fileAST!,
@@ -193,6 +198,7 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
             attribute,
             initializer,
             name,
+            readonly,
             reflects,
             required,
             type,
