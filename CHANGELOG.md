@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/htmlplus/element/compare/v2.2.0...v2.3.0) (2024-03-04)
+
+
+### Features
+
+* Support readonly properties ([2b53e5a](https://github.com/htmlplus/element/commit/2b53e5a487cc2cb36d126b5863a9c0a7e8aeff1e))
+
 # [2.2.0](https://github.com/htmlplus/element/compare/v2.1.6...v2.2.0) (2024-03-02)
 
 
