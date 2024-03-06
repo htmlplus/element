@@ -1,7 +1,7 @@
 import { kebabCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 import {
   appendToMethod,
   defineProperty,
@@ -30,9 +30,9 @@ export interface PropertyOptions {
  * and updates the element when the property is set.
  */
 export function Property(options?: PropertyOptions) {
-  return function (target: PlusElement, propertyKey: PropertyKey, descriptor?: PropertyDescriptor) {
+  return function (target: HTMLPlusElement, key: PropertyKey, descriptor?: PropertyDescriptor) {
     // Converts property name to string.
-    const name = String(propertyKey);
+    const name = String(key);
 
     // Registers an attribute that is intricately linked to the property.
     (target.constructor['observedAttributes'] ||= []).push(kebabCase(name));
@@ -49,10 +49,12 @@ export function Property(options?: PropertyOptions) {
         descriptor.get = function () {
           const value = getter?.apply(this);
 
+          // TODO: target or this
           target[CONSTANTS.API_LOCKED] = true;
 
-          updateAttribute(host(this), name, value);
+          updateAttribute(this, name, value);
 
+          // TODO: target or this
           target[CONSTANTS.API_LOCKED] = false;
 
           return value;
@@ -86,38 +88,37 @@ export function Property(options?: PropertyOptions) {
         request(this, name, previous, (skipped) => {
           if (!options?.reflect || skipped) return;
 
+          // TODO: target or this
           target[CONSTANTS.API_LOCKED] = true;
 
-          updateAttribute(host(this), name, next);
+          updateAttribute(this, name, next);
 
+          // TODO: target or this
           target[CONSTANTS.API_LOCKED] = false;
         });
       }
 
       // Attaches the getter and setter functions to the current property of the target class.
-      defineProperty(target, propertyKey, { get, set });
+      defineProperty(target, key, { get, set });
     }
 
     // TODO: Check the lifecycle
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONSTRUCTED, function () {
-      // Gets the host element from the target class.
-      const element = host(this);
-
       // Defines a getter function to use in the host element.
       const get = () => {
-        return this[propertyKey];
+        return this[key];
       };
 
       // Defines a setter function to use in the host element.
       const set = descriptor
         ? undefined
         : (input) => {
-            this[propertyKey] = toProperty(input, options?.type);
+            this[key] = toProperty(input, options?.type);
           };
 
       // TODO: Check the configuration.
       // Attaches the getter and setter functions to the current property of the host element.
-      defineProperty(element, propertyKey, { get, set, configurable: true });
+      defineProperty(host(this), key, { get, set, configurable: true });
     });
   };
 }

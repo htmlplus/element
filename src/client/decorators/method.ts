@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 import { appendToMethod, defineProperty, host } from '../utils/index.js';
 
 /**
@@ -7,10 +7,10 @@ import { appendToMethod, defineProperty, host } from '../utils/index.js';
  * and invoke it as needed, both internally and externally.
  */
 export function Method() {
-  return function (target: PlusElement, propertyKey: PropertyKey) {
+  return function (target: HTMLPlusElement, key: PropertyKey) {
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONSTRUCTED, function () {
-      defineProperty(host(this), propertyKey, {
-        get: () => this[propertyKey].bind(this)
+      defineProperty(host(this), key, {
+        get: () => this[key].bind(this)
       });
     });
   };

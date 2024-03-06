@@ -1,4 +1,4 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 import { defineProperty, request } from '../utils/index.js';
 
 /**
@@ -6,8 +6,8 @@ import { defineProperty, request } from '../utils/index.js';
  * element to re-render upon the desired property changes.
  */
 export function State() {
-  return function (target: PlusElement, propertyKey: PropertyKey) {
-    const name = String(propertyKey);
+  return function (target: HTMLPlusElement, key: PropertyKey) {
+    const name = String(key);
 
     const symbol = Symbol();
 
@@ -26,6 +26,6 @@ export function State() {
     }
 
     // TODO: configurable
-    defineProperty(target, propertyKey, { get, set, configurable: true });
+    defineProperty(target, key, { get, set, configurable: true });
   };
 }

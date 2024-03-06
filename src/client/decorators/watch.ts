@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 import { appendToMethod } from '../utils/index.js';
 
 /**
@@ -12,19 +12,19 @@ import { appendToMethod } from '../utils/index.js';
  * @param immediate Triggers the callback immediately after initialization.
  */
 export function Watch(keys?: string | string[], immediate?: boolean) {
-  return function (target: PlusElement, propertyKey: PropertyKey): void {
+  return function (target: HTMLPlusElement, key: PropertyKey): void {
     // Gets all keys
-    const all = [keys].flat().filter((key) => key);
+    const all = [keys].flat().filter((item) => item);
     // Registers a lifecycle to detect changes.
     appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function (states: Map<string, any>) {
       // Skips the logic if 'immediate' wasn't passed.
       if (!immediate && !this[CONSTANTS.API_RENDER_COMPLETED]) return;
       // Loops the keys.
-      states.forEach((previous, key) => {
+      states.forEach((previous, item) => {
         // Skips the current key.
-        if (all.length && !all.includes(key)) return;
+        if (all.length && !all.includes(item)) return;
         // Invokes the method with parameters.
-        this[propertyKey](this[key], previous, key);
+        this[key](this[item], previous, item);
       });
     });
   };
