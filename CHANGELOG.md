@@ -1,3 +1,14 @@
+# [2.4.0](https://github.com/htmlplus/element/compare/v2.3.0...v2.4.0) (2024-03-06)
+
+
+### Features
+
+* Add `dispatch` util. ([3199144](https://github.com/htmlplus/element/commit/3199144b38668aef8604107e9744261f085965f4))
+* Add `Provider` and `Consumer` decorator. ([c17225a](https://github.com/htmlplus/element/commit/c17225a8fc599ef05a2dd79654c8c3ad7199f83d))
+* Add the `HTMLPlusElement` interface. ([e63510a](https://github.com/htmlplus/element/commit/e63510ae81384145caccc88b29c5e12952bd3591))
+* Support `delegatesFocus` and `slotAssignment` static properties. ([0c38d59](https://github.com/htmlplus/element/commit/0c38d59aaa8ad14935c065e256c64c435024b53b))
+* Update `host` util target type. ([7dab034](https://github.com/htmlplus/element/commit/7dab03468d8bb7bca46a759cf4fb2fcc668960ab))
+
 # [2.3.0](https://github.com/htmlplus/element/compare/v2.2.0...v2.3.0) (2024-03-04)
 
 
