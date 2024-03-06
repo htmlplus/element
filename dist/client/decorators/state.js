@@ -4,8 +4,8 @@ import { defineProperty, request } from '../utils/index.js';
  * element to re-render upon the desired property changes.
  */
 export function State() {
-    return function (target, propertyKey) {
-        const name = String(propertyKey);
+    return function (target, key) {
+        const name = String(key);
         const symbol = Symbol();
         function get() {
             return this[symbol];
@@ -18,6 +18,6 @@ export function State() {
             request(this, name, previous);
         }
         // TODO: configurable
-        defineProperty(target, propertyKey, { get, set, configurable: true });
+        defineProperty(target, key, { get, set, configurable: true });
     };
 }

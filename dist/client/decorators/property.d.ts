@@ -1,4 +1,4 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 /**
  * The configuration for property decorator.
  */
@@ -8,7 +8,7 @@ export interface PropertyOptions {
      */
     reflect?: boolean;
     /**
-     * Do not set the value to this property. This value is automatically set during transpiling.
+     * Do not set the value to this property. This value is automatically set during transforming.
      */
     type?: number;
 }
@@ -16,4 +16,4 @@ export interface PropertyOptions {
  * Creates a reactive property, reflecting a corresponding attribute value,
  * and updates the element when the property is set.
  */
-export declare function Property(options?: PropertyOptions): (target: PlusElement, propertyKey: PropertyKey) => void;
+export declare function Property(options?: PropertyOptions): (target: HTMLPlusElement, key: PropertyKey, descriptor?: PropertyDescriptor) => void;

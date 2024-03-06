@@ -1,4 +1,4 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 /**
  * Monitors `@Property` and `@State` to detect changes.
  * The decorated method will be called after any changes,
@@ -8,4 +8,4 @@ import { PlusElement } from '../../types';
  * @param keys Collection of `@Property` and `@State` names.
  * @param immediate Triggers the callback immediately after initialization.
  */
-export declare function Watch(keys?: string | string[], immediate?: boolean): (target: PlusElement, propertyKey: PropertyKey) => void;
+export declare function Watch(keys?: string | string[], immediate?: boolean): (target: HTMLPlusElement, key: PropertyKey) => void;

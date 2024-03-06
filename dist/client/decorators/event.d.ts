@@ -1,4 +1,4 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 /**
  * A function type that generates a `CustomEvent`.
  */
@@ -32,4 +32,4 @@ export interface EventOptions {
  *
  * @param options An object that configures options for the event dispatcher.
  */
-export declare function Event<T = any>(options?: EventOptions): (target: PlusElement, propertyKey: PropertyKey) => void;
+export declare function Event<T = any>(options?: EventOptions): (target: HTMLPlusElement, key: PropertyKey) => void;

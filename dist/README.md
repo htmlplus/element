@@ -475,7 +475,7 @@ Parameters:
     <br />
   - `type` (Optional)
     <br />
-    Do not set the value to this property. This value is automatically set during transpiling.
+    Do not set the value to this property. This value is automatically set during transforming.
     <br />
     <br />
 

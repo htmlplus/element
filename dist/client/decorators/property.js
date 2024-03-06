@@ -1,45 +1,83 @@
+import { kebabCase } from 'change-case';
 import * as CONSTANTS from '../../constants/index.js';
-import { addMember, appendToMethod, defineProperty, host, request, toProperty, updateAttribute } from '../utils/index.js';
+import { appendToMethod, defineProperty, host, request, toProperty, updateAttribute } from '../utils/index.js';
 /**
  * Creates a reactive property, reflecting a corresponding attribute value,
  * and updates the element when the property is set.
  */
 export function Property(options) {
-    return function (target, propertyKey) {
-        const name = String(propertyKey);
-        const symbol = Symbol();
-        addMember(target.constructor, name, options);
-        function get() {
-            return this[symbol];
+    return function (target, key, descriptor) {
+        var _a;
+        // Converts property name to string.
+        const name = String(key);
+        // Registers an attribute that is intricately linked to the property.
+        ((_a = target.constructor)['observedAttributes'] || (_a['observedAttributes'] = [])).push(kebabCase(name));
+        // TODO: This feature is an experimental
+        // When the property is a getter function.
+        if (descriptor) {
+            // Checks the reflection.
+            if (options === null || options === void 0 ? void 0 : options.reflect) {
+                // Stores the original getter function.
+                const getter = descriptor.get;
+                // Defines a new getter function.
+                descriptor.get = function () {
+                    const value = getter === null || getter === void 0 ? void 0 : getter.apply(this);
+                    // TODO: target or this
+                    target[CONSTANTS.API_LOCKED] = true;
+                    updateAttribute(this, name, value);
+                    // TODO: target or this
+                    target[CONSTANTS.API_LOCKED] = false;
+                    return value;
+                };
+                // TODO: Check the lifecycle
+                appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function () {
+                    // Calls the getter function to update the related attribute.
+                    this[name];
+                });
+            }
         }
-        function set(next) {
-            const previous = this[symbol];
-            if (next === previous)
-                return;
-            this[symbol] = next;
-            request(this, name, previous, (skipped) => {
-                if (!(options === null || options === void 0 ? void 0 : options.reflect) || skipped)
+        // When the property is normal.
+        else {
+            // Creates a unique symbol.
+            const symbol = Symbol();
+            // Defines a getter function to use in the target class.
+            function get() {
+                return this[symbol];
+            }
+            // Defines a setter function to use in the target class.
+            function set(next) {
+                const previous = this[symbol];
+                if (next === previous)
                     return;
-                target[CONSTANTS.API_LOCKED] = true;
-                updateAttribute(host(this), name, next);
-                target[CONSTANTS.API_LOCKED] = false;
-            });
+                this[symbol] = next;
+                request(this, name, previous, (skipped) => {
+                    if (!(options === null || options === void 0 ? void 0 : options.reflect) || skipped)
+                        return;
+                    // TODO: target or this
+                    target[CONSTANTS.API_LOCKED] = true;
+                    updateAttribute(this, name, next);
+                    // TODO: target or this
+                    target[CONSTANTS.API_LOCKED] = false;
+                });
+            }
+            // Attaches the getter and setter functions to the current property of the target class.
+            defineProperty(target, key, { get, set });
         }
-        defineProperty(target, propertyKey, { get, set });
-        // TODO: check the lifecycle
+        // TODO: Check the lifecycle
         appendToMethod(target, CONSTANTS.LIFECYCLE_CONSTRUCTED, function () {
-            const element = host(this);
-            // TODO: experimental for isolated options
-            if (element === this)
-                return;
+            // Defines a getter function to use in the host element.
             const get = () => {
-                return this[propertyKey];
+                return this[key];
             };
-            const set = (input) => {
-                this[propertyKey] = toProperty(input, options === null || options === void 0 ? void 0 : options.type);
-            };
-            // TODO: configurable
-            defineProperty(element, propertyKey, { get, set, configurable: true });
+            // Defines a setter function to use in the host element.
+            const set = descriptor
+                ? undefined
+                : (input) => {
+                    this[key] = toProperty(input, options === null || options === void 0 ? void 0 : options.type);
+                };
+            // TODO: Check the configuration.
+            // Attaches the getter and setter functions to the current property of the host element.
+            defineProperty(host(this), key, { get, set, configurable: true });
         });
     };
 }

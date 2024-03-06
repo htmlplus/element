@@ -1,14 +1,13 @@
-type EventTarget = Window | Document | Element;
-type EventType = 'outside' | (string & {});
-type EventHandler = EventListenerOrEventListenerObject;
-type EventOptions = boolean | AddEventListenerOptions;
-type EventListener = (target: EventTarget, type: EventType, handler: EventHandler, options?: EventOptions) => void;
+import { HTMLPlusElement } from '../../types';
 /**
  * TODO
  */
-export declare const off: EventListener;
+export declare const dispatch: <T = any>(target: HTMLElement | HTMLPlusElement, type: string, eventInitDict?: CustomEventInit<T> | undefined) => CustomEvent<T>;
 /**
  * TODO
  */
-export declare const on: EventListener;
-export {};
+export declare const on: (target: Window | Document | HTMLElement | HTMLPlusElement, type: string, handler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;
+/**
+ * TODO
+ */
+export declare const off: (target: Window | Document | HTMLElement | HTMLPlusElement, type: string, handler: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;

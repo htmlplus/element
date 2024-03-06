@@ -1,5 +1,5 @@
-import { PlusElement } from '../../types/index.js';
+import { HTMLPlusElement } from '../../types';
 /**
  * Selects the first element in the shadow dom that matches a specified CSS selector.
  */
-export declare function query(target: PlusElement, selectors: string): Element | null | undefined;
+export declare function query(target: HTMLPlusElement, selectors: string): Element | null | undefined;

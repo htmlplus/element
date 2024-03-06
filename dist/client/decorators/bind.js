@@ -4,12 +4,12 @@ import { defineProperty } from '../utils/index.js';
  * making it easier to reference `this` within the method.
  */
 export function Bind() {
-    return function (target, propertyKey, descriptor) {
+    return function (target, key, descriptor) {
         return {
             configurable: true,
             get() {
                 const value = descriptor === null || descriptor === void 0 ? void 0 : descriptor.value.bind(this);
-                defineProperty(this, propertyKey, {
+                defineProperty(this, key, {
                     value,
                     configurable: true,
                     writable: true

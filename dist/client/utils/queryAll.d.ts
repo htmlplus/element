@@ -1,5 +1,5 @@
-import { PlusElement } from '../../types/index.js';
+import { HTMLPlusElement } from '../../types';
 /**
  * Selects all elements in the shadow dom that match a specified CSS selector.
  */
-export declare function queryAll(target: PlusElement, selectors: string): NodeListOf<Element> | undefined;
+export declare function queryAll(target: HTMLPlusElement, selectors: string): NodeListOf<Element> | undefined;

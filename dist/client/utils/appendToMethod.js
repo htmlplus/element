@@ -1,6 +1,6 @@
-export const appendToMethod = (target, propertyKey, handler) => {
+export const appendToMethod = (target, key, handler) => {
     // Gets the previous function
-    const previous = target[propertyKey];
+    const previous = target[key];
     // Creates new function
     function next(...parameters) {
         // Calls the previous
@@ -11,5 +11,5 @@ export const appendToMethod = (target, propertyKey, handler) => {
         return result;
     }
     // Replaces the next with the previous one
-    target[propertyKey] = next;
+    target[key] = next;
 };

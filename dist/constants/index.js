@@ -15,6 +15,7 @@ export const DECORATOR_CSS_VARIABLE = '@Property()';
 export const DECORATOR_ELEMENT = 'Element';
 export const DECORATOR_EVENT = 'Event';
 export const DECORATOR_PROPERTY = 'Property';
+export const DECORATOR_PROPERTY_TYPE = 'type';
 export const DECORATOR_STATE = 'State';
 export const DECORATOR_METHOD = 'Method';
 // element
@@ -31,11 +32,8 @@ export const LIFECYCLE_UPDATED = 'updatedCallback';
 // methods
 export const METHOD_RENDER = 'render';
 // statics
-export const STATIC_MEMBERS = 'MEMBERS';
-export const STATIC_MEMBERS_INITIALIZER = 'default';
-export const STATIC_MEMBERS_TYPE = 'type';
-export const STATIC_STYLES = 'STYLES';
-export const STATIC_TAG = 'TAG';
+export const STATIC_STYLE = 'style';
+export const STATIC_TAG = 'tag';
 // style
 export const STYLE_IMPORTED = 'STYLE_IMPORTED';
 // types

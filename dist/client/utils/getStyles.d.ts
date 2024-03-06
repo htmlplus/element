@@ -1,2 +1,2 @@
-import { PlusElement } from '../../types';
-export declare const getStyles: (target: PlusElement) => string | undefined;
+import { HTMLPlusElement } from '../../types';
+export declare const getStyles: (target: HTMLPlusElement) => string | undefined;

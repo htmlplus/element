@@ -9,4 +9,4 @@
  * for more information about using selectors to identify elements.
  * Multiple selectors may be specified by separating them using commas.
  */
-export declare function QueryAll(selectors: string): (target: import("../../types/index.js").PlusElement, propertyKey: PropertyKey) => void;
+export declare function QueryAll(selectors: string): (target: import("../../types/index.js").HTMLPlusElement, key: PropertyKey) => void;

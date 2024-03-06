@@ -1,1 +1,1 @@
-export declare const call: (target: any, key: PropertyKey, ...parameters: Array<any>) => any;
+export declare const call: (target: Object, key: PropertyKey, ...parameters: Array<any>) => any;

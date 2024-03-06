@@ -1,4 +1,4 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 /**
  * Updates the DOM with a scheduled task.
  * @param target The element instance.
@@ -6,4 +6,4 @@ import { PlusElement } from '../../types';
  * @param previous The previous value of Property/State.
  * @param callback Invoked when the rendering phase is completed.
  */
-export declare const request: (target: PlusElement, name?: string, previous?: any, callback?: ((skipped: boolean) => void) | undefined) => void;
+export declare const request: (target: HTMLPlusElement, name?: string, previous?: any, callback?: ((skipped: boolean) => void) | undefined) => void;

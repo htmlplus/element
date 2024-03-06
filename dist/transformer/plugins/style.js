@@ -34,7 +34,7 @@ export const style = (options) => {
         context.styleName = path.basename(context.stylePath, context.styleExtension);
         const { local } = addDependency(context.fileAST, context.stylePath, CONSTANTS.STYLE_IMPORTED, undefined, true);
         // TODO: remove 'local!'
-        const property = t.classProperty(t.identifier(CONSTANTS.STATIC_STYLES), t.identifier(local), undefined, null, undefined, true);
+        const property = t.classProperty(t.identifier(CONSTANTS.STATIC_STYLE), t.identifier(local), undefined, null, undefined, true);
         t.addComment(property, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
         context.class.body.body.unshift(property);
     };

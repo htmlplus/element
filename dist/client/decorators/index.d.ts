@@ -1,4 +1,5 @@
 export * from './bind.js';
+export * from './consumer.js';
 export * from './direction.js';
 export * from './element.js';
 export * from './event.js';
@@ -7,6 +8,7 @@ export * from './isRTL.js';
 export * from './listen.js';
 export * from './method.js';
 export * from './property.js';
+export * from './provider.js';
 export * from './query.js';
 export * from './queryAll.js';
 export * from './slots.js';

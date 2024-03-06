@@ -1,5 +1,5 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 /**
  * Indicates the host of the element.
  */
-export declare const host: (target: PlusElement) => HTMLElement;
+export declare const host: (target: HTMLElement | HTMLPlusElement) => HTMLElement;

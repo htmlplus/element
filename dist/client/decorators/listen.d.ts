@@ -1,4 +1,4 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 /**
  * An object that configures
  * [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options)
@@ -46,7 +46,7 @@ export interface ListenOptions {
  * [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options)
  * for the event listener.
  */
-export declare function Listen(type: string, options?: ListenOptions): (target: PlusElement, propertyKey: PropertyKey, descriptor: PropertyDescriptor) => {
+export declare function Listen(type: string, options?: ListenOptions): (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) => {
     configurable: boolean;
     get(): any;
 };

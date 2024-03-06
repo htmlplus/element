@@ -1,2 +1,2 @@
-import { PlusElement } from '../../types';
-export declare const shadowRoot: (target: PlusElement) => ShadowRoot | null;
+import { HTMLPlusElement } from '../../types';
+export declare const shadowRoot: (target: HTMLElement | HTMLPlusElement) => ShadowRoot | null;

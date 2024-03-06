@@ -1,1 +1,2 @@
-export declare const updateAttribute: (node: Element, key: string, value: any) => void;
+import { HTMLPlusElement } from '../../types';
+export declare const updateAttribute: (target: HTMLElement | HTMLPlusElement, key: string, value: any) => void;

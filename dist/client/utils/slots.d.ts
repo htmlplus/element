@@ -1,9 +1,9 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 type Slots = {
     [key: string]: boolean;
 };
 /**
  * Returns the slots name.
  */
-export declare const slots: (target: PlusElement) => Slots;
+export declare const slots: (target: HTMLElement | HTMLPlusElement) => Slots;
 export {};

@@ -103,9 +103,7 @@ export const customElement = (options) => {
                                 const children = node.children.map(render).flat();
                                 if (!attributes.length)
                                     return children;
-                                const { local } = addDependency(path, CONSTANTS.UTILS_PATH, CONSTANTS.UTILS_HOST_LOCAL, CONSTANTS.UTILS_HOST_IMPORTED);
-                                const host = t.callExpression(t.identifier(local), [t.thisExpression()]);
-                                return [TODO(host, attributes), ...children];
+                                return [TODO(t.thisExpression(), attributes), ...children];
                             }
                             const name = node.openingElement.name.name;
                             const children = node.children.map(render).flat();
@@ -273,9 +271,9 @@ export const customElement = (options) => {
                 }
                 const [argument] = expression.arguments;
                 argument.properties = argument.properties.filter((property) => {
-                    return property.key.name != CONSTANTS.STATIC_MEMBERS_TYPE;
+                    return property.key.name != CONSTANTS.DECORATOR_PROPERTY_TYPE;
                 });
-                argument.properties.push(t.objectProperty(t.identifier(CONSTANTS.STATIC_MEMBERS_TYPE), t.numericLiteral(type)));
+                argument.properties.push(t.objectProperty(t.identifier(CONSTANTS.DECORATOR_PROPERTY_TYPE), t.numericLiteral(type)));
             }
         });
         // attach typings

@@ -1,5 +1,5 @@
 import { kebabCase, pascalCase } from 'change-case';
-import { defineProperty, getConfig, getFramework, host } from '../utils/index.js';
+import { defineProperty, dispatch, getConfig, getFramework, host } from '../utils/index.js';
 /**
  * Provides the capability to dispatch a [CustomEvent](https://mdn.io/custom-event)
  * from an element.
@@ -7,15 +7,15 @@ import { defineProperty, getConfig, getFramework, host } from '../utils/index.js
  * @param options An object that configures options for the event dispatcher.
  */
 export function Event(options = {}) {
-    return function (target, propertyKey) {
-        defineProperty(target, propertyKey, {
+    return function (target, key) {
+        defineProperty(target, key, {
             get() {
                 return (detail) => {
                     var _a, _b;
                     const element = host(this);
-                    const framework = getFramework(element);
+                    const framework = getFramework(this);
                     (_a = options.bubbles) !== null && _a !== void 0 ? _a : (options.bubbles = false);
-                    let type = String(propertyKey);
+                    let type = String(key);
                     switch (framework) {
                         case 'qwik':
                         case 'solid':
@@ -30,8 +30,7 @@ export function Event(options = {}) {
                     }
                     let event;
                     event || (event = (_b = getConfig('event', 'resolver')) === null || _b === void 0 ? void 0 : _b({ detail, element, framework, options, type }));
-                    event || (event = new CustomEvent(type, Object.assign(Object.assign({}, options), { detail })));
-                    element.dispatchEvent(event);
+                    event || (event = dispatch(this, type, Object.assign(Object.assign({}, options), { detail })));
                     return event;
                 };
             }

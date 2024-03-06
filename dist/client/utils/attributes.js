@@ -1,9 +1,11 @@
 import { off, on } from './event.js';
+import { host } from './host.js';
 import { isEvent } from './isEvent.js';
 import { toEvent } from './toEvent.js';
 import { updateAttribute } from './updateAttribute.js';
 const symbol = Symbol();
-export const attributes = (element, attributes) => {
+export const attributes = (target, attributes) => {
+    const element = host(target);
     const prev = element[symbol] || {};
     const next = Object.assign({}, ...attributes);
     const prevClass = (prev.class || '').split(' ');

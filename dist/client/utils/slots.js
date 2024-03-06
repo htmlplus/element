@@ -4,8 +4,9 @@ import { host } from './host.js';
  */
 export const slots = (target) => {
     var _a;
+    const element = host(target);
     const slots = {};
-    const children = Array.from(host(target).childNodes);
+    const children = Array.from(element.childNodes);
     for (const child of children) {
         if (child.nodeName == '#comment')
             continue;

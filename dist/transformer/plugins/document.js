@@ -116,11 +116,12 @@ export const document = (options) => {
                 });
             });
             const properties = context.classProperties.map((property) => {
-                var _a, _b;
+                var _a, _b, _c;
                 const attribute = kebabCase(property.key['name']);
                 // TODO
                 const initializer = getInitializer(property.value);
                 const name = property.key['name'];
+                const readonly = property['kind'] == 'get';
                 // TODO
                 const reflects = (() => {
                     if (!property.decorators)
@@ -143,13 +144,17 @@ export const document = (options) => {
                     catch (_a) { }
                     return false;
                 })();
-                const required = !property.optional;
-                const type = print((_a = property.typeAnnotation) === null || _a === void 0 ? void 0 : _a['typeAnnotation']);
-                const typeReference = getTypeReference(context.fileAST, (_b = property.typeAnnotation) === null || _b === void 0 ? void 0 : _b['typeAnnotation']);
+                const required = 'optional' in property && !property.optional;
+                // TODO
+                const type = property['returnType']
+                    ? print((_a = property['returnType']) === null || _a === void 0 ? void 0 : _a['typeAnnotation'])
+                    : print((_b = property.typeAnnotation) === null || _b === void 0 ? void 0 : _b['typeAnnotation']);
+                const typeReference = getTypeReference(context.fileAST, (_c = property.typeAnnotation) === null || _c === void 0 ? void 0 : _c['typeAnnotation']);
                 return Object.assign({
                     attribute,
                     initializer,
                     name,
+                    readonly,
                     reflects,
                     required,
                     type,

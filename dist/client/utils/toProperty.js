@@ -7,10 +7,10 @@ export const toProperty = (input, type) => {
     if (CONSTANTS.TYPE_BOOLEAN & type) {
         if (string === '')
             return true;
-        if (string === 'false')
-            return false;
         if (string === 'true')
             return true;
+        if (string === 'false')
+            return false;
     }
     if (CONSTANTS.TYPE_NUMBER & type) {
         if (string != '' && !isNaN(input)) {

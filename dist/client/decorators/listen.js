@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { appendToMethod, host, on, off } from '../utils/index.js';
+import { appendToMethod, on, off } from '../utils/index.js';
 import { Bind } from './bind.js';
 /**
  * Will be called whenever the specified event is delivered to the target
@@ -11,10 +11,9 @@ import { Bind } from './bind.js';
  * for the event listener.
  */
 export function Listen(type, options) {
-    return function (target, propertyKey, descriptor) {
-        options = Object.assign({ target: 'host' }, options);
+    return function (target, key, descriptor) {
         const element = (instance) => {
-            switch (options.target) {
+            switch (options === null || options === void 0 ? void 0 : options.target) {
                 case 'body':
                     return window.document.body;
                 case 'document':
@@ -22,17 +21,17 @@ export function Listen(type, options) {
                 case 'window':
                     return window;
                 case 'host':
-                    return host(instance);
+                    return instance;
                 default:
-                    return host(instance);
+                    return instance;
             }
         };
         appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
-            on(element(this), type, this[propertyKey], options);
+            on(element(this), type, this[key], options);
         });
         appendToMethod(target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
-            off(element(this), type, this[propertyKey], options);
+            off(element(this), type, this[key], options);
         });
-        return Bind()(target, propertyKey, descriptor);
+        return Bind()(target, key, descriptor);
     };
 }

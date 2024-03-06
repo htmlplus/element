@@ -1,1 +1,2 @@
-export declare const attributes: (element: HTMLElement, attributes: any[]) => void;
+import { HTMLPlusElement } from '../../types';
+export declare const attributes: (target: HTMLElement | HTMLPlusElement, attributes: any[]) => void;
