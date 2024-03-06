@@ -161,16 +161,7 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
 
                 if (!attributes.length) return children;
 
-                const { local } = addDependency(
-                  path,
-                  CONSTANTS.UTILS_PATH,
-                  CONSTANTS.UTILS_HOST_LOCAL,
-                  CONSTANTS.UTILS_HOST_IMPORTED
-                );
-
-                const host = t.callExpression(t.identifier(local!), [t.thisExpression()]);
-
-                return [TODO(host, attributes), ...children];
+                return [TODO(t.thisExpression(), attributes), ...children];
               }
 
               const name = node.openingElement.name.name;
