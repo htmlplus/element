@@ -1,7 +1,7 @@
 import { kebabCase, pascalCase } from 'change-case';
 
-import { PlusElement } from '../../types';
-import { defineProperty, getConfig, getFramework, host } from '../utils/index.js';
+import { HTMLPlusElement } from '../../types';
+import { defineProperty, dispatch, getConfig, getFramework, host } from '../utils/index.js';
 
 /**
  * A function type that generates a `CustomEvent`.
@@ -39,17 +39,17 @@ export interface EventOptions {
  * @param options An object that configures options for the event dispatcher.
  */
 export function Event<T = any>(options: EventOptions = {}) {
-  return function (target: PlusElement, propertyKey: PropertyKey) {
-    defineProperty(target, propertyKey, {
+  return function (target: HTMLPlusElement, key: PropertyKey) {
+    defineProperty(target, key, {
       get() {
         return (detail?: T): CustomEvent<T> => {
           const element = host(this);
 
-          const framework = getFramework(element);
+          const framework = getFramework(this);
 
           options.bubbles ??= false;
 
-          let type = String(propertyKey);
+          let type = String(key);
 
           switch (framework) {
             case 'qwik':
@@ -68,9 +68,7 @@ export function Event<T = any>(options: EventOptions = {}) {
 
           event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
 
-          event ||= new CustomEvent(type, { ...options, detail });
-
-          element.dispatchEvent(event);
+          event ||= dispatch<T>(this, type, { ...options, detail });
 
           return event;
         };

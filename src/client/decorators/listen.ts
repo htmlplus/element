@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types';
-import { appendToMethod, host, on, off } from '../utils/index.js';
+import { HTMLPlusElement } from '../../types';
+import { appendToMethod, on, off } from '../utils/index.js';
 import { Bind } from './bind.js';
 
 /**
@@ -52,14 +52,9 @@ export interface ListenOptions {
  * for the event listener.
  */
 export function Listen(type: string, options?: ListenOptions) {
-  return function (target: PlusElement, propertyKey: PropertyKey, descriptor: PropertyDescriptor) {
-    options = {
-      target: 'host',
-      ...options
-    };
-
+  return function (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) {
     const element = (instance) => {
-      switch (options!.target) {
+      switch (options?.target) {
         case 'body':
           return window.document.body;
         case 'document':
@@ -67,20 +62,20 @@ export function Listen(type: string, options?: ListenOptions) {
         case 'window':
           return window;
         case 'host':
-          return host(instance);
+          return instance;
         default:
-          return host(instance);
+          return instance;
       }
     };
 
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
-      on(element(this), type, this[propertyKey], options);
+      on(element(this), type, this[key], options);
     });
 
     appendToMethod(target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
-      off(element(this), type, this[propertyKey], options);
+      off(element(this), type, this[key], options);
     });
 
-    return Bind()(target, propertyKey, descriptor);
+    return Bind()(target, key, descriptor);
   };
 }
