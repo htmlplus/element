@@ -1,7 +1,7 @@
 import { camelCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 import { call, getConfig, getTag, isServer, request } from '../utils/index.js';
 
 /**
@@ -10,7 +10,7 @@ import { call, getConfig, getTag, isServer, request } from '../utils/index.js';
  * and its name, in kebab-case, serves as the element name.
  */
 export function Element() {
-  return function (constructor: PlusElement) {
+  return function (constructor: HTMLPlusElement) {
     if (isServer()) return;
 
     const tag = getTag(constructor);
@@ -18,10 +18,20 @@ export function Element() {
     if (customElements.get(tag!)) return;
 
     class Plus extends HTMLElement {
+      // TODO
+      static formAssociated = constructor['formAssociated'];
+
+      // TODO
+      static observedAttributes = constructor['observedAttributes'];
+
       constructor() {
         super();
 
-        this.attachShadow({ mode: 'open' });
+        this.attachShadow({
+          mode: 'open',
+          delegatesFocus: constructor['delegatesFocus'],
+          slotAssignment: constructor['slotAssignment']
+        });
 
         const instance = (this[CONSTANTS.API_INSTANCE] = new (constructor as any)());
 
@@ -29,16 +39,6 @@ export function Element() {
 
         // TODO
         call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
-      }
-
-      // TODO
-      static get formAssociated() {
-        return constructor['formAssociated'];
-      }
-
-      // TODO
-      static get observedAttributes() {
-        return constructor['observedAttributes'];
       }
 
       adoptedCallback() {
