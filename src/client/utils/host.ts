@@ -1,9 +1,13 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 
 /**
  * Indicates the host of the element.
  */
-export const host = (target: PlusElement): HTMLElement => {
-  return target[CONSTANTS.API_HOST]();
+export const host = (target: HTMLElement | HTMLPlusElement): HTMLElement => {
+  try {
+    return target[CONSTANTS.API_HOST]();
+  } catch {
+    return target as any;
+  }
 };
