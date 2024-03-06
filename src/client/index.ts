@@ -3,6 +3,7 @@ export * from './decorators/index.js';
 export {
   classes,
   direction,
+  dispatch,
   getConfig,
   host,
   isCSSColor,
