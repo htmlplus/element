@@ -1,10 +1,10 @@
 export const appendToMethod = (
-  target: any,
-  propertyKey: PropertyKey,
+  target: Object,
+  key: PropertyKey,
   handler: (this, ...parameters: Array<any>) => void
-) => {
+): void => {
   // Gets the previous function
-  const previous = target[propertyKey];
+  const previous = target[key];
 
   // Creates new function
   function next(this, ...parameters) {
@@ -19,5 +19,5 @@ export const appendToMethod = (
   }
 
   // Replaces the next with the previous one
-  target[propertyKey] = next;
+  target[key] = next;
 };

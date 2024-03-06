@@ -1,11 +1,15 @@
+import { HTMLPlusElement } from '../../types';
 import { off, on } from './event.js';
+import { host } from './host.js';
 import { isEvent } from './isEvent.js';
 import { toEvent } from './toEvent.js';
 import { updateAttribute } from './updateAttribute.js';
 
 const symbol = Symbol();
 
-export const attributes = (element: HTMLElement, attributes: any[]) => {
+export const attributes = (target: HTMLElement | HTMLPlusElement, attributes: any[]): void => {
+  const element = host(target);
+
   const prev = element[symbol] || {};
   const next = Object.assign({}, ...attributes);
 

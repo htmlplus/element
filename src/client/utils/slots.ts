@@ -1,4 +1,4 @@
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 import { host } from './host.js';
 
 type Slots = {
@@ -8,10 +8,12 @@ type Slots = {
 /**
  * Returns the slots name.
  */
-export const slots = (target: PlusElement): Slots => {
+export const slots = (target: HTMLElement | HTMLPlusElement): Slots => {
+  const element = host(target);
+
   const slots = {};
 
-  const children = Array.from(host(target).childNodes);
+  const children = Array.from(element.childNodes);
 
   for (const child of children) {
     if (child.nodeName == '#comment') continue;

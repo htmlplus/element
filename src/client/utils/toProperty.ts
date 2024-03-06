@@ -1,7 +1,7 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { typeOf } from './typeOf.js';
 
-export const toProperty = (input: any, type: number | undefined) => {
+export const toProperty = (input: any, type: number | undefined): any => {
   if (type === undefined) return input;
 
   const string = `${input}`;

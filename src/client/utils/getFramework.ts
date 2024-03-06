@@ -1,13 +1,18 @@
-export const getFramework = (target: HTMLElement): string | undefined => {
-  if ('_qc_' in target) return 'qwik';
+import { HTMLPlusElement } from '../../types';
+import { host } from './host.js';
 
-  if ('_$owner' in target) return 'solid';
+export const getFramework = (target: HTMLElement | HTMLPlusElement): string | undefined => {
+  const element = host(target);
 
-  if ('__svelte_meta' in target) return 'svelte';
+  if ('_qc_' in element) return 'qwik';
 
-  if ('__vnode' in target) return 'vue';
+  if ('_$owner' in element) return 'solid';
 
-  const keys = Object.keys(target);
+  if ('__svelte_meta' in element) return 'svelte';
+
+  if ('__vnode' in element) return 'vue';
+
+  const keys = Object.keys(element);
 
   const has = (input) => keys.some((key) => key.startsWith(input));
 

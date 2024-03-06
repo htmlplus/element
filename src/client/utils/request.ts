@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { PlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types';
 import { call } from './call.js';
 import { getStyles } from './getStyles.js';
 import { shadowRoot } from './shadowRoot.js';
@@ -14,7 +14,7 @@ import { html, render } from './uhtml.js';
  * @param callback Invoked when the rendering phase is completed.
  */
 export const request = (
-  target: PlusElement,
+  target: HTMLPlusElement,
   name?: string,
   previous?: any,
   callback?: (skipped: boolean) => void
