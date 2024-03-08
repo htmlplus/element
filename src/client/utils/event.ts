@@ -33,7 +33,7 @@ export const on = (
   handler: EventListenerOrEventListenerObject,
   options?: boolean | AddEventListenerOptions
 ) => {
-  const element = host(target);
+  const element = host(target as any);
 
   if (type != 'outside') {
     return element.addEventListener(type, handler, options);
@@ -65,7 +65,7 @@ export const off = (
   handler: EventListenerOrEventListenerObject,
   options?: boolean | AddEventListenerOptions
 ): void => {
-  const element = host(target);
+  const element = host(target as any);
 
   if (type != 'outside') {
     return element.removeEventListener(type, handler, options);

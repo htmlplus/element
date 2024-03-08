@@ -58,17 +58,15 @@ export function Element() {
         // TODO: experimental for global config
         Object.assign(instance, getConfig('element', getTag(instance)!, 'property'));
 
+        instance[CONSTANTS.API_CONNECTED] = true;
+
         const connect = () => {
-          instance[CONSTANTS.API_CONNECTED] = true;
-
-          call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
-
           request(instance, undefined, undefined, () => {
             call(instance, CONSTANTS.LIFECYCLE_LOADED);
           });
         };
 
-        const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECT);
+        const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
 
         if (!callback?.then) return connect();
 

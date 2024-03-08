@@ -22,11 +22,9 @@ export function Property(options) {
                 // Defines a new getter function.
                 descriptor.get = function () {
                     const value = getter === null || getter === void 0 ? void 0 : getter.apply(this);
-                    // TODO: target or this
-                    target[CONSTANTS.API_LOCKED] = true;
+                    this[CONSTANTS.API_LOCKED] = true;
                     updateAttribute(this, name, value);
-                    // TODO: target or this
-                    target[CONSTANTS.API_LOCKED] = false;
+                    this[CONSTANTS.API_LOCKED] = false;
                     return value;
                 };
                 // TODO: Check the lifecycle
@@ -51,13 +49,13 @@ export function Property(options) {
                     return;
                 this[symbol] = next;
                 request(this, name, previous, (skipped) => {
-                    if (!(options === null || options === void 0 ? void 0 : options.reflect) || skipped)
+                    if (skipped)
                         return;
-                    // TODO: target or this
-                    target[CONSTANTS.API_LOCKED] = true;
+                    if (!(options === null || options === void 0 ? void 0 : options.reflect))
+                        return;
+                    this[CONSTANTS.API_LOCKED] = true;
                     updateAttribute(this, name, next);
-                    // TODO: target or this
-                    target[CONSTANTS.API_LOCKED] = false;
+                    this[CONSTANTS.API_LOCKED] = false;
                 });
             }
             // Attaches the getter and setter functions to the current property of the target class.
@@ -73,6 +71,9 @@ export function Property(options) {
             const set = descriptor
                 ? undefined
                 : (input) => {
+                    if (this[CONSTANTS.API_LOCKED]) {
+                        return;
+                    }
                     this[key] = toProperty(input, options === null || options === void 0 ? void 0 : options.type);
                 };
             // TODO: Check the configuration.

@@ -16,7 +16,6 @@ export declare const DECORATOR_STATE = "State";
 export declare const DECORATOR_METHOD = "Method";
 export declare const ELEMENT_HOST_NAME = "host";
 export declare const LIFECYCLE_ADOPTED = "adoptedCallback";
-export declare const LIFECYCLE_CONNECT = "connectCallback";
 export declare const LIFECYCLE_CONNECTED = "connectedCallback";
 export declare const LIFECYCLE_CONSTRUCTED = "constructedCallback";
 export declare const LIFECYCLE_DISCONNECTED = "disconnectedCallback";

@@ -51,7 +51,7 @@ export function Property(options?: PropertyOptions) {
 
           this[CONSTANTS.API_LOCKED] = true;
 
-          updateAttribute(this, name, value);
+          updateAttribute(this as HTMLPlusElement, name, value);
 
           this[CONSTANTS.API_LOCKED] = false;
 

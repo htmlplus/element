@@ -30,13 +30,9 @@ export function Element() {
                 call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_ADOPTED);
             }
             attributeChangedCallback(attribute, prev, next) {
-                const instance = this[CONSTANTS.API_INSTANCE];
-                if (instance[CONSTANTS.API_LOCKED])
-                    return;
-                const name = camelCase(attribute);
                 // ensures the integrity of readonly properties to prevent potential errors.
                 try {
-                    this[name] = next;
+                    this[camelCase(attribute)] = next;
                 }
                 catch (_a) { }
             }
@@ -44,14 +40,13 @@ export function Element() {
                 const instance = this[CONSTANTS.API_INSTANCE];
                 // TODO: experimental for global config
                 Object.assign(instance, getConfig('element', getTag(instance), 'property'));
+                instance[CONSTANTS.API_CONNECTED] = true;
                 const connect = () => {
-                    instance[CONSTANTS.API_CONNECTED] = true;
-                    call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
                     request(instance, undefined, undefined, () => {
                         call(instance, CONSTANTS.LIFECYCLE_LOADED);
                     });
                 };
-                const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECT);
+                const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
                 if (!(callback === null || callback === void 0 ? void 0 : callback.then))
                     return connect();
                 callback.then(() => connect());
