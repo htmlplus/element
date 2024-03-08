@@ -49,13 +49,11 @@ export function Property(options?: PropertyOptions) {
         descriptor.get = function () {
           const value = getter?.apply(this);
 
-          // TODO: target or this
-          target[CONSTANTS.API_LOCKED] = true;
+          this[CONSTANTS.API_LOCKED] = true;
 
           updateAttribute(this, name, value);
 
-          // TODO: target or this
-          target[CONSTANTS.API_LOCKED] = false;
+          this[CONSTANTS.API_LOCKED] = false;
 
           return value;
         };
@@ -86,15 +84,15 @@ export function Property(options?: PropertyOptions) {
         this[symbol] = next;
 
         request(this, name, previous, (skipped) => {
-          if (!options?.reflect || skipped) return;
+          if (skipped) return;
 
-          // TODO: target or this
-          target[CONSTANTS.API_LOCKED] = true;
+          if (!options?.reflect) return;
+
+          this[CONSTANTS.API_LOCKED] = true;
 
           updateAttribute(this, name, next);
 
-          // TODO: target or this
-          target[CONSTANTS.API_LOCKED] = false;
+          this[CONSTANTS.API_LOCKED] = false;
         });
       }
 
@@ -113,6 +111,9 @@ export function Property(options?: PropertyOptions) {
       const set = descriptor
         ? undefined
         : (input) => {
+            if (this[CONSTANTS.API_LOCKED]) {
+              return;
+            }
             this[key] = toProperty(input, options?.type);
           };
 

@@ -46,15 +46,9 @@ export function Element() {
       }
 
       attributeChangedCallback(attribute, prev, next) {
-        const instance = this[CONSTANTS.API_INSTANCE];
-
-        if (instance[CONSTANTS.API_LOCKED]) return;
-
-        const name = camelCase(attribute);
-
         // ensures the integrity of readonly properties to prevent potential errors.
         try {
-          this[name] = next;
+          this[camelCase(attribute)] = next;
         } catch {}
       }
 
