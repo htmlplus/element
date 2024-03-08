@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/htmlplus/element/compare/v2.5.0...v2.5.1) (2024-03-08)
+
+
+### Bug Fixes
+
+* Fix the HTMLPlusElement interface ([213b46e](https://github.com/htmlplus/element/commit/213b46eacaa9a908237321bdaaa2952b866ef223))
+
 # [2.5.0](https://github.com/htmlplus/element/compare/v2.4.1...v2.5.0) (2024-03-08)
 
 
