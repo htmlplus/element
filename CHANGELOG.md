@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/htmlplus/element/compare/v2.4.1...v2.5.0) (2024-03-08)
+
+
+### Features
+
+* Expose an interface that contains lifecycles. ([51ea9db](https://github.com/htmlplus/element/commit/51ea9db7b75bbef1f4d0f7e723d5c4795cddf20a))
+
 ## [2.4.1](https://github.com/htmlplus/element/compare/v2.4.0...v2.4.1) (2024-03-08)
 
 
