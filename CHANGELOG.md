@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/htmlplus/element/compare/v2.4.0...v2.4.1) (2024-03-08)
+
+
+### Bug Fixes
+
+* Fix the lock flag of the attribute updating phase ([c0c6da3](https://github.com/htmlplus/element/commit/c0c6da34c3e6f4be618f76920acd0806be2cb8a0))
+
 # [2.4.0](https://github.com/htmlplus/element/compare/v2.3.0...v2.4.0) (2024-03-06)
 
 
