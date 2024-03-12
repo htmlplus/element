@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/htmlplus/element/compare/v2.5.1...v2.6.0) (2024-03-12)
+
+
+### Features
+
+* Add sibling context api ([58dc6c3](https://github.com/htmlplus/element/commit/58dc6c3767581c418e6e4793e4a87d1f281cb7c0))
+
 ## [2.5.1](https://github.com/htmlplus/element/compare/v2.5.0...v2.5.1) (2024-03-08)
 
 
