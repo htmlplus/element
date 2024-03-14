@@ -13,71 +13,73 @@ export function Element() {
   return function (constructor: HTMLPlusElement) {
     if (isServer()) return;
 
-    const tag = getTag(constructor);
+    const tag = getTag(constructor)!;
 
-    if (customElements.get(tag!)) return;
+    if (customElements.get(tag)) return;
 
-    class Plus extends HTMLElement {
-      // TODO
-      static formAssociated = constructor['formAssociated'];
-
-      // TODO
-      static observedAttributes = constructor['observedAttributes'];
-
-      constructor() {
-        super();
-
-        this.attachShadow({
-          mode: 'open',
-          delegatesFocus: constructor['delegatesFocus'],
-          slotAssignment: constructor['slotAssignment']
-        });
-
-        const instance = (this[CONSTANTS.API_INSTANCE] = new (constructor as any)());
-
-        instance[CONSTANTS.API_HOST] = () => this;
-
-        // TODO
-        call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
-      }
-
-      adoptedCallback() {
-        call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_ADOPTED);
-      }
-
-      attributeChangedCallback(attribute, prev, next) {
-        // ensures the integrity of readonly properties to prevent potential errors.
-        try {
-          this[camelCase(attribute)] = next;
-        } catch {}
-      }
-
-      connectedCallback() {
-        const instance = this[CONSTANTS.API_INSTANCE];
-
-        // TODO: experimental for global config
-        Object.assign(instance, getConfig('element', getTag(instance)!, 'property'));
-
-        instance[CONSTANTS.API_CONNECTED] = true;
-
-        const connect = () => {
-          request(instance, undefined, undefined, () => {
-            call(instance, CONSTANTS.LIFECYCLE_LOADED);
-          });
-        };
-
-        const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
-
-        if (!callback?.then) return connect();
-
-        callback.then(() => connect());
-      }
-
-      disconnectedCallback() {
-        call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_DISCONNECTED);
-      }
-    }
-
-    customElements.define(tag!, Plus);
+    customElements.define(tag, proxy(constructor));
   };
 }
+
+const proxy = (constructor: HTMLPlusElement) => {
+  return class Plus extends HTMLElement {
+    // TODO
+    static formAssociated = constructor['formAssociated'];
+
+    // TODO
+    static observedAttributes = constructor['observedAttributes'];
+
+    constructor() {
+      super();
+
+      this.attachShadow({
+        mode: 'open',
+        delegatesFocus: constructor['delegatesFocus'],
+        slotAssignment: constructor['slotAssignment']
+      });
+
+      const instance = (this[CONSTANTS.API_INSTANCE] = new (constructor as any)());
+
+      instance[CONSTANTS.API_HOST] = () => this;
+
+      // TODO
+      call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
+    }
+
+    adoptedCallback() {
+      call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_ADOPTED);
+    }
+
+    attributeChangedCallback(attribute, prev, next) {
+      // ensures the integrity of readonly properties to prevent potential errors.
+      try {
+        this[camelCase(attribute)] = next;
+      } catch {}
+    }
+
+    connectedCallback() {
+      const instance = this[CONSTANTS.API_INSTANCE];
+
+      // TODO: experimental for global config
+      Object.assign(instance, getConfig('element', getTag(instance)!, 'property'));
+
+      instance[CONSTANTS.API_CONNECTED] = true;
+
+      const connect = () => {
+        request(instance, undefined, undefined, () => {
+          call(instance, CONSTANTS.LIFECYCLE_LOADED);
+        });
+      };
+
+      const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
+
+      if (!callback?.then) return connect();
+
+      callback.then(() => connect());
+    }
+
+    disconnectedCallback() {
+      call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_DISCONNECTED);
+    }
+  };
+};

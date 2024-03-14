@@ -13,7 +13,12 @@ export function Element() {
         const tag = getTag(constructor);
         if (customElements.get(tag))
             return;
-        class Plus extends HTMLElement {
+        customElements.define(tag, proxy(constructor));
+    };
+}
+const proxy = (constructor) => {
+    var _a;
+    return _a = class Plus extends HTMLElement {
             constructor() {
                 super();
                 this.attachShadow({
@@ -54,11 +59,10 @@ export function Element() {
             disconnectedCallback() {
                 call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_DISCONNECTED);
             }
-        }
+        },
         // TODO
-        Plus.formAssociated = constructor['formAssociated'];
+        _a.formAssociated = constructor['formAssociated'],
         // TODO
-        Plus.observedAttributes = constructor['observedAttributes'];
-        customElements.define(tag, Plus);
-    };
-}
+        _a.observedAttributes = constructor['observedAttributes'],
+        _a;
+};
