@@ -384,19 +384,21 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
     if (options!.typings) {
       visitor(ast, {
         Program(path) {
-          const attributes = context.classProperties!.map((property) => {
-            const key = property.key as t.Identifier;
+          const attributes = context
+            .classProperties!.filter((property) => !t.isClassMethod(property))
+            .map((property) => {
+              const key = property.key as t.Identifier;
 
-            const typeAnnotation = property.typeAnnotation as t.TSTypeAnnotation;
+              const typeAnnotation = property.typeAnnotation as t.TSTypeAnnotation;
 
-            return Object.assign(
-              t.tSPropertySignature(t.stringLiteral(kebabCase(key.name)), typeAnnotation),
-              {
-                optional: property.optional,
-                leadingComments: t.cloneNode(property, true).leadingComments
-              }
-            );
-          });
+              return Object.assign(
+                t.tSPropertySignature(t.stringLiteral(kebabCase(key.name)), typeAnnotation),
+                {
+                  optional: property.optional,
+                  leadingComments: t.cloneNode(property, true).leadingComments
+                }
+              );
+            });
 
           const events = context.classEvents!.map((event) => {
             const key = event.key as t.Identifier;
@@ -447,9 +449,15 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           const properties = context.classProperties!.map((property) => {
             const key = property.key as t.Identifier;
 
-            const typeAnnotation = property.typeAnnotation as t.TSTypeAnnotation;
+            // TODO
+            const readonly = property.readonly || !!property['returnType'];
 
-            return Object.assign(t.tSPropertySignature(t.identifier(key.name), typeAnnotation), {
+            // TODO
+            const typeAnnotation = (property.typeAnnotation ||
+              property['returnType']) as t.TSTypeAnnotation;
+
+            return Object.assign(t.tsPropertySignature(t.identifier(key.name), typeAnnotation), {
+              readonly,
               optional: property.optional,
               leadingComments: t.cloneNode(property, true).leadingComments
             });

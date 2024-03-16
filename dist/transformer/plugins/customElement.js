@@ -280,7 +280,9 @@ export const customElement = (options) => {
         if (options.typings) {
             visitor(ast, {
                 Program(path) {
-                    const attributes = context.classProperties.map((property) => {
+                    const attributes = context
+                        .classProperties.filter((property) => !t.isClassMethod(property))
+                        .map((property) => {
                         const key = property.key;
                         const typeAnnotation = property.typeAnnotation;
                         return Object.assign(t.tSPropertySignature(t.stringLiteral(kebabCase(key.name)), typeAnnotation), {
@@ -310,8 +312,13 @@ export const customElement = (options) => {
                     });
                     const properties = context.classProperties.map((property) => {
                         const key = property.key;
-                        const typeAnnotation = property.typeAnnotation;
-                        return Object.assign(t.tSPropertySignature(t.identifier(key.name), typeAnnotation), {
+                        // TODO
+                        const readonly = property.readonly || !!property['returnType'];
+                        // TODO
+                        const typeAnnotation = (property.typeAnnotation ||
+                            property['returnType']);
+                        return Object.assign(t.tsPropertySignature(t.identifier(key.name), typeAnnotation), {
+                            readonly,
                             optional: property.optional,
                             leadingComments: t.cloneNode(property, true).leadingComments
                         });
