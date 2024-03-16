@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/htmlplus/element/compare/v2.6.0...v2.7.0) (2024-03-16)
+
+
+### Features
+
+* Support of getter property ([d272a5f](https://github.com/htmlplus/element/commit/d272a5fae893e29982d030bf5ec67a3dd6f9b1a9))
+
 # [2.6.0](https://github.com/htmlplus/element/compare/v2.5.1...v2.6.0) (2024-03-12)
 
 
