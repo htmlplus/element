@@ -143,6 +143,11 @@ In the `index.html` file.
 </details>
 
 <details>
+  <summary>Consumer</summary>
+TODO
+</details>
+
+<details>
   <summary>Direction</summary>
   
 Indicates whether the [Direction](https://mdn.io/css-direction) of the element is `Right-To-Left` or `Left-To-Right`.
@@ -468,6 +473,11 @@ Parameters:
   The configuration for property decorator.
   <br />
   <br />
+  - `attribute` (Optional)
+    <br />
+    Specifies the name of the attribute related to the property.
+    <br />
+    <br />
   - `reflect` (Optional)
     <br />
     Whether property value is reflected back to the associated attribute. default is `false`.
@@ -475,7 +485,7 @@ Parameters:
     <br />
   - `type` (Optional)
     <br />
-    Do not set the value to this property. This value is automatically set during transforming.
+    Specifies the property `type` and supports [data types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures). If this value is not set, it will be set automatically during transforming.
     <br />
     <br />
 
@@ -501,6 +511,11 @@ In the `index.html` file.
 <say-greeting name="Jan"></say-greeting>
 ```
 
+</details>
+
+<details>
+  <summary>Provider</summary>
+TODO
 </details>
 
 <details>
@@ -759,6 +774,13 @@ TODO
 </details>
 
 <details>
+  <summary>dispatch</summary>
+
+TODO
+
+</details>
+
+<details>
   <summary>host</summary>
   
 Indicates the host of the element.
@@ -836,15 +858,6 @@ TODO
 </details>
 
 <details>
-  <summary>styles</summary>
-  
-Converts a JavaScript object containing CSS styles to a CSS string.
-
-TODO
-
-</details>
-
-<details>
   <summary>toUnit</summary>
 
 Converts a value to a unit.
@@ -877,13 +890,6 @@ Elements encompass several lifecycle methods, each triggered at different stages
 
 <details>
   <summary>adoptedCallback</summary>
-
-TODO
-
-</details>
-
-<details>
-  <summary>connectCallback</summary>
 
 TODO
 

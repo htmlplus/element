@@ -9,7 +9,13 @@ import {
   TransformerPluginContext,
   TransformerPluginGlobal
 } from '../transformer.types';
-import { extractFromComment, getInitializer, getTypeReference, print } from '../utils/index.js';
+import {
+  extractAttribute,
+  extractFromComment,
+  getInitializer,
+  getTypeReference,
+  print
+} from '../utils/index.js';
 
 export const DOCUMENT_OPTIONS: Partial<DocumentOptions> = {
   destination: path.join('dist', 'document.json')
@@ -152,7 +158,7 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
       });
 
       const properties = context.classProperties!.map((property) => {
-        const attribute = kebabCase(property.key['name']);
+        const attribute = extractAttribute(property) || kebabCase(property.key['name']);
 
         // TODO
         const initializer = getInitializer(property.value!);

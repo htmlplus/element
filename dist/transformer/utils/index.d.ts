@@ -1,4 +1,5 @@
 export * from './addDependency.js';
+export * from './extractAttribute.js';
 export * from './extractFromComment.js';
 export * from './getInitializer.js';
 export * from './getType.js';

@@ -4,7 +4,7 @@ import { camelCase, kebabCase, pascalCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
 import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
-import { addDependency, getType, print, visitor } from '../utils/index.js';
+import { addDependency, extractAttribute, getType, print, visitor } from '../utils/index.js';
 
 export const CUSTOM_ELEMENT_OPTIONS: Partial<CustomElementOptions> = {
   prefix: undefined,
@@ -275,6 +275,20 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
 
         if (expression.callee?.name != CONSTANTS.DECORATOR_PROPERTY) return;
 
+        if (!expression.arguments.length) {
+          expression.arguments.push(t.objectExpression([]));
+        }
+
+        const [argument] = expression.arguments;
+
+        const filtered = argument.properties.filter((property) => {
+          return property.key.name != CONSTANTS.DECORATOR_PROPERTY_TYPE;
+        });
+
+        if (argument.properties.length != filtered.length) return;
+
+        argument.properties = filtered;
+
         let type = 0;
 
         const extract = (input) => {
@@ -364,16 +378,6 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           getType(context.directoryPath!, ast, path.parentPath.node.typeAnnotation?.typeAnnotation)
         );
 
-        if (!expression.arguments.length) {
-          expression.arguments.push(t.objectExpression([]));
-        }
-
-        const [argument] = expression.arguments;
-
-        argument.properties = argument.properties.filter((property) => {
-          return property.key.name != CONSTANTS.DECORATOR_PROPERTY_TYPE;
-        });
-
         argument.properties.push(
           t.objectProperty(t.identifier(CONSTANTS.DECORATOR_PROPERTY_TYPE), t.numericLiteral(type))
         );
@@ -387,12 +391,12 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           const attributes = context
             .classProperties!.filter((property) => !t.isClassMethod(property))
             .map((property) => {
-              const key = property.key as t.Identifier;
+              const key = extractAttribute(property) || kebabCase(property.key['name']);
 
               const typeAnnotation = property.typeAnnotation as t.TSTypeAnnotation;
 
               return Object.assign(
-                t.tSPropertySignature(t.stringLiteral(kebabCase(key.name)), typeAnnotation),
+                t.tSPropertySignature(t.stringLiteral(kebabCase(key)), typeAnnotation),
                 {
                   optional: property.optional,
                   leadingComments: t.cloneNode(property, true).leadingComments

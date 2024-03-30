@@ -1,1 +1,1 @@
-export declare const toProperty: (input: any, type: number | undefined) => any;
+export declare const toProperty: (input: any, type?: any) => any;

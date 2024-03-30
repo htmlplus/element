@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 import * as CONSTANTS from '../../constants/index.js';
-import { extractFromComment, getInitializer, getTypeReference, print } from '../utils/index.js';
+import { extractAttribute, extractFromComment, getInitializer, getTypeReference, print } from '../utils/index.js';
 export const DOCUMENT_OPTIONS = {
     destination: path.join('dist', 'document.json')
 };
@@ -117,7 +117,7 @@ export const document = (options) => {
             });
             const properties = context.classProperties.map((property) => {
                 var _a, _b, _c;
-                const attribute = kebabCase(property.key['name']);
+                const attribute = extractAttribute(property) || kebabCase(property.key['name']);
                 // TODO
                 const initializer = getInitializer(property.value);
                 const name = property.key['name'];

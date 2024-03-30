@@ -1,7 +1,7 @@
 import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
-import { extractFromComment, getType, print } from '../utils/index.js';
+import { extractAttribute, extractFromComment, getType, print } from '../utils/index.js';
 export const VISUAL_STUDIO_CODE_OPTIONS = {
     destination: path.join('dist', 'visual-studio-code.json')
 };
@@ -31,7 +31,7 @@ export const visualStudioCode = (options) => {
             }, extractFromComment(context.class, ['description']));
             for (const property of context.classProperties || []) {
                 const attribute = Object.assign({
-                    name: kebabCase(property.key['name']),
+                    name: extractAttribute(property) || kebabCase(property.key['name']),
                     values: []
                 }, extractFromComment(property, ['description']));
                 const type = print(getType(context.directoryPath, context.fileAST, (_c = property.typeAnnotation) === null || _c === void 0 ? void 0 : _c['typeAnnotation']));

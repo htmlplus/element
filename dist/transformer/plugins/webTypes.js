@@ -1,7 +1,7 @@
 import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
 import path from 'path';
-import { extractFromComment, getInitializer, getType, print } from '../utils/index.js';
+import { extractAttribute, extractFromComment, getInitializer, getType, print } from '../utils/index.js';
 export const WEB_TYPES_OPTIONS = {
     destination: path.join('dist', 'web-types.json'),
     packageName: '',
@@ -35,7 +35,7 @@ export const webTypes = (options) => {
             const attributes = (_a = context.classProperties) === null || _a === void 0 ? void 0 : _a.map((property) => {
                 var _a;
                 return Object.assign({
-                    name: kebabCase(property.key['name']),
+                    name: extractAttribute(property) || kebabCase(property.key['name']),
                     value: {
                         // kind: TODO
                         type: print(getType(context.directoryPath, context.fileAST, (_a = property.typeAnnotation) === null || _a === void 0 ? void 0 : _a['typeAnnotation']))

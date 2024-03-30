@@ -1,8 +1,8 @@
 export declare const PACKAGE_NAME = "@htmlplus/element";
+export declare const MAPPER: unique symbol;
 export declare const API_CONNECTED: unique symbol;
 export declare const API_HOST: unique symbol;
 export declare const API_INSTANCE: unique symbol;
-export declare const API_LOCKED: unique symbol;
 export declare const API_REQUEST: unique symbol;
 export declare const API_RENDER_COMPLETED: unique symbol;
 export declare const API_STACKS: unique symbol;

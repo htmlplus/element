@@ -7,7 +7,13 @@ import {
   TransformerPluginContext,
   TransformerPluginGlobal
 } from '../transformer.types';
-import { extractFromComment, getInitializer, getType, print } from '../utils/index.js';
+import {
+  extractAttribute,
+  extractFromComment,
+  getInitializer,
+  getType,
+  print
+} from '../utils/index.js';
 
 export const WEB_TYPES_OPTIONS: Partial<WebTypesOptions> = {
   destination: path.join('dist', 'web-types.json'),
@@ -54,7 +60,7 @@ export const webTypes = (options?: WebTypesOptions): TransformerPlugin => {
       const attributes = context.classProperties?.map((property) =>
         Object.assign(
           {
-            name: kebabCase(property.key['name']),
+            name: extractAttribute(property) || kebabCase(property.key['name']),
             value: {
               // kind: TODO
               type: print(

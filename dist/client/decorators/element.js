@@ -34,12 +34,15 @@ const proxy = (constructor) => {
             adoptedCallback() {
                 call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_ADOPTED);
             }
-            attributeChangedCallback(attribute, prev, next) {
+            attributeChangedCallback(key, prev, next) {
+                var _a;
                 // ensures the integrity of readonly properties to prevent potential errors.
                 try {
-                    this[camelCase(attribute)] = next;
+                    const attribute = (_a = constructor[CONSTANTS.MAPPER]) === null || _a === void 0 ? void 0 : _a[key];
+                    const property = attribute || camelCase(key);
+                    this[property] = next;
                 }
-                catch (_a) { }
+                catch (_b) { }
             }
             connectedCallback() {
                 const instance = this[CONSTANTS.API_INSTANCE];

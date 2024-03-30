@@ -16,13 +16,19 @@ import {
  */
 export interface PropertyOptions {
   /**
+   * Specifies the name of the attribute related to the property.
+   */
+  attribute?: string;
+  /**
    * Whether property value is reflected back to the associated attribute. default is `false`.
    */
   reflect?: boolean;
   /**
-   * Do not set the value to this property. This value is automatically set during transforming.
+   * Specifies the property `type` and supports
+   * [data types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures).
+   * If this value is not set, it will be set automatically during transforming.
    */
-  type?: number;
+  type?: any;
 }
 
 /**
@@ -31,11 +37,26 @@ export interface PropertyOptions {
  */
 export function Property(options?: PropertyOptions) {
   return function (target: HTMLPlusElement, key: PropertyKey, descriptor?: PropertyDescriptor) {
+    // Creates a unique symbol for the lock flag.
+    const locked = Symbol();
+
     // Converts property name to string.
     const name = String(key);
 
+    // Calculates attribute.
+    const attribute = options?.attribute || kebabCase(name);
+
     // Registers an attribute that is intricately linked to the property.
-    (target.constructor['observedAttributes'] ||= []).push(kebabCase(name));
+    (target.constructor['observedAttributes'] ||= []).push(attribute);
+
+    // TODO
+    if (attribute) {
+      // TODO
+      target.constructor[CONSTANTS.MAPPER] ||= {};
+
+      // TODO
+      target.constructor[CONSTANTS.MAPPER][attribute] = name;
+    }
 
     // TODO: This feature is an experimental
     // When the property is a getter function.
@@ -49,11 +70,11 @@ export function Property(options?: PropertyOptions) {
         descriptor.get = function () {
           const value = getter?.apply(this);
 
-          this[CONSTANTS.API_LOCKED] = true;
+          this[locked] = true;
 
-          updateAttribute(this as HTMLPlusElement, name, value);
+          updateAttribute(this as HTMLPlusElement, attribute, value);
 
-          this[CONSTANTS.API_LOCKED] = false;
+          this[locked] = false;
 
           return value;
         };
@@ -61,7 +82,7 @@ export function Property(options?: PropertyOptions) {
         // TODO: Check the lifecycle
         appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function () {
           // Calls the getter function to update the related attribute.
-          this[name];
+          this[key];
         });
       }
     }
@@ -88,11 +109,11 @@ export function Property(options?: PropertyOptions) {
 
           if (!options?.reflect) return;
 
-          this[CONSTANTS.API_LOCKED] = true;
+          this[locked] = true;
 
-          updateAttribute(this, name, next);
+          updateAttribute(this, attribute, next);
 
-          this[CONSTANTS.API_LOCKED] = false;
+          this[locked] = false;
         });
       }
 
@@ -111,7 +132,7 @@ export function Property(options?: PropertyOptions) {
       const set = descriptor
         ? undefined
         : (input) => {
-            if (this[CONSTANTS.API_LOCKED]) {
+            if (this[locked]) {
               return;
             }
             this[key] = toProperty(input, options?.type);

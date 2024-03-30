@@ -4,13 +4,19 @@ import { HTMLPlusElement } from '../../types';
  */
 export interface PropertyOptions {
     /**
+     * Specifies the name of the attribute related to the property.
+     */
+    attribute?: string;
+    /**
      * Whether property value is reflected back to the associated attribute. default is `false`.
      */
     reflect?: boolean;
     /**
-     * Do not set the value to this property. This value is automatically set during transforming.
+     * Specifies the property `type` and supports
+     * [data types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures).
+     * If this value is not set, it will be set automatically during transforming.
      */
-    type?: number;
+    type?: any;
 }
 /**
  * Creates a reactive property, reflecting a corresponding attribute value,

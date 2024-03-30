@@ -50,10 +50,14 @@ const proxy = (constructor: HTMLPlusElement) => {
       call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_ADOPTED);
     }
 
-    attributeChangedCallback(attribute, prev, next) {
+    attributeChangedCallback(key, prev, next) {
       // ensures the integrity of readonly properties to prevent potential errors.
       try {
-        this[camelCase(attribute)] = next;
+        const attribute = constructor[CONSTANTS.MAPPER]?.[key];
+
+        const property = attribute || camelCase(key);
+
+        this[property] = next;
       } catch {}
     }
 

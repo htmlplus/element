@@ -7,7 +7,7 @@ import {
   TransformerPluginContext,
   TransformerPluginGlobal
 } from '../transformer.types';
-import { extractFromComment, getType, print } from '../utils/index.js';
+import { extractAttribute, extractFromComment, getType, print } from '../utils/index.js';
 
 export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {
   destination: path.join('dist', 'visual-studio-code.json')
@@ -53,7 +53,7 @@ export const visualStudioCode = (options?: VisualStudioCodeOptions): Transformer
       for (const property of context.classProperties || []) {
         const attribute = Object.assign(
           {
-            name: kebabCase(property.key['name']),
+            name: extractAttribute(property) || kebabCase(property.key['name']),
             values: [] as any
           },
           extractFromComment(property, ['description'])
