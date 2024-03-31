@@ -66,10 +66,14 @@ export function Consumer(namespace) {
         };
         // TODO
         appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+            // TODO
+            let connected;
             const options = {
                 bubbles: true
             };
             options.detail = (parent, state) => {
+                // TODO
+                connected = true;
                 update(this, state);
                 const cleanup = () => {
                     off(parent, `${prefix}:update`, onUpdate);
@@ -83,6 +87,8 @@ export function Consumer(namespace) {
                 cleanups(this).set(prefix, cleanup);
             };
             dispatch(this, `${prefix}:presence`, options);
+            // TODO: When the `Provider` element is activated after the `Consumer` element.
+            !connected && setTimeout(() => dispatch(this, `${prefix}:presence`, options));
         });
         appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
             var _a;

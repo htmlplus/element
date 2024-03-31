@@ -28,7 +28,6 @@ const proxy = (constructor) => {
                 });
                 const instance = (this[CONSTANTS.API_INSTANCE] = new constructor());
                 instance[CONSTANTS.API_HOST] = () => this;
-                // TODO
                 call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
             }
             adoptedCallback() {
@@ -36,7 +35,7 @@ const proxy = (constructor) => {
             }
             attributeChangedCallback(key, prev, next) {
                 var _a;
-                // ensures the integrity of readonly properties to prevent potential errors.
+                // Ensures the integrity of readonly properties to prevent potential errors.
                 try {
                     const attribute = (_a = constructor[CONSTANTS.MAPPER]) === null || _a === void 0 ? void 0 : _a[key];
                     const property = attribute || camelCase(key);
@@ -63,9 +62,7 @@ const proxy = (constructor) => {
                 call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_DISCONNECTED);
             }
         },
-        // TODO
         _a.formAssociated = constructor['formAssociated'],
-        // TODO
         _a.observedAttributes = constructor['observedAttributes'],
         _a;
 };

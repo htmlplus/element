@@ -23,10 +23,8 @@ export function Element() {
 
 const proxy = (constructor: HTMLPlusElement) => {
   return class Plus extends HTMLElement {
-    // TODO
     static formAssociated = constructor['formAssociated'];
 
-    // TODO
     static observedAttributes = constructor['observedAttributes'];
 
     constructor() {
@@ -42,7 +40,6 @@ const proxy = (constructor: HTMLPlusElement) => {
 
       instance[CONSTANTS.API_HOST] = () => this;
 
-      // TODO
       call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
     }
 
@@ -51,7 +48,7 @@ const proxy = (constructor: HTMLPlusElement) => {
     }
 
     attributeChangedCallback(key, prev, next) {
-      // ensures the integrity of readonly properties to prevent potential errors.
+      // Ensures the integrity of readonly properties to prevent potential errors.
       try {
         const attribute = constructor[CONSTANTS.MAPPER]?.[key];
 

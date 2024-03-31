@@ -97,11 +97,17 @@ export function Consumer(namespace: string) {
 
     // TODO
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+      // TODO
+      let connected;
+
       const options: CustomEventInit = {
         bubbles: true
       };
 
       options.detail = (parent: HTMLPlusElement, state: any) => {
+        // TODO
+        connected = true;
+
         update(this, state);
 
         const cleanup = () => {
@@ -122,6 +128,9 @@ export function Consumer(namespace: string) {
       };
 
       dispatch(this, `${prefix}:presence`, options);
+
+      // TODO: When the `Provider` element is activated after the `Consumer` element.
+      !connected && setTimeout(() => dispatch(this, `${prefix}:presence`, options));
     });
 
     appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
