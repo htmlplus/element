@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/htmlplus/element/compare/v2.7.0...v2.8.0) (2024-03-30)
+
+
+### Features
+
+* Add `attribute` option for the `Property` decorator. ([489fef6](https://github.com/htmlplus/element/commit/489fef6ed7fd3f0a78ebcdc0c5b22b21a3437658))
+
 # [2.7.0](https://github.com/htmlplus/element/compare/v2.6.0...v2.7.0) (2024-03-16)
 
 
