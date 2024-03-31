@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/htmlplus/element/compare/v2.8.0...v2.8.1) (2024-03-31)
+
+
+### Bug Fixes
+
+* Resolve `Consumer` decorator early loading problem. ([b5f5a3e](https://github.com/htmlplus/element/commit/b5f5a3ec6961ed99da4eeea19cda054eaa730b58))
+
 # [2.8.0](https://github.com/htmlplus/element/compare/v2.7.0...v2.8.0) (2024-03-30)
 
 
