@@ -52,6 +52,11 @@ export function Event<T = any>(options: EventOptions = {}) {
           let type = String(key);
 
           switch (framework) {
+            // TODO: Experimental
+            case 'blazor':
+              options.bubbles = true;
+              type = pascalCase(type);
+              break;
             case 'qwik':
             case 'solid':
               type = pascalCase(type).toLowerCase();
