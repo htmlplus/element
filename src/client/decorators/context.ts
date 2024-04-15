@@ -98,6 +98,9 @@ export function Consumer(namespace: string) {
     // TODO
     appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
       // TODO
+      if (SUB && this[SUB]) return;
+
+      // TODO
       let connected;
 
       const options: CustomEventInit = {
