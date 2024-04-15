@@ -1,3 +1,15 @@
+# [2.9.0](https://github.com/htmlplus/element/compare/v2.8.1...v2.9.0) (2024-04-15)
+
+
+### Bug Fixes
+
+* Solve the problem of overriding state in the API context. ([d087c49](https://github.com/htmlplus/element/commit/d087c49306f3fc7a1d07984c18864ba112a1e551))
+
+
+### Features
+
+* Experimental support of Blazor events. ([16ff1c7](https://github.com/htmlplus/element/commit/16ff1c71d93f0f3bea0c6dd2a9f0ea4c1e5e1c0a))
+
 ## [2.8.1](https://github.com/htmlplus/element/compare/v2.8.0...v2.8.1) (2024-03-31)
 
 
