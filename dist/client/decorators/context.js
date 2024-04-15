@@ -67,6 +67,9 @@ export function Consumer(namespace) {
         // TODO
         appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
             // TODO
+            if (SUB && this[SUB])
+                return;
+            // TODO
             let connected;
             const options = {
                 bubbles: true
