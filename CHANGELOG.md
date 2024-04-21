@@ -1,3 +1,10 @@
+## [2.9.1](https://github.com/htmlplus/element/compare/v2.9.0...v2.9.1) (2024-04-21)
+
+
+### Bug Fixes
+
+* Fix the event resolver in global config. ([162b928](https://github.com/htmlplus/element/commit/162b92892cc887f131266cabc984f00bb691f400))
+
 # [2.9.0](https://github.com/htmlplus/element/compare/v2.8.1...v2.9.0) (2024-04-15)
 
 
