@@ -55,15 +55,28 @@ export function Event<T = any>(options: EventOptions = {}) {
             // TODO: Experimental
             case 'blazor':
               options.bubbles = true;
+
               type = pascalCase(type);
+
+              window['Blazor'].registerCustomEventType(type, {
+                createEventArgs: (event) => ({
+                  detail: event.detail
+                })
+              });
               break;
+
             case 'qwik':
-            case 'solid':
               type = pascalCase(type).toLowerCase();
               break;
+
             case 'preact':
               type = pascalCase(type);
               break;
+
+            case 'solid':
+              type = pascalCase(type).toLowerCase();
+              break;
+
             default:
               type = kebabCase(type);
               break;
@@ -72,6 +85,8 @@ export function Event<T = any>(options: EventOptions = {}) {
           let event: CustomEvent<T>;
 
           event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
+
+          event && element.dispatchEvent(event);
 
           event ||= dispatch<T>(this, type, { ...options, detail });
 

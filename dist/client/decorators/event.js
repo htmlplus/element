@@ -21,13 +21,20 @@ export function Event(options = {}) {
                         case 'blazor':
                             options.bubbles = true;
                             type = pascalCase(type);
+                            window['Blazor'].registerCustomEventType(type, {
+                                createEventArgs: (event) => ({
+                                    detail: event.detail
+                                })
+                            });
                             break;
                         case 'qwik':
-                        case 'solid':
                             type = pascalCase(type).toLowerCase();
                             break;
                         case 'preact':
                             type = pascalCase(type);
+                            break;
+                        case 'solid':
+                            type = pascalCase(type).toLowerCase();
                             break;
                         default:
                             type = kebabCase(type);
@@ -35,6 +42,7 @@ export function Event(options = {}) {
                     }
                     let event;
                     event || (event = (_b = getConfig('event', 'resolver')) === null || _b === void 0 ? void 0 : _b({ detail, element, framework, options, type }));
+                    event && element.dispatchEvent(event);
                     event || (event = dispatch(this, type, Object.assign(Object.assign({}, options), { detail })));
                     return event;
                 };
