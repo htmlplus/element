@@ -21,11 +21,14 @@ export function Event(options = {}) {
                         case 'blazor':
                             options.bubbles = true;
                             type = pascalCase(type);
-                            window['Blazor'].registerCustomEventType(type, {
-                                createEventArgs: (event) => ({
-                                    detail: event.detail
-                                })
-                            });
+                            try {
+                                window['Blazor'].registerCustomEventType(type, {
+                                    createEventArgs: (event) => ({
+                                        detail: event.detail
+                                    })
+                                });
+                            }
+                            catch (_c) { }
                             break;
                         case 'qwik':
                             type = pascalCase(type).toLowerCase();

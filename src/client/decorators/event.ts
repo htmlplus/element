@@ -58,11 +58,13 @@ export function Event<T = any>(options: EventOptions = {}) {
 
               type = pascalCase(type);
 
-              window['Blazor'].registerCustomEventType(type, {
-                createEventArgs: (event) => ({
-                  detail: event.detail
-                })
-              });
+              try {
+                window['Blazor'].registerCustomEventType(type, {
+                  createEventArgs: (event) => ({
+                    detail: event.detail
+                  })
+                });
+              } catch {}
               break;
 
             case 'qwik':
