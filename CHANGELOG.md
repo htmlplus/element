@@ -1,3 +1,10 @@
+## [2.9.2](https://github.com/htmlplus/element/compare/v2.9.1...v2.9.2) (2024-04-24)
+
+
+### Bug Fixes
+
+* Fix the register custom event in Blazor. ([8c56814](https://github.com/htmlplus/element/commit/8c5681409f61e96e917a8a734d426661724d6ce5))
+
 ## [2.9.1](https://github.com/htmlplus/element/compare/v2.9.0...v2.9.1) (2024-04-21)
 
 
