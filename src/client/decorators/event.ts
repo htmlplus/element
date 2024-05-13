@@ -72,8 +72,8 @@ export function Event<T = any>(options: EventOptions = {}) {
               type = pascalCase(type).toLowerCase();
               break;
 
-            case 'preact':
             case 'react':
+            case 'preact':
               type = pascalCase(type);
               break;
 

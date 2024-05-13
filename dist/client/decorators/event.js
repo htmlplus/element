@@ -34,8 +34,8 @@ export function Event(options = {}) {
                         case 'solid':
                             type = pascalCase(type).toLowerCase();
                             break;
-                        case 'preact':
                         case 'react':
+                        case 'preact':
                             type = pascalCase(type);
                             break;
                         default:
