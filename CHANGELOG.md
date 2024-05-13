@@ -1,3 +1,10 @@
+## [2.9.3](https://github.com/htmlplus/element/compare/v2.9.2...v2.9.3) (2024-05-13)
+
+
+### Bug Fixes
+
+* Convert event types to PascalCase in React mode. ([04bfcba](https://github.com/htmlplus/element/commit/04bfcba6cff11214bd0f7af288a4d77600d6629f))
+
 ## [2.9.2](https://github.com/htmlplus/element/compare/v2.9.1...v2.9.2) (2024-04-24)
 
 
