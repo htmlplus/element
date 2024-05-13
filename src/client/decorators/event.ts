@@ -68,15 +68,13 @@ export function Event<T = any>(options: EventOptions = {}) {
               break;
 
             case 'qwik':
+            case 'solid':
               type = pascalCase(type).toLowerCase();
               break;
 
             case 'preact':
+            case 'react':
               type = pascalCase(type);
-              break;
-
-            case 'solid':
-              type = pascalCase(type).toLowerCase();
               break;
 
             default:

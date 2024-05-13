@@ -31,13 +31,12 @@ export function Event(options = {}) {
                             catch (_c) { }
                             break;
                         case 'qwik':
+                        case 'solid':
                             type = pascalCase(type).toLowerCase();
                             break;
                         case 'preact':
+                        case 'react':
                             type = pascalCase(type);
-                            break;
-                        case 'solid':
-                            type = pascalCase(type).toLowerCase();
                             break;
                         default:
                             type = kebabCase(type);
