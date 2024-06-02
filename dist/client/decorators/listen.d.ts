@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 /**
  * An object that configures
  * [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options)

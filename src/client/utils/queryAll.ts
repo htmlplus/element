@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 import { shadowRoot } from './shadowRoot.js';
 
 /**

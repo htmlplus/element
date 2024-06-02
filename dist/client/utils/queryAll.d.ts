@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 /**
  * Selects all elements in the shadow dom that match a specified CSS selector.
  */

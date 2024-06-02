@@ -21,13 +21,12 @@ export function addDependency(path, source, local, imported, comment) {
         return {
             node: declaration
         };
-    let specifier = declaration === null || declaration === void 0 ? void 0 : declaration.specifiers.find((specifier) => {
-        var _a;
+    let specifier = declaration?.specifiers.find((specifier) => {
         if (isDefault) {
             return specifier.type == 'ImportDefaultSpecifier';
         }
         else if (isImport) {
-            return ((_a = specifier.imported) === null || _a === void 0 ? void 0 : _a.name) == imported;
+            return specifier.imported?.name == imported;
         }
     });
     if (specifier)

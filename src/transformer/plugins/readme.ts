@@ -5,7 +5,7 @@ import {
   TransformerPlugin,
   TransformerPluginContext,
   TransformerPluginGlobal
-} from '../transformer.types';
+} from '../transformer.types.js';
 
 export const README_OPTIONS: Partial<ReadmeOptions> = {
   source(context) {

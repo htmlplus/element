@@ -1,4 +1,4 @@
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 export declare const WEB_TYPES_OPTIONS: Partial<WebTypesOptions>;
 export interface WebTypesOptions {
     destination?: string;

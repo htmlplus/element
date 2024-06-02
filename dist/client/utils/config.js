@@ -23,6 +23,6 @@ export const getConfig = (...keys) => {
 export const setConfig = (config, options) => {
     if (isServer())
         return;
-    const previous = (options === null || options === void 0 ? void 0 : options.override) ? {} : window[`$htmlplus$`];
+    const previous = options?.override ? {} : window[`$htmlplus$`];
     window[`$htmlplus$`] = merge({}, DEFAULTS, previous, config);
 };

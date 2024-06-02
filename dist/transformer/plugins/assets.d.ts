@@ -1,4 +1,4 @@
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 export declare const ASSETS_OPTIONS: Partial<AssetsOptions>;
 export interface AssetsOptions {
     destination?: (context: TransformerPluginContext) => string;

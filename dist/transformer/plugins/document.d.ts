@@ -1,4 +1,4 @@
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 export declare const DOCUMENT_OPTIONS: Partial<DocumentOptions>;
 export interface DocumentOptions {
     destination: string;

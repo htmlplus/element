@@ -26,7 +26,6 @@ A powerful tool for building a scalable, reusable, fast, and lightweight `UI Com
 - **Style File Recognition**: Identifies and links the relevant style file to the element.
 - **Tag Name Recognition**: Generates tag name from the class name.
 - **Clean Syntax**: Uses a minimal amount of code to achieve the same functionality, making the code easier to read, understand, and maintain.
-- **Attribute Over Class**: Uses HTML attributes instead of HTML class names to keep the size of the start tag short, making it more readable and preventing the DOM from getting dirty.
 
 ## Quick Start
 

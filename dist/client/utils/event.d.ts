@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 /**
  * TODO
  */

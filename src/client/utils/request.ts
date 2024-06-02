@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 import { call } from './call.js';
 import { getStyles } from './getStyles.js';
 import { shadowRoot } from './shadowRoot.js';

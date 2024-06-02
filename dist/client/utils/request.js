@@ -12,9 +12,8 @@ import { html, render } from './uhtml.js';
  * @param callback Invoked when the rendering phase is completed.
  */
 export const request = (target, name, previous, callback) => {
-    var _a, _b;
     // Creates/Gets a stacks.
-    const stacks = (target[_a = CONSTANTS.API_STACKS] || (target[_a] = new Map()));
+    const stacks = (target[CONSTANTS.API_STACKS] ||= new Map());
     // Creates/Updates a stack.
     const stack = stacks.get(name) || { callbacks: [], previous };
     // Adds the callback to the stack, if exists.
@@ -60,7 +59,7 @@ export const request = (target, name, previous, callback) => {
         target[CONSTANTS.API_RENDER_COMPLETED] = true;
     };
     // Creates/Gets a micro task function.
-    target[_b = CONSTANTS.API_REQUEST] || (target[_b] = task({ handler }));
+    target[CONSTANTS.API_REQUEST] ||= task({ handler });
     // Calls the micro task.
     call(target, CONSTANTS.API_REQUEST);
 };

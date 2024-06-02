@@ -11,13 +11,11 @@ export const document = (options) => {
     const name = 'document';
     options = Object.assign({}, DOCUMENT_OPTIONS, options);
     const finish = (global) => {
-        var _a, _b;
         const json = {
             elements: []
         };
         for (const context of global.contexts) {
             const events = context.classEvents.map((event) => {
-                var _a, _b;
                 const cancelable = (() => {
                     if (!event.decorators)
                         return false;
@@ -36,11 +34,11 @@ export const document = (options) => {
                             }
                         }
                     }
-                    catch (_a) { }
+                    catch { }
                     return false;
                 })();
-                const detail = print((_a = event.typeAnnotation) === null || _a === void 0 ? void 0 : _a['typeAnnotation']);
-                const detailReference = getTypeReference(context.fileAST, (_b = event.typeAnnotation) === null || _b === void 0 ? void 0 : _b['typeAnnotation'].typeParameters.params[0]);
+                const detail = print(event.typeAnnotation?.['typeAnnotation']);
+                const detailReference = getTypeReference(context.fileAST, event.typeAnnotation?.['typeAnnotation'].typeParameters.params[0]);
                 const name = event.key['name'];
                 return Object.assign({
                     cancelable,
@@ -55,36 +53,31 @@ export const document = (options) => {
                 .sort((a, b) => (a > b ? 1 : -1))
                 .pop();
             const methods = context.classMethods.map((method) => {
-                var _a, _b;
                 const async = method.async;
                 const name = method.key['name'];
                 const comments = extractFromComment(method);
                 // TODO
-                const parameters = method.params.map((param) => {
-                    var _a, _b, _c, _d;
-                    return ({
-                        description: (_b = (_a = comments.params) === null || _a === void 0 ? void 0 : _a.find((item) => item.name == param['name'])) === null || _b === void 0 ? void 0 : _b.description,
-                        required: !param['optional'],
-                        name: param['name'],
-                        type: print((_c = param === null || param === void 0 ? void 0 : param['typeAnnotation']) === null || _c === void 0 ? void 0 : _c.typeAnnotation) || undefined,
-                        typeReference: getTypeReference(context.fileAST, (_d = param === null || param === void 0 ? void 0 : param['typeAnnotation']) === null || _d === void 0 ? void 0 : _d.typeAnnotation)
-                    });
-                });
+                const parameters = method.params.map((param) => ({
+                    description: comments.params?.find((item) => item.name == param['name'])?.description,
+                    required: !param['optional'],
+                    name: param['name'],
+                    type: print(param?.['typeAnnotation']?.typeAnnotation) || undefined,
+                    typeReference: getTypeReference(context.fileAST, param?.['typeAnnotation']?.typeAnnotation)
+                }));
                 // TODO
                 delete comments.params;
-                const returns = print((_a = method.returnType) === null || _a === void 0 ? void 0 : _a['typeAnnotation']) || 'void';
-                const returnsReference = getTypeReference(context.fileAST, (_b = method.returnType) === null || _b === void 0 ? void 0 : _b['typeAnnotation']);
+                const returns = print(method.returnType?.['typeAnnotation']) || 'void';
+                const returnsReference = getTypeReference(context.fileAST, method.returnType?.['typeAnnotation']);
                 const signature = [
                     method.key['name'],
                     '(',
                     parameters
                         .map((parameter) => {
-                        var _a;
                         let string = '';
                         string += parameter.name;
                         string += parameter.required ? '' : '?';
                         string += parameter.type ? ': ' : '';
-                        string += (_a = parameter.type) !== null && _a !== void 0 ? _a : '';
+                        string += parameter.type ?? '';
                         return string;
                     })
                         .join(', '),
@@ -116,7 +109,6 @@ export const document = (options) => {
                 });
             });
             const properties = context.classProperties.map((property) => {
-                var _a, _b, _c;
                 const attribute = extractAttribute(property) || kebabCase(property.key['name']);
                 // TODO
                 const initializer = getInitializer(property.value);
@@ -141,15 +133,15 @@ export const document = (options) => {
                             }
                         }
                     }
-                    catch (_a) { }
+                    catch { }
                     return false;
                 })();
                 const required = 'optional' in property && !property.optional;
                 // TODO
                 const type = property['returnType']
-                    ? print((_a = property['returnType']) === null || _a === void 0 ? void 0 : _a['typeAnnotation'])
-                    : print((_b = property.typeAnnotation) === null || _b === void 0 ? void 0 : _b['typeAnnotation']);
-                const typeReference = getTypeReference(context.fileAST, (_c = property.typeAnnotation) === null || _c === void 0 ? void 0 : _c['typeAnnotation']);
+                    ? print(property['returnType']?.['typeAnnotation'])
+                    : print(property.typeAnnotation?.['typeAnnotation']);
+                const typeReference = getTypeReference(context.fileAST, property.typeAnnotation?.['typeAnnotation']);
                 return Object.assign({
                     attribute,
                     initializer,
@@ -191,7 +183,7 @@ export const document = (options) => {
                 styles,
                 title
             }, extractFromComment(context.class));
-            const transformed = ((_b = (_a = options).transformer) === null || _b === void 0 ? void 0 : _b.call(_a, context, element)) || element;
+            const transformed = options.transformer?.(context, element) || element;
             json.elements.push(transformed);
         }
         json.elements = json.elements.sort((a, b) => (a.title > b.title ? 1 : -1));

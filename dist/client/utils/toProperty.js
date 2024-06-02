@@ -35,7 +35,7 @@ export const toProperty = (input, type) => {
                 return value;
             }
         }
-        catch (_a) { }
+        catch { }
     }
     if (CONSTANTS.TYPE_OBJECT & type || type === Object) {
         try {
@@ -44,7 +44,7 @@ export const toProperty = (input, type) => {
                 return value;
             }
         }
-        catch (_b) { }
+        catch { }
     }
     if (CONSTANTS.TYPE_UNDEFINED & type || type === undefined) {
         if (string === 'undefined') {

@@ -8,7 +8,7 @@ import {
   TransformerPlugin,
   TransformerPluginContext,
   TransformerPluginGlobal
-} from '../transformer.types';
+} from '../transformer.types.js';
 import {
   extractAttribute,
   extractFromComment,

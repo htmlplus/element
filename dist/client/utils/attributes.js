@@ -29,5 +29,5 @@ export const attributes = (target, attributes) => {
         else
             updateAttribute(element, key, next[key]);
     }
-    element[symbol] = Object.assign({}, next);
+    element[symbol] = { ...next };
 };

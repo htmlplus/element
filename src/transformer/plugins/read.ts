@@ -1,14 +1,26 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 
 export const READ_OPTIONS: Partial<ReadOptions> = {
   encoding: 'utf8'
 };
 
 export interface ReadOptions {
-  encoding: BufferEncoding;
+  encoding:
+    | 'utf8'
+    | 'ascii'
+    | 'utf-8'
+    | 'utf16le'
+    | 'utf-16le'
+    | 'ucs2'
+    | 'ucs-2'
+    | 'base64'
+    | 'base64url'
+    | 'latin1'
+    | 'binary'
+    | 'hex';
   flag?: string | undefined;
 }
 

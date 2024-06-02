@@ -1,4 +1,4 @@
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 export declare const STYLE_OPTIONS: Partial<StyleOptions>;
 export interface StyleOptions {
     source?: (context: TransformerPluginContext) => string | string[];

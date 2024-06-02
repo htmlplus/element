@@ -13,7 +13,7 @@ import { Bind } from './bind.js';
 export function Listen(type, options) {
     return function (target, key, descriptor) {
         const element = (instance) => {
-            switch (options === null || options === void 0 ? void 0 : options.target) {
+            switch (options?.target) {
                 case 'body':
                     return window.document.body;
                 case 'document':

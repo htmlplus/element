@@ -8,7 +8,7 @@ export function Bind() {
         return {
             configurable: true,
             get() {
-                const value = descriptor === null || descriptor === void 0 ? void 0 : descriptor.value.bind(this);
+                const value = descriptor?.value.bind(this);
                 defineProperty(this, key, {
                     value,
                     configurable: true,

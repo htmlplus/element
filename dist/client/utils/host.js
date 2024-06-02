@@ -6,7 +6,7 @@ export const host = (target) => {
     try {
         return target[CONSTANTS.API_HOST]();
     }
-    catch (_a) {
+    catch {
         return target;
     }
 };

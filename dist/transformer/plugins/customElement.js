@@ -49,8 +49,7 @@ export const customElement = (options) => {
                 if (name.name != 'className')
                     return;
                 const hasClass = path.parentPath.node.attributes.some((attribute) => {
-                    var _a;
-                    return ((_a = attribute.name) === null || _a === void 0 ? void 0 : _a.name) == 'class';
+                    return attribute.name?.name == 'class';
                 });
                 if (hasClass)
                     return path.remove();
@@ -61,6 +60,10 @@ export const customElement = (options) => {
         visitor(ast, {
             JSXAttribute(path) {
                 const { name, value } = path.node;
+                if (name.name == 'value') {
+                    name.name = '.' + name.name;
+                    return;
+                }
                 const key = ['tabIndex', 'viewBox'];
                 if (!key.includes(name.name))
                     return;
@@ -79,13 +82,12 @@ export const customElement = (options) => {
                     return t.callExpression(t.identifier(local), [
                         node,
                         t.arrayExpression(attributes.map((attribute) => {
-                            var _a;
                             switch (attribute.type) {
                                 case 'JSXSpreadAttribute':
                                     return attribute.argument;
                                 default:
                                     return t.objectExpression([
-                                        t.objectProperty(t.stringLiteral(attribute.name.name), ((_a = attribute.value) === null || _a === void 0 ? void 0 : _a.type) == 'JSXExpressionContainer'
+                                        t.objectProperty(t.stringLiteral(attribute.name.name), attribute.value?.type == 'JSXExpressionContainer'
                                             ? attribute.value.expression
                                             : attribute.value || t.booleanLiteral(true))
                                     ]);
@@ -181,9 +183,8 @@ export const customElement = (options) => {
         // add type to properties
         visitor(ast, {
             Decorator(path) {
-                var _a, _b;
                 const { expression } = path.node;
-                if (((_a = expression.callee) === null || _a === void 0 ? void 0 : _a.name) != CONSTANTS.DECORATOR_PROPERTY)
+                if (expression.callee?.name != CONSTANTS.DECORATOR_PROPERTY)
                     return;
                 if (!expression.arguments.length) {
                     expression.arguments.push(t.objectExpression([]));
@@ -197,8 +198,7 @@ export const customElement = (options) => {
                 argument.properties = filtered;
                 let type = 0;
                 const extract = (input) => {
-                    var _a;
-                    switch (input === null || input === void 0 ? void 0 : input.type) {
+                    switch (input?.type) {
                         case 'BooleanLiteral':
                             type |= CONSTANTS.TYPE_BOOLEAN;
                             break;
@@ -264,8 +264,8 @@ export const customElement = (options) => {
                             break;
                     }
                     // TODO
-                    if ((input === null || input === void 0 ? void 0 : input.type) == 'TSParenthesizedType' &&
-                        ((_a = input === null || input === void 0 ? void 0 : input.typeAnnotation) === null || _a === void 0 ? void 0 : _a.type) == 'TSIntersectionType') {
+                    if (input?.type == 'TSParenthesizedType' &&
+                        input?.typeAnnotation?.type == 'TSIntersectionType') {
                         let types = input.types || input.typeAnnotation.types;
                         if (types.length != 2)
                             return;
@@ -275,7 +275,7 @@ export const customElement = (options) => {
                         extract(types[0]);
                     }
                 };
-                extract(getType(context.directoryPath, ast, (_b = path.parentPath.node.typeAnnotation) === null || _b === void 0 ? void 0 : _b.typeAnnotation));
+                extract(getType(context.directoryPath, ast, path.parentPath.node.typeAnnotation?.typeAnnotation));
                 argument.properties.push(t.objectProperty(t.identifier(CONSTANTS.DECORATOR_PROPERTY_TYPE), t.numericLiteral(type)));
             }
         });
@@ -294,12 +294,11 @@ export const customElement = (options) => {
                         });
                     });
                     const events = context.classEvents.map((event) => {
-                        var _a;
                         const key = event.key;
                         const typeAnnotation = event.typeAnnotation;
                         return Object.assign(t.tSPropertySignature(t.identifier(camelCase('on-' + key.name)), t.tsTypeAnnotation(t.tsFunctionType(undefined, [
                             Object.assign({}, t.identifier('event'), {
-                                typeAnnotation: t.tsTypeAnnotation(t.tsTypeReference(t.identifier('CustomEvent'), (_a = typeAnnotation === null || typeAnnotation === void 0 ? void 0 : typeAnnotation['typeAnnotation']) === null || _a === void 0 ? void 0 : _a.typeParameters))
+                                typeAnnotation: t.tsTypeAnnotation(t.tsTypeReference(t.identifier('CustomEvent'), typeAnnotation?.['typeAnnotation']?.typeParameters))
                             })
                         ], t.tsTypeAnnotation(t.tsVoidKeyword())))), {
                             optional: true,

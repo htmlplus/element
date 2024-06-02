@@ -1,7 +1,7 @@
 import { camelCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 import { call, getConfig, getTag, isServer, request } from '../utils/index.js';
 
 /**

@@ -6,7 +6,7 @@ export function Provider(namespace) {
         const [MAIN, SUB] = namespace.split('.');
         const prefix = `htmlplus:${MAIN}`;
         const cleanups = (instance) => {
-            return (instance[symbol] || (instance[symbol] = new Map()));
+            return (instance[symbol] ||= new Map());
         };
         const update = (instance) => {
             const options = {};
@@ -31,11 +31,10 @@ export function Provider(namespace) {
             cleanups(this).set(prefix, cleanup);
         });
         appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
-            var _a;
             update(this);
             if (cleanups(this).size && !states.has(SUB))
                 return;
-            (_a = cleanups(this).get(`${prefix}:${states.get(SUB)}`)) === null || _a === void 0 ? void 0 : _a();
+            cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
             const type = `${prefix}:${this[SUB]}`;
             const cleanup = () => {
                 off(window, `${type}:presence`, onPresence);
@@ -59,7 +58,7 @@ export function Consumer(namespace) {
         const [MAIN, SUB] = namespace.split('.');
         const prefix = `htmlplus:${MAIN}`;
         const cleanups = (instance) => {
-            return (instance[symbol] || (instance[symbol] = new Map()));
+            return (instance[symbol] ||= new Map());
         };
         const update = (instance, state) => {
             instance[key] = state;
@@ -94,10 +93,9 @@ export function Consumer(namespace) {
             !connected && setTimeout(() => dispatch(this, `${prefix}:presence`, options));
         });
         appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
-            var _a;
             if (cleanups(this).size && !states.has(SUB))
                 return;
-            (_a = cleanups(this).get(`${prefix}:${states.get(SUB)}`)) === null || _a === void 0 ? void 0 : _a();
+            cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
             const type = `${prefix}:${this[SUB]}`;
             const cleanup = () => {
                 off(window, `${type}:disconnect`, onDisconnect);

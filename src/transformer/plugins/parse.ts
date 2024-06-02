@@ -1,6 +1,6 @@
 import { parse as parser, ParserOptions } from '@babel/parser';
 
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 
 export const PARSE_OPTIONS: Partial<ParseOptions> = {
   sourceType: 'module',

@@ -5,7 +5,7 @@ import {
   TransformerPlugin,
   TransformerPluginContext,
   TransformerPluginGlobal
-} from './transformer.types';
+} from './transformer.types.js';
 
 const logger = ora({
   color: 'yellow'

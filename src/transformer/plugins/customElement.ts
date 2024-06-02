@@ -3,7 +3,7 @@ import t from '@babel/types';
 import { camelCase, kebabCase, pascalCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 import { addDependency, extractAttribute, getType, print, visitor } from '../utils/index.js';
 
 export const CUSTOM_ELEMENT_OPTIONS: Partial<CustomElementOptions> = {
@@ -102,6 +102,11 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
     visitor(ast, {
       JSXAttribute(path) {
         const { name, value } = path.node;
+
+        if (name.name == 'value') {
+          name.name = '.' + name.name;
+          return;
+        }
 
         const key = ['tabIndex', 'viewBox'];
 

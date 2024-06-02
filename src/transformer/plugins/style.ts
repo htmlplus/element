@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 import { addDependency } from '../utils/index.js';
 
 export const STYLE_OPTIONS: Partial<StyleOptions> = {

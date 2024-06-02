@@ -1,7 +1,7 @@
 import t from '@babel/types';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 import { visitor } from '../utils/index.js';
 
 export const validate = (): TransformerPlugin => {

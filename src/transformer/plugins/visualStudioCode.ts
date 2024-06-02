@@ -6,7 +6,7 @@ import {
   TransformerPlugin,
   TransformerPluginContext,
   TransformerPluginGlobal
-} from '../transformer.types';
+} from '../transformer.types.js';
 import { extractAttribute, extractFromComment, getType, print } from '../utils/index.js';
 
 export const VISUAL_STUDIO_CODE_OPTIONS: Partial<VisualStudioCodeOptions> = {

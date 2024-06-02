@@ -7,19 +7,18 @@ import { appendToMethod, defineProperty, host, request, toProperty, updateAttrib
  */
 export function Property(options) {
     return function (target, key, descriptor) {
-        var _a, _b, _c;
         // Creates a unique symbol for the lock flag.
         const locked = Symbol();
         // Converts property name to string.
         const name = String(key);
         // Calculates attribute.
-        const attribute = (options === null || options === void 0 ? void 0 : options.attribute) || kebabCase(name);
+        const attribute = options?.attribute || kebabCase(name);
         // Registers an attribute that is intricately linked to the property.
-        ((_a = target.constructor)['observedAttributes'] || (_a['observedAttributes'] = [])).push(attribute);
+        (target.constructor['observedAttributes'] ||= []).push(attribute);
         // TODO
         if (attribute) {
             // TODO
-            (_b = target.constructor)[_c = CONSTANTS.MAPPER] || (_b[_c] = {});
+            target.constructor[CONSTANTS.MAPPER] ||= {};
             // TODO
             target.constructor[CONSTANTS.MAPPER][attribute] = name;
         }
@@ -27,12 +26,12 @@ export function Property(options) {
         // When the property is a getter function.
         if (descriptor) {
             // Checks the reflection.
-            if (options === null || options === void 0 ? void 0 : options.reflect) {
+            if (options?.reflect) {
                 // Stores the original getter function.
                 const getter = descriptor.get;
                 // Defines a new getter function.
                 descriptor.get = function () {
-                    const value = getter === null || getter === void 0 ? void 0 : getter.apply(this);
+                    const value = getter?.apply(this);
                     this[locked] = true;
                     updateAttribute(this, attribute, value);
                     this[locked] = false;
@@ -62,7 +61,7 @@ export function Property(options) {
                 request(this, name, previous, (skipped) => {
                     if (skipped)
                         return;
-                    if (!(options === null || options === void 0 ? void 0 : options.reflect))
+                    if (!options?.reflect)
                         return;
                     this[locked] = true;
                     updateAttribute(this, attribute, next);
@@ -85,7 +84,7 @@ export function Property(options) {
                     if (this[locked]) {
                         return;
                     }
-                    this[key] = toProperty(input, options === null || options === void 0 ? void 0 : options.type);
+                    this[key] = toProperty(input, options?.type);
                 };
             // TODO: Check the configuration.
             // Attaches the getter and setter functions to the current property of the host element.

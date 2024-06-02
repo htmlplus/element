@@ -7,8 +7,7 @@ export const validate = () => {
         context.skipped = true;
         visitor(context.fileAST, {
             ImportDeclaration(path) {
-                var _a;
-                if (((_a = path.node.source) === null || _a === void 0 ? void 0 : _a.value) !== CONSTANTS.PACKAGE_NAME)
+                if (path.node.source?.value !== CONSTANTS.PACKAGE_NAME)
                     return;
                 for (const specifier of path.node.specifiers) {
                     if (specifier.imported.name !== CONSTANTS.DECORATOR_ELEMENT)

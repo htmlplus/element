@@ -1,5 +1,5 @@
 import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 
 /**
  * Indicates the host of the element.

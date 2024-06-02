@@ -9,7 +9,6 @@ export const visualStudioCode = (options) => {
     const name = 'visualStudioCode';
     options = Object.assign({}, VISUAL_STUDIO_CODE_OPTIONS, options);
     const finish = (global) => {
-        var _a, _b, _c, _d, _e;
         const contexts = global.contexts.sort((a, b) => {
             return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? +1 : -1;
         });
@@ -25,7 +24,7 @@ export const visualStudioCode = (options) => {
                 references: [
                     {
                         name: 'Source code',
-                        url: (_b = (_a = options).reference) === null || _b === void 0 ? void 0 : _b.call(_a, context)
+                        url: options.reference?.(context)
                     }
                 ]
             }, extractFromComment(context.class, ['description']));
@@ -34,7 +33,7 @@ export const visualStudioCode = (options) => {
                     name: extractAttribute(property) || kebabCase(property.key['name']),
                     values: []
                 }, extractFromComment(property, ['description']));
-                const type = print(getType(context.directoryPath, context.fileAST, (_c = property.typeAnnotation) === null || _c === void 0 ? void 0 : _c['typeAnnotation']));
+                const type = print(getType(context.directoryPath, context.fileAST, property.typeAnnotation?.['typeAnnotation']));
                 const sections = type.split('|');
                 for (const section of sections) {
                     const trimmed = section.trim();
@@ -63,7 +62,7 @@ export const visualStudioCode = (options) => {
                 }
                 tag.attributes.push(attribute);
             }
-            const transformed = ((_e = (_d = options).transformer) === null || _e === void 0 ? void 0 : _e.call(_d, context, tag)) || tag;
+            const transformed = options.transformer?.(context, tag) || tag;
             json.tags.push(transformed);
         }
         const dirname = path.dirname(options.destination);

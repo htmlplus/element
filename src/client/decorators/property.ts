@@ -1,7 +1,7 @@
 import { kebabCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 import {
   appendToMethod,
   defineProperty,

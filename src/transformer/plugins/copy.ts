@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { TransformerPlugin } from '../transformer.types';
+import { TransformerPlugin } from '../transformer.types.js';
 
 export const COPY_OPTIONS: Partial<CopyOptions> = {
   at: 'start'

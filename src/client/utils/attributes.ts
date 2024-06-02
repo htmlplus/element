@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 import { off, on } from './event.js';
 import { host } from './host.js';
 import { isEvent } from './isEvent.js';

@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 import { defineProperty } from './defineProperty.js';
 
 export function toDecorator(util: Function, ...parameters: any[]) {

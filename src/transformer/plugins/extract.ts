@@ -2,7 +2,7 @@ import t from '@babel/types';
 import { kebabCase } from 'change-case';
 
 import * as CONSTANTS from '../../constants/index.js';
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
 import { hasDecorator } from '../utils/index.js';
 
 export const extract = (): TransformerPlugin => {

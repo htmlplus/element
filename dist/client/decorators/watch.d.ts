@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 /**
  * Monitors `@Property` and `@State` to detect changes.
  * The decorated method will be called after any changes,

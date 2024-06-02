@@ -6,5 +6,5 @@ export const extractAttribute = (property) => {
             .expression.arguments[0].properties.find((property) => property.key.name == 'attribute').value
             .value;
     }
-    catch (_a) { }
+    catch { }
 };

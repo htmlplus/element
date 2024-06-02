@@ -42,14 +42,14 @@ export const getType = (directory, file, node) => {
                         .find((reference) => fs.existsSync(reference));
                     const content = fs.readFileSync(reference, 'utf8');
                     const filePath = resolve(directory, path.node.source.value + '.ts');
-                    path.$ast || (path.$ast = parse(content, {
+                    path.$ast ||= parse(content, {
                         allowImportExportEverywhere: true,
                         plugins: ['typescript'],
                         ranges: false
-                    }));
+                    });
                     result = getType(dirname(filePath), path.$ast, node);
                 }
-                catch (_a) { }
+                catch { }
                 path.stop();
                 break;
             }

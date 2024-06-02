@@ -11,10 +11,9 @@ export function Event(options = {}) {
         defineProperty(target, key, {
             get() {
                 return (detail) => {
-                    var _a, _b;
                     const element = host(this);
                     const framework = getFramework(this);
-                    (_a = options.bubbles) !== null && _a !== void 0 ? _a : (options.bubbles = false);
+                    options.bubbles ??= false;
                     let type = String(key);
                     switch (framework) {
                         // TODO: Experimental
@@ -28,7 +27,7 @@ export function Event(options = {}) {
                                     })
                                 });
                             }
-                            catch (_c) { }
+                            catch { }
                             break;
                         case 'qwik':
                         case 'solid':
@@ -43,9 +42,9 @@ export function Event(options = {}) {
                             break;
                     }
                     let event;
-                    event || (event = (_b = getConfig('event', 'resolver')) === null || _b === void 0 ? void 0 : _b({ detail, element, framework, options, type }));
+                    event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
                     event && element.dispatchEvent(event);
-                    event || (event = dispatch(this, type, Object.assign(Object.assign({}, options), { detail })));
+                    event ||= dispatch(this, type, { ...options, detail });
                     return event;
                 };
             }

@@ -5,7 +5,7 @@ import {
   TransformerPlugin,
   TransformerPluginContext,
   TransformerPluginGlobal
-} from '../transformer.types';
+} from '../transformer.types.js';
 
 export const ASSETS_OPTIONS: Partial<AssetsOptions> = {
   destination(context) {

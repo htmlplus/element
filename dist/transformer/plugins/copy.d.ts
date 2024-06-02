@@ -1,4 +1,4 @@
-import { TransformerPlugin } from '../transformer.types';
+import { TransformerPlugin } from '../transformer.types.js';
 export declare const COPY_OPTIONS: Partial<CopyOptions>;
 export interface CopyOptions {
     at?: 'start' | 'run' | 'finish';

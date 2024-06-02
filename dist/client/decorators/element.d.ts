@@ -1,4 +1,4 @@
-import { HTMLPlusElement } from '../../types';
+import { HTMLPlusElement } from '../../types/index.js';
 /**
  * The class marked with this decorator is considered a
  * [Custom Element](https://mdn.io/using-custom-elements),
