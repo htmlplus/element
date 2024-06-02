@@ -1,3 +1,10 @@
+## [2.9.4](https://github.com/htmlplus/element/compare/v2.9.3...v2.9.4) (2024-06-02)
+
+
+### Bug Fixes
+
+* Convert target from ES2017 to ESNext in tsconfig.json ([b434995](https://github.com/htmlplus/element/commit/b4349951b78f0bc662a201132dc14a38b914bb06))
+
 ## [2.9.3](https://github.com/htmlplus/element/compare/v2.9.2...v2.9.3) (2024-05-13)
 
 
