@@ -1,3 +1,10 @@
+## [2.9.5](https://github.com/htmlplus/element/compare/v2.9.4...v2.9.5) (2024-07-05)
+
+
+### Bug Fixes
+
+* Update the npm packages. ([7ea107a](https://github.com/htmlplus/element/commit/7ea107afb67e80f86fa128662a61f0948453b629))
+
 ## [2.9.4](https://github.com/htmlplus/element/compare/v2.9.3...v2.9.4) (2024-06-02)
 
 
