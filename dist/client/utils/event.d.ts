@@ -2,7 +2,7 @@ import { HTMLPlusElement } from '../../types/index.js';
 /**
  * TODO
  */
-export declare const dispatch: <T = any>(target: HTMLElement | HTMLPlusElement, type: string, eventInitDict?: CustomEventInit<T> | undefined) => CustomEvent<T>;
+export declare const dispatch: <T = any>(target: HTMLElement | HTMLPlusElement, type: string, eventInitDict?: CustomEventInit<T>) => CustomEvent<T>;
 /**
  * TODO
  */

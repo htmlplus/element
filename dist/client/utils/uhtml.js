@@ -490,8 +490,8 @@ const cache$1 = new WeakMapSet();
 // a RegExp that helps checking nodes that cannot contain comments
 const textOnly = /^(?:textarea|script|style|title|plaintext|xmp)$/;
 const createCache = () => ({
-    stack: [],
-    entry: null,
+    stack: [], // each template gets a stack for each interpolation "hole"
+    entry: null, // each entry contains details, such as:
     //  * the template that is representing
     //  * the type of node it represents (html or svg)
     //  * the content fragment with all nodes

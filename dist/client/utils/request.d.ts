@@ -6,4 +6,4 @@ import { HTMLPlusElement } from '../../types/index.js';
  * @param previous The previous value of Property/State.
  * @param callback Invoked when the rendering phase is completed.
  */
-export declare const request: (target: HTMLPlusElement, name?: string, previous?: any, callback?: ((skipped: boolean) => void) | undefined) => void;
+export declare const request: (target: HTMLPlusElement, name?: string, previous?: any, callback?: (skipped: boolean) => void) => void;
