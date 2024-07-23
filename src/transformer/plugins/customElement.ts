@@ -475,6 +475,8 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           // prettier-ignore
           const ast = template.default.ast(
             `
+              // THE FOLLOWING TYPES HAVE BEEN ADDED AUTOMATICALLY
+
               export interface ${context.className}Attributes {
                 ${attributes.map(print).join('')}
               }
