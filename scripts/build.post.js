@@ -1,7 +1,7 @@
 import cpy from 'cpy';
 import fs from 'fs';
 
-cpy(['package-lock.json', 'README.md'], 'dist');
+cpy(['package-lock.json', 'README.md', 'src/jsx-runtime.d.ts'], 'dist', { flat: true });
 
 const raw = fs.readFileSync('package.json', 'utf8');
 const parsed = JSON.parse(raw);
