@@ -1,3 +1,10 @@
+## [2.9.8](https://github.com/htmlplus/element/compare/v2.9.7...v2.9.8) (2024-07-23)
+
+
+### Bug Fixes
+
+* Include a flag as a comment prior to inserting types in the customElement plugin. ([bd857ef](https://github.com/htmlplus/element/commit/bd857efc8cfb8baed4c4f3fb2a71aba6b2be8f3e))
+
 ## [2.9.7](https://github.com/htmlplus/element/compare/v2.9.6...v2.9.7) (2024-07-23)
 
 
