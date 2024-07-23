@@ -1,3 +1,10 @@
+## [2.9.7](https://github.com/htmlplus/element/compare/v2.9.6...v2.9.7) (2024-07-23)
+
+
+### Bug Fixes
+
+* Add jsx typing. ([f3e38ef](https://github.com/htmlplus/element/commit/f3e38ef7749e16a088aae65bcfa2bb06b691b22a))
+
 ## [2.9.6](https://github.com/htmlplus/element/compare/v2.9.5...v2.9.6) (2024-07-16)
 
 
