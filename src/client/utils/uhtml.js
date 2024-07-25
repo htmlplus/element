@@ -13,7 +13,8 @@ class WeakMapSet extends WeakMap {
 }
 
 /*! (c) Andrea Giammarchi - ISC */
-const empty = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
+const empty =
+  /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
 const elements = /<([a-z]+[a-z0-9:._-]*)([^>]*?)(\/?)>/g;
 const attributes = /([^\s\\>"'=]+)\s*=\s*(['"]?)\x01/g;
 const holes = /[\x01\x02]/g;
@@ -60,8 +61,8 @@ const diffable = (node, operation) =>
         ? remove(node)
         : node.lastChild
       : operation
-      ? node.valueOf()
-      : node.firstChild
+        ? node.valueOf()
+        : node.firstChild
     : node;
 const persistent = (fragment) => {
   const { firstChild, lastChild } = fragment;
@@ -222,7 +223,12 @@ var udomdiff = (parentNode, a, b, get, before) => {
       // need to be added are not at the end, and in such case
       // the node to `insertBefore`, if the index is more than 0
       // must be retrieved, otherwise it's gonna be the first item.
-      const node = bEnd < bLength ? (bStart ? get(b[bStart - 1], -0).nextSibling : get(b[bEnd - bStart], 0)) : before;
+      const node =
+        bEnd < bLength
+          ? bStart
+            ? get(b[bStart - 1], -0).nextSibling
+            : get(b[bEnd - bStart], 0)
+          : before;
       while (bStart < bEnd) parentNode.insertBefore(get(b[bStart++], 1), node);
     }
     // remove head or tail: fast path
@@ -322,10 +328,16 @@ var udomdiff = (parentNode, a, b, get, before) => {
 const { isArray, prototype } = Array;
 const { indexOf } = prototype;
 
-const { createDocumentFragment, createElement, createElementNS, createTextNode, createTreeWalker, importNode } =
-  new Proxy(typeof window == 'undefined' ? {} : window.document, {
-    get: (target, method) => (target[method] || function () {}).bind(target)
-  });
+const {
+  createDocumentFragment,
+  createElement,
+  createElementNS,
+  createTextNode,
+  createTreeWalker,
+  importNode
+} = new Proxy(typeof window == 'undefined' ? {} : window.document, {
+  get: (target, method) => (target[method] || function () {}).bind(target)
+});
 
 const createHTML = (html) => {
   const template = createElement('template');
@@ -421,7 +433,11 @@ const handleAnything = (comment) => {
         // is not expected one, nothing happens, as easy as that.
         if (oldValue !== newValue && 'ELEMENT_NODE' in newValue) {
           oldValue = newValue;
-          nodes = diff(comment, nodes, newValue.nodeType === 11 ? [...newValue.childNodes] : [newValue]);
+          nodes = diff(
+            comment,
+            nodes,
+            newValue.nodeType === 11 ? [...newValue.childNodes] : [newValue]
+          );
         }
         break;
       case 'function':
@@ -474,8 +490,8 @@ function handlers(options) {
   return type === 'node'
     ? handleAnything(node)
     : type === 'attr'
-    ? handleAttribute(node, options.name /*, options.svg*/)
-    : text(node);
+      ? handleAttribute(node, options.name /*, options.svg*/)
+      : text(node);
 }
 
 // from a fragment container, create an array of indexes
@@ -597,7 +613,8 @@ const mapTemplate = (type, template) => {
 // if a template is unknown, perform the previous mapping, otherwise grab
 // its details such as the fragment with all nodes, and updates info.
 const mapUpdates = (type, template) => {
-  const { content, nodes } = cache$1.get(template) || cache$1.set(template, mapTemplate(type, template));
+  const { content, nodes } =
+    cache$1.get(template) || cache$1.set(template, mapTemplate(type, template));
   // clone deeply the fragment
   const fragment = importNode(content, true);
   // and relate an update handler per each node that needs one
@@ -618,7 +635,8 @@ const unroll = (info, { type, template, values }) => {
   // if the cache entry is either null or different from the template
   // and the type this unroll should resolve, create a new entry
   // assigning a new content fragment and the list of updates.
-  if (!entry || entry.template !== template || entry.type !== type) info.entry = entry = createEntry(type, template);
+  if (!entry || entry.template !== template || entry.type !== type)
+    info.entry = entry = createEntry(type, template);
   const { content, updates, wire } = entry;
   // even if the fragment and its nodes is not live yet,
   // it is already possible to update via interpolations values.
@@ -696,7 +714,8 @@ const tag = (type) => {
       // it is possible to create one-off content out of the box via node tag
       // this might return the single created node, or a fragment with all
       // nodes present at the root level and, of course, their child nodes
-      node: (template, ...values) => unroll(createCache(), new Hole(type, template, values)).valueOf()
+      node: (template, ...values) =>
+        unroll(createCache(), new Hole(type, template, values)).valueOf()
     }
   );
 };
