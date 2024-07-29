@@ -214,7 +214,11 @@ var udomdiff = (parentNode, a, b, get, before) => {
             // need to be added are not at the end, and in such case
             // the node to `insertBefore`, if the index is more than 0
             // must be retrieved, otherwise it's gonna be the first item.
-            const node = bEnd < bLength ? (bStart ? get(b[bStart - 1], -0).nextSibling : get(b[bEnd - bStart], 0)) : before;
+            const node = bEnd < bLength
+                ? bStart
+                    ? get(b[bStart - 1], -0).nextSibling
+                    : get(b[bEnd - bStart], 0)
+                : before;
             while (bStart < bEnd)
                 parentNode.insertBefore(get(b[bStart++], 1), node);
         }

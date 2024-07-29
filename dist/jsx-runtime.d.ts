@@ -95,7 +95,7 @@ declare namespace JSX {
     s: WithPart<'s'>;
     samp: WithPart<'samp'>;
     search: WithPart<'search'>;
-    slot: WithPart<'slot'>;
+    slot: WithPart<'slot'> & { onSlotChange?: (event: Event) => void };
     script: WithPart<'script'>;
     section: WithPart<'section'>;
     select: WithPart<'select'>;
