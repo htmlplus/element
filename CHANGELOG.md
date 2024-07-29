@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/htmlplus/element/compare/v2.9.8...v2.10.0) (2024-07-29)
+
+
+### Features
+
+* Add a JSX type definitions file to provide type checking for elements. ([9d5fa1f](https://github.com/htmlplus/element/commit/9d5fa1fec22840e488e4da928ceb81ef921c773c))
+
 ## [2.9.8](https://github.com/htmlplus/element/compare/v2.9.7...v2.9.8) (2024-07-23)
 
 
