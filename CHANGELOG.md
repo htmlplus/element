@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/htmlplus/element/compare/v2.10.0...v2.11.0) (2024-07-30)
+
+
+### Features
+
+* Integrate a write lifecycle into the transformation plugins. ([7c191e6](https://github.com/htmlplus/element/commit/7c191e6d04ff1b7cdc35e5303f45790d1d83dbe8))
+
 # [2.10.0](https://github.com/htmlplus/element/compare/v2.9.8...v2.10.0) (2024-07-29)
 
 
