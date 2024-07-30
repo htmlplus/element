@@ -30,6 +30,7 @@ export interface TransformerPluginContext {
     readmeName?: string;
     readmePath?: string;
     styleContent?: string;
+    styleContentTransformed?: string;
     styleExtension?: string;
     styleName?: string;
     stylePath?: string;
@@ -46,5 +47,6 @@ export interface TransformerPlugin {
     start?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
     run?: (context: TransformerPluginContext, global: TransformerPluginGlobal) => Return<TransformerPluginContext>;
     finish?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
+    write?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
 }
 export {};

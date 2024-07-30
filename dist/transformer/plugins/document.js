@@ -10,7 +10,7 @@ export const DOCUMENT_OPTIONS = {
 export const document = (options) => {
     const name = 'document';
     options = Object.assign({}, DOCUMENT_OPTIONS, options);
-    const finish = (global) => {
+    const write = (global) => {
         const json = {
             elements: []
         };
@@ -164,7 +164,18 @@ export const document = (options) => {
                     const [first, second] = section.split(/\n/);
                     const description = first.replace('*/', '').trim();
                     const name = second.split(':')[0].trim();
-                    const initializer = second.split(':').slice(1).join(':').replace(';', '').trim();
+                    const initializerDefault = second.split(':').slice(1).join(':').replace(';', '').trim();
+                    // TODO
+                    const initializerTransformed = context.styleContentTransformed
+                        ?.split(name)
+                        ?.at(1)
+                        ?.split(':')
+                        ?.filter((section) => !!section)
+                        ?.at(0)
+                        ?.split(/;|}/)
+                        ?.at(0)
+                        ?.trim();
+                    const initializer = initializerTransformed || initializerDefault;
                     return {
                         description,
                         initializer,
@@ -191,5 +202,5 @@ export const document = (options) => {
         fs.ensureDirSync(dirname);
         fs.writeJSONSync(options.destination, json, { encoding: 'utf8', spaces: 2 });
     };
-    return { name, finish };
+    return { name, write };
 };

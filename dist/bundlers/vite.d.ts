@@ -4,4 +4,5 @@ export declare const htmlplus: (...plugins: Array<TransformerPlugin>) => {
     buildStart(): Promise<void>;
     load(id: any): Promise<string | undefined>;
     buildEnd(): Promise<void>;
+    writeBundle(options: any, bundles: any): Promise<void>;
 };

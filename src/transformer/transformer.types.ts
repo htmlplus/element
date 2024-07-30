@@ -49,6 +49,7 @@ export interface TransformerPluginContext {
 
   // style
   styleContent?: string;
+  styleContentTransformed?: string;
   styleExtension?: string;
   styleName?: string;
   stylePath?: string;
@@ -70,4 +71,5 @@ export interface TransformerPlugin {
     global: TransformerPluginGlobal
   ) => Return<TransformerPluginContext>;
   finish?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
+  write?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
 }

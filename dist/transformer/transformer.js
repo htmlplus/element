@@ -67,5 +67,12 @@ export const transformer = (...plugins) => {
         log(`Plugins finished successfully.`, true);
         log(`Finished.`, true);
     };
-    return { start, run, finish };
+    const write = async () => {
+        for (const plugin of plugins) {
+            if (!plugin.write)
+                continue;
+            global = (await plugin.write(global)) || global;
+        }
+    };
+    return { global, start, run, finish, write };
 };
