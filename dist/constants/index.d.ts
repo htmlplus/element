@@ -6,6 +6,7 @@ export declare const API_INSTANCE: unique symbol;
 export declare const API_REQUEST: unique symbol;
 export declare const API_RENDER_COMPLETED: unique symbol;
 export declare const API_STACKS: unique symbol;
+export declare const API_STYLE: unique symbol;
 export declare const COMMENT_AUTO_ADDED = " THIS IS AUTO-ADDED, DO NOT EDIT MANUALY";
 export declare const DECORATOR_CSS_VARIABLE = "@Property()";
 export declare const DECORATOR_ELEMENT = "Element";

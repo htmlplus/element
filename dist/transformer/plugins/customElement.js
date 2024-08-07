@@ -121,6 +121,15 @@ export const customElement = (options) => {
                                 for (const attribute of attributes) {
                                     switch (attribute.type) {
                                         case 'JSXAttribute':
+                                            if (attribute.name.name == 'dangerouslySetInnerHTML') {
+                                                try {
+                                                    parts.push(' ', '.innerHTML');
+                                                    parts.push('=');
+                                                    parts.push(attribute.value.expression.properties.at(0).value);
+                                                }
+                                                catch { }
+                                                continue;
+                                            }
                                             parts.push(' ', attribute.name.name);
                                             if (!attribute.value)
                                                 continue;

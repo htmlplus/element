@@ -10,6 +10,7 @@ export const API_INSTANCE = Symbol();
 export const API_REQUEST = Symbol();
 export const API_RENDER_COMPLETED = Symbol();
 export const API_STACKS = Symbol();
+export const API_STYLE = Symbol();
 
 // comments
 export const COMMENT_AUTO_ADDED = ' THIS IS AUTO-ADDED, DO NOT EDIT MANUALY';

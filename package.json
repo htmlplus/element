@@ -10,11 +10,8 @@
   "types": "client/index.d.ts",
   "scripts": {
     "build": "npm run clean && tsc && node scripts/build.post.js",
-    "build:watch": "tsc -w",
     "clean": "rimraf dist",
-    "development:start": "tsx src/development/scripts.start.ts",
-    "development:build": "tsx src/development/scripts.build.ts",
-    "development:build:watch": "tsx watch src/development/scripts.build.ts",
+    "development:start": "vite --config development/vite.config.js",
     "format": "prettier --write ."
   },
   "files": [
