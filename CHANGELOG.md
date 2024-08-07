@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/htmlplus/element/compare/v2.11.0...v2.12.0) (2024-08-07)
+
+
+### Features
+
+* Implement support for dangerouslySetInnerHTML in JSX. ([3ca3977](https://github.com/htmlplus/element/commit/3ca3977927a643061b23b2eb759efe1acdeb3d48))
+
 # [2.11.0](https://github.com/htmlplus/element/compare/v2.10.0...v2.11.0) (2024-07-30)
 
 
