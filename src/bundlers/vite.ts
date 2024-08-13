@@ -2,7 +2,7 @@ import path from 'path';
 
 import { TransformerPlugin, transformer } from '../transformer/index.js';
 
-export const htmlplus = (...plugins: Array<TransformerPlugin>) => {
+export const vite = (...plugins: Array<TransformerPlugin>) => {
   const { global, start, run, finish, write } = transformer(...plugins);
 
   return {

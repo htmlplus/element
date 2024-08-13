@@ -6,10 +6,10 @@
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
   "description": "A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies. Powerd by Web Component.",
   "type": "module",
-  "main": "client/index.js",
-  "types": "client/index.d.ts",
+  "main": "client.js",
+  "types": "client.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc && node scripts/build.post.js",
+    "build": "npm run clean && rollup -c && node scripts/build.post.js",
     "clean": "rimraf dist",
     "development:start": "vite --config development/vite.config.js",
     "format": "prettier --write ."
@@ -52,6 +52,7 @@
     "typescript": "^5.5.3"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.0",
     "@semantic-release/git": "^10.0.1",
@@ -62,8 +63,10 @@
     "cpy": "^11.0.1",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
+    "rollup": "^4.20.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-node-externals": "^7.1.2",
     "semantic-release": "^24.0.0",
-    "tsx": "^4.16.2",
     "vite": "^5.3.4"
   }
 }

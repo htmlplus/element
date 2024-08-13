@@ -1,6 +1,6 @@
 import { TransformerPlugin, transformer } from '../transformer/index.js';
 
-export const htmlplus = (...plugins: Array<TransformerPlugin>) => {
+export const rollup = (...plugins: Array<TransformerPlugin>) => {
   const { start, run, finish } = transformer(...plugins);
 
   return {

@@ -998,7 +998,7 @@ import {
   read,
   style,
   validate,
-} from '@htmlplus/element/transformer/index.js';
+} from '@htmlplus/element/transformer.js';
 
 const plugins = [
   read(),
@@ -1041,7 +1041,7 @@ import {
   validate,
   visualStudioCode,
   webTypes
-} from '@htmlplus/element/transformer/index.js';
+} from '@htmlplus/element/transformer.js';
 ```
 
 </details>

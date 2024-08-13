@@ -63,10 +63,8 @@ export const TYPE_UNDEFINED = 2 ** 9;
 // utils
 export const UTILS_ATTRIBUTES_IMPORTED = 'attributes';
 export const UTILS_ATTRIBUTES_LOCAL = 'UTILS_ATTRIBUTES';
-export const UTILS_HOST_IMPORTED = 'host';
-export const UTILS_HOST_LOCAL = 'UTILS_HOST';
 export const UTILS_HTML_IMPORTED = 'html';
 export const UTILS_HTML_LOCAL = 'UTILS_HTML';
 export const UTILS_STYLES_IMPORTED = 'styles';
 export const UTILS_STYLES_LOCAL = 'UTILS_STYLES';
-export const UTILS_PATH = '@htmlplus/element/client/utils/index.js';
+export const UTILS_PATH = '@htmlplus/element/internal.js';
