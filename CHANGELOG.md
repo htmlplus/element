@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/htmlplus/element/compare/v2.12.0...v2.13.0) (2024-08-13)
+
+
+### Features
+
+* Enhance the build system by migrating to Rollup and adopting the most recent module resolution strategy in TypeScript. ([5e50ff2](https://github.com/htmlplus/element/commit/5e50ff2f870ad57f9a00709720a2b0d43f55a2dd))
+
 # [2.12.0](https://github.com/htmlplus/element/compare/v2.11.0...v2.12.0) (2024-08-07)
 
 
