@@ -31,7 +31,7 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
 
   options = Object.assign({}, DOCUMENT_OPTIONS, options);
 
-  const write = (global: TransformerPluginGlobal) => {
+  const finish = (global: TransformerPluginGlobal) => {
     const json = {
       elements: [] as any
     };
@@ -280,5 +280,5 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
     fs.writeJSONSync(options!.destination, json, { encoding: 'utf8', spaces: 2 });
   };
 
-  return { name, write };
+  return { name, finish };
 };

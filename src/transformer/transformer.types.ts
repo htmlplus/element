@@ -71,5 +71,4 @@ export interface TransformerPlugin {
     global: TransformerPluginGlobal
   ) => Return<TransformerPluginContext>;
   finish?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
-  write?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
 }

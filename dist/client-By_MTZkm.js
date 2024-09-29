@@ -1,5 +1,5 @@
 import { kebabCase, camelCase, pascalCase } from 'change-case';
-import { API_HOST, STATIC_STYLE, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, API_INSTANCE, MAPPER, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_LOADED } from './constants.js';
+import { API_HOST, STATIC_STYLE, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, KEY, API_INSTANCE, MAPPER, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_LOADED } from './constants.js';
 
 const appendToMethod = (target, key, handler) => {
     // Gets the previous function
@@ -1130,7 +1130,8 @@ const request = (target, name, previous, callback) => {
                 return;
             const regex1 = /this-([\w-]+)(?:-([\w-]+))?/g;
             const regex2 = /(\s*\w+\s*:\s*(undefined|null)\s*;?)/g;
-            const hasGlobal = raw.includes(':global');
+            const regex3 = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
+            const hasGlobal = raw.includes('global');
             const hasVariable = raw.includes('this-');
             let localSheet = target[API_STYLE];
             let globalSheet = target.constructor[API_STYLE];
@@ -1150,8 +1151,8 @@ const request = (target, name, previous, callback) => {
                 target[API_STYLE] = localSheet;
                 shadowRoot(target).adoptedStyleSheets.push(localSheet);
             }
-            const localStyle = parsed;
-            localSheet.replace(localStyle);
+            const localStyle = parsed.replace(regex3, '');
+            localSheet.replaceSync(localStyle);
             if (!hasGlobal || globalSheet)
                 return;
             if (!globalSheet) {
@@ -1160,21 +1161,11 @@ const request = (target, name, previous, callback) => {
                 document.adoptedStyleSheets.push(globalSheet);
             }
             const globalStyle = parsed
-                .split('}')
-                .map((rule) => {
-                let [selectors, properties] = rule.split('{');
-                selectors = selectors
-                    .split(',')
-                    .map((selector) => selector.trim())
-                    .filter((selector) => selector.startsWith(':global'))
-                    .map((selector) => selector.replace(':global', ''))
-                    .map((selector) => selector.trim())
-                    .join(',');
-                return selectors ? `${selectors}{${properties}}` : '';
-            })
-                .filter((selector) => !!selector)
-                .join('');
-            globalSheet.replace(globalStyle);
+                ?.match(regex3)
+                ?.join('')
+                ?.replaceAll('global', '')
+                ?.replaceAll(':host', getTag(target));
+            globalSheet.replaceSync(globalStyle);
         })();
         // Calls the lifecycle's callback after the rendering phase.
         call(target, LIFECYCLE_UPDATED, states);
@@ -1317,7 +1308,7 @@ function Provider(namespace) {
     return function (target, key, descriptor) {
         const symbol = Symbol();
         const [MAIN, SUB] = namespace.split('.');
-        const prefix = `htmlplus:${MAIN}`;
+        const prefix = `${KEY}:${MAIN}`;
         const cleanups = (instance) => {
             return (instance[symbol] ||= new Map());
         };
@@ -1369,7 +1360,7 @@ function Consumer(namespace) {
     return function (target, key) {
         const symbol = Symbol();
         const [MAIN, SUB] = namespace.split('.');
-        const prefix = `htmlplus:${MAIN}`;
+        const prefix = `${KEY}:${MAIN}`;
         const cleanups = (instance) => {
             return (instance[symbol] ||= new Map());
         };

@@ -112,7 +112,7 @@ export const visualStudioCode = (options?: VisualStudioCodeOptions): Transformer
 
     fs.ensureDirSync(dirname);
 
-    fs.writeJSONSync(options!.destination, json, { encoding: 'utf8', spaces: 2 });
+    fs.writeJSONSync(options!.destination!, json, { encoding: 'utf8', spaces: 2 });
   };
 
   return { name, finish };

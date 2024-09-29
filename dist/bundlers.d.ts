@@ -13,7 +13,6 @@ declare const vite: (...plugins: Array<TransformerPlugin>) => {
     name: string;
     buildStart(): Promise<void>;
     load(id: any): Promise<string | undefined>;
-    buildEnd(): Promise<void>;
     writeBundle(options: any, bundles: any): Promise<void>;
 };
 

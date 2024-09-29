@@ -2,6 +2,7 @@ import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
 import { call } from './call.js';
 import { getStyles } from './getStyles.js';
+import { getTag } from './getTag.js';
 import { shadowRoot } from './shadowRoot.js';
 import { task } from './task.js';
 import { render } from './uhtml.js';
@@ -64,8 +65,9 @@ export const request = (
 
       const regex1 = /this-([\w-]+)(?:-([\w-]+))?/g;
       const regex2 = /(\s*\w+\s*:\s*(undefined|null)\s*;?)/g;
+      const regex3 = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
 
-      const hasGlobal = raw.includes(':global');
+      const hasGlobal = raw.includes('global');
       const hasVariable = raw.includes('this-');
 
       let localSheet = target[CONSTANTS.API_STYLE];
@@ -93,9 +95,9 @@ export const request = (
         shadowRoot(target)!.adoptedStyleSheets.push(localSheet);
       }
 
-      const localStyle = parsed;
+      const localStyle = parsed.replace(regex3, '');
 
-      localSheet.replace(localStyle);
+      localSheet.replaceSync(localStyle);
 
       if (!hasGlobal || globalSheet) return;
 
@@ -108,22 +110,12 @@ export const request = (
       }
 
       const globalStyle = parsed
-        .split('}')
-        .map((rule) => {
-          let [selectors, properties] = rule.split('{');
-          selectors = selectors
-            .split(',')
-            .map((selector) => selector.trim())
-            .filter((selector) => selector.startsWith(':global'))
-            .map((selector) => selector.replace(':global', ''))
-            .map((selector) => selector.trim())
-            .join(',');
-          return selectors ? `${selectors}{${properties}}` : '';
-        })
-        .filter((selector) => !!selector)
-        .join('');
+        ?.match(regex3)
+        ?.join('')
+        ?.replaceAll('global', '')
+        ?.replaceAll(':host', getTag(target)!);
 
-      globalSheet.replace(globalStyle);
+      globalSheet.replaceSync(globalStyle);
     })();
 
     // Calls the lifecycle's callback after the rendering phase.

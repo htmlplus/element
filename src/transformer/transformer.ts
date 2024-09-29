@@ -1,6 +1,7 @@
 import ora from 'ora';
 import path from 'path';
 
+import * as CONSTANTS from '../constants/index.js';
 import {
   TransformerPlugin,
   TransformerPluginContext,
@@ -12,7 +13,7 @@ const logger = ora({
 });
 
 const log = (message, persist?) => {
-  const content = `${new Date().toLocaleTimeString()} [HTMLPLUS] ${message}`;
+  const content = `${new Date().toLocaleTimeString()} [${CONSTANTS.KEY}] ${message}`;
 
   const log = logger.start(content);
 
@@ -29,7 +30,7 @@ export const transformer = (...plugins: TransformerPlugin[]) => {
   const start = async () => {
     log(`Started.`, true);
 
-    log(`${plugins.length} plugins found.`, true);
+    log(`${plugins.length} plugins detected.`, true);
 
     log(`Plugins are starting.`, true);
 
@@ -43,7 +44,7 @@ export const transformer = (...plugins: TransformerPlugin[]) => {
       log(`Plugin '${plugin.name}' started successfully.`);
     }
 
-    log(`Plugins started successfully.`, true);
+    log(`Plugins have been successfully started.`, true);
   };
 
   const run = async (filePath: string) => {
@@ -96,17 +97,10 @@ export const transformer = (...plugins: TransformerPlugin[]) => {
       log(`Plugin '${plugin.name}' finished successfully.`);
     }
 
-    log(`Plugins finished successfully.`, true);
+    log(`Plugins have been successfully finished.`, true);
 
     log(`Finished.`, true);
   };
 
-  const write = async () => {
-    for (const plugin of plugins) {
-      if (!plugin.write) continue;
-      global = (await plugin.write(global)) || global;
-    }
-  };
-
-  return { global, start, run, finish, write };
+  return { global, start, run, finish };
 };

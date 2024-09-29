@@ -53,7 +53,7 @@ export const getType = (directory: string, file: t.File, node: t.Node): t.Node =
             )
             .find((reference) => fs.existsSync(reference));
 
-          const content = fs.readFileSync(reference, 'utf8');
+          const content = fs.readFileSync(reference!, 'utf8');
 
           const filePath = resolve(directory, path.node.source.value + '.ts');
 

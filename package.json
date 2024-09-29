@@ -9,7 +9,7 @@
   "main": "client.js",
   "types": "client.d.ts",
   "scripts": {
-    "build": "npm run clean && rollup -c && node scripts/build.post.js",
+    "build": "npm run clean && rollup -c",
     "clean": "rimraf dist",
     "development:start": "vite --config development/vite.config.js",
     "format": "prettier --write ."
@@ -64,6 +64,7 @@
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "rollup": "^4.20.0",
+    "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-node-externals": "^7.1.2",
     "semantic-release": "^24.0.0",

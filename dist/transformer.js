@@ -8,13 +8,13 @@ import template from '@babel/template';
 import { pascalCase, kebabCase, camelCase, capitalCase } from 'change-case';
 import ora from 'ora';
 import path, { join, resolve, dirname } from 'node:path';
-import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, UTILS_STYLES_LOCAL, UTILS_PATH, DECORATOR_PROPERTY_TYPE, UTILS_STYLES_IMPORTED, ELEMENT_HOST_NAME, UTILS_HTML_IMPORTED, UTILS_HTML_LOCAL, TYPE_OBJECT, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, TYPE_ARRAY, TYPE_STRING, TYPE_NULL, TYPE_ENUM, UTILS_ATTRIBUTES_IMPORTED, UTILS_ATTRIBUTES_LOCAL, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, PACKAGE_NAME, DECORATOR_ELEMENT } from './constants.js';
+import { KEY, COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, UTILS_STYLES_LOCAL, UTILS_PATH, DECORATOR_PROPERTY_TYPE, UTILS_STYLES_IMPORTED, ELEMENT_HOST_NAME, UTILS_HTML_IMPORTED, UTILS_HTML_LOCAL, TYPE_OBJECT, TYPE_ARRAY, TYPE_NULL, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, UTILS_ATTRIBUTES_IMPORTED, UTILS_ATTRIBUTES_LOCAL, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, PACKAGE_NAME, DECORATOR_ELEMENT } from './constants.js';
 
 const logger = ora({
     color: 'yellow'
 });
 const log = (message, persist) => {
-    const content = `${new Date().toLocaleTimeString()} [HTMLPLUS] ${message}`;
+    const content = `${new Date().toLocaleTimeString()} [${KEY}] ${message}`;
     const log = logger.start(content);
     if (!persist)
         return;
@@ -26,7 +26,7 @@ const transformer = (...plugins) => {
     };
     const start = async () => {
         log(`Started.`, true);
-        log(`${plugins.length} plugins found.`, true);
+        log(`${plugins.length} plugins detected.`, true);
         log(`Plugins are starting.`, true);
         for (const plugin of plugins) {
             if (!plugin.start)
@@ -35,7 +35,7 @@ const transformer = (...plugins) => {
             global = (await plugin.start(global)) || global;
             log(`Plugin '${plugin.name}' started successfully.`);
         }
-        log(`Plugins started successfully.`, true);
+        log(`Plugins have been successfully started.`, true);
     };
     const run = async (filePath) => {
         path.join(filePath).split(path.sep).pop();
@@ -74,17 +74,10 @@ const transformer = (...plugins) => {
             global = (await plugin.finish(global)) || global;
             log(`Plugin '${plugin.name}' finished successfully.`);
         }
-        log(`Plugins finished successfully.`, true);
+        log(`Plugins have been successfully finished.`, true);
         log(`Finished.`, true);
     };
-    const write = async () => {
-        for (const plugin of plugins) {
-            if (!plugin.write)
-                continue;
-            global = (await plugin.write(global)) || global;
-        }
-    };
-    return { global, start, run, finish, write };
+    return { global, start, run, finish };
 };
 
 const ASSETS_OPTIONS = {
@@ -591,29 +584,36 @@ const customElement = (options) => {
                     expression.arguments.push(t.objectExpression([]));
                 }
                 const [argument] = expression.arguments;
-                const filtered = argument.properties.filter((property) => {
-                    return property.key.name != DECORATOR_PROPERTY_TYPE;
+                const property = argument.properties.find((property) => {
+                    return property.key.name == DECORATOR_PROPERTY_TYPE;
                 });
-                if (argument.properties.length != filtered.length)
+                if (property)
                     return;
-                argument.properties = filtered;
                 let type = 0;
                 const extract = (input) => {
                     switch (input?.type) {
+                        case 'bool':
+                        case 'Boolean':
                         case 'BooleanLiteral':
+                        case 'TSBooleanKeyword':
                             type |= TYPE_BOOLEAN;
                             break;
+                        case 'Date':
+                            type |= TYPE_DATE;
+                            break;
+                        case 'Number':
                         case 'NumericLiteral':
+                        case 'TSNumberKeyword':
                             type |= TYPE_NUMBER;
                             break;
                         case 'StringLiteral':
                             type |= TYPE_ENUM;
                             break;
+                        case 'TSStringKeyword':
+                            type |= TYPE_STRING;
+                            break;
                         case 'TSArrayType':
                             type |= TYPE_ARRAY;
-                            break;
-                        case 'TSBooleanKeyword':
-                            type |= TYPE_BOOLEAN;
                             break;
                         case 'TSLiteralType':
                             extract(input.literal);
@@ -621,15 +621,11 @@ const customElement = (options) => {
                         case 'TSNullKeyword':
                             type |= TYPE_NULL;
                             break;
-                        case 'TSNumberKeyword':
-                            type |= TYPE_NUMBER;
-                            break;
+                        case 'Object':
                         case 'TSObjectKeyword':
                             type |= TYPE_OBJECT;
                             break;
-                        case 'TSStringKeyword':
-                            type |= TYPE_STRING;
-                            break;
+                        case 'Array':
                         case 'TSTupleType':
                             type |= TYPE_ARRAY;
                             break;
@@ -637,43 +633,23 @@ const customElement = (options) => {
                             type |= TYPE_OBJECT;
                             break;
                         case 'TSTypeReference':
-                            if (!input.typeName)
-                                break;
-                            switch (input.typeName.name) {
-                                case 'Array':
-                                    type |= TYPE_ARRAY;
-                                    break;
-                                case 'Boolean':
-                                    type |= TYPE_BOOLEAN;
-                                    break;
-                                case 'bool':
-                                    type |= TYPE_BOOLEAN;
-                                    break;
-                                case 'Date':
-                                    type |= TYPE_DATE;
-                                    break;
-                                case 'Number':
-                                    type |= TYPE_NUMBER;
-                                    break;
-                                case 'Object':
-                                    type |= TYPE_OBJECT;
-                                    break;
-                            }
+                            extract({ type: input?.typeName?.name });
                             break;
                         case 'TSUnionType':
                             input.types.forEach(extract);
                             break;
-                    }
-                    // TODO
-                    if (input?.type == 'TSParenthesizedType' &&
-                        input?.typeAnnotation?.type == 'TSIntersectionType') {
-                        let types = input.types || input.typeAnnotation.types;
-                        if (types.length != 2)
-                            return;
-                        types = types.filter((type) => type.type != 'TSTypeLiteral');
-                        if (types.length != 1)
-                            return;
-                        extract(types[0]);
+                        // TODO
+                        case 'TSParenthesizedType':
+                            if (input?.typeAnnotation?.type != 'TSIntersectionType')
+                                break;
+                            let types = input.types || input.typeAnnotation.types;
+                            if (types.length != 2)
+                                return;
+                            types = types.filter((type) => type.type != 'TSTypeLiteral');
+                            if (types.length != 1)
+                                return;
+                            extract(types[0]);
+                            break;
                     }
                 };
                 extract(getType(context.directoryPath, ast, path.parentPath.node.typeAnnotation?.typeAnnotation));
@@ -789,7 +765,7 @@ const DOCUMENT_OPTIONS = {
 const document = (options) => {
     const name = 'document';
     options = Object.assign({}, DOCUMENT_OPTIONS, options);
-    const write = (global) => {
+    const finish = (global) => {
         const json = {
             elements: []
         };
@@ -981,7 +957,7 @@ const document = (options) => {
         fs.ensureDirSync(dirname);
         fs.writeJSONSync(options.destination, json, { encoding: 'utf8', spaces: 2 });
     };
-    return { name, write };
+    return { name, finish };
 };
 
 const extract = () => {

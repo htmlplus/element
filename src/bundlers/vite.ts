@@ -1,12 +1,13 @@
 import path from 'path';
 
+import * as CONSTANTS from '../constants/index.js';
 import { TransformerPlugin, transformer } from '../transformer/index.js';
 
 export const vite = (...plugins: Array<TransformerPlugin>) => {
-  const { global, start, run, finish, write } = transformer(...plugins);
+  const { global, start, run, finish } = transformer(...plugins);
 
   return {
-    name: 'htmlplus',
+    name: CONSTANTS.KEY,
 
     async buildStart() {
       await start();
@@ -15,43 +16,32 @@ export const vite = (...plugins: Array<TransformerPlugin>) => {
     async load(id) {
       if (!id.endsWith('.tsx')) return;
 
-      let { script, skipped, stylePath } = await run(id);
+      const context = await run(id);
 
-      if (skipped) return;
+      if (context.skipped) return;
 
-      if (script && stylePath) {
-        script = script.replace(path.basename(stylePath), `${path.basename(stylePath)}?inline`);
+      if (context.script && context.stylePath) {
+        context.script = context.script.replace(path.basename(context.stylePath), `$&?inline`);
       }
 
-      return script;
-    },
-
-    async buildEnd() {
-      await finish();
+      return context.script;
     },
 
     async writeBundle(options, bundles) {
       // TODO
-      try {
-        for (const context of global.contexts) {
-          for (const key in bundles) {
-            if (!Object.hasOwnProperty.call(bundles, key)) continue;
-            const bundle = bundles[key];
-            if (!bundle.facadeModuleId.startsWith(context.filePath)) continue;
-            const modules = bundle['modules'];
-            for (const key in modules) {
-              if (!Object.hasOwnProperty.call(modules, key)) continue;
-              const module = modules[key];
-              if (!key.startsWith(context.stylePath || '')) continue;
-              context.styleContentTransformed = module.code;
-              break;
-            }
-            break;
-          }
-        }
-      } catch {}
+      global.contexts.forEach((context) => {
+        Object.keys(bundles).forEach((key) => {
+          const { facadeModuleId, modules } = bundles[key];
+          if (!facadeModuleId?.startsWith(context.filePath)) return;
+          const id = Object.keys(modules).find((key) => {
+            return key.startsWith(context.stylePath || '');
+          });
+          if (!id) return;
+          context.styleContentTransformed = modules[id].code;
+        });
+      });
 
-      await write();
+      await finish();
     }
   };
 };

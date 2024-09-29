@@ -1,10 +1,11 @@
+import * as CONSTANTS from '../constants/index.js';
 import { TransformerPlugin, transformer } from '../transformer/index.js';
 
 export const rollup = (...plugins: Array<TransformerPlugin>) => {
   const { start, run, finish } = transformer(...plugins);
 
   return {
-    name: 'htmlplus',
+    name: CONSTANTS.KEY,
 
     async buildStart() {
       await start();

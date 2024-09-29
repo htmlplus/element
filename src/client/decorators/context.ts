@@ -8,7 +8,7 @@ export function Provider(namespace: string) {
 
     const [MAIN, SUB] = namespace.split('.');
 
-    const prefix = `htmlplus:${MAIN}`;
+    const prefix = `${CONSTANTS.KEY}:${MAIN}`;
 
     const cleanups = (instance: HTMLPlusElement): Map<string, any> => {
       return (instance[symbol] ||= new Map());
@@ -85,7 +85,7 @@ export function Consumer(namespace: string) {
 
     const [MAIN, SUB] = namespace.split('.');
 
-    const prefix = `htmlplus:${MAIN}`;
+    const prefix = `${CONSTANTS.KEY}:${MAIN}`;
 
     const cleanups = (instance: HTMLPlusElement): Map<string, any> => {
       return (instance[symbol] ||= new Map());

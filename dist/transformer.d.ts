@@ -49,7 +49,6 @@ interface TransformerPlugin {
     start?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
     run?: (context: TransformerPluginContext, global: TransformerPluginGlobal) => Return<TransformerPluginContext>;
     finish?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
-    write?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
 }
 
 declare const transformer: (...plugins: TransformerPlugin[]) => {
@@ -57,7 +56,6 @@ declare const transformer: (...plugins: TransformerPlugin[]) => {
     start: () => Promise<void>;
     run: (filePath: string) => Promise<TransformerPluginContext>;
     finish: () => Promise<void>;
-    write: () => Promise<void>;
 };
 
 declare const ASSETS_OPTIONS: Partial<AssetsOptions>;
