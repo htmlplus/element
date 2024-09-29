@@ -1,3 +1,10 @@
+## [2.13.1](https://github.com/htmlplus/element/compare/v2.13.0...v2.13.1) (2024-09-29)
+
+
+### Bug Fixes
+
+* Enhance the logic to boost maintainability ([d12bae1](https://github.com/htmlplus/element/commit/d12bae19e38f16ca216c88e0a8acdd7241a44cdd))
+
 # [2.13.0](https://github.com/htmlplus/element/compare/v2.12.0...v2.13.0) (2024-08-13)
 
 
