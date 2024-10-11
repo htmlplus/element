@@ -1,7 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
 import { call } from './call.js';
-import { getStyles } from './getStyles.js';
 import { getTag } from './getTag.js';
 import { shadowRoot } from './shadowRoot.js';
 import { task } from './task.js';
@@ -59,7 +58,7 @@ export const request = (
 
     // TODO
     (() => {
-      const raw = getStyles(target);
+      const raw = target.constructor[CONSTANTS.STATIC_STYLE];
 
       if (!raw) return;
 

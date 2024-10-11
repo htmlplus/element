@@ -1,5 +1,5 @@
 import { kebabCase, camelCase, pascalCase } from 'change-case';
-import { API_HOST, STATIC_STYLE, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, KEY, API_INSTANCE, MAPPER, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_LOADED } from './constants.js';
+import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, KEY, API_INSTANCE, MAPPER, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_LOADED } from './constants.js';
 
 const appendToMethod = (target, key, handler) => {
     // Gets the previous function
@@ -262,10 +262,6 @@ const getFramework = (target) => {
         return 'react';
     if (has('__zone_symbol__'))
         return 'angular';
-};
-
-const getStyles = (target) => {
-    return target.constructor[STATIC_STYLE] ?? target[STATIC_STYLE];
 };
 
 const getTag = (target) => {
@@ -1125,7 +1121,7 @@ const request = (target, name, previous, callback) => {
         });
         // TODO
         (() => {
-            const raw = getStyles(target);
+            const raw = target.constructor[STATIC_STYLE];
             if (!raw)
                 return;
             const regex1 = /this-([\w-]+)(?:-([\w-]+))?/g;
