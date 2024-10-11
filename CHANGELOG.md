@@ -1,3 +1,10 @@
+## [2.13.2](https://github.com/htmlplus/element/compare/v2.13.1...v2.13.2) (2024-10-11)
+
+
+### Bug Fixes
+
+* Correct the retrieval of the static style. ([16f9bdc](https://github.com/htmlplus/element/commit/16f9bdc4c301ea65f5c74010a2be3f4cab64fb09))
+
 ## [2.13.1](https://github.com/htmlplus/element/compare/v2.13.0...v2.13.1) (2024-09-29)
 
 
