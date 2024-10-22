@@ -1,6 +1,6 @@
 import typescript from '@rollup/plugin-typescript';
 import { defineConfig } from 'rollup';
-import copy from 'rollup-plugin-copy'
+import copy from 'rollup-plugin-copy';
 import { dts } from 'rollup-plugin-dts';
 import { nodeExternals } from 'rollup-plugin-node-externals';
 
@@ -34,14 +34,7 @@ export default defineConfig([
         targets: [
           {
             dest: output.dir,
-            src: ['package-lock.json', 'README.md', 'src/jsx-runtime.d.ts'],
-          },
-          {
-            dest: output.dir,
-            src: 'package.json',
-            transform(contents) {
-              return JSON.stringify({ ...JSON.parse(contents), scripts: undefined }, null, 2);
-            }
+            src: 'src/jsx-runtime.d.ts'
           }
         ]
       })

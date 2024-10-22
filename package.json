@@ -4,10 +4,10 @@
   "license": "MIT",
   "sideEffects": false,
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
-  "description": "A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies. Powerd by Web Component.",
+  "description": "A powerful library for building scalable, reusable, fast, tastable and lightweight design system for any web technologies. Powered by Web Component.",
   "type": "module",
-  "main": "client.js",
-  "types": "client.d.ts",
+  "main": "./dist/client.js",
+  "types": "./dist/client.d.ts",
   "scripts": {
     "build": "npm run clean && rollup -c",
     "clean": "rimraf dist",
@@ -15,10 +15,28 @@
     "format": "prettier --write ."
   },
   "files": [
-    "**/*.*"
+    "./dist/*",
+    "./package.json",
+    "./README.md"
   ],
-  "publishConfig": {
-    "directory": "dist"
+  "exports": {
+    ".": {
+      "import": "./dist/client.js",
+      "types": "./dist/client.d.ts"
+    },
+    "./bundlers.js": {
+      "import": "./dist/bundlers.js",
+      "types": "./dist/bundlers.d.ts"
+    },
+    "./internal.js": {
+      "import": "./dist/internal.js",
+      "types": "./dist/internal.d.ts"
+    },
+    "./transformer.js": {
+      "import": "./dist/transformer.js",
+      "types": "./dist/transformer.d.ts"
+    },
+    "./jsx-runtime": "./dist/jsx-runtime.d.ts"
   },
   "engines": {
     "node": ">= 20.10.0"
