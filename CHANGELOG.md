@@ -1,3 +1,15 @@
+## [2.14.0](https://github.com/htmlplus/element/compare/v2.13.2...v2.14.0) (2024-10-22)
+
+### ⚠ BREAKING CHANGES
+
+* Revise the structure of the dist folder by adding an exports key to the package.json file.
+* Update the release conditions to ensure they are in accordance with the Conventional Commits specification.
+
+### Features
+
+* Revise the structure of the dist folder by adding an exports key to the package.json file. ([5744c9b](https://github.com/htmlplus/element/commit/5744c9b13f69fa3daec5f76b409c3f4811078fd6))
+* Update the release conditions to ensure they are in accordance with the Conventional Commits specification. ([324fca7](https://github.com/htmlplus/element/commit/324fca76b3c57280ef801bdc5230ae41abf566d8))
+
 ## [2.13.2](https://github.com/htmlplus/element/compare/v2.13.1...v2.13.2) (2024-10-11)
 
 
