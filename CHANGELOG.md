@@ -1,3 +1,13 @@
+## [3.0.0](https://github.com/htmlplus/element/compare/v2.14.0...v3.0.0) (2024-10-22)
+
+### ⚠ BREAKING CHANGES
+
+* Revise the .releaserc file to incorporate settings for breaking changes.
+
+### Bug Fixes
+
+* Revise the .releaserc file to incorporate settings for breaking changes. ([4bafd6f](https://github.com/htmlplus/element/commit/4bafd6fa07c75c23735e4d14b1676dd199f7b5e0))
+
 ## [2.14.0](https://github.com/htmlplus/element/compare/v2.13.2...v2.14.0) (2024-10-22)
 
 ### ⚠ BREAKING CHANGES

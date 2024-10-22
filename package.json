@@ -1,6 +1,6 @@
 {
   "name": "@htmlplus/element",
-  "version": "2.14.0",
+  "version": "3.0.0",
   "license": "MIT",
   "sideEffects": false,
   "author": "Masood Abdolian <m.abdolian@gmail.com>",
