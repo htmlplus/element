@@ -52,7 +52,7 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
                 }
               }
             }
-          } catch {}
+          } catch { }
 
           return false;
         })();
@@ -146,14 +146,14 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
           },
           // TODO
           returns != 'void' &&
-            comments.returns && {
-              tags: [
-                {
-                  key: 'returns',
-                  value: `${comments.returns}`
-                }
-              ]
-            }
+          comments.returns && {
+            tags: [
+              {
+                key: 'returns',
+                value: `${comments.returns}`
+              }
+            ]
+          }
         );
       });
 
@@ -182,7 +182,7 @@ export const document = (options?: DocumentOptions): TransformerPlugin => {
                 }
               }
             }
-          } catch {}
+          } catch { }
 
           return false;
         })();

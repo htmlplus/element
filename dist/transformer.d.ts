@@ -95,12 +95,7 @@ interface ParseOptions extends ParserOptions {
 }
 declare const parse: (options?: ParseOptions) => TransformerPlugin;
 
-declare const READ_OPTIONS: Partial<ReadOptions>;
-interface ReadOptions {
-    encoding: 'utf8' | 'ascii' | 'utf-8' | 'utf16le' | 'utf-16le' | 'ucs2' | 'ucs-2' | 'base64' | 'base64url' | 'latin1' | 'binary' | 'hex';
-    flag?: string | undefined;
-}
-declare const read: (options?: ReadOptions) => TransformerPlugin;
+declare const read: () => TransformerPlugin;
 
 declare const README_OPTIONS: Partial<ReadmeOptions>;
 interface ReadmeOptions {
@@ -134,4 +129,4 @@ interface WebTypesOptions {
 }
 declare const webTypes: (options?: WebTypesOptions) => TransformerPlugin;
 
-export { ASSETS_OPTIONS, type AssetsOptions, COPY_OPTIONS, CUSTOM_ELEMENT_OPTIONS, type CopyOptions, type CustomElementOptions, DOCUMENT_OPTIONS, type DocumentOptions, PARSE_OPTIONS, type ParseOptions, README_OPTIONS, READ_OPTIONS, type ReadOptions, type ReadmeOptions, STYLE_OPTIONS, type StyleOptions, type TransformerPlugin, type TransformerPluginContext, type TransformerPluginGlobal, VISUAL_STUDIO_CODE_OPTIONS, type VisualStudioCodeOptions, WEB_TYPES_OPTIONS, type WebTypesOptions, assets, copy, customElement, document, extract, parse, read, readme, style, transformer, validate, visualStudioCode, webTypes };
+export { ASSETS_OPTIONS, type AssetsOptions, COPY_OPTIONS, CUSTOM_ELEMENT_OPTIONS, type CopyOptions, type CustomElementOptions, DOCUMENT_OPTIONS, type DocumentOptions, PARSE_OPTIONS, type ParseOptions, README_OPTIONS, type ReadmeOptions, STYLE_OPTIONS, type StyleOptions, type TransformerPlugin, type TransformerPluginContext, type TransformerPluginGlobal, VISUAL_STUDIO_CODE_OPTIONS, type VisualStudioCodeOptions, WEB_TYPES_OPTIONS, type WebTypesOptions, assets, copy, customElement, document, extract, parse, read, readme, style, transformer, validate, visualStudioCode, webTypes };

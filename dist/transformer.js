@@ -385,6 +385,9 @@ const hasDecorator = (node, name) => {
 
 // TODO: add options
 const print = (ast) => {
+    // TODO: the `ast` should not be undefined
+    if (!ast)
+        return '';
     return (generator.default || generator)(ast, { decoratorsBeforeExport: true }).code;
 };
 
@@ -992,16 +995,12 @@ const parse = (options) => {
     return { name, run };
 };
 
-const READ_OPTIONS = {
-    encoding: 'utf8'
-};
-const read = (options) => {
+const read = () => {
     const name = 'read';
-    options = Object.assign({}, READ_OPTIONS, options);
     const run = (context) => {
         if (!context.filePath)
             return;
-        context.fileContent = fs.readFileSync(context.filePath, options);
+        context.fileContent = fs.readFileSync(context.filePath, 'utf8');
         context.fileExtension = path.extname(context.filePath);
         context.fileName = path.basename(context.filePath, context.fileExtension);
         context.directoryPath = path.dirname(context.filePath);
@@ -1250,4 +1249,4 @@ const webTypes = (options) => {
     return { name, finish };
 };
 
-export { ASSETS_OPTIONS, COPY_OPTIONS, CUSTOM_ELEMENT_OPTIONS, DOCUMENT_OPTIONS, PARSE_OPTIONS, README_OPTIONS, READ_OPTIONS, STYLE_OPTIONS, VISUAL_STUDIO_CODE_OPTIONS, WEB_TYPES_OPTIONS, assets, copy, customElement, document, extract, parse, read, readme, style, transformer, validate, visualStudioCode, webTypes };
+export { ASSETS_OPTIONS, COPY_OPTIONS, CUSTOM_ELEMENT_OPTIONS, DOCUMENT_OPTIONS, PARSE_OPTIONS, README_OPTIONS, STYLE_OPTIONS, VISUAL_STUDIO_CODE_OPTIONS, WEB_TYPES_OPTIONS, assets, copy, customElement, document, extract, parse, read, readme, style, transformer, validate, visualStudioCode, webTypes };

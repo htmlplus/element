@@ -1,6 +1,6 @@
 import 'react';
 
-type WithPart<K> = React.JSX.IntrinsicElements[K] & { part?: string };
+type WithPart<K extends keyof React.JSX.IntrinsicElements> = React.JSX.IntrinsicElements[K] & { part?: string };
 
 declare namespace JSX {
   interface IntrinsicElements {
