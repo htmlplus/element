@@ -1,3 +1,9 @@
+## [3.0.1](https://github.com/htmlplus/element/compare/v3.0.0...v3.0.1) (2024-10-30)
+
+### Bug Fixes
+
+* Upgrade all npm packages to their latest versions ([cdfd5b0](https://github.com/htmlplus/element/commit/cdfd5b07a390370fd0aa6af5ebeb0e4c6f9c7967))
+
 ## [3.0.0](https://github.com/htmlplus/element/compare/v2.14.0...v3.0.0) (2024-10-22)
 
 ### ⚠ BREAKING CHANGES
