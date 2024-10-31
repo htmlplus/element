@@ -1,12 +1,12 @@
 import { KEY } from './constants.js';
 import { transformer } from './transformer.js';
 import 'fs-extra';
+import 'glob';
 import '@babel/template';
 import '@babel/types';
 import 'change-case';
 import '@babel/traverse';
 import '@babel/parser';
-import 'glob';
 import '@babel/generator';
 import path from 'node:path';
 import 'ora';

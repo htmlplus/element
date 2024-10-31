@@ -86,6 +86,9 @@ const ASSETS_OPTIONS = {
     },
     source(context) {
         return path.join(context.directoryPath, 'assets');
+    },
+    json(context) {
+        return path.join('dist', 'assets', context.fileName + '.json');
     }
 };
 const assets = (options) => {
@@ -100,6 +103,12 @@ const assets = (options) => {
             if (!fs.existsSync(context.assetsSource))
                 continue;
             fs.copySync(context.assetsSource, context.assetsDestination);
+            const json = options.json?.(context);
+            if (!json)
+                continue;
+            fs.ensureDirSync(path.dirname(json));
+            const files = glob.sync('**/*.*', { cwd: context.assetsDestination });
+            fs.writeJSONSync(json, files, { encoding: 'utf8', spaces: 2 });
         }
     };
     return { name, finish };

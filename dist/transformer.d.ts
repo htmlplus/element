@@ -62,6 +62,7 @@ declare const ASSETS_OPTIONS: Partial<AssetsOptions>;
 interface AssetsOptions {
     destination?: (context: TransformerPluginContext) => string;
     source?: (context: TransformerPluginContext) => string;
+    json?: (context: TransformerPluginContext) => string;
 }
 declare const assets: (options?: AssetsOptions) => TransformerPlugin;
 
