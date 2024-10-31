@@ -1,3 +1,9 @@
+## [3.1.0](https://github.com/htmlplus/element/compare/v3.0.1...v3.1.0) (2024-10-31)
+
+### Features
+
+* Integrate a JSON generator into the assets plugin ([e2c70b9](https://github.com/htmlplus/element/commit/e2c70b9928666e3253b7d5e93394c3810d818b9c))
+
 ## [3.0.1](https://github.com/htmlplus/element/compare/v3.0.0...v3.0.1) (2024-10-30)
 
 ### Bug Fixes
