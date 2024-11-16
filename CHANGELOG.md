@@ -1,3 +1,9 @@
+## [3.1.1](https://github.com/htmlplus/element/compare/v3.1.0...v3.1.1) (2024-11-16)
+
+### Bug Fixes
+
+* Roll back the Node.js engine from version 22.10.0 to version 20.10.0 ([739af3a](https://github.com/htmlplus/element/commit/739af3a15276536585245fe7f70a5d8c3d62d967))
+
 ## [3.1.0](https://github.com/htmlplus/element/compare/v3.0.1...v3.1.0) (2024-10-31)
 
 ### Features
