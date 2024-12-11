@@ -1112,7 +1112,7 @@ const request = (target, name, previous, callback) => {
         // Calls the lifecycle's callback before the rendering phase.
         call(target, LIFECYCLE_UPDATE, states);
         // Renders template to the DOM.
-        render(shadowRoot(target), () => call(target, METHOD_RENDER));
+        render(shadowRoot(target), () => call(target, METHOD_RENDER) ?? null);
         // Invokes requests' callback.
         stacks.forEach((state) => {
             state.callbacks.forEach((callback, index, callbacks) => {

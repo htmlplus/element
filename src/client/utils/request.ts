@@ -47,7 +47,7 @@ export const request = (
     call(target, CONSTANTS.LIFECYCLE_UPDATE, states);
 
     // Renders template to the DOM.
-    render(shadowRoot(target), () => call(target, CONSTANTS.METHOD_RENDER));
+    render(shadowRoot(target), () => call(target, CONSTANTS.METHOD_RENDER) ?? null);
 
     // Invokes requests' callback.
     stacks.forEach((state) => {
