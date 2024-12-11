@@ -1,3 +1,9 @@
+## [3.1.2](https://github.com/htmlplus/element/compare/v3.1.1...v3.1.2) (2024-12-11)
+
+### Bug Fixes
+
+* Resolve the rendering issue of the element template without utilizing the render function ([04d3dcf](https://github.com/htmlplus/element/commit/04d3dcf1b38cf10cacc34bd945682cc043995cc3))
+
 ## [3.1.1](https://github.com/htmlplus/element/compare/v3.1.0...v3.1.1) (2024-11-16)
 
 ### Bug Fixes
