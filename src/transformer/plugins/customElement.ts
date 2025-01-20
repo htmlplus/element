@@ -192,7 +192,7 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
                           parts.push(' ', '.innerHTML');
                           parts.push('=');
                           parts.push(attribute.value.expression.properties.at(0).value);
-                        } catch {}
+                        } catch { }
                         continue;
                       }
 
@@ -497,6 +497,16 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
                   "${context.elementTagName}": ${context.elementInterfaceName};
                 }
                 
+                namespace JSX {
+                  interface IntrinsicElements {
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & {
+                      [key: string]: any;
+                    };
+                  }
+                }
+              }
+
+              declare module "react" {
                 namespace JSX {
                   interface IntrinsicElements {
                     "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & {
