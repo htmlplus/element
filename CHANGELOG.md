@@ -1,3 +1,9 @@
+## [3.1.3](https://github.com/htmlplus/element/compare/v3.1.2...v3.1.3) (2025-01-20)
+
+### Bug Fixes
+
+* Support for the new JSX namespace declaration module in React 19 ([32cce64](https://github.com/htmlplus/element/commit/32cce649c27481732f352ef64ed0840aa00aa4a7))
+
 ## [3.1.2](https://github.com/htmlplus/element/compare/v3.1.1...v3.1.2) (2024-12-11)
 
 ### Bug Fixes
