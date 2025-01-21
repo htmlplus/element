@@ -757,6 +757,16 @@ const customElement = (options) => {
                 }
               }
 
+              declare module "react" {
+                namespace JSX {
+                  interface IntrinsicElements {
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & {
+                      [key: string]: any;
+                    };
+                  }
+                }
+              }
+
               export type ${context.className}Element = globalThis.${context.elementInterfaceName}
             `, {
                         plugins: ['typescript'],
