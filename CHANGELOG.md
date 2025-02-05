@@ -1,3 +1,9 @@
+## [3.1.4](https://github.com/htmlplus/element/compare/v3.1.3...v3.1.4) (2025-02-05)
+
+### Bug Fixes
+
+* Enhance the property parser to support TSMappedType ([430f46b](https://github.com/htmlplus/element/commit/430f46bd7ac8aac0ac04dfaa88614a4397fc8986))
+
 ## [3.1.3](https://github.com/htmlplus/element/compare/v3.1.2...v3.1.3) (2025-01-20)
 
 ### Bug Fixes
