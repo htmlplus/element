@@ -8,7 +8,7 @@ import template from '@babel/template';
 import { pascalCase, kebabCase, camelCase, capitalCase } from 'change-case';
 import ora from 'ora';
 import path, { join, resolve, dirname } from 'node:path';
-import { KEY, COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, UTILS_STYLES_LOCAL, UTILS_PATH, DECORATOR_PROPERTY_TYPE, UTILS_STYLES_IMPORTED, ELEMENT_HOST_NAME, UTILS_HTML_IMPORTED, UTILS_HTML_LOCAL, TYPE_OBJECT, TYPE_ARRAY, TYPE_NULL, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, UTILS_ATTRIBUTES_IMPORTED, UTILS_ATTRIBUTES_LOCAL, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, PACKAGE_NAME, DECORATOR_ELEMENT } from './constants.js';
+import { KEY, COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, UTILS_STYLES_LOCAL, UTILS_PATH, DECORATOR_PROPERTY_TYPE, UTILS_STYLES_IMPORTED, ELEMENT_HOST_NAME, UTILS_HTML_IMPORTED, UTILS_HTML_LOCAL, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, UTILS_ATTRIBUTES_IMPORTED, UTILS_ATTRIBUTES_LOCAL, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, PACKAGE_NAME, DECORATOR_ELEMENT } from './constants.js';
 
 const logger = ora({
     color: 'yellow'
@@ -512,7 +512,9 @@ const customElement = (options) => {
                                 return attribute.type == 'JSXSpreadAttribute';
                             });
                             if (hasSpreadAttribute) {
-                                parts.push(' ', TODO(t.identifier('TODO'), attributes));
+                                parts.push(' ', 'ref=', t.arrowFunctionExpression([
+                                    t.identifier('$element')
+                                ], TODO(t.identifier('$element'), attributes)));
                             }
                             else {
                                 for (const attribute of attributes) {
@@ -624,7 +626,9 @@ const customElement = (options) => {
                         case 'TSStringKeyword':
                             type |= TYPE_STRING;
                             break;
+                        case 'Array':
                         case 'TSArrayType':
+                        case 'TSTupleType':
                             type |= TYPE_ARRAY;
                             break;
                         case 'TSLiteralType':
@@ -635,12 +639,7 @@ const customElement = (options) => {
                             break;
                         case 'Object':
                         case 'TSObjectKeyword':
-                            type |= TYPE_OBJECT;
-                            break;
-                        case 'Array':
-                        case 'TSTupleType':
-                            type |= TYPE_ARRAY;
-                            break;
+                        case 'TSMappedType':
                         case 'TSTypeLiteral':
                             type |= TYPE_OBJECT;
                             break;
@@ -1135,7 +1134,7 @@ const visualStudioCode = (options) => {
     options = Object.assign({}, VISUAL_STUDIO_CODE_OPTIONS, options);
     const finish = (global) => {
         const contexts = global.contexts.sort((a, b) => {
-            return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? +1 : -1;
+            return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? 1 : -1;
         });
         const json = {
             $schema: 'TODO',
@@ -1207,7 +1206,7 @@ const webTypes = (options) => {
     options = Object.assign({}, WEB_TYPES_OPTIONS, options);
     const finish = (global) => {
         const contexts = global.contexts.sort((a, b) => {
-            return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? +1 : -1;
+            return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? 1 : -1;
         });
         const json = {
             '$schema': 'http://json.schemastore.org/web-types',

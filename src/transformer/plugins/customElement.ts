@@ -182,7 +182,19 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
               });
 
               if (hasSpreadAttribute) {
-                parts.push(' ', TODO(t.identifier('TODO'), attributes));
+                parts.push(
+                  ' ',
+                  'ref=',
+                  t.arrowFunctionExpression(
+                    [
+                      t.identifier('$element')
+                    ],
+                    TODO(
+                      t.identifier('$element'),
+                      attributes
+                    )
+                  )
+                );
               } else {
                 for (const attribute of attributes) {
                   switch (attribute.type) {
@@ -325,7 +337,9 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
             case 'TSStringKeyword':
               type |= CONSTANTS.TYPE_STRING;
               break;
+            case 'Array':
             case 'TSArrayType':
+            case 'TSTupleType':
               type |= CONSTANTS.TYPE_ARRAY;
               break;
             case 'TSLiteralType':
@@ -336,12 +350,7 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
               break;
             case 'Object':
             case 'TSObjectKeyword':
-              type |= CONSTANTS.TYPE_OBJECT;
-              break;
-            case 'Array':
-            case 'TSTupleType':
-              type |= CONSTANTS.TYPE_ARRAY;
-              break;
+            case 'TSMappedType':
             case 'TSTypeLiteral':
               type |= CONSTANTS.TYPE_OBJECT;
               break;
