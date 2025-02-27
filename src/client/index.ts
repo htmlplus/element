@@ -7,6 +7,8 @@ export {
   getConfig,
   host,
   isCSSColor,
+  toCSSColor,
+  toCSSUnit,
   isRTL,
   query,
   queryAll,

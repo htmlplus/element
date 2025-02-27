@@ -1,3 +1,3 @@
-export { p as attributes, r as html, u as styles } from './client-BsD9JZY4.js';
+export { v as attributes, w as html, x as styles } from './client-CBHDnVtZ.js';
 import 'change-case';
 import './constants.js';

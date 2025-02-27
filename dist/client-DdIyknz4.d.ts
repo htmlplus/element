@@ -188,6 +188,8 @@ declare function Slots$1(): (target: HTMLPlusElement, key: PropertyKey) => void;
  */
 declare function State(): (target: HTMLPlusElement, key: PropertyKey) => void;
 
+declare function Style(): (target: HTMLPlusElement, key: PropertyKey) => void;
+
 /**
  * Monitors `@Property` and `@State` to detect changes.
  * The decorated method will be called after any changes,
@@ -297,6 +299,10 @@ type Slots = {
  */
 declare const slots: (target: HTMLElement | HTMLPlusElement) => Slots;
 
+declare const toCSSColor: (input: string) => string | undefined;
+
+declare const toCSSUnit: (input?: number | string | null) => string | undefined;
+
 /**
  * Converts a value to a unit.
  */
@@ -306,4 +312,4 @@ declare const attributes: any;
 declare const html: any;
 declare const styles: any;
 
-export { styles as A, Bind as B, type Config as C, Direction as D, Element$1 as E, Host as H, IsRTL as I, type ListenOptions as L, Method as M, Provider as P, Query as Q, Slots$1 as S, Watch as W, dispatch as a, isRTL as b, classes as c, direction as d, queryAll as e, off as f, getConfig as g, host as h, isCSSColor as i, setConfig as j, type ConfigOptions as k, Consumer as l, type EventEmitter as m, type EventOptions as n, on as o, Event as p, query as q, Listen as r, slots as s, toUnit as t, type PropertyOptions as u, Property as v, QueryAll as w, State as x, attributes as y, html as z };
+export { Style as A, Bind as B, type Config as C, Direction as D, Element$1 as E, attributes as F, html as G, Host as H, IsRTL as I, styles as J, type ListenOptions as L, Method as M, Provider as P, Query as Q, Slots$1 as S, Watch as W, dispatch as a, toCSSUnit as b, classes as c, direction as d, isRTL as e, queryAll as f, getConfig as g, host as h, isCSSColor as i, off as j, toUnit as k, setConfig as l, type ConfigOptions as m, Consumer as n, on as o, type EventEmitter as p, query as q, type EventOptions as r, slots as s, toCSSColor as t, Event as u, Listen as v, type PropertyOptions as w, Property as x, QueryAll as y, State as z };

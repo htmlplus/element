@@ -1,5 +1,5 @@
 import { kebabCase, camelCase, pascalCase } from 'change-case';
-import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, KEY, API_INSTANCE, MAPPER, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_LOADED } from './constants.js';
+import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, API_INSTANCE, MAPPER, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_LOADED } from './constants.js';
 
 const appendToMethod = (target, key, handler) => {
     // Gets the previous function
@@ -1204,6 +1204,22 @@ const styles$1 = (input) => {
         .join('; ');
 };
 
+const toCSSColor = (input) => {
+    return isCSSColor(input) ? input : undefined;
+};
+
+const toCSSUnit = (input) => {
+    if (input == null || input === '') {
+        return;
+    }
+    if (typeof input === 'number' || !isNaN(Number(input))) {
+        return `${input}px`;
+    }
+    if (/^\d+(\.\d+)?(px|pt|cm|mm|in|em|rem|%|vw|vh)$/.test(input)) {
+        return input;
+    }
+};
+
 function toDecorator(util, ...parameters) {
     return function (target, key) {
         defineProperty(target, key, {
@@ -1755,6 +1771,70 @@ function State() {
     };
 }
 
+// TODO: check the logic
+function Style() {
+    return function (target, key) {
+        const LAST = Symbol();
+        const SHEET = Symbol();
+        appendToMethod(target, LIFECYCLE_UPDATED, function () {
+            let sheet = this[SHEET];
+            let value = this[key];
+            const update = (value) => (result) => {
+                if (value && value !== this[LAST])
+                    return;
+                sheet.replaceSync(toCssString(result));
+                this[LAST] = undefined;
+            };
+            if (!sheet) {
+                sheet = new CSSStyleSheet();
+                this[SHEET] = sheet;
+                shadowRoot(this)?.adoptedStyleSheets.push(sheet);
+            }
+            if (typeof value === 'function') {
+                value = value.call(this);
+            }
+            if (value instanceof Promise) {
+                value
+                    .then(update(this[LAST] = value))
+                    .catch((error) => {
+                    throw new Error('TODO', { cause: error });
+                });
+            }
+            else {
+                update()(value);
+            }
+        });
+    };
+}
+const toCssString = (input, parent) => {
+    if (typeof input == 'string') {
+        return input.trim();
+    }
+    if (Array.isArray(input)) {
+        return input
+            .map((item) => toCssString(item, parent))
+            .filter(Boolean)
+            .join('\n');
+    }
+    if (typeof input != 'object')
+        return '';
+    let result = '';
+    for (const key of Object.keys(input)) {
+        const value = input[key];
+        const ignore = [null, undefined, false].includes(value);
+        if (ignore)
+            continue;
+        const cssKey = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+        if (typeof value === 'object') {
+            result += `${cssKey} {${toCssString(value, cssKey)}}`;
+        }
+        else {
+            result += `${cssKey}: ${value};`;
+        }
+    }
+    return parent ? result : `:host {${result}}`;
+};
+
 /**
  * Monitors `@Property` and `@State` to detect changes.
  * The decorated method will be called after any changes,
@@ -1789,4 +1869,4 @@ const attributes = attributes$2;
 const html = html$1;
 const styles = styles$1;
 
-export { Bind as B, Consumer as C, Direction as D, Element as E, Host as H, IsRTL as I, Listen as L, Method as M, Provider as P, Query as Q, Slots as S, Watch as W, dispatch as a, isRTL as b, classes as c, direction as d, queryAll as e, off as f, getConfig as g, host as h, isCSSColor as i, setConfig as j, Event as k, Property as l, QueryAll as m, State as n, on as o, attributes as p, query as q, html as r, slots as s, toUnit as t, styles as u };
+export { Bind as B, Consumer as C, Direction as D, Element as E, Host as H, IsRTL as I, Listen as L, Method as M, Provider as P, Query as Q, Slots as S, Watch as W, dispatch as a, toCSSUnit as b, classes as c, direction as d, isRTL as e, queryAll as f, getConfig as g, host as h, isCSSColor as i, off as j, toUnit as k, setConfig as l, Event as m, Property as n, on as o, QueryAll as p, query as q, State as r, slots as s, toCSSColor as t, Style as u, attributes as v, html as w, styles as x };
