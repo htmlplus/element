@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/htmlplus/element/compare/v3.1.4...v3.2.0) (2025-02-27)
+
+### Features
+
+* Implement the `toCSSColor` and `toCSSUnit` utility functions to facilitate the conversion of colors and sizes ([2b3cf10](https://github.com/htmlplus/element/commit/2b3cf1013b4505579ebaa5bf500eaa9f3bf9533f))
+* Implement the experimental `style` decorator to dynamically update styles from within the element logic ([174db86](https://github.com/htmlplus/element/commit/174db860f535e5150cded2308d4b4f6681d31e10))
+
 ## [3.1.4](https://github.com/htmlplus/element/compare/v3.1.3...v3.1.4) (2025-02-05)
 
 ### Bug Fixes
