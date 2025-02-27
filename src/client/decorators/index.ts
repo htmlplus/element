@@ -12,4 +12,5 @@ export * from './query.js';
 export * from './queryAll.js';
 export * from './slots.js';
 export * from './state.js';
+export * from './style.js';
 export * from './watch.js';
