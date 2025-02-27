@@ -22,6 +22,8 @@ export * from './slots.js';
 export * from './styles.js';
 export * from './task.js';
 export * from './toBoolean.js';
+export * from './toCSSColor.js';
+export * from './toCSSUnit.js';
 export * from './toDecorator.js';
 export * from './toEvent.js';
 export * from './toProperty.js';
