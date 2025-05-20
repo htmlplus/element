@@ -1,4 +1,3 @@
-export * from './appendToMethod.js';
 export * from './attributes.js';
 export * from './call.js';
 export * from './classes.js';
@@ -16,7 +15,7 @@ export * from './isServer.js';
 export * from './merge.js';
 export * from './query.js';
 export * from './queryAll.js';
-export * from './request.js';
+export * from './requestUpdate.js';
 export * from './shadowRoot.js';
 export * from './slots.js';
 export * from './styles.js';
@@ -31,3 +30,4 @@ export * from './toUnit.js';
 export * from './typeOf.js';
 export * from './uhtml.js';
 export * from './updateAttribute.js';
+export * from './wrapMethod.js';

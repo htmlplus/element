@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
-import { appendToMethod, shadowRoot } from '../utils/index.js';
+import { shadowRoot, wrapMethod } from '../utils/index.js';
 
 // TODO: check the logic
 
@@ -10,7 +10,7 @@ export function Style() {
 
     const SHEET = Symbol();
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function () {
+    wrapMethod('before', target, CONSTANTS.LIFECYCLE_UPDATED, function () {
       let sheet = this[SHEET];
 
       let value = this[key];
@@ -36,16 +36,14 @@ export function Style() {
       }
 
       if (value instanceof Promise) {
-        value
-          .then(update(this[LAST] = value))
-          .catch((error) => {
-            throw new Error('TODO', { cause: error })
-          })
+        value.then(update((this[LAST] = value))).catch((error) => {
+          throw new Error('TODO', { cause: error });
+        });
       } else {
         update()(value);
       }
-    })
-  }
+    });
+  };
 }
 
 const toCssString = (input: any, parent?: string): string => {
@@ -81,4 +79,4 @@ const toCssString = (input: any, parent?: string): string => {
   }
 
   return parent ? result : `:host {${result}}`;
-}
+};

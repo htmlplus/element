@@ -147,6 +147,46 @@ TODO
 </details>
 
 <details>
+  <summary>Debounce</summary>
+  
+Ensures that the method executes only after the specified delay, resetting the timer if called again within the delay period.
+
+In the `my-element.tsx` file.
+
+```tsx
+import { Debounce, Element, State } from '@htmlplus/element';
+
+@Element()
+export class MyCounter {
+  @State()
+  value: number = 0;
+
+  @Debounce()
+  onClick() {
+    this.value++;
+  }
+
+  render() {
+    return (
+      <host onClick={this.onClick}>
+        Count is {this.value}
+      </host>
+    )
+  }
+}
+```
+
+In the `index.html` file.
+
+```html
+<body dir="rtl">
+  <my-counter></my-counter>
+</body>
+```
+
+</details>
+
+<details>
   <summary>Direction</summary>
   
 Indicates whether the [Direction](https://mdn.io/css-direction) of the element is `Right-To-Left` or `Left-To-Right`.
@@ -540,7 +580,7 @@ export class MyButton {
   @Query('.btn')
   buttonRef!: HTMLButtonElement;
 
-  loadedCallback() {
+  readyCallback() {
     console.log(this.buttonRef); // <button class="btn"></button>
   }
 
@@ -587,7 +627,7 @@ export class MyButton {
   @QueryAll('span')
   spanRefs!: NodeList;
 
-  loadedCallback() {
+  readyCallback() {
     console.log(this.spanRefs); // [span, span]
   }
 
@@ -897,7 +937,7 @@ TODO
 <details>
   <summary>connectedCallback</summary>
 
-A lifecycle callback method that is called each time the element is added to the document.
+Invoked when an element is added to the document's DOM.
 
 ```js
 import { Element } from '@htmlplus/element';
@@ -915,7 +955,7 @@ export class MyElement {
 <details>
   <summary>disconnectedCallback</summary>
 
-TODO
+Invoked when an element is removed from the document's DOM.
 
 ```js
 import { Element } from '@htmlplus/element';
@@ -931,17 +971,40 @@ export class MyElement {
 </details>
 
 <details>
-  <summary>loadedCallback</summary>
+  <summary>prepareCallback</summary>
 
-TODO
+This lifecycle is asynchronous and is invoked before all other lifecycles.
 
 ```js
 import { Element } from '@htmlplus/element';
 
 @Element()
 export class MyElement {
-  loadedCallback() {
-    console.log('Element is loaded!');
+  prepareCallback() {
+    return new Promise((resolve) => {
+      setTimeout(resolve, 2500);
+    })
+  }
+  connectedCallback() {
+    console.log('The element connects after 2500 milliseconds!');
+  }
+}
+```
+
+</details>
+
+<details>
+  <summary>readyCallback</summary>
+
+Invoked after the elements's DOM has been updated the first time, immediately before `updatedCallback` is called.
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  readyCallback() {
+    console.log('Element is ready!');
   }
 }
 ```
@@ -951,14 +1014,42 @@ export class MyElement {
 <details>
   <summary>updateCallback</summary>
 
-TODO
+Invoked before the element is rendered, this method receives a Map where keys represent the names of changed properties, and values hold their corresponding previous states. Modifying Properties/State within this method does not trigger an element update.
+
+```js
+import { Element, Property } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  @Property()
+  value?: number = 0;
+
+  updateCallback(changes) {
+    console.log('Changed properties are: ', changes);
+  }
+}
+```
 
 </details>
 
 <details>
   <summary>updatedCallback</summary>
 
-TODO
+Invoked after the element is rendered, this method receives a Map where keys represent the names of changed properties, and values hold their corresponding previous states.
+
+```js
+import { Element, Property } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  @Property()
+  value?: number = 0;
+
+  updatedCallback(changes) {
+    console.log('Changed properties are: ', changes);
+  }
+}
+```
 
 </details>
 

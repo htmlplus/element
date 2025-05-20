@@ -1,13 +1,9 @@
 export const KEY = 'htmlplus';
 export const PACKAGE_NAME = '@htmlplus/element';
 
-// TODO
-export const MAPPER = Symbol();
-
 // APIs
 export const API_CONNECTED = Symbol();
 export const API_HOST = Symbol();
-export const API_INSTANCE = Symbol();
 export const API_REQUEST = Symbol();
 export const API_RENDER_COMPLETED = Symbol();
 export const API_STACKS = Symbol();
@@ -35,7 +31,8 @@ export const LIFECYCLE_ADOPTED = 'adoptedCallback';
 export const LIFECYCLE_CONNECTED = 'connectedCallback';
 export const LIFECYCLE_CONSTRUCTED = 'constructedCallback';
 export const LIFECYCLE_DISCONNECTED = 'disconnectedCallback';
-export const LIFECYCLE_LOADED = 'loadedCallback';
+export const LIFECYCLE_READY = 'readyCallback';
+export const LIFECYCLE_PREPARE = 'prepareCallback';
 export const LIFECYCLE_UPDATE = 'updateCallback';
 export const LIFECYCLE_UPDATED = 'updatedCallback';
 

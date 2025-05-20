@@ -1,5 +1,5 @@
 import { HTMLPlusElement } from '../../types/index.js';
-import { defineProperty, request } from '../utils/index.js';
+import { defineProperty, requestUpdate } from '../utils/index.js';
 
 /**
  * Applying this decorator to any `class property` will trigger the
@@ -7,25 +7,25 @@ import { defineProperty, request } from '../utils/index.js';
  */
 export function State() {
   return function (target: HTMLPlusElement, key: PropertyKey) {
+    const KEY = Symbol();
+
     const name = String(key);
 
-    const symbol = Symbol();
+    defineProperty(target, key, {
+      enumerable: true,
+      configurable: true,
+      get() {
+        return this[KEY];
+      },
+      set(next) {
+        const previous = this[KEY];
 
-    function get(this) {
-      return this[symbol];
-    }
+        if (next === previous) return;
 
-    function set(this, next) {
-      const previous = this[symbol];
+        this[KEY] = next;
 
-      if (next === previous) return;
-
-      this[symbol] = next;
-
-      request(this, name, previous);
-    }
-
-    // TODO: configurable
-    defineProperty(target, key, { get, set, configurable: true });
+        requestUpdate(this, name, previous);
+      }
+    });
   };
 }

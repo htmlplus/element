@@ -1,7 +1,7 @@
 import { kebabCase, pascalCase } from 'change-case';
 
 import { HTMLPlusElement } from '../../types/index.js';
-import { defineProperty, dispatch, getConfig, getFramework, host } from '../utils/index.js';
+import { dispatch, getConfig, getFramework, host } from '../utils/index.js';
 
 /**
  * A function type that generates a `CustomEvent`.
@@ -40,59 +40,55 @@ export interface EventOptions {
  */
 export function Event<T = any>(options: EventOptions = {}) {
   return function (target: HTMLPlusElement, key: PropertyKey) {
-    defineProperty(target, key, {
-      get() {
-        return (detail?: T): CustomEvent<T> => {
-          const element = host(this);
+    target[key] = function (detail?: T): CustomEvent<T> {
+      const element = host(this);
 
-          const framework = getFramework(this);
+      const framework = getFramework(this);
 
-          options.bubbles ??= false;
+      options.bubbles ??= false;
 
-          let type = String(key);
+      let type = String(key);
 
-          switch (framework) {
-            // TODO: Experimental
-            case 'blazor':
-              options.bubbles = true;
+      switch (framework) {
+        // TODO: Experimental
+        case 'blazor':
+          options.bubbles = true;
 
-              type = pascalCase(type);
+          type = pascalCase(type);
 
-              try {
-                window['Blazor'].registerCustomEventType(type, {
-                  createEventArgs: (event) => ({
-                    detail: event.detail
-                  })
-                });
-              } catch {}
-              break;
+          try {
+            window['Blazor'].registerCustomEventType(type, {
+              createEventArgs: (event) => ({
+                detail: event.detail
+              })
+            });
+          } catch {}
+          break;
 
-            case 'qwik':
-            case 'solid':
-              type = pascalCase(type).toLowerCase();
-              break;
+        case 'qwik':
+        case 'solid':
+          type = pascalCase(type).toLowerCase();
+          break;
 
-            case 'react':
-            case 'preact':
-              type = pascalCase(type);
-              break;
+        case 'react':
+        case 'preact':
+          type = pascalCase(type);
+          break;
 
-            default:
-              type = kebabCase(type);
-              break;
-          }
-
-          let event: CustomEvent<T>;
-
-          event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
-
-          event && element.dispatchEvent(event);
-
-          event ||= dispatch<T>(this, type, { ...options, detail });
-
-          return event;
-        };
+        default:
+          type = kebabCase(type);
+          break;
       }
-    });
+
+      let event: CustomEvent<T>;
+
+      event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
+
+      event && element.dispatchEvent(event);
+
+      event ||= dispatch<T>(this, type, { ...options, detail });
+
+      return event;
+    };
   };
 }

@@ -1,8 +1,6 @@
-import { camelCase } from 'change-case';
-
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
-import { call, getConfig, getTag, isServer, request } from '../utils/index.js';
+import { call, getConfig, getTag, isServer, requestUpdate } from '../utils/index.js';
 
 /**
  * The class marked with this decorator is considered a
@@ -23,6 +21,8 @@ export function Element() {
 
 const proxy = (constructor: HTMLPlusElement) => {
   return class Plus extends HTMLElement {
+    #instance;
+
     static formAssociated = constructor['formAssociated'];
 
     static observedAttributes = constructor['observedAttributes'];
@@ -36,51 +36,53 @@ const proxy = (constructor: HTMLPlusElement) => {
         slotAssignment: constructor['slotAssignment']
       });
 
-      const instance = (this[CONSTANTS.API_INSTANCE] = new (constructor as any)());
+      this.#instance = new (constructor as any)();
 
-      instance[CONSTANTS.API_HOST] = () => this;
+      this.#instance[CONSTANTS.API_HOST] = () => this;
 
-      call(instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
+      call(this.#instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
     }
 
     adoptedCallback() {
-      call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_ADOPTED);
+      call(this.#instance, CONSTANTS.LIFECYCLE_ADOPTED);
     }
 
     attributeChangedCallback(key, prev, next) {
-      // Ensures the integrity of readonly properties to prevent potential errors.
-      try {
-        const attribute = constructor[CONSTANTS.MAPPER]?.[key];
-
-        const property = attribute || camelCase(key);
-
-        this[property] = next;
-      } catch {}
+      if (prev != next) {
+        this.#instance['RAW:' + key] = next;
+      }
     }
 
     connectedCallback() {
-      const instance = this[CONSTANTS.API_INSTANCE];
-
       // TODO: experimental for global config
-      Object.assign(instance, getConfig('element', getTag(instance)!, 'property'));
-
-      instance[CONSTANTS.API_CONNECTED] = true;
+      Object.assign(this.#instance, getConfig('element', getTag(this.#instance)!, 'property'));
 
       const connect = () => {
-        request(instance, undefined, undefined, () => {
-          call(instance, CONSTANTS.LIFECYCLE_LOADED);
+        this.#instance[CONSTANTS.API_CONNECTED] = true;
+
+        call(this.#instance, CONSTANTS.LIFECYCLE_CONNECTED);
+
+        requestUpdate(this.#instance, undefined, undefined, () => {
+          call(this.#instance, CONSTANTS.LIFECYCLE_READY);
         });
       };
 
-      const callback = call(instance, CONSTANTS.LIFECYCLE_CONNECTED);
+      const hasPrepare = CONSTANTS.LIFECYCLE_PREPARE in this.#instance;
 
-      if (!callback?.then) return connect();
+      if (!hasPrepare) return connect();
 
-      callback.then(() => connect());
+      call(this.#instance, CONSTANTS.LIFECYCLE_PREPARE)
+        .then(() => connect())
+        .catch((error) => {
+          throw new Error(
+            `Failed to prepare <${getTag(this.#instance)}> element before connection.`,
+            { cause: error }
+          );
+        });
     }
 
     disconnectedCallback() {
-      call(this[CONSTANTS.API_INSTANCE], CONSTANTS.LIFECYCLE_DISCONNECTED);
+      call(this.#instance, CONSTANTS.LIFECYCLE_DISCONNECTED);
     }
   };
 };

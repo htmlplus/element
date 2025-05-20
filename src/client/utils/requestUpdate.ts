@@ -13,7 +13,7 @@ import { render } from './uhtml.js';
  * @param previous The previous value of Property/State.
  * @param callback Invoked when the rendering phase is completed.
  */
-export const request = (
+export const requestUpdate = (
   target: HTMLPlusElement,
   name?: string,
   previous?: any,

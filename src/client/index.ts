@@ -1,6 +1,8 @@
 export * from './decorators/index.js';
 
 export {
+  type Config,
+  type ConfigOptions,
   classes,
   direction,
   dispatch,
@@ -16,7 +18,5 @@ export {
   off,
   slots,
   toUnit,
-  setConfig,
-  type Config,
-  type ConfigOptions
+  setConfig
 } from './utils/index.js';

@@ -1,5 +1,6 @@
 export * from './bind.js';
 export * from './context.js';
+export * from './debounce.js';
 export * from './direction.js';
 export * from './element.js';
 export * from './event.js';

@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
-import { appendToMethod } from '../utils/index.js';
+import { wrapMethod } from '../utils/index.js';
 
 /**
  * Monitors `@Property` and `@State` to detect changes.
@@ -16,7 +16,7 @@ export function Watch(keys?: string | string[], immediate?: boolean) {
     // Gets all keys
     const all = [keys].flat().filter((item) => item);
     // Registers a lifecycle to detect changes.
-    appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function (states: Map<string, any>) {
+    wrapMethod('after', target, CONSTANTS.LIFECYCLE_UPDATED, function (states: Map<string, any>) {
       // Skips the logic if 'immediate' wasn't passed.
       if (!immediate && !this[CONSTANTS.API_RENDER_COMPLETED]) return;
       // Loops the keys.

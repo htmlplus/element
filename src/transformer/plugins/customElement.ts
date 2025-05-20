@@ -108,6 +108,11 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
           return;
         }
 
+        if (name.name == 'disabled') {
+          name.name = '.' + name.name;
+          return;
+        }
+
         const key = ['tabIndex', 'viewBox'];
 
         if (!key.includes(name.name)) return;
@@ -186,13 +191,8 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
                   ' ',
                   'ref=',
                   t.arrowFunctionExpression(
-                    [
-                      t.identifier('$element')
-                    ],
-                    TODO(
-                      t.identifier('$element'),
-                      attributes
-                    )
+                    [t.identifier('$element')],
+                    TODO(t.identifier('$element'), attributes)
                   )
                 );
               } else {
@@ -204,7 +204,7 @@ export const customElement = (options?: CustomElementOptions): TransformerPlugin
                           parts.push(' ', '.innerHTML');
                           parts.push('=');
                           parts.push(attribute.value.expression.properties.at(0).value);
-                        } catch { }
+                        } catch {}
                         continue;
                       }
 

@@ -3,12 +3,12 @@ import { kebabCase } from 'change-case';
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
 import {
-  appendToMethod,
   defineProperty,
   host,
-  request,
+  requestUpdate,
   toProperty,
-  updateAttribute
+  updateAttribute,
+  wrapMethod
 } from '../utils/index.js';
 
 /**
@@ -36,111 +36,130 @@ export interface PropertyOptions {
  * and updates the element when the property is set.
  */
 export function Property(options?: PropertyOptions) {
-  return function (target: HTMLPlusElement, key: PropertyKey, descriptor?: PropertyDescriptor) {
-    // Creates a unique symbol for the lock flag.
-    const locked = Symbol();
+  return function (target: HTMLPlusElement, key: string, descriptor?: PropertyDescriptor) {
+    // Unique symbol for property storage to avoid naming conflicts
+    const KEY = Symbol();
 
-    // Converts property name to string.
-    const name = String(key);
+    // Unique symbol for the lock flag to prevent infinite loops during updates
+    const LOCKED = Symbol();
 
-    // Calculates attribute.
-    const attribute = options?.attribute || kebabCase(name);
+    // Calculate attribute name from the property key if not explicitly provided
+    const attribute = options?.attribute || kebabCase(key);
 
-    // Registers an attribute that is intricately linked to the property.
+    // Store the original setter (if it exists) to preserve its behavior
+    const originalSetter = descriptor?.set;
+
+    // Register the attribute in the observedAttributes array for the element
     (target.constructor['observedAttributes'] ||= []).push(attribute);
 
-    // TODO
-    if (attribute) {
-      // TODO
-      target.constructor[CONSTANTS.MAPPER] ||= {};
-
-      // TODO
-      target.constructor[CONSTANTS.MAPPER][attribute] = name;
+    // Getter function to retrieve the property value
+    function get(this) {
+      return this[KEY];
     }
 
-    // TODO: This feature is an experimental
-    // When the property is a getter function.
-    if (descriptor) {
-      // Checks the reflection.
-      if (options?.reflect) {
-        // Stores the original getter function.
-        const getter = descriptor.get;
+    // Setter function to update the property value and trigger updates
+    function set(this, value) {
+      // Store the previous value
+      const previous = this[KEY];
 
-        // Defines a new getter function.
-        descriptor.get = function () {
-          const value = getter?.apply(this);
+      // Store the new value
+      const next = value;
 
-          this[locked] = true;
+      // Skip updates if the value hasn't changed and no custom setter is defined
+      if (!originalSetter && next === previous) return;
 
-          updateAttribute(this as HTMLPlusElement, attribute, value);
-
-          this[locked] = false;
-
-          return value;
-        };
-
-        // TODO: Check the lifecycle
-        appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATED, function () {
-          // Calls the getter function to update the related attribute.
-          this[key];
-        });
+      // If a custom setter exists, call it with the new value
+      if (originalSetter) {
+        originalSetter.call(this, next);
       }
-    }
-    // When the property is normal.
-    else {
-      // Creates a unique symbol.
-      const symbol = Symbol();
-
-      // Defines a getter function to use in the target class.
-      function get(this) {
-        return this[symbol];
+      // Otherwise, update the property directly
+      else {
+        this[KEY] = next;
       }
 
-      // Defines a setter function to use in the target class.
-      function set(this, next) {
-        const previous = this[symbol];
+      // Request an update
+      requestUpdate(this, key, previous, (skipped) => {
+        // Skip if the update was aborted
+        if (skipped) return;
 
-        if (next === previous) return;
+        // If reflection is enabled, update the corresponding attribute
+        if (!options?.reflect) return;
 
-        this[symbol] = next;
+        // Lock to prevent infinite loops
+        this[LOCKED] = true;
 
-        request(this, name, previous, (skipped) => {
-          if (skipped) return;
+        // Update the attribute
+        updateAttribute(this, attribute, next);
 
-          if (!options?.reflect) return;
-
-          this[locked] = true;
-
-          updateAttribute(this, attribute, next);
-
-          this[locked] = false;
-        });
-      }
-
-      // Attaches the getter and setter functions to the current property of the target class.
-      defineProperty(target, key, { get, set });
+        // Unlock
+        this[LOCKED] = false;
+      });
     }
 
-    // TODO: Check the lifecycle
-    appendToMethod(target, CONSTANTS.LIFECYCLE_CONSTRUCTED, function () {
-      // Defines a getter function to use in the host element.
+    // Override the property descriptor if a custom setter exists
+    if (originalSetter) {
+      descriptor.set = set;
+    }
+
+    // Attach the getter and setter to the target class property if no descriptor exists
+    if (!descriptor) {
+      defineProperty(target, key, { configurable: true, get, set });
+    }
+
+    /**
+     * Define a raw property setter to handle updates that trigger from the `attributeChangedCallback`,
+     * To intercept and process raw attribute values before they are assigned to the property
+     */
+    defineProperty(target, 'RAW:' + attribute, {
+      set(value) {
+        if (!this[LOCKED]) {
+          // Convert the raw value and set it to the corresponding property
+          this[key] = toProperty(value, options?.type);
+        }
+      }
+    });
+
+    // Attach getter and setter to the host element on construction
+    wrapMethod('before', target, CONSTANTS.LIFECYCLE_CONSTRUCTED, function () {
       const get = () => {
+        if (descriptor && !descriptor.get) {
+          throw new Error(`Property '${key}' does not have a getter. Unable to retrieve value.`);
+        }
         return this[key];
       };
 
-      // Defines a setter function to use in the host element.
-      const set = descriptor
-        ? undefined
-        : (input) => {
-            if (this[locked]) {
-              return;
-            }
-            this[key] = toProperty(input, options?.type);
-          };
+      const set = (value) => {
+        if (descriptor && !descriptor.set) {
+          throw new Error(`Property '${key}' does not have a setter. Unable to assign value.`);
+        }
+        this[key] = value;
+      };
 
-      // TODO: Check the configuration.
-      // Attaches the getter and setter functions to the current property of the host element.
-      defineProperty(host(this), key, { get, set, configurable: true });
+      defineProperty(host(this), key, { configurable: true, get, set });
     });
+
+    /**
+     * TODO: Review these behaviors again.
+     *
+     * When a property has a reflect and either a getter, a setter, or both are available,
+     * three approaches are possible:
+     *
+     * 1. Only a getter is present: The attribute updates after each render is completed.
+     * 2. Only a setter is present: The attribute updates after each setter call.
+     * 3. Both getter and setter are present: The attribute is updated via the setter call
+     *    and also after each render is completed, resulting in two attribute update processes.
+     */
+    if (options?.reflect && descriptor?.get) {
+      wrapMethod('before', target, CONSTANTS.LIFECYCLE_UPDATED, function () {
+        // Lock to prevent infinite loops
+        this[LOCKED] = true;
+
+        // Update the attribute
+        updateAttribute(this, attribute, this[key]);
+
+        // Unlock
+        this[LOCKED] = false;
+      });
+    }
   };
 }

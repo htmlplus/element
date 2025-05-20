@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
-import { appendToMethod, on, off } from '../utils/index.js';
+import { on, off, wrapMethod } from '../utils/index.js';
 import { Bind } from './bind.js';
 
 /**
@@ -68,11 +68,11 @@ export function Listen(type: string, options?: ListenOptions) {
       }
     };
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+    wrapMethod('before', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
       on(element(this), type, this[key], options);
     });
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
+    wrapMethod('before', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
       off(element(this), type, this[key], options);
     });
 

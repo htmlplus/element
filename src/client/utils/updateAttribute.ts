@@ -1,5 +1,3 @@
-import { kebabCase } from 'change-case';
-
 import { HTMLPlusElement } from '../../types/index.js';
 import { host } from './host.js';
 
@@ -10,11 +8,9 @@ export const updateAttribute = (
 ): void => {
   const element = host(target);
 
-  const name = kebabCase(key);
-
   if ([undefined, null, false].includes(value)) {
-    return element.removeAttribute(name);
+    element.removeAttribute(key);
+  } else {
+    element.setAttribute(key, value === true ? '' : value);
   }
-
-  element.setAttribute(name, value === true ? '' : value);
 };

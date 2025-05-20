@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
-import { appendToMethod, dispatch, off, on } from '../utils/index.js';
+import { dispatch, off, on, wrapMethod } from '../utils/index.js';
 
 export function Provider(namespace: string) {
   return function (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) {
@@ -29,7 +29,7 @@ export function Provider(namespace: string) {
     };
 
     // TODO
-    appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+    wrapMethod('after', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
       const cleanup = () => {
         off(this, `${prefix}:presence`, onPresence);
 
@@ -47,7 +47,7 @@ export function Provider(namespace: string) {
       cleanups(this).set(prefix, cleanup);
     });
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
+    wrapMethod('after', target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
       update(this);
 
       if (cleanups(this).size && !states.has(SUB)) return;
@@ -73,7 +73,7 @@ export function Provider(namespace: string) {
       cleanups(this).set(type, cleanup);
     });
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
+    wrapMethod('after', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
       cleanups(this).forEach((cleanup) => cleanup());
     });
   };
@@ -96,7 +96,7 @@ export function Consumer(namespace: string) {
     };
 
     // TODO
-    appendToMethod(target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+    wrapMethod('after', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
       // TODO
       if (SUB && this[SUB]) return;
 
@@ -136,7 +136,7 @@ export function Consumer(namespace: string) {
       !connected && setTimeout(() => dispatch(this, `${prefix}:presence`, options));
     });
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
+    wrapMethod('after', target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
       if (cleanups(this).size && !states.has(SUB)) return;
 
       cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
@@ -168,7 +168,7 @@ export function Consumer(namespace: string) {
       dispatch(window, `${type}:presence`);
     });
 
-    appendToMethod(target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
+    wrapMethod('after', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
       cleanups(this).forEach((cleanup) => cleanup());
     });
   };

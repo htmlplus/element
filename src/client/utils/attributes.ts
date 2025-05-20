@@ -1,3 +1,5 @@
+import { kebabCase } from 'change-case';
+
 import { HTMLPlusElement } from '../../types/index.js';
 import { off, on } from './event.js';
 import { host } from './host.js';
@@ -32,7 +34,7 @@ export const attributes = (target: HTMLElement | HTMLPlusElement, attributes: an
   for (const key in next) {
     if (['class', 'style'].includes(key)) continue;
     if (isEvent(key)) on(element, toEvent(key), next[key]);
-    else updateAttribute(element, key, next[key]);
+    else updateAttribute(element, kebabCase(key), next[key]);
   }
 
   element[symbol] = { ...next };

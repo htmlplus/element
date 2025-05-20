@@ -6,16 +6,20 @@ import { defineProperty } from '../utils/index.js';
  */
 export function Bind() {
   return function (target: Object, key: PropertyKey, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+
     return {
       configurable: true,
       get() {
-        const value = descriptor?.value!.bind(this);
+        const next = original.bind(this);
+
         defineProperty(this, key, {
-          value,
+          value: next,
           configurable: true,
           writable: true
         });
-        return value;
+
+        return next;
       }
     };
   };
