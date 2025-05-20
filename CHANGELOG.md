@@ -1,3 +1,9 @@
+## [3.2.1](https://github.com/htmlplus/element/compare/v3.2.0...v3.2.1) (2025-05-20)
+
+### Bug Fixes
+
+* Resolve some technical debt issues to significantly improve the overall quality of the code ([1f3f724](https://github.com/htmlplus/element/commit/1f3f7246e2769db683fc198ae9df422ff64b092c))
+
 ## [3.2.0](https://github.com/htmlplus/element/compare/v3.1.4...v3.2.0) (2025-02-27)
 
 ### Features
