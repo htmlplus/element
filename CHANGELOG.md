@@ -1,3 +1,9 @@
+## [3.2.3](https://github.com/htmlplus/element/compare/v3.2.2...v3.2.3) (2025-05-22)
+
+### Bug Fixes
+
+* Update the Provider decorator to be compatible with properties ([4ee0419](https://github.com/htmlplus/element/commit/4ee04195ba3f395c5d4541ca2ced966eb698931a))
+
 ## [3.2.2](https://github.com/htmlplus/element/compare/v3.2.1...v3.2.2) (2025-05-22)
 
 ### Bug Fixes
