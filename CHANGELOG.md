@@ -1,3 +1,9 @@
+## [3.2.2](https://github.com/htmlplus/element/compare/v3.2.1...v3.2.2) (2025-05-22)
+
+### Bug Fixes
+
+* Rebuild the source code ([9178cc0](https://github.com/htmlplus/element/commit/9178cc010b36490e5bf2fe5a7218ab3bd47d70f8))
+
 ## [3.2.1](https://github.com/htmlplus/element/compare/v3.2.0...v3.2.1) (2025-05-20)
 
 ### Bug Fixes
