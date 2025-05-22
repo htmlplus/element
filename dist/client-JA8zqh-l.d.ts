@@ -14,6 +14,18 @@ declare function Provider(namespace: string): (target: HTMLPlusElement, key: Pro
 declare function Consumer(namespace: string): (target: HTMLPlusElement, key: PropertyKey) => void;
 
 /**
+ * A method decorator that applies debounce behavior to a class method.
+ * Ensures that the method executes only after the specified delay,
+ * resetting the timer if called again within the delay period.
+ *
+ * @param {number} delay - The debounce delay in milliseconds.
+ */
+declare function Debounce(delay?: number): (target: Object, key: PropertyKey, descriptor: PropertyDescriptor) => {
+    configurable: boolean;
+    get(): any;
+};
+
+/**
  * Indicates whether the [Direction](https://mdn.io/css-direction)
  * of the element is `Right-To-Left` or `Left-To-Right`.
  */
@@ -127,7 +139,7 @@ declare function Listen(type: string, options?: ListenOptions): (target: HTMLPlu
  * Provides a way to encapsulate functionality within an element
  * and invoke it as needed, both internally and externally.
  */
-declare function Method(): (target: HTMLPlusElement, key: PropertyKey) => void;
+declare function Method(): (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) => void;
 
 /**
  * The configuration for property decorator.
@@ -152,7 +164,7 @@ interface PropertyOptions {
  * Creates a reactive property, reflecting a corresponding attribute value,
  * and updates the element when the property is set.
  */
-declare function Property(options?: PropertyOptions): (target: HTMLPlusElement, key: PropertyKey, descriptor?: PropertyDescriptor) => void;
+declare function Property(options?: PropertyOptions): (target: HTMLPlusElement, key: string, descriptor?: PropertyDescriptor) => void;
 
 /**
  * Selects the first element in the shadow dom that matches a specified CSS selector.
@@ -312,4 +324,4 @@ declare const attributes: any;
 declare const html: any;
 declare const styles: any;
 
-export { Style as A, Bind as B, type Config as C, Direction as D, Element$1 as E, attributes as F, html as G, Host as H, IsRTL as I, styles as J, type ListenOptions as L, Method as M, Provider as P, Query as Q, Slots$1 as S, Watch as W, dispatch as a, toCSSUnit as b, classes as c, direction as d, isRTL as e, queryAll as f, getConfig as g, host as h, isCSSColor as i, off as j, toUnit as k, setConfig as l, type ConfigOptions as m, Consumer as n, on as o, type EventEmitter as p, query as q, type EventOptions as r, slots as s, toCSSColor as t, Event as u, Listen as v, type PropertyOptions as w, Property as x, QueryAll as y, State as z };
+export { State as A, Bind as B, type Config as C, Debounce as D, Element$1 as E, Style as F, attributes as G, Host as H, IsRTL as I, html as J, styles as K, type ListenOptions as L, Method as M, Provider as P, Query as Q, Slots$1 as S, Watch as W, type ConfigOptions as a, dispatch as b, classes as c, direction as d, toCSSUnit as e, isRTL as f, getConfig as g, host as h, isCSSColor as i, queryAll as j, off as k, toUnit as l, setConfig as m, Consumer as n, on as o, Direction as p, query as q, type EventEmitter as r, slots as s, toCSSColor as t, type EventOptions as u, Event as v, Listen as w, type PropertyOptions as x, Property as y, QueryAll as z };

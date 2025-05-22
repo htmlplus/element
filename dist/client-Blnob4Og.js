@@ -1,21 +1,5 @@
-import { kebabCase, camelCase, pascalCase } from 'change-case';
-import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, API_INSTANCE, MAPPER, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_LOADED } from './constants.js';
-
-const appendToMethod = (target, key, handler) => {
-    // Gets the previous function
-    const previous = target[key];
-    // Creates new function
-    function next(...parameters) {
-        // Calls the previous
-        const result = previous?.bind(this)(...parameters);
-        // Calls the appended
-        handler.bind(this)(...parameters);
-        // Returns the result
-        return result;
-    }
-    // Replaces the next with the previous one
-    target[key] = next;
-};
+import { kebabCase, pascalCase } from 'change-case';
+import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, LIFECYCLE_PREPARE, LIFECYCLE_READY, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED } from './constants.js';
 
 /**
  * Indicates the host of the element.
@@ -87,11 +71,12 @@ const toEvent = (input) => {
 
 const updateAttribute = (target, key, value) => {
     const element = host(target);
-    const name = kebabCase(key);
     if ([undefined, null, false].includes(value)) {
-        return element.removeAttribute(name);
+        element.removeAttribute(key);
     }
-    element.setAttribute(name, value === true ? '' : value);
+    else {
+        element.setAttribute(key, value === true ? '' : value);
+    }
 };
 
 const symbol = Symbol();
@@ -118,13 +103,13 @@ const attributes$2 = (target, attributes) => {
         if (isEvent(key))
             on(element, toEvent(key), next[key]);
         else
-            updateAttribute(element, key, next[key]);
+            updateAttribute(element, kebabCase(key), next[key]);
     }
     element[symbol] = { ...next };
 };
 
-const call = (target, key, ...parameters) => {
-    return target[key]?.call(target, ...parameters);
+const call = (target, key, ...args) => {
+    return target[key]?.apply(target, args);
 };
 
 const typeOf = (input) => {
@@ -1091,7 +1076,7 @@ tag('svg');
  * @param previous The previous value of Property/State.
  * @param callback Invoked when the rendering phase is completed.
  */
-const request = (target, name, previous, callback) => {
+const requestUpdate = (target, name, previous, callback) => {
     // Creates/Gets a stacks.
     const stacks = (target[API_STACKS] ||= new Map());
     // Creates/Updates a stack.
@@ -1220,11 +1205,11 @@ const toCSSUnit = (input) => {
     }
 };
 
-function toDecorator(util, ...parameters) {
+function toDecorator(util, ...args) {
     return function (target, key) {
         defineProperty(target, key, {
             get() {
-                return util(this, ...parameters);
+                return util(this, ...args);
             }
         });
     };
@@ -1295,22 +1280,49 @@ const toUnit = (input, unit = 'px') => {
     return Number(input) + unit;
 };
 
+const wrapMethod = (mode, target, key, handler) => {
+    // Gets the original function
+    const original = target[key];
+    // Validate target property
+    if (original && typeof original !== 'function') {
+        throw new TypeError(`Property ${String(key)} is not a function`);
+    }
+    // Creates new function
+    function wrapped(...args) {
+        // Calls the handler before the original
+        if (mode == 'before') {
+            handler.apply(this, args);
+        }
+        // Calls the original
+        const result = original?.apply(this, args);
+        // Calls the handler after the original
+        if (mode == 'after') {
+            handler.apply(this, args);
+        }
+        // Returns the result
+        return result;
+    }
+    // Replaces the wrapped with the original one
+    target[key] = wrapped;
+};
+
 /**
  * Used to bind a method of a class to the current context,
  * making it easier to reference `this` within the method.
  */
 function Bind() {
     return function (target, key, descriptor) {
+        const original = descriptor.value;
         return {
             configurable: true,
             get() {
-                const value = descriptor?.value.bind(this);
+                const next = original.bind(this);
                 defineProperty(this, key, {
-                    value,
+                    value: next,
                     configurable: true,
                     writable: true
                 });
-                return value;
+                return next;
             }
         };
     };
@@ -1334,7 +1346,7 @@ function Provider(namespace) {
             dispatch(instance, `${prefix}:${instance[SUB]}:update`, options);
         };
         // TODO
-        appendToMethod(target, LIFECYCLE_CONNECTED, function () {
+        wrapMethod('after', target, LIFECYCLE_CONNECTED, function () {
             const cleanup = () => {
                 off(this, `${prefix}:presence`, onPresence);
                 cleanups(this).delete(prefix);
@@ -1346,7 +1358,7 @@ function Provider(namespace) {
             on(this, `${prefix}:presence`, onPresence);
             cleanups(this).set(prefix, cleanup);
         });
-        appendToMethod(target, LIFECYCLE_UPDATE, function (states) {
+        wrapMethod('after', target, LIFECYCLE_UPDATE, function (states) {
             update(this);
             if (cleanups(this).size && !states.has(SUB))
                 return;
@@ -1363,7 +1375,7 @@ function Provider(namespace) {
             on(window, `${type}:presence`, onPresence);
             cleanups(this).set(type, cleanup);
         });
-        appendToMethod(target, LIFECYCLE_DISCONNECTED, function () {
+        wrapMethod('after', target, LIFECYCLE_DISCONNECTED, function () {
             cleanups(this).forEach((cleanup) => cleanup());
         });
     };
@@ -1380,7 +1392,7 @@ function Consumer(namespace) {
             instance[key] = state;
         };
         // TODO
-        appendToMethod(target, LIFECYCLE_CONNECTED, function () {
+        wrapMethod('after', target, LIFECYCLE_CONNECTED, function () {
             // TODO
             if (SUB && this[SUB])
                 return;
@@ -1408,7 +1420,7 @@ function Consumer(namespace) {
             // TODO: When the `Provider` element is activated after the `Consumer` element.
             !connected && setTimeout(() => dispatch(this, `${prefix}:presence`, options));
         });
-        appendToMethod(target, LIFECYCLE_UPDATE, function (states) {
+        wrapMethod('after', target, LIFECYCLE_UPDATE, function (states) {
             if (cleanups(this).size && !states.has(SUB))
                 return;
             cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
@@ -1430,9 +1442,38 @@ function Consumer(namespace) {
             cleanups(this).set(type, cleanup);
             dispatch(window, `${type}:presence`);
         });
-        appendToMethod(target, LIFECYCLE_DISCONNECTED, function () {
+        wrapMethod('after', target, LIFECYCLE_DISCONNECTED, function () {
             cleanups(this).forEach((cleanup) => cleanup());
         });
+    };
+}
+
+/**
+ * A method decorator that applies debounce behavior to a class method.
+ * Ensures that the method executes only after the specified delay,
+ * resetting the timer if called again within the delay period.
+ *
+ * @param {number} delay - The debounce delay in milliseconds.
+ */
+function Debounce(delay = 0) {
+    return function (target, key, descriptor) {
+        const KEY = Symbol();
+        const original = descriptor.value;
+        function clear() {
+            if (!Object.hasOwn(this, KEY))
+                return;
+            clearTimeout(this[KEY]);
+            delete this[KEY];
+        }
+        function debounced(...args) {
+            clear.call(this);
+            this[KEY] = window.setTimeout(() => {
+                clear.call(this);
+                original.apply(this, args);
+            }, delay);
+        }
+        descriptor.value = debounced;
+        return Bind()(target, key, descriptor);
     };
 }
 
@@ -1461,6 +1502,7 @@ function Element() {
 }
 const proxy = (constructor) => {
     return class Plus extends HTMLElement {
+        #instance;
         static formAssociated = constructor['formAssociated'];
         static observedAttributes = constructor['observedAttributes'];
         constructor() {
@@ -1470,39 +1512,39 @@ const proxy = (constructor) => {
                 delegatesFocus: constructor['delegatesFocus'],
                 slotAssignment: constructor['slotAssignment']
             });
-            const instance = (this[API_INSTANCE] = new constructor());
-            instance[API_HOST] = () => this;
-            call(instance, LIFECYCLE_CONSTRUCTED);
+            this.#instance = new constructor();
+            this.#instance[API_HOST] = () => this;
+            call(this.#instance, LIFECYCLE_CONSTRUCTED);
         }
         adoptedCallback() {
-            call(this[API_INSTANCE], LIFECYCLE_ADOPTED);
+            call(this.#instance, LIFECYCLE_ADOPTED);
         }
         attributeChangedCallback(key, prev, next) {
-            // Ensures the integrity of readonly properties to prevent potential errors.
-            try {
-                const attribute = constructor[MAPPER]?.[key];
-                const property = attribute || camelCase(key);
-                this[property] = next;
+            if (prev != next) {
+                this.#instance['RAW:' + key] = next;
             }
-            catch { }
         }
         connectedCallback() {
-            const instance = this[API_INSTANCE];
             // TODO: experimental for global config
-            Object.assign(instance, getConfig('element', getTag(instance), 'property'));
-            instance[API_CONNECTED] = true;
+            Object.assign(this.#instance, getConfig('element', getTag(this.#instance), 'property'));
             const connect = () => {
-                request(instance, undefined, undefined, () => {
-                    call(instance, LIFECYCLE_LOADED);
+                this.#instance[API_CONNECTED] = true;
+                call(this.#instance, LIFECYCLE_CONNECTED);
+                requestUpdate(this.#instance, undefined, undefined, () => {
+                    call(this.#instance, LIFECYCLE_READY);
                 });
             };
-            const callback = call(instance, LIFECYCLE_CONNECTED);
-            if (!callback?.then)
+            const hasPrepare = LIFECYCLE_PREPARE in this.#instance;
+            if (!hasPrepare)
                 return connect();
-            callback.then(() => connect());
+            call(this.#instance, LIFECYCLE_PREPARE)
+                .then(() => connect())
+                .catch((error) => {
+                throw new Error(`Failed to prepare <${getTag(this.#instance)}> element before connection.`, { cause: error });
+            });
         }
         disconnectedCallback() {
-            call(this[API_INSTANCE], LIFECYCLE_DISCONNECTED);
+            call(this.#instance, LIFECYCLE_DISCONNECTED);
         }
     };
 };
@@ -1515,47 +1557,43 @@ const proxy = (constructor) => {
  */
 function Event(options = {}) {
     return function (target, key) {
-        defineProperty(target, key, {
-            get() {
-                return (detail) => {
-                    const element = host(this);
-                    const framework = getFramework(this);
-                    options.bubbles ??= false;
-                    let type = String(key);
-                    switch (framework) {
-                        // TODO: Experimental
-                        case 'blazor':
-                            options.bubbles = true;
-                            type = pascalCase(type);
-                            try {
-                                window['Blazor'].registerCustomEventType(type, {
-                                    createEventArgs: (event) => ({
-                                        detail: event.detail
-                                    })
-                                });
-                            }
-                            catch { }
-                            break;
-                        case 'qwik':
-                        case 'solid':
-                            type = pascalCase(type).toLowerCase();
-                            break;
-                        case 'react':
-                        case 'preact':
-                            type = pascalCase(type);
-                            break;
-                        default:
-                            type = kebabCase(type);
-                            break;
+        target[key] = function (detail) {
+            const element = host(this);
+            const framework = getFramework(this);
+            options.bubbles ??= false;
+            let type = String(key);
+            switch (framework) {
+                // TODO: Experimental
+                case 'blazor':
+                    options.bubbles = true;
+                    type = pascalCase(type);
+                    try {
+                        window['Blazor'].registerCustomEventType(type, {
+                            createEventArgs: (event) => ({
+                                detail: event.detail
+                            })
+                        });
                     }
-                    let event;
-                    event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
-                    event && element.dispatchEvent(event);
-                    event ||= dispatch(this, type, { ...options, detail });
-                    return event;
-                };
+                    catch { }
+                    break;
+                case 'qwik':
+                case 'solid':
+                    type = pascalCase(type).toLowerCase();
+                    break;
+                case 'react':
+                case 'preact':
+                    type = pascalCase(type);
+                    break;
+                default:
+                    type = kebabCase(type);
+                    break;
             }
-        });
+            let event;
+            event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
+            event && element.dispatchEvent(event);
+            event ||= dispatch(this, type, { ...options, detail });
+            return event;
+        };
     };
 }
 
@@ -1598,10 +1636,10 @@ function Listen(type, options) {
                     return instance;
             }
         };
-        appendToMethod(target, LIFECYCLE_CONNECTED, function () {
+        wrapMethod('before', target, LIFECYCLE_CONNECTED, function () {
             on(element(this), type, this[key], options);
         });
-        appendToMethod(target, LIFECYCLE_DISCONNECTED, function () {
+        wrapMethod('before', target, LIFECYCLE_DISCONNECTED, function () {
             off(element(this), type, this[key], options);
         });
         return Bind()(target, key, descriptor);
@@ -1613,11 +1651,9 @@ function Listen(type, options) {
  * and invoke it as needed, both internally and externally.
  */
 function Method() {
-    return function (target, key) {
-        appendToMethod(target, LIFECYCLE_CONSTRUCTED, function () {
-            defineProperty(host(this), key, {
-                get: () => this[key].bind(this)
-            });
+    return function (target, key, descriptor) {
+        wrapMethod('before', target, LIFECYCLE_CONSTRUCTED, function () {
+            host(this)[key] = this[key].bind(this);
         });
     };
 }
@@ -1628,89 +1664,110 @@ function Method() {
  */
 function Property(options) {
     return function (target, key, descriptor) {
-        // Creates a unique symbol for the lock flag.
-        const locked = Symbol();
-        // Converts property name to string.
-        const name = String(key);
-        // Calculates attribute.
-        const attribute = options?.attribute || kebabCase(name);
-        // Registers an attribute that is intricately linked to the property.
+        // Unique symbol for property storage to avoid naming conflicts
+        const KEY = Symbol();
+        // Unique symbol for the lock flag to prevent infinite loops during updates
+        const LOCKED = Symbol();
+        // Calculate attribute name from the property key if not explicitly provided
+        const attribute = options?.attribute || kebabCase(key);
+        // Store the original setter (if it exists) to preserve its behavior
+        const originalSetter = descriptor?.set;
+        // Register the attribute in the observedAttributes array for the element
         (target.constructor['observedAttributes'] ||= []).push(attribute);
-        // TODO
-        if (attribute) {
-            // TODO
-            target.constructor[MAPPER] ||= {};
-            // TODO
-            target.constructor[MAPPER][attribute] = name;
+        // Getter function to retrieve the property value
+        function get() {
+            return this[KEY];
         }
-        // TODO: This feature is an experimental
-        // When the property is a getter function.
-        if (descriptor) {
-            // Checks the reflection.
-            if (options?.reflect) {
-                // Stores the original getter function.
-                const getter = descriptor.get;
-                // Defines a new getter function.
-                descriptor.get = function () {
-                    const value = getter?.apply(this);
-                    this[locked] = true;
-                    updateAttribute(this, attribute, value);
-                    this[locked] = false;
-                    return value;
-                };
-                // TODO: Check the lifecycle
-                appendToMethod(target, LIFECYCLE_UPDATED, function () {
-                    // Calls the getter function to update the related attribute.
-                    this[key];
-                });
+        // Setter function to update the property value and trigger updates
+        function set(value) {
+            // Store the previous value
+            const previous = this[KEY];
+            // Store the new value
+            const next = value;
+            // Skip updates if the value hasn't changed and no custom setter is defined
+            if (!originalSetter && next === previous)
+                return;
+            // If a custom setter exists, call it with the new value
+            if (originalSetter) {
+                originalSetter.call(this, next);
             }
-        }
-        // When the property is normal.
-        else {
-            // Creates a unique symbol.
-            const symbol = Symbol();
-            // Defines a getter function to use in the target class.
-            function get() {
-                return this[symbol];
+            // Otherwise, update the property directly
+            else {
+                this[KEY] = next;
             }
-            // Defines a setter function to use in the target class.
-            function set(next) {
-                const previous = this[symbol];
-                if (next === previous)
+            // Request an update
+            requestUpdate(this, key, previous, (skipped) => {
+                // Skip if the update was aborted
+                if (skipped)
                     return;
-                this[symbol] = next;
-                request(this, name, previous, (skipped) => {
-                    if (skipped)
-                        return;
-                    if (!options?.reflect)
-                        return;
-                    this[locked] = true;
-                    updateAttribute(this, attribute, next);
-                    this[locked] = false;
-                });
-            }
-            // Attaches the getter and setter functions to the current property of the target class.
-            defineProperty(target, key, { get, set });
+                // If reflection is enabled, update the corresponding attribute
+                if (!options?.reflect)
+                    return;
+                // Lock to prevent infinite loops
+                this[LOCKED] = true;
+                // Update the attribute
+                updateAttribute(this, attribute, next);
+                // Unlock
+                this[LOCKED] = false;
+            });
         }
-        // TODO: Check the lifecycle
-        appendToMethod(target, LIFECYCLE_CONSTRUCTED, function () {
-            // Defines a getter function to use in the host element.
+        // Override the property descriptor if a custom setter exists
+        if (originalSetter) {
+            descriptor.set = set;
+        }
+        // Attach the getter and setter to the target class property if no descriptor exists
+        if (!descriptor) {
+            defineProperty(target, key, { configurable: true, get, set });
+        }
+        /**
+         * Define a raw property setter to handle updates that trigger from the `attributeChangedCallback`,
+         * To intercept and process raw attribute values before they are assigned to the property
+         */
+        defineProperty(target, 'RAW:' + attribute, {
+            set(value) {
+                if (!this[LOCKED]) {
+                    // Convert the raw value and set it to the corresponding property
+                    this[key] = toProperty(value, options?.type);
+                }
+            }
+        });
+        // Attach getter and setter to the host element on construction
+        wrapMethod('before', target, LIFECYCLE_CONSTRUCTED, function () {
             const get = () => {
+                if (descriptor && !descriptor.get) {
+                    throw new Error(`Property '${key}' does not have a getter. Unable to retrieve value.`);
+                }
                 return this[key];
             };
-            // Defines a setter function to use in the host element.
-            const set = descriptor
-                ? undefined
-                : (input) => {
-                    if (this[locked]) {
-                        return;
-                    }
-                    this[key] = toProperty(input, options?.type);
-                };
-            // TODO: Check the configuration.
-            // Attaches the getter and setter functions to the current property of the host element.
-            defineProperty(host(this), key, { get, set, configurable: true });
+            const set = (value) => {
+                if (descriptor && !descriptor.set) {
+                    throw new Error(`Property '${key}' does not have a setter. Unable to assign value.`);
+                }
+                this[key] = value;
+            };
+            defineProperty(host(this), key, { configurable: true, get, set });
         });
+        /**
+         * TODO: Review these behaviors again.
+         *
+         * When a property has a reflect and either a getter, a setter, or both are available,
+         * three approaches are possible:
+         *
+         * 1. Only a getter is present: The attribute updates after each render is completed.
+         * 2. Only a setter is present: The attribute updates after each setter call.
+         * 3. Both getter and setter are present: The attribute is updated via the setter call
+         *    and also after each render is completed, resulting in two attribute update processes.
+         */
+        if (options?.reflect && descriptor?.get) {
+            wrapMethod('before', target, LIFECYCLE_UPDATED, function () {
+                // Lock to prevent infinite loops
+                this[LOCKED] = true;
+                // Update the attribute
+                updateAttribute(this, attribute, this[key]);
+                // Unlock
+                this[LOCKED] = false;
+            });
+        }
     };
 }
 
@@ -1754,20 +1811,22 @@ function Slots() {
  */
 function State() {
     return function (target, key) {
+        const KEY = Symbol();
         const name = String(key);
-        const symbol = Symbol();
-        function get() {
-            return this[symbol];
-        }
-        function set(next) {
-            const previous = this[symbol];
-            if (next === previous)
-                return;
-            this[symbol] = next;
-            request(this, name, previous);
-        }
-        // TODO: configurable
-        defineProperty(target, key, { get, set, configurable: true });
+        defineProperty(target, key, {
+            enumerable: true,
+            configurable: true,
+            get() {
+                return this[KEY];
+            },
+            set(next) {
+                const previous = this[KEY];
+                if (next === previous)
+                    return;
+                this[KEY] = next;
+                requestUpdate(this, name, previous);
+            }
+        });
     };
 }
 
@@ -1776,7 +1835,7 @@ function Style() {
     return function (target, key) {
         const LAST = Symbol();
         const SHEET = Symbol();
-        appendToMethod(target, LIFECYCLE_UPDATED, function () {
+        wrapMethod('before', target, LIFECYCLE_UPDATED, function () {
             let sheet = this[SHEET];
             let value = this[key];
             const update = (value) => (result) => {
@@ -1794,9 +1853,7 @@ function Style() {
                 value = value.call(this);
             }
             if (value instanceof Promise) {
-                value
-                    .then(update(this[LAST] = value))
-                    .catch((error) => {
+                value.then(update((this[LAST] = value))).catch((error) => {
                     throw new Error('TODO', { cause: error });
                 });
             }
@@ -1849,7 +1906,7 @@ function Watch(keys, immediate) {
         // Gets all keys
         const all = [keys].flat().filter((item) => item);
         // Registers a lifecycle to detect changes.
-        appendToMethod(target, LIFECYCLE_UPDATED, function (states) {
+        wrapMethod('after', target, LIFECYCLE_UPDATED, function (states) {
             // Skips the logic if 'immediate' wasn't passed.
             if (!immediate && !this[API_RENDER_COMPLETED])
                 return;
@@ -1869,4 +1926,4 @@ const attributes = attributes$2;
 const html = html$1;
 const styles = styles$1;
 
-export { Bind as B, Consumer as C, Direction as D, Element as E, Host as H, IsRTL as I, Listen as L, Method as M, Provider as P, Query as Q, Slots as S, Watch as W, dispatch as a, toCSSUnit as b, classes as c, direction as d, isRTL as e, queryAll as f, getConfig as g, host as h, isCSSColor as i, off as j, toUnit as k, setConfig as l, Event as m, Property as n, on as o, QueryAll as p, query as q, State as r, slots as s, toCSSColor as t, Style as u, attributes as v, html as w, styles as x };
+export { Bind as B, Consumer as C, Debounce as D, Element as E, Host as H, IsRTL as I, Listen as L, Method as M, Provider as P, Query as Q, Slots as S, Watch as W, dispatch as a, toCSSUnit as b, classes as c, direction as d, isRTL as e, queryAll as f, getConfig as g, host as h, isCSSColor as i, off as j, toUnit as k, setConfig as l, Direction as m, Event as n, on as o, Property as p, query as q, QueryAll as r, slots as s, toCSSColor as t, State as u, Style as v, attributes as w, html as x, styles as y };

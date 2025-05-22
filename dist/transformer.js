@@ -461,6 +461,10 @@ const customElement = (options) => {
                     name.name = '.' + name.name;
                     return;
                 }
+                if (name.name == 'disabled') {
+                    name.name = '.' + name.name;
+                    return;
+                }
                 const key = ['tabIndex', 'viewBox'];
                 if (!key.includes(name.name))
                     return;
@@ -512,9 +516,7 @@ const customElement = (options) => {
                                 return attribute.type == 'JSXSpreadAttribute';
                             });
                             if (hasSpreadAttribute) {
-                                parts.push(' ', 'ref=', t.arrowFunctionExpression([
-                                    t.identifier('$element')
-                                ], TODO(t.identifier('$element'), attributes)));
+                                parts.push(' ', 'ref=', t.arrowFunctionExpression([t.identifier('$element')], TODO(t.identifier('$element'), attributes)));
                             }
                             else {
                                 for (const attribute of attributes) {
