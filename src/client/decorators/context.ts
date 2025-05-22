@@ -3,7 +3,7 @@ import { HTMLPlusElement } from '../../types/index.js';
 import { dispatch, off, on, wrapMethod } from '../utils/index.js';
 
 export function Provider(namespace: string) {
-  return function (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) {
+  return function (target: HTMLPlusElement, key: PropertyKey) {
     const symbol = Symbol();
 
     const [MAIN, SUB] = namespace.split('.');
@@ -17,7 +17,7 @@ export function Provider(namespace: string) {
     const update = (instance: HTMLPlusElement) => {
       const options: CustomEventInit = {};
 
-      options.detail = descriptor.get!.call(instance);
+      options.detail = instance[key];
 
       dispatch(instance, `${prefix}:update`, options);
 
@@ -39,7 +39,7 @@ export function Provider(namespace: string) {
       const onPresence = (event: any) => {
         event.stopPropagation();
 
-        event.detail(this, descriptor.get!.call(this));
+        event.detail(this, this[key]);
       };
 
       on(this, `${prefix}:presence`, onPresence);

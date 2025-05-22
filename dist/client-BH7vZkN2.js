@@ -1329,7 +1329,7 @@ function Bind() {
 }
 
 function Provider(namespace) {
-    return function (target, key, descriptor) {
+    return function (target, key) {
         const symbol = Symbol();
         const [MAIN, SUB] = namespace.split('.');
         const prefix = `${KEY}:${MAIN}`;
@@ -1338,7 +1338,7 @@ function Provider(namespace) {
         };
         const update = (instance) => {
             const options = {};
-            options.detail = descriptor.get.call(instance);
+            options.detail = instance[key];
             dispatch(instance, `${prefix}:update`, options);
             if (!SUB)
                 return;
@@ -1353,7 +1353,7 @@ function Provider(namespace) {
             };
             const onPresence = (event) => {
                 event.stopPropagation();
-                event.detail(this, descriptor.get.call(this));
+                event.detail(this, this[key]);
             };
             on(this, `${prefix}:presence`, onPresence);
             cleanups(this).set(prefix, cleanup);

@@ -10,7 +10,7 @@ declare function Bind(): (target: Object, key: PropertyKey, descriptor: Property
 interface HTMLPlusElement {
 }
 
-declare function Provider(namespace: string): (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) => void;
+declare function Provider(namespace: string): (target: HTMLPlusElement, key: PropertyKey) => void;
 declare function Consumer(namespace: string): (target: HTMLPlusElement, key: PropertyKey) => void;
 
 /**
