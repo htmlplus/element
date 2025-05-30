@@ -1,1 +1,1 @@
-export { G as attributes, J as html, K as styles } from './client-B2DGXsxR.js';
+export { a as attributes, h as html, s as styles } from './client.js';
