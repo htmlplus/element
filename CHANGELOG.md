@@ -1,3 +1,9 @@
+## [3.2.5](https://github.com/htmlplus/element/compare/v3.2.4...v3.2.5) (2025-07-01)
+
+### Bug Fixes
+
+* Eliminate the `prepareCallback` lifecycle support ([fea428b](https://github.com/htmlplus/element/commit/fea428b683b2090df6b6be89b8786f2dd7bc5206))
+
 ## [3.2.4](https://github.com/htmlplus/element/compare/v3.2.3...v3.2.4) (2025-05-30)
 
 ### Bug Fixes
