@@ -57,28 +57,13 @@ const proxy = (constructor: HTMLPlusElement) => {
       // TODO: experimental for global config
       Object.assign(this.#instance, getConfig('element', getTag(this.#instance)!, 'property'));
 
-      const connect = () => {
-        this.#instance[CONSTANTS.API_CONNECTED] = true;
+      this.#instance[CONSTANTS.API_CONNECTED] = true;
 
-        call(this.#instance, CONSTANTS.LIFECYCLE_CONNECTED);
+      call(this.#instance, CONSTANTS.LIFECYCLE_CONNECTED);
 
-        requestUpdate(this.#instance, undefined, undefined, () => {
-          call(this.#instance, CONSTANTS.LIFECYCLE_READY);
-        });
-      };
-
-      const hasPrepare = CONSTANTS.LIFECYCLE_PREPARE in this.#instance;
-
-      if (!hasPrepare) return connect();
-
-      call(this.#instance, CONSTANTS.LIFECYCLE_PREPARE)
-        .then(() => connect())
-        .catch((error) => {
-          throw new Error(
-            `Failed to prepare <${getTag(this.#instance)}> element before connection.`,
-            { cause: error }
-          );
-        });
+      requestUpdate(this.#instance, undefined, undefined, () => {
+        call(this.#instance, CONSTANTS.LIFECYCLE_READY);
+      });
     }
 
     disconnectedCallback() {

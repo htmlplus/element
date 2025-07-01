@@ -971,29 +971,6 @@ export class MyElement {
 </details>
 
 <details>
-  <summary>prepareCallback</summary>
-
-This lifecycle is asynchronous and is invoked before all other lifecycles.
-
-```js
-import { Element } from '@htmlplus/element';
-
-@Element()
-export class MyElement {
-  prepareCallback() {
-    return new Promise((resolve) => {
-      setTimeout(resolve, 2500);
-    })
-  }
-  connectedCallback() {
-    console.log('The element connects after 2500 milliseconds!');
-  }
-}
-```
-
-</details>
-
-<details>
   <summary>readyCallback</summary>
 
 Invoked after the elements's DOM has been updated the first time, immediately before `updatedCallback` is called.

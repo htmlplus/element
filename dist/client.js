@@ -1,5 +1,5 @@
 import { kebabCase, pascalCase } from 'change-case';
-import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, LIFECYCLE_PREPARE, LIFECYCLE_READY, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED } from './constants.js';
+import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_READY } from './constants.js';
 
 /**
  * Indicates the host of the element.
@@ -1527,20 +1527,10 @@ const proxy = (constructor) => {
         connectedCallback() {
             // TODO: experimental for global config
             Object.assign(this.#instance, getConfig('element', getTag(this.#instance), 'property'));
-            const connect = () => {
-                this.#instance[API_CONNECTED] = true;
-                call(this.#instance, LIFECYCLE_CONNECTED);
-                requestUpdate(this.#instance, undefined, undefined, () => {
-                    call(this.#instance, LIFECYCLE_READY);
-                });
-            };
-            const hasPrepare = LIFECYCLE_PREPARE in this.#instance;
-            if (!hasPrepare)
-                return connect();
-            call(this.#instance, LIFECYCLE_PREPARE)
-                .then(() => connect())
-                .catch((error) => {
-                throw new Error(`Failed to prepare <${getTag(this.#instance)}> element before connection.`, { cause: error });
+            this.#instance[API_CONNECTED] = true;
+            call(this.#instance, LIFECYCLE_CONNECTED);
+            requestUpdate(this.#instance, undefined, undefined, () => {
+                call(this.#instance, LIFECYCLE_READY);
             });
         }
         disconnectedCallback() {

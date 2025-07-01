@@ -32,7 +32,6 @@ export const LIFECYCLE_CONNECTED = 'connectedCallback';
 export const LIFECYCLE_CONSTRUCTED = 'constructedCallback';
 export const LIFECYCLE_DISCONNECTED = 'disconnectedCallback';
 export const LIFECYCLE_READY = 'readyCallback';
-export const LIFECYCLE_PREPARE = 'prepareCallback';
 export const LIFECYCLE_UPDATE = 'updateCallback';
 export const LIFECYCLE_UPDATED = 'updatedCallback';
 
