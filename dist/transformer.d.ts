@@ -130,4 +130,5 @@ interface WebTypesOptions {
 }
 declare const webTypes: (options?: WebTypesOptions) => TransformerPlugin;
 
-export { ASSETS_OPTIONS, type AssetsOptions, COPY_OPTIONS, CUSTOM_ELEMENT_OPTIONS, type CopyOptions, type CustomElementOptions, DOCUMENT_OPTIONS, type DocumentOptions, PARSE_OPTIONS, type ParseOptions, README_OPTIONS, type ReadmeOptions, STYLE_OPTIONS, type StyleOptions, type TransformerPlugin, type TransformerPluginContext, type TransformerPluginGlobal, VISUAL_STUDIO_CODE_OPTIONS, type VisualStudioCodeOptions, WEB_TYPES_OPTIONS, type WebTypesOptions, assets, copy, customElement, document, extract, parse, read, readme, style, transformer, validate, visualStudioCode, webTypes };
+export { ASSETS_OPTIONS, COPY_OPTIONS, CUSTOM_ELEMENT_OPTIONS, DOCUMENT_OPTIONS, PARSE_OPTIONS, README_OPTIONS, STYLE_OPTIONS, VISUAL_STUDIO_CODE_OPTIONS, WEB_TYPES_OPTIONS, assets, copy, customElement, document, extract, parse, read, readme, style, transformer, validate, visualStudioCode, webTypes };
+export type { AssetsOptions, CopyOptions, CustomElementOptions, DocumentOptions, ParseOptions, ReadmeOptions, StyleOptions, TransformerPlugin, TransformerPluginContext, TransformerPluginGlobal, VisualStudioCodeOptions, WebTypesOptions };

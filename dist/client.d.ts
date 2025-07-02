@@ -324,4 +324,5 @@ declare const attributes: any;
 declare const html: any;
 declare const styles: any;
 
-export { Bind, type Config, type ConfigOptions, Consumer, Debounce, Direction, Element$1 as Element, Event, type EventEmitter, type EventOptions, Host, IsRTL, Listen, type ListenOptions, Method, Property, type PropertyOptions, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Watch, attributes as a, classes, direction, dispatch, getConfig, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, slots, toCSSColor, toCSSUnit, toUnit };
+export { Bind, Consumer, Debounce, Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Watch, attributes as a, classes, direction, dispatch, getConfig, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, slots, toCSSColor, toCSSUnit, toUnit };
+export type { Config, ConfigOptions, EventEmitter, EventOptions, ListenOptions, PropertyOptions };
