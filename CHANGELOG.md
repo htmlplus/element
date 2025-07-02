@@ -1,3 +1,9 @@
+## [3.2.6](https://github.com/htmlplus/element/compare/v3.2.5...v3.2.6) (2025-07-02)
+
+### Bug Fixes
+
+* Resolve vulnerabilities by updating npm packages ([7b23200](https://github.com/htmlplus/element/commit/7b232008f0e6dbdf6b322ed0a363340626f299bc))
+
 ## [3.2.5](https://github.com/htmlplus/element/compare/v3.2.4...v3.2.5) (2025-07-01)
 
 ### Bug Fixes
