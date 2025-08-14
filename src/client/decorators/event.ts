@@ -1,7 +1,7 @@
 import { kebabCase, pascalCase } from 'change-case';
 
 import { HTMLPlusElement } from '../../types/index.js';
-import { dispatch, getConfig, getFramework, host } from '../utils/index.js';
+import { dispatch, getConfig, getFramework, getNamespace, host } from '../utils/index.js';
 
 /**
  * A function type that generates a `CustomEvent`.
@@ -62,7 +62,7 @@ export function Event<T = any>(options: EventOptions = {}) {
                 detail: event.detail
               })
             });
-          } catch {}
+          } catch { }
           break;
 
         case 'qwik':
@@ -80,9 +80,11 @@ export function Event<T = any>(options: EventOptions = {}) {
           break;
       }
 
-      let event: CustomEvent<T>;
+      let event: CustomEvent<T> | undefined;
 
-      event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
+      const resolver = getConfig(getNamespace(target)!).event?.resolver;
+
+      event ||= resolver?.({ detail, element, framework, options, type });
 
       event && element.dispatchEvent(event);
 

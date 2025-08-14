@@ -1,5 +1,5 @@
 import { kebabCase, pascalCase } from 'change-case';
-import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_READY } from './constants.js';
+import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, TYPE_STRING, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_READY } from './constants.js';
 
 /**
  * Indicates the host of the element.
@@ -163,13 +163,6 @@ const classes = (input, smart) => {
     return result.filter((item) => item).join(' ');
 };
 
-/**
- * Indicates whether the current code is running on a server.
- */
-const isServer = () => {
-    return !(typeof window != 'undefined' && window.document);
-};
-
 const merge = (target, ...sources) => {
     for (const source of sources) {
         if (!source)
@@ -192,31 +185,31 @@ const merge = (target, ...sources) => {
     return target;
 };
 
-const DEFAULTS = {
-    element: {}
+/**
+ * TODO
+ */
+const getConfig = (namespace) => {
+    return globalThis[`$htmlplus:${namespace}$`] || {};
 };
 /**
  * TODO
  */
-const getConfig = (...keys) => {
-    if (isServer())
-        return;
-    let config = window[`$htmlplus$`];
-    for (const key of keys) {
-        if (!config)
-            break;
-        config = config[key];
-    }
-    return config;
+const getConfigCreator = (namespace) => () => {
+    return getConfig(namespace);
 };
 /**
  * TODO
  */
-const setConfig = (config, options) => {
-    if (isServer())
-        return;
-    const previous = options?.override ? {} : window[`$htmlplus$`];
-    window[`$htmlplus$`] = merge({}, DEFAULTS, previous, config);
+const setConfig = (namespace, config, options) => {
+    const previous = options?.override ? {} : globalThis[`$htmlplus:${namespace}$`];
+    const next = merge({}, previous, config);
+    globalThis[`$htmlplus:${namespace}$`] = next;
+};
+/**
+ * TODO
+ */
+const setConfigCreator = (namespace) => (config, options) => {
+    return setConfig(namespace, config, options);
 };
 
 const defineProperty = Object.defineProperty;
@@ -253,6 +246,10 @@ const getTag = (target) => {
     return target.constructor[STATIC_TAG] ?? target[STATIC_TAG];
 };
 
+const getNamespace = (target) => {
+    return getTag(target)?.split('-')?.at(0);
+};
+
 /**
  * Determines whether the given input string is a valid
  * [CSS Color](https://mdn.io/color-value) or not.
@@ -267,6 +264,13 @@ const isCSSColor = (input) => {
  * Indicates whether the direction of the element is `Right-To-Left` or not.
  */
 const isRTL = (target) => direction(target) == 'rtl';
+
+/**
+ * Indicates whether the current code is running on a server.
+ */
+const isServer = () => {
+    return !(typeof window != 'undefined' && window.document);
+};
 
 const shadowRoot = (target) => {
     return host(target)?.shadowRoot;
@@ -1266,7 +1270,20 @@ const toProperty = (input, type) => {
             return undefined;
         }
     }
-    return input;
+    if (TYPE_STRING & type || type === String) {
+        return input;
+    }
+    // TODO
+    // if (CONSTANTS.TYPE_BIGINT   & type || type === BigInt)   { }
+    // if (CONSTANTS.TYPE_ENUM     & type || type === TODO)     { }
+    // if (CONSTANTS.TYPE_FUNCTION & type || type === Function) { }
+    try {
+        // TODO
+        return JSON.parse(input);
+    }
+    catch {
+        return input;
+    }
 };
 
 /**
@@ -1526,7 +1543,31 @@ const proxy = (constructor) => {
         }
         connectedCallback() {
             // TODO: experimental for global config
-            Object.assign(this.#instance, getConfig('element', getTag(this.#instance), 'property'));
+            (() => {
+                const namespace = getNamespace(this.#instance);
+                const tag = getTag(this.#instance);
+                const properties = getConfig(namespace).elements?.[tag]?.properties;
+                if (!properties)
+                    return;
+                const defaults = Object.fromEntries(Object.entries(properties).map(([key, value]) => [key, value?.default]));
+                Object.assign(this, defaults);
+            })();
+            // TODO
+            (() => {
+                const key = Object.keys(this).find((key) => key.startsWith('__reactProps'));
+                const props = this[key];
+                if (!props)
+                    return;
+                for (const [key, value] of Object.entries(props)) {
+                    if (this[key] != undefined)
+                        continue;
+                    if (key == 'children')
+                        continue;
+                    if (typeof value != 'object')
+                        continue;
+                    this[key] = value;
+                }
+            })();
             this.#instance[API_CONNECTED] = true;
             call(this.#instance, LIFECYCLE_CONNECTED);
             requestUpdate(this.#instance, undefined, undefined, () => {
@@ -1579,7 +1620,8 @@ function Event(options = {}) {
                     break;
             }
             let event;
-            event ||= getConfig('event', 'resolver')?.({ detail, element, framework, options, type });
+            const resolver = getConfig(getNamespace(target)).event?.resolver;
+            event ||= resolver?.({ detail, element, framework, options, type });
             event && element.dispatchEvent(event);
             event ||= dispatch(this, type, { ...options, detail });
             return event;
@@ -1644,6 +1686,165 @@ function Method() {
     return function (target, key, descriptor) {
         wrapMethod('before', target, LIFECYCLE_CONSTRUCTED, function () {
             host(this)[key] = this[key].bind(this);
+        });
+    };
+}
+
+const CONTAINER_DATA = Symbol();
+const getContainers = (breakpoints) => {
+    return Object.entries(breakpoints || {}).reduce((result, [key, breakpoint]) => {
+        if (breakpoint.type !== 'container')
+            return result;
+        result[key] = {
+            min: breakpoint.min,
+            max: breakpoint.max
+        };
+        return result;
+    }, {});
+};
+const getMedias = (breakpoints) => {
+    return Object.entries(breakpoints || {}).reduce((result, [key, breakpoint]) => {
+        if (breakpoint.type !== 'media')
+            return result;
+        const parts = [];
+        const min = 'min' in breakpoint ? breakpoint.min : undefined;
+        const max = 'max' in breakpoint ? breakpoint.max : undefined;
+        if (min !== undefined)
+            parts.push(`(min-width: ${min}px)`);
+        if (max !== undefined)
+            parts.push(`(max-width: ${max}px)`);
+        const query = parts.join(' and ');
+        if (query)
+            result[key] = query;
+        return result;
+    }, {});
+};
+const matchContainer = (element, container) => {
+    const $element = element;
+    const getData = () => {
+        if ($element[CONTAINER_DATA])
+            return $element[CONTAINER_DATA];
+        const listeners = new Set();
+        const observer = new ResizeObserver(() => {
+            listeners.forEach((listener) => listener());
+        });
+        observer.observe(element);
+        $element[CONTAINER_DATA] = { listeners, observer };
+        return $element[CONTAINER_DATA];
+    };
+    const getMatches = () => {
+        const width = element.offsetWidth;
+        const matches = (container.min === undefined || width >= container.min) &&
+            (container.max === undefined || width <= container.max);
+        return matches;
+    };
+    const addEventListener = (type, listener) => {
+        getData().listeners.add(listener);
+    };
+    const removeEventListener = (type, listener) => {
+        const data = getData();
+        data.listeners.delete(listener);
+        if (data.listeners.size !== 0)
+            return;
+        data.observer.disconnect();
+        delete $element[CONTAINER_DATA];
+    };
+    return {
+        get matches() {
+            return getMatches();
+        },
+        addEventListener,
+        removeEventListener
+    };
+};
+function Overrides() {
+    return function (target, key) {
+        const DISPOSERS = Symbol();
+        const breakpoints = getConfig(getNamespace(target)).breakpoints || {};
+        const containers = getContainers(breakpoints);
+        const medias = getMedias(breakpoints);
+        wrapMethod('after', target, LIFECYCLE_UPDATE, function (states) {
+            if (!states.has(key))
+                return;
+            const disposers = (this[DISPOSERS] ??= new Map());
+            const overrides = this[key] || {};
+            const activeKeys = new Set(disposers.keys());
+            const overrideKeys = Object.keys(overrides);
+            const containerKeys = overrideKeys.filter((breakpoint) => breakpoint in containers);
+            const mediaKeys = overrideKeys.filter((breakpoint) => breakpoint in medias);
+            let timeout;
+            let next = {};
+            const apply = (key) => {
+                clearTimeout(timeout);
+                Object.assign(next, overrides[key]);
+                timeout = setTimeout(() => {
+                    Object.assign(host(this), overrides[key]);
+                    next = {};
+                }, 0);
+            };
+            for (const overrideKey of overrideKeys) {
+                if (activeKeys.delete(overrideKey))
+                    continue;
+                const breakpoint = breakpoints[overrideKey];
+                if (!breakpoint)
+                    continue;
+                switch (breakpoint.type) {
+                    case 'container': {
+                        const container = containers[overrideKey];
+                        if (!container)
+                            break;
+                        const containerQueryList = matchContainer(host(this), container);
+                        const change = () => {
+                            for (const containerKey of containerKeys) {
+                                if (matchContainer(host(this), containers[containerKey]).matches) {
+                                    apply(containerKey);
+                                }
+                            }
+                        };
+                        containerQueryList.addEventListener('change', change);
+                        const disposer = () => {
+                            containerQueryList.removeEventListener('change', change);
+                        };
+                        disposers.set(overrideKey, disposer);
+                        if (!containerQueryList.matches)
+                            break;
+                        change();
+                        break;
+                    }
+                    case 'media': {
+                        const media = medias[overrideKey];
+                        if (!media)
+                            break;
+                        const mediaQueryList = window.matchMedia(media);
+                        const change = () => {
+                            for (const mediaKey of mediaKeys) {
+                                if (window.matchMedia(medias[mediaKey]).matches) {
+                                    apply(mediaKey);
+                                }
+                            }
+                        };
+                        mediaQueryList.addEventListener('change', change);
+                        const disposer = () => {
+                            mediaQueryList.removeEventListener('change', change);
+                        };
+                        disposers.set(overrideKey, disposer);
+                        if (!mediaQueryList.matches)
+                            break;
+                        change();
+                        break;
+                    }
+                }
+            }
+            for (const activeKey of activeKeys) {
+                const disposer = disposers.get(activeKey);
+                disposer();
+                disposers.delete(activeKey);
+            }
+        });
+        wrapMethod('after', target, LIFECYCLE_DISCONNECTED, function () {
+            const disposers = (this[DISPOSERS] ??= new Map());
+            disposers.forEach((disposer) => disposer());
+            disposers.clear();
         });
     };
 }
@@ -1916,4 +2117,4 @@ const attributes = attributes$2;
 const html = html$1;
 const styles = styles$1;
 
-export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Property, Provider, Query, QueryAll, Slots, State, Style, Watch, attributes as a, classes, direction, dispatch, getConfig, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, slots, toCSSColor, toCSSUnit, toUnit };
+export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots, State, Style, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toCSSColor, toCSSUnit, toUnit };

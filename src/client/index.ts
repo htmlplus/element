@@ -3,10 +3,13 @@ export * from './decorators/index.js';
 export {
   type Config,
   type ConfigOptions,
+  getConfig,
+  getConfigCreator,
+  setConfig,
+  setConfigCreator,
   classes,
   direction,
   dispatch,
-  getConfig,
   host,
   isCSSColor,
   toCSSColor,
@@ -17,6 +20,5 @@ export {
   on,
   off,
   slots,
-  toUnit,
-  setConfig
+  toUnit
 } from './utils/index.js';

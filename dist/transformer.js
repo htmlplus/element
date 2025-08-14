@@ -751,9 +751,7 @@ const customElement = (options) => {
                 
                 namespace JSX {
                   interface IntrinsicElements {
-                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & {
-                      [key: string]: any;
-                    };
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
                   }
                 }
               }
@@ -761,9 +759,7 @@ const customElement = (options) => {
               declare module "react" {
                 namespace JSX {
                   interface IntrinsicElements {
-                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & {
-                      [key: string]: any;
-                    };
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
                   }
                 }
               }
@@ -774,6 +770,22 @@ const customElement = (options) => {
                         preserveComments: true
                     });
                     path.node.body.push(...ast);
+                },
+                // TODO
+                TSTypeReference(path) {
+                    if (path.node.typeName?.name != 'OverridesConfig')
+                        return;
+                    const property = path.findParent((path) => path.isTSPropertySignature());
+                    if (!property)
+                        return;
+                    const name = property.node.key.name || property.node.key.extra.rawValue;
+                    if (!path.node.typeParameters?.params)
+                        return;
+                    path.node.typeParameters.params[1] = t.tsTypeReference(t.identifier('Omit'), t.tsTypeParameterInstantiation([
+                        t.tsTypeReference(t.identifier(`${context.className}Properties`)),
+                        t.tsLiteralType(t.stringLiteral(name))
+                    ]));
+                    path.skip();
                 }
             });
         }

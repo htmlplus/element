@@ -1,6 +1,6 @@
 import * as CONSTANTS from '../../constants/index.js';
 import { HTMLPlusElement } from '../../types/index.js';
-import { call, getConfig, getTag, isServer, requestUpdate } from '../utils/index.js';
+import { call, getConfig, getNamespace, getTag, isServer, requestUpdate } from '../utils/index.js';
 
 /**
  * The class marked with this decorator is considered a
@@ -55,7 +55,40 @@ const proxy = (constructor: HTMLPlusElement) => {
 
     connectedCallback() {
       // TODO: experimental for global config
-      Object.assign(this.#instance, getConfig('element', getTag(this.#instance)!, 'property'));
+      (() => {
+        const namespace = getNamespace(this.#instance)!;
+
+        const tag = getTag(this.#instance)!;
+
+        const properties = getConfig(namespace).elements?.[tag]?.properties;
+
+        if (!properties) return;
+
+        const defaults = Object.fromEntries(
+          Object.entries(properties).map(([key, value]) => [key, value?.default])
+        );
+
+        Object.assign(this, defaults);
+      })();
+
+      // TODO
+      (() => {
+        const key = Object.keys(this).find((key) => key.startsWith('__reactProps'));
+
+        const props = this[key as keyof Element] as { [key: string]: any };
+
+        if (!props) return;
+
+        for (const [key, value] of Object.entries(props)) {
+          if (this[key] != undefined) continue;
+
+          if (key == 'children') continue;
+
+          if (typeof value != 'object') continue;
+
+          this[key] = value;
+        }
+      })();
 
       this.#instance[CONSTANTS.API_CONNECTED] = true;
 

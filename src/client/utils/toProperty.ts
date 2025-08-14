@@ -55,5 +55,19 @@ export const toProperty = (input: any, type?: any): any => {
     }
   }
 
-  return input;
+  if (CONSTANTS.TYPE_STRING & type || type === String) {
+    return input;
+  }
+
+  // TODO
+  // if (CONSTANTS.TYPE_BIGINT   & type || type === BigInt)   { }
+  // if (CONSTANTS.TYPE_ENUM     & type || type === TODO)     { }
+  // if (CONSTANTS.TYPE_FUNCTION & type || type === Function) { }
+
+  try {
+    // TODO
+    return JSON.parse(input);
+  } catch {
+    return input;
+  }
 };

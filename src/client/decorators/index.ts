@@ -8,6 +8,7 @@ export * from './host.js';
 export * from './isRTL.js';
 export * from './listen.js';
 export * from './method.js';
+export * from './overrides.js';
 export * from './property.js';
 export * from './query.js';
 export * from './queryAll.js';

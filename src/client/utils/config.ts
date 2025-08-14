@@ -1,25 +1,42 @@
-import { isServer } from './isServer.js';
 import { merge } from './merge.js';
-
-const DEFAULTS: Config = {
-  element: {}
-};
 
 /**
  * TODO
  */
 export interface Config {
+  breakpoints?: {
+    [key: string]: {
+      type: 'container' | 'media';
+      min?: number;
+      max?: number;
+    };
+  };
   event?: {
     resolver?: (parameters: any) => CustomEvent | undefined;
   };
-  asset?: {
+  assets?: {
     [key: string]: any;
   };
-  element?: {
+  elements?: {
     [key: string]: {
-      property?: {
-        [key: string]: any;
+      properties?: {
+        [key: string]: {
+          default?: unknown;
+        };
       };
+      // slots?: {
+      //   [key: string]: any;
+      // };
+      // variants?: {
+      //   [key: string]: {
+      //     properties: {
+      //       [key: string]: any;
+      //     };
+      //     slots?: {
+      //       [key: string]: any;
+      //     };
+      //   }
+      // };
     };
   };
 }
@@ -41,26 +58,32 @@ export interface ConfigOptions {
 /**
  * TODO
  */
-export const getConfig = (...keys: string[]): any => {
-  if (isServer()) return;
-
-  let config = window[`$htmlplus$`];
-
-  for (const key of keys) {
-    if (!config) break;
-    config = config[key];
-  }
-
-  return config;
+export const getConfig = (namespace: string): Config => {
+  return globalThis[`$htmlplus:${namespace}$`] || {};
 };
 
 /**
  * TODO
  */
-export const setConfig = (config: Config, options?: ConfigOptions): void => {
-  if (isServer()) return;
-
-  const previous = options?.override ? {} : window[`$htmlplus$`];
-
-  window[`$htmlplus$`] = merge({}, DEFAULTS, previous, config);
+export const getConfigCreator = (namespace: string) => () => {
+  return getConfig(namespace);
 };
+
+/**
+ * TODO
+ */
+export const setConfig = (namespace: string, config: Config, options?: ConfigOptions): void => {
+  const previous = options?.override ? {} : globalThis[`$htmlplus:${namespace}$`];
+
+  const next = merge({}, previous, config);
+
+  globalThis[`$htmlplus:${namespace}$`] = next;
+};
+
+/**
+ * TODO
+ */
+export const setConfigCreator =
+  (namespace: string) => (config: Config, options?: ConfigOptions) => {
+    return setConfig(namespace, config, options);
+  };

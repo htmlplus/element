@@ -6,6 +6,7 @@ export * from './defineProperty.js';
 export * from './direction.js';
 export * from './event.js';
 export * from './getFramework.js';
+export * from './getNamespace.js';
 export * from './getTag.js';
 export * from './host.js';
 export * from './isCSSColor.js';
