@@ -1,3 +1,9 @@
+## [3.3.0](https://github.com/htmlplus/element/compare/v3.2.6...v3.3.0) (2025-08-14)
+
+### Features
+
+* Implement the experimental `Overrides` decorator ([9177f5e](https://github.com/htmlplus/element/commit/9177f5e86a6048cac34eced87c46ea544a19078a))
+
 ## [3.2.6](https://github.com/htmlplus/element/compare/v3.2.5...v3.2.6) (2025-07-02)
 
 ### Bug Fixes
