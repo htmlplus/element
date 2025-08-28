@@ -1,3 +1,9 @@
+## [3.3.1](https://github.com/htmlplus/element/compare/v3.3.0...v3.3.1) (2025-08-28)
+
+### Bug Fixes
+
+* Integrate Biome, Husky, and Lint-Staged to improve code consistency, automation, and overall development workflow ([2bc97aa](https://github.com/htmlplus/element/commit/2bc97aaaa0346a45bb323d66de7512aaa5c5fb17))
+
 ## [3.3.0](https://github.com/htmlplus/element/compare/v3.2.6...v3.3.0) (2025-08-14)
 
 ### Features
