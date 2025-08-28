@@ -1,10 +1,11 @@
-import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types/index.js';
-import { call } from './call.js';
-import { getTag } from './getTag.js';
-import { shadowRoot } from './shadowRoot.js';
-import { task } from './task.js';
-import { render } from './uhtml.js';
+import * as CONSTANTS from '@/constants';
+import type { HTMLPlusElement } from '@/types';
+
+import { call } from './call';
+import { getTag } from './getTag';
+import { shadowRoot } from './shadowRoot';
+import { task } from './task';
+import { render } from './uhtml';
 
 /**
  * Updates the DOM with a scheduled task.
@@ -14,122 +15,131 @@ import { render } from './uhtml.js';
  * @param callback Invoked when the rendering phase is completed.
  */
 export const requestUpdate = (
-  target: HTMLPlusElement,
-  name?: string,
-  previous?: any,
-  callback?: (skipped: boolean) => void
+	target: HTMLPlusElement,
+	name?: string,
+	previous?: unknown,
+	callback?: (skipped: boolean) => void
 ): void => {
-  // Creates/Gets a stacks.
-  const stacks = (target[CONSTANTS.API_STACKS] ||= new Map());
+	// Ensure API_STACKS exists on target
+	target[CONSTANTS.API_STACKS] ||= new Map();
 
-  // Creates/Updates a stack.
-  const stack = stacks.get(name) || { callbacks: [], previous };
+	// Creates/Gets a stacks.
+	const stacks = target[CONSTANTS.API_STACKS] as Map<
+		string | undefined,
+		{
+			callbacks: ((skipped: boolean) => void)[];
+			previous: unknown;
+		}
+	>;
 
-  // Adds the callback to the stack, if exists.
-  callback && stack.callbacks.push(callback);
+	// Creates/Updates a stack.
+	const stack = stacks.get(name) || { callbacks: [], previous };
 
-  // Stores the stack.
-  stacks.set(name, stack);
+	// Adds the callback to the stack, if exists.
+	callback && stack.callbacks.push(callback);
 
-  // Defines a handler.
-  const handler = () => {
-    // Skips the rendering phase if DOM isn't ready.
-    if (!target[CONSTANTS.API_CONNECTED]) return;
+	// Stores the stack.
+	stacks.set(name, stack);
 
-    // Calculates the states to pass into lifecycles' callbacks.
-    const states = new Map(
-      Array.from(stacks)
-        .filter((stack: any) => stack[0])
-        .map((stack: any) => [stack[0], stack[1].previous])
-    );
+	// Defines a handler.
+	const handler = () => {
+		// Skips the rendering phase if DOM isn't ready.
+		if (!target[CONSTANTS.API_CONNECTED]) return;
 
-    // Calls the lifecycle's callback before the rendering phase.
-    call(target, CONSTANTS.LIFECYCLE_UPDATE, states);
+		// Calculates the states to pass into lifecycles' callbacks.
+		const states = new Map(
+			Array.from(stacks)
+				.filter((stack) => stack[0])
+				.map((stack) => [stack[0], stack[1].previous])
+		);
 
-    // Renders template to the DOM.
-    render(shadowRoot(target), () => call(target, CONSTANTS.METHOD_RENDER) ?? null);
+		// Calls the lifecycle's callback before the rendering phase.
+		call(target, CONSTANTS.LIFECYCLE_UPDATE, states);
 
-    // Invokes requests' callback.
-    stacks.forEach((state) => {
-      state.callbacks.forEach((callback, index, callbacks) => {
-        callback(callbacks.length - 1 != index);
-      });
-    });
+		// Renders template to the DOM.
+		render(shadowRoot(target), () => call(target, CONSTANTS.METHOD_RENDER) ?? null);
 
-    // TODO
-    (() => {
-      const raw = target.constructor[CONSTANTS.STATIC_STYLE];
+		// Invokes requests' callback.
+		stacks.forEach((state) => {
+			state.callbacks.forEach((callback, index, callbacks) => {
+				callback(callbacks.length - 1 !== index);
+			});
+		});
 
-      if (!raw) return;
+		// TODO
+		(() => {
+			const raw = target.constructor[CONSTANTS.STATIC_STYLE];
 
-      const regex1 = /this-([\w-]+)(?:-([\w-]+))?/g;
-      const regex2 = /(\s*\w+\s*:\s*(undefined|null)\s*;?)/g;
-      const regex3 = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
+			if (!raw) return;
 
-      const hasGlobal = raw.includes('global');
-      const hasVariable = raw.includes('this-');
+			const regex1 = /this-([\w-]+)(?:-([\w-]+))?/g;
+			const regex2 = /(\s*\w+\s*:\s*(undefined|null)\s*;?)/g;
+			const regex3 = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
 
-      let localSheet = target[CONSTANTS.API_STYLE];
-      let globalSheet = target.constructor[CONSTANTS.API_STYLE];
+			const hasGlobal = raw.includes('global');
+			const hasVariable = raw.includes('this-');
 
-      if (!hasVariable && localSheet) return;
+			let localSheet = target[CONSTANTS.API_STYLE];
+			let globalSheet = target.constructor[CONSTANTS.API_STYLE];
 
-      const parsed = raw
-        .replace(regex1, (match, key) => {
-          let value = target as any;
+			if (!hasVariable && localSheet) return;
 
-          for (const section of key.split('-')) {
-            value = value?.[section];
-          }
+			const parsed = raw
+				.replace(regex1, (_match, key) => {
+					let value = target;
 
-          return value;
-        })
-        .replace(regex2, '');
+					for (const section of key.split('-')) {
+						value = value?.[section];
+					}
 
-      if (!localSheet) {
-        localSheet = new CSSStyleSheet();
+					return value;
+				})
+				.replace(regex2, '');
 
-        target[CONSTANTS.API_STYLE] = localSheet;
+			if (!localSheet) {
+				localSheet = new CSSStyleSheet();
 
-        shadowRoot(target)!.adoptedStyleSheets.push(localSheet);
-      }
+				target[CONSTANTS.API_STYLE] = localSheet;
 
-      const localStyle = parsed.replace(regex3, '');
+				shadowRoot(target)?.adoptedStyleSheets.push(localSheet);
+			}
 
-      localSheet.replaceSync(localStyle);
+			const localStyle = parsed.replace(regex3, '');
 
-      if (!hasGlobal || globalSheet) return;
+			localSheet.replaceSync(localStyle);
 
-      if (!globalSheet) {
-        globalSheet = new CSSStyleSheet();
+			if (!hasGlobal || globalSheet) return;
 
-        target.constructor[CONSTANTS.API_STYLE] = globalSheet;
+			if (!globalSheet) {
+				globalSheet = new CSSStyleSheet();
 
-        document.adoptedStyleSheets.push(globalSheet);
-      }
+				target.constructor[CONSTANTS.API_STYLE] = globalSheet;
 
-      const globalStyle = parsed
-        ?.match(regex3)
-        ?.join('')
-        ?.replaceAll('global', '')
-        ?.replaceAll(':host', getTag(target)!);
+				document.adoptedStyleSheets.push(globalSheet);
+			}
 
-      globalSheet.replaceSync(globalStyle);
-    })();
+			const globalStyle = parsed
+				?.match(regex3)
+				?.join('')
+				?.replaceAll('global', '')
+				?.replaceAll(':host', getTag(target) || '');
 
-    // Calls the lifecycle's callback after the rendering phase.
-    call(target, CONSTANTS.LIFECYCLE_UPDATED, states);
+			globalSheet.replaceSync(globalStyle);
+		})();
 
-    // Clears stacks.
-    stacks.clear();
+		// Calls the lifecycle's callback after the rendering phase.
+		call(target, CONSTANTS.LIFECYCLE_UPDATED, states);
 
-    // TODO: related to the @Watch decorator.
-    target[CONSTANTS.API_RENDER_COMPLETED] = true;
-  };
+		// Clears stacks.
+		stacks.clear();
 
-  // Creates/Gets a micro task function.
-  target[CONSTANTS.API_REQUEST] ||= task({ handler });
+		// TODO: related to the @Watch decorator.
+		target[CONSTANTS.API_RENDER_COMPLETED] = true;
+	};
 
-  // Calls the micro task.
-  call(target, CONSTANTS.API_REQUEST);
+	// Creates/Gets a micro task function.
+	target[CONSTANTS.API_REQUEST] ||= task({ handler });
+
+	// Calls the micro task.
+	call(target, CONSTANTS.API_REQUEST);
 };

@@ -1,106 +1,106 @@
-import ora from 'ora';
-import path from 'path';
+import path from 'node:path';
 
-import * as CONSTANTS from '../constants/index.js';
-import {
-  TransformerPlugin,
-  TransformerPluginContext,
-  TransformerPluginGlobal
-} from './transformer.types.js';
+import ora from 'ora';
+
+import * as CONSTANTS from '@/constants';
+
+import type {
+	TransformerPlugin,
+	TransformerPluginContext,
+	TransformerPluginGlobal
+} from './transformer.types';
 
 const logger = ora({
-  color: 'yellow'
+	color: 'yellow'
 });
 
 const log = (message, persist?) => {
-  const content = `${new Date().toLocaleTimeString()} [${CONSTANTS.KEY}] ${message}`;
+	const content = `${new Date().toLocaleTimeString()} [${CONSTANTS.KEY}] ${message}`;
 
-  const log = logger.start(content);
+	const log = logger.start(content);
 
-  if (!persist) return;
+	if (!persist) return;
 
-  log.succeed();
+	log.succeed();
 };
 
 export const transformer = (...plugins: TransformerPlugin[]) => {
-  let global: TransformerPluginGlobal = {
-    contexts: []
-  };
+	let global: TransformerPluginGlobal = {
+		contexts: []
+	};
 
-  const start = async () => {
-    log(`Started.`, true);
+	const start = async () => {
+		log(`Started.`, true);
 
-    log(`${plugins.length} plugins detected.`, true);
+		log(`${plugins.length} plugins detected.`, true);
 
-    log(`Plugins are starting.`, true);
+		log(`Plugins are starting.`, true);
 
-    for (const plugin of plugins) {
-      if (!plugin.start) continue;
+		for (const plugin of plugins) {
+			if (!plugin.start) continue;
 
-      log(`Plugin '${plugin.name}' is starting.`);
+			log(`Plugin '${plugin.name}' is starting.`);
 
-      global = (await plugin.start(global)) || global;
+			global = (await plugin.start(global)) || global;
 
-      log(`Plugin '${plugin.name}' started successfully.`);
-    }
+			log(`Plugin '${plugin.name}' started successfully.`);
+		}
 
-    log(`Plugins have been successfully started.`, true);
-  };
+		log(`Plugins have been successfully started.`, true);
+	};
 
-  const run = async (filePath: string) => {
-    const key = path.join(filePath).split(path.sep).pop();
+	const run = async (filePath: string) => {
+		let context: TransformerPluginContext = {
+			filePath
+		};
 
-    let context: TransformerPluginContext = {
-      filePath
-    };
+		const parsed = path.parse(filePath);
 
-    const parsed = path.parse(filePath);
+		for (const plugin of plugins) {
+			if (!plugin.run) continue;
 
-    for (const plugin of plugins) {
-      if (!plugin.run) continue;
+			const source = path.join(parsed.dir).split(path.sep).slice(-2).concat(parsed.base).join('/');
 
-      const source = path.join(parsed.dir).split(path.sep).slice(-2).concat(parsed.base).join('/');
+			log(`Plugin '${plugin.name}' is executing on '${source}' file.`);
 
-      log(`Plugin '${plugin.name}' is executing on '${source}' file.`);
+			try {
+				context = (await plugin.run(context, global)) || context;
+			} catch (error) {
+				log(`Error in '${plugin.name}' plugin on '${source}' file.\n`, true);
+				throw error;
+			}
 
-      try {
-        context = (await plugin.run(context, global)) || context;
-      } catch (error) {
-        log(`Error in '${plugin.name}' plugin on '${source}' file.\n`, true);
-        throw error;
-      }
+			global.contexts = global.contexts
+				.filter((current) => {
+					return current.filePath !== context.filePath;
+				})
+				.concat(context);
 
-      global.contexts = global.contexts
-        .filter((current) => {
-          return current.filePath != context.filePath;
-        })
-        .concat(context);
+			log(`Plugin '${plugin.name}' executed successfully on '${source}' file.`);
+		}
 
-      log(`Plugin '${plugin.name}' executed successfully on '${source}' file.`);
-    }
+		logger.stop();
 
-    logger.stop();
+		return context;
+	};
 
-    return context;
-  };
+	const finish = async () => {
+		log(`Plugins are finishing.`, true);
 
-  const finish = async () => {
-    log(`Plugins are finishing.`, true);
+		for (const plugin of plugins) {
+			if (!plugin.finish) continue;
 
-    for (const plugin of plugins) {
-      if (!plugin.finish) continue;
+			log(`Plugin '${plugin.name}' is finishing.`);
 
-      log(`Plugin '${plugin.name}' is finishing.`);
+			global = (await plugin.finish(global)) || global;
 
-      global = (await plugin.finish(global)) || global;
+			log(`Plugin '${plugin.name}' finished successfully.`);
+		}
 
-      log(`Plugin '${plugin.name}' finished successfully.`);
-    }
+		log(`Plugins have been successfully finished.`, true);
 
-    log(`Plugins have been successfully finished.`, true);
+		log(`Finished.`, true);
+	};
 
-    log(`Finished.`, true);
-  };
-
-  return { global, start, run, finish };
+	return { global, start, run, finish };
 };

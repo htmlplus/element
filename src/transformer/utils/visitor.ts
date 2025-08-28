@@ -1,7 +1,5 @@
-import traverse from '@babel/traverse';
-import { Node } from '@babel/types';
+import core from '@babel/traverse';
 
-// TODO: options type
-export const visitor = (ast: Node, options: any): void => {
-  (traverse.default || traverse)(ast, options);
-};
+const traverse = ((core as unknown as { default: unknown }).default || core) as typeof core;
+
+export const visitor = traverse;

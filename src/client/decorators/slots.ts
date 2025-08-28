@@ -1,8 +1,8 @@
-import { slots, toDecorator } from '../utils/index.js';
+import { slots, toDecorator } from '@/client/utils';
 
 /**
  * Returns the slots name.
  */
 export function Slots() {
-  return toDecorator(slots);
+	return toDecorator(slots);
 }

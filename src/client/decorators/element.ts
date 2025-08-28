@@ -1,6 +1,6 @@
-import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types/index.js';
-import { call, getConfig, getNamespace, getTag, isServer, requestUpdate } from '../utils/index.js';
+import { call, getConfig, getNamespace, getTag, isServer, requestUpdate } from '@/client/utils';
+import * as CONSTANTS from '@/constants';
+import type { HTMLPlusElement } from '@/types';
 
 /**
  * The class marked with this decorator is considered a
@@ -8,99 +8,108 @@ import { call, getConfig, getNamespace, getTag, isServer, requestUpdate } from '
  * and its name, in kebab-case, serves as the element name.
  */
 export function Element() {
-  return function (constructor: HTMLPlusElement) {
-    if (isServer()) return;
+	// biome-ignore lint: TODO
+	return (constructor: HTMLPlusElement) => {
+		if (isServer()) return;
 
-    const tag = getTag(constructor)!;
+		const tag = getTag(constructor);
 
-    if (customElements.get(tag)) return;
+		if (!tag) return;
 
-    customElements.define(tag, proxy(constructor));
-  };
+		if (customElements.get(tag)) return;
+
+		customElements.define(tag, proxy(constructor));
+	};
 }
 
+// biome-ignore lint: TODO
 const proxy = (constructor: HTMLPlusElement) => {
-  return class Plus extends HTMLElement {
-    #instance;
+	return class Plus extends HTMLElement {
+		#instance;
 
-    static formAssociated = constructor['formAssociated'];
+		// biome-ignore lint: TODO
+		static formAssociated = constructor['formAssociated'];
 
-    static observedAttributes = constructor['observedAttributes'];
+		// biome-ignore lint: TODO
+		static observedAttributes = constructor['observedAttributes'];
 
-    constructor() {
-      super();
+		constructor() {
+			super();
 
-      this.attachShadow({
-        mode: 'open',
-        delegatesFocus: constructor['delegatesFocus'],
-        slotAssignment: constructor['slotAssignment']
-      });
+			this.attachShadow({
+				mode: 'open',
+				// biome-ignore lint: TODO
+				delegatesFocus: constructor['delegatesFocus'],
+				// biome-ignore lint: TODO
+				slotAssignment: constructor['slotAssignment']
+			});
 
-      this.#instance = new (constructor as any)();
+			// biome-ignore lint: TODO
+			this.#instance = new (constructor as any)();
 
-      this.#instance[CONSTANTS.API_HOST] = () => this;
+			this.#instance[CONSTANTS.API_HOST] = () => this;
 
-      call(this.#instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
-    }
+			call(this.#instance, CONSTANTS.LIFECYCLE_CONSTRUCTED);
+		}
 
-    adoptedCallback() {
-      call(this.#instance, CONSTANTS.LIFECYCLE_ADOPTED);
-    }
+		adoptedCallback() {
+			call(this.#instance, CONSTANTS.LIFECYCLE_ADOPTED);
+		}
 
-    attributeChangedCallback(key, prev, next) {
-      if (prev != next) {
-        this.#instance['RAW:' + key] = next;
-      }
-    }
+		attributeChangedCallback(key, prev, next) {
+			if (prev !== next) {
+				this.#instance[`RAW:${key}`] = next;
+			}
+		}
 
-    connectedCallback() {
-      // TODO: experimental for global config
-      (() => {
-        const namespace = getNamespace(this.#instance)!;
+		connectedCallback() {
+			// TODO: experimental for global config
+			(() => {
+				const namespace = getNamespace(this.#instance) || '';
 
-        const tag = getTag(this.#instance)!;
+				const tag = getTag(this.#instance) || '';
 
-        const properties = getConfig(namespace).elements?.[tag]?.properties;
+				const properties = getConfig(namespace).elements?.[tag]?.properties;
 
-        if (!properties) return;
+				if (!properties) return;
 
-        const defaults = Object.fromEntries(
-          Object.entries(properties).map(([key, value]) => [key, value?.default])
-        );
+				const defaults = Object.fromEntries(
+					Object.entries(properties).map(([key, value]) => [key, value?.default])
+				);
 
-        Object.assign(this, defaults);
-      })();
+				Object.assign(this, defaults);
+			})();
 
-      // TODO
-      (() => {
-        const key = Object.keys(this).find((key) => key.startsWith('__reactProps'));
+			// TODO
+			(() => {
+				const key = Object.keys(this).find((key) => key.startsWith('__reactProps'));
 
-        const props = this[key as keyof Element] as { [key: string]: any };
+				const props = this[key as keyof Element];
 
-        if (!props) return;
+				if (!props) return;
 
-        for (const [key, value] of Object.entries(props)) {
-          if (this[key] != undefined) continue;
+				for (const [key, value] of Object.entries(props)) {
+					if (this[key] !== undefined) continue;
 
-          if (key == 'children') continue;
+					if (key === 'children') continue;
 
-          if (typeof value != 'object') continue;
+					if (typeof value !== 'object') continue;
 
-          this[key] = value;
-        }
-      })();
+					this[key] = value;
+				}
+			})();
 
-      this.#instance[CONSTANTS.API_CONNECTED] = true;
+			this.#instance[CONSTANTS.API_CONNECTED] = true;
 
-      call(this.#instance, CONSTANTS.LIFECYCLE_CONNECTED);
+			call(this.#instance, CONSTANTS.LIFECYCLE_CONNECTED);
 
-      requestUpdate(this.#instance, undefined, undefined, () => {
-        call(this.#instance, CONSTANTS.LIFECYCLE_READY);
-      });
-    }
+			requestUpdate(this.#instance, undefined, undefined, () => {
+				call(this.#instance, CONSTANTS.LIFECYCLE_READY);
+			});
+		}
 
-    disconnectedCallback() {
-      call(this.#instance, CONSTANTS.LIFECYCLE_DISCONNECTED);
-    }
-  };
+		disconnectedCallback() {
+			call(this.#instance, CONSTANTS.LIFECYCLE_DISCONNECTED);
+		}
+	};
 };

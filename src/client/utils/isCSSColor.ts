@@ -3,7 +3,9 @@
  * [CSS Color](https://mdn.io/color-value) or not.
  */
 export const isCSSColor = (input: string): boolean => {
-  const option = new Option();
-  option.style.color = input;
-  return option.style.color !== '';
+	const option = new Option();
+
+	option.style.color = input;
+
+	return option.style.color !== '';
 };

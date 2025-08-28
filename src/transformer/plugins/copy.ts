@@ -1,49 +1,49 @@
+import path from 'node:path';
+
 import fs from 'fs-extra';
-import path from 'path';
 
-import { TransformerPlugin } from '../transformer.types.js';
+import type { InvertOptional, TransformerPlugin } from '../transformer.types';
 
-export const COPY_OPTIONS: Partial<CopyOptions> = {
-  at: 'start'
+export const COPY_OPTIONS: InvertOptional<CopyOptions> = {
+	at: 'start',
+	transformer: (content) => content
 };
 
 export interface CopyOptions {
-  at?: 'start' | 'run' | 'finish';
-  destination: string;
-  source: string;
-  transformer?: (content: string) => string;
+	at?: 'start' | 'run' | 'finish';
+	destination: string;
+	source: string;
+	transformer?: (content: string) => string;
 }
 
-export const copy = (options: CopyOptions): TransformerPlugin => {
-  const name = 'copy';
+export const copy = (userOptions: CopyOptions): TransformerPlugin => {
+	const name = 'copy';
 
-  options = Object.assign({}, COPY_OPTIONS, options);
+	const options = Object.assign({}, COPY_OPTIONS, userOptions) as Required<CopyOptions>;
 
-  const copy = (caller) => {
-    if (options.at != caller) return;
+	const copy = (caller) => {
+		if (options.at !== caller) return;
 
-    let content;
+		let content = fs.readFileSync(options.source, 'utf8');
 
-    content = fs.readFileSync(options.source, 'utf8');
+		if (options.transformer) content = options.transformer(content);
 
-    if (options.transformer) content = options.transformer(content);
+		fs.ensureDirSync(path.dirname(options.destination));
 
-    fs.ensureDirSync(path.dirname(options.destination));
+		fs.writeFileSync(options.destination, content, 'utf8');
+	};
 
-    fs.writeFileSync(options.destination, content, 'utf8');
-  };
+	const start = () => {
+		copy('start');
+	};
 
-  const start = () => {
-    copy('start');
-  };
+	const run = () => {
+		copy('run');
+	};
 
-  const run = () => {
-    copy('run');
-  };
+	const finish = () => {
+		copy('finish');
+	};
 
-  const finish = () => {
-    copy('finish');
-  };
-
-  return { name, start, run, finish };
+	return { name, start, run, finish };
 };

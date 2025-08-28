@@ -1,59 +1,61 @@
+import path from 'node:path';
+
 import fs from 'fs-extra';
 import { glob } from 'glob';
-import path from 'path';
 
-import {
-  TransformerPlugin,
-  TransformerPluginContext,
-  TransformerPluginGlobal
-} from '../transformer.types.js';
+import type {
+	InvertOptional,
+	TransformerPlugin,
+	TransformerPluginContext,
+	TransformerPluginGlobal
+} from '../transformer.types';
 
-export const ASSETS_OPTIONS: Partial<AssetsOptions> = {
-  destination(context) {
-    return path.join('dist', 'assets', context.fileName!);
-  },
-  source(context) {
-    return path.join(context.directoryPath!, 'assets');
-  },
-  json(context) {
-    return path.join('dist', 'assets', context.fileName! + '.json');
-  }
+export const ASSETS_OPTIONS: InvertOptional<AssetsOptions> = {
+	destination(context) {
+		return path.join('dist', 'assets', context.fileName || '');
+	},
+	source(context) {
+		return path.join(context.directoryPath || '', 'assets');
+	},
+	json(context) {
+		return path.join('dist', 'assets', `${context.fileName || ''}.json`);
+	}
 };
 
 export interface AssetsOptions {
-  destination?: (context: TransformerPluginContext) => string;
-  source?: (context: TransformerPluginContext) => string;
-  json?: (context: TransformerPluginContext) => string;
+	destination?: (context: TransformerPluginContext) => string;
+	source?: (context: TransformerPluginContext) => string;
+	json?: (context: TransformerPluginContext) => string;
 }
 
-export const assets = (options?: AssetsOptions): TransformerPlugin => {
-  const name = 'assets';
+export const assets = (userOptions?: AssetsOptions): TransformerPlugin => {
+	const name = 'assets';
 
-  options = Object.assign({}, ASSETS_OPTIONS, options);
+	const options = Object.assign({}, ASSETS_OPTIONS, userOptions) as Required<AssetsOptions>;
 
-  const finish = (global: TransformerPluginGlobal) => {
-    for (const context of global.contexts) {
-      context.assetsDestination = options!.destination!(context);
+	const finish = (global: TransformerPluginGlobal) => {
+		for (const context of global.contexts) {
+			context.assetsDestination = options.destination(context);
 
-      context.assetsSource = options!.source!(context);
+			context.assetsSource = options.source(context);
 
-      if (!context.assetsSource) continue;
+			if (!context.assetsSource) continue;
 
-      if (!fs.existsSync(context.assetsSource)) continue;
+			if (!fs.existsSync(context.assetsSource)) continue;
 
-      fs.copySync(context.assetsSource, context.assetsDestination);
+			fs.copySync(context.assetsSource, context.assetsDestination);
 
-      const json = options.json?.(context);
+			const json = options.json?.(context);
 
-      if (!json) continue;
+			if (!json) continue;
 
-      fs.ensureDirSync(path.dirname(json));
+			fs.ensureDirSync(path.dirname(json));
 
-      const files = glob.sync('**/*.*', { cwd: context.assetsDestination });
+			const files = glob.sync('**/*.*', { cwd: context.assetsDestination });
 
-      fs.writeJSONSync(json, files, { encoding: 'utf8', spaces: 2 });
-    }
-  };
+			fs.writeJSONSync(json, files, { encoding: 'utf8', spaces: 2 });
+		}
+	};
 
-  return { name, finish };
+	return { name, finish };
 };

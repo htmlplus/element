@@ -1,14 +1,14 @@
 import { KEY } from './constants.js';
-import { transformer } from './transformer.js';
 import 'fs-extra';
 import 'glob';
 import '@babel/template';
 import '@babel/types';
 import 'change-case';
-import '@babel/traverse';
+import { transformer } from './transformer.js';
 import '@babel/parser';
-import '@babel/generator';
 import path from 'node:path';
+import '@babel/traverse';
+import '@babel/generator';
 import 'ora';
 
 const rollup = (...plugins) => {
@@ -52,7 +52,7 @@ const vite = (...plugins) => {
             }
             return context.script;
         },
-        async writeBundle(options, bundles) {
+        async writeBundle(_options, bundles) {
             // TODO
             global.contexts.forEach((context) => {
                 Object.keys(bundles).forEach((key) => {

@@ -1,57 +1,59 @@
 import { kebabCase } from 'change-case';
 
-import { typeOf } from './typeOf.js';
+import { typeOf } from './typeOf';
 
 /**
  * TODO
  */
-export const classes = (input: any, smart?: boolean): string => {
-  const result: Array<string> = [];
+export const classes = (input: unknown, smart?: boolean): string => {
+	const result: string[] = [];
 
-  switch (typeOf(input)) {
-    case 'array': {
-      for (const item of input) {
-        result.push(classes(item, smart));
-      }
-      break;
-    }
+	switch (typeOf(input)) {
+		case 'array': {
+			for (const item of input as unknown[]) {
+				result.push(classes(item, smart));
+			}
+			break;
+		}
 
-    case 'object': {
-      const keys = Object.keys(input);
+		case 'object': {
+			const obj = input as Record<string, unknown>;
 
-      for (const key of keys) {
-        const value = input[key];
+			const keys = Object.keys(obj);
 
-        const name = kebabCase(key);
+			for (const key of keys) {
+				const value = obj[key];
 
-        const type = typeOf(value);
+				const name = kebabCase(key);
 
-        if (!smart) {
-          value && result.push(name);
-          continue;
-        }
+				const type = typeOf(value);
 
-        switch (type) {
-          case 'boolean': {
-            value && result.push(`${name}`);
-            break;
-          }
-          case 'number':
-          case 'string': {
-            result.push(`${name}-${value}`);
-            break;
-          }
-        }
-      }
+				if (!smart) {
+					value && result.push(name);
+					continue;
+				}
 
-      break;
-    }
+				switch (type) {
+					case 'boolean': {
+						value && result.push(`${name}`);
+						break;
+					}
+					case 'number':
+					case 'string': {
+						result.push(`${name}-${value}`);
+						break;
+					}
+				}
+			}
 
-    case 'string': {
-      result.push(input);
-      break;
-    }
-  }
+			break;
+		}
 
-  return result.filter((item) => item).join(' ');
+		case 'string': {
+			result.push(input as string);
+			break;
+		}
+	}
+
+	return result.filter((item) => item).join(' ');
 };

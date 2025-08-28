@@ -1,44 +1,47 @@
 import t from '@babel/types';
 import { kebabCase } from 'change-case';
 
-import * as CONSTANTS from '../../constants/index.js';
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
-import { hasDecorator } from '../utils/index.js';
+import * as CONSTANTS from '@/constants';
+import { hasDecorator } from '@/transformer/utils';
+
+import type { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
 
 export const extract = (): TransformerPlugin => {
-  const name = 'extract';
+	const name = 'extract';
 
-  const run = (context: TransformerPluginContext) => {
-    const { declaration, leadingComments } = context.fileAST?.program.body.find((child) => {
-      return t.isExportNamedDeclaration(child);
-    }) as any;
+	const run = (context: TransformerPluginContext) => {
+		const body = context.fileAST?.program.body.find((child) => {
+			return t.isExportNamedDeclaration(child);
+		});
 
-    context.class = declaration;
+		context.class = body?.declaration as t.ClassDeclaration | undefined;
 
-    context.class!.leadingComments = leadingComments; // TODO
+		if (context.class) {
+			context.class.leadingComments = body?.leadingComments; // TODO
+		}
 
-    context.classMembers = context.class?.body?.body || [];
+		context.classMembers = context.class?.body?.body || [];
 
-    context.className = context.class?.id?.name;
+		context.className = context.class?.id?.name;
 
-    context.elementKey = kebabCase(context.className || '');
+		context.elementKey = kebabCase(context.className || '');
 
-    context.classEvents = context.classMembers.filter((member) =>
-      hasDecorator(member, CONSTANTS.DECORATOR_EVENT)
-    ) as any;
+		context.classEvents = context.classMembers.filter((member) =>
+			hasDecorator(member, CONSTANTS.DECORATOR_EVENT)
+		) as t.ClassProperty[];
 
-    context.classMethods = context.classMembers.filter((member) =>
-      hasDecorator(member, CONSTANTS.DECORATOR_METHOD)
-    ) as any;
+		context.classMethods = context.classMembers.filter((member) =>
+			hasDecorator(member, CONSTANTS.DECORATOR_METHOD)
+		) as t.ClassMethod[];
 
-    context.classProperties = context.classMembers.filter((member) =>
-      hasDecorator(member, CONSTANTS.DECORATOR_PROPERTY)
-    ) as any;
+		context.classProperties = context.classMembers.filter((member) =>
+			hasDecorator(member, CONSTANTS.DECORATOR_PROPERTY)
+		) as t.ClassProperty[];
 
-    context.classStates = context.classMembers.filter((member) =>
-      hasDecorator(member, CONSTANTS.DECORATOR_STATE)
-    ) as any;
-  };
+		context.classStates = context.classMembers.filter((member) =>
+			hasDecorator(member, CONSTANTS.DECORATOR_STATE)
+		) as t.ClassProperty[];
+	};
 
-  return { name, run };
+	return { name, run };
 };

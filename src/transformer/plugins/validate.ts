@@ -1,58 +1,70 @@
 import t from '@babel/types';
 
-import * as CONSTANTS from '../../constants/index.js';
-import { TransformerPlugin, TransformerPluginContext } from '../transformer.types.js';
-import { visitor } from '../utils/index.js';
+import * as CONSTANTS from '@/constants';
+import { visitor } from '@/transformer/utils';
+
+import type { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
 
 export const validate = (): TransformerPlugin => {
-  const name = 'validate';
+	const name = 'validate';
 
-  const run = (context: TransformerPluginContext) => {
-    context.skipped = true;
+	const run = (context: TransformerPluginContext) => {
+		context.skipped = true;
 
-    visitor(context.fileAST!, {
-      ImportDeclaration(path) {
-        if (path.node.source?.value !== CONSTANTS.PACKAGE_NAME) return;
+		if (!context.fileAST) return;
 
-        for (const specifier of path.node.specifiers) {
-          if (specifier.imported.name !== CONSTANTS.DECORATOR_ELEMENT) continue;
+		visitor(context.fileAST, {
+			ImportDeclaration(path) {
+				if (path.node.source?.value !== CONSTANTS.PACKAGE_NAME) return;
 
-          const binding = path.scope.getBinding(specifier.imported.name);
+				for (const specifier of path.node.specifiers) {
+					if (
+						!t.isImportSpecifier(specifier) ||
+						!t.isIdentifier(specifier.imported) ||
+						specifier.imported.name !== CONSTANTS.DECORATOR_ELEMENT
+					) {
+						continue;
+					}
 
-          if (binding.references == 0) break;
+					const binding = path.scope.getBinding(specifier.imported.name);
 
-          const referencePaths = binding.referencePaths.filter((referencePath) => {
-            if (
-              t.isCallExpression(referencePath.parent) &&
-              t.isDecorator(referencePath.parentPath.parent) &&
-              t.isClassDeclaration(referencePath.parentPath.parentPath.parent) &&
-              t.isExportNamedDeclaration(referencePath.parentPath.parentPath.parentPath.parent)
-            )
-              return true;
-          });
+					if (!binding || binding.references === 0) {
+						continue;
+					}
 
-          if (referencePaths.length > 1) {
-            throw new Error(
-              'In each file, only one custom element can be defined. \n' +
-                'If more than one @Element() decorator is used in the file, it will result in an error.\n'
-            );
-          }
+					const referencePaths = binding.referencePaths.filter((referencePath) => {
+						return (
+							t.isCallExpression(referencePath.parent) &&
+							t.isDecorator(referencePath.parentPath?.parent) &&
+							t.isClassDeclaration(referencePath.parentPath.parentPath?.parent) &&
+							t.isExportNamedDeclaration(referencePath.parentPath.parentPath.parentPath?.parent)
+						);
+					});
 
-          context.skipped = false;
+					if (referencePaths.length > 1) {
+						throw new Error(
+							'In each file, only one custom element can be defined. \n' +
+								'If more than one @Element() decorator is used in the file, it will result in an error.\n'
+						);
+					}
 
-          if (referencePaths.length == 1) break;
+					context.skipped = false;
 
-          throw new Error(
-            'It appears that the class annotated with the @Element() decorator is not being exported correctly.'
-          );
-        }
+					if (referencePaths.length === 1) {
+						break;
+					}
 
-        path.stop();
-      }
-    });
+					throw new Error(
+						'It appears that the class annotated with the @Element() decorator is not being exported correctly.'
+					);
+				}
 
-    context.skipped;
-  };
+				path.stop();
+			}
+		});
 
-  return { name, run };
+		context.skipped;
+	};
+
+	return { name, run };
 };

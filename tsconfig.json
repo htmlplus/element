@@ -1,18 +1,22 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "rootDir": "src",
-    "moduleResolution": "NodeNext",
-    "outDir": "dist",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": false,
-    "skipLibCheck": true,
-    "allowJs": true
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["dist", "node_modules"]
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"rootDir": "src",
+		"moduleResolution": "bundler",
+		"baseUrl": "src",
+		"paths": {
+			"@/*": ["./*"]
+		},
+		"outDir": "dist",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"skipLibCheck": true,
+		"allowJs": true
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["dist", "node_modules"]
 }

@@ -1,12 +1,12 @@
 import { kebabCase, pascalCase } from 'change-case';
 
-import { HTMLPlusElement } from '../../types/index.js';
-import { dispatch, getConfig, getFramework, getNamespace, host } from '../utils/index.js';
+import { dispatch, getConfig, getFramework, getNamespace, host } from '@/client/utils';
+import type { HTMLPlusElement } from '@/types';
 
 /**
  * A function type that generates a `CustomEvent`.
  */
-export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
+export type EventEmitter<T = unknown> = (data?: T) => CustomEvent<T>;
 
 /**
  * An object that configures
@@ -14,22 +14,22 @@ export type EventEmitter<T = any> = (data?: T) => CustomEvent<T>;
  * for the event dispatcher.
  */
 export interface EventOptions {
-  /**
-   * A boolean value indicating whether the event bubbles.
-   * The default is `false`.
-   */
-  bubbles?: boolean;
-  /**
-   * A boolean value indicating whether the event can be cancelled.
-   * The default is `false`.
-   */
-  cancelable?: boolean;
-  /**
-   * A boolean value indicating whether the event will trigger listeners outside of a shadow root
-   * (see [Event.composed](https://mdn.io/event-composed) for more details).
-   * The default is `false`.
-   */
-  composed?: boolean;
+	/**
+	 * A boolean value indicating whether the event bubbles.
+	 * The default is `false`.
+	 */
+	bubbles?: boolean;
+	/**
+	 * A boolean value indicating whether the event can be cancelled.
+	 * The default is `false`.
+	 */
+	cancelable?: boolean;
+	/**
+	 * A boolean value indicating whether the event will trigger listeners outside of a shadow root
+	 * (see [Event.composed](https://mdn.io/event-composed) for more details).
+	 * The default is `false`.
+	 */
+	composed?: boolean;
 }
 
 /**
@@ -38,59 +38,60 @@ export interface EventOptions {
  *
  * @param options An object that configures options for the event dispatcher.
  */
-export function Event<T = any>(options: EventOptions = {}) {
-  return function (target: HTMLPlusElement, key: PropertyKey) {
-    target[key] = function (detail?: T): CustomEvent<T> {
-      const element = host(this);
+export function Event<T = unknown>(options: EventOptions = {}) {
+	return (target: HTMLPlusElement, key: PropertyKey) => {
+		target[key] = function (detail?: T): CustomEvent<T> {
+			const element = host(this);
 
-      const framework = getFramework(this);
+			const framework = getFramework(this);
 
-      options.bubbles ??= false;
+			options.bubbles ??= false;
 
-      let type = String(key);
+			let type = String(key);
 
-      switch (framework) {
-        // TODO: Experimental
-        case 'blazor':
-          options.bubbles = true;
+			switch (framework) {
+				// TODO: Experimental
+				case 'blazor':
+					options.bubbles = true;
 
-          type = pascalCase(type);
+					type = pascalCase(type);
 
-          try {
-            window['Blazor'].registerCustomEventType(type, {
-              createEventArgs: (event) => ({
-                detail: event.detail
-              })
-            });
-          } catch { }
-          break;
+					try {
+						// biome-ignore lint: TODO
+						window['Blazor'].registerCustomEventType(type, {
+							createEventArgs: (event) => ({
+								detail: event.detail
+							})
+						});
+					} catch {}
+					break;
 
-        case 'qwik':
-        case 'solid':
-          type = pascalCase(type).toLowerCase();
-          break;
+				case 'qwik':
+				case 'solid':
+					type = pascalCase(type).toLowerCase();
+					break;
 
-        case 'react':
-        case 'preact':
-          type = pascalCase(type);
-          break;
+				case 'react':
+				case 'preact':
+					type = pascalCase(type);
+					break;
 
-        default:
-          type = kebabCase(type);
-          break;
-      }
+				default:
+					type = kebabCase(type);
+					break;
+			}
 
-      let event: CustomEvent<T> | undefined;
+			let event: CustomEvent<T> | undefined;
 
-      const resolver = getConfig(getNamespace(target)!).event?.resolver;
+			const resolver = getConfig(getNamespace(target) || '').event?.resolver;
 
-      event ||= resolver?.({ detail, element, framework, options, type });
+			event ||= resolver?.({ detail, element, framework, options, type });
 
-      event && element.dispatchEvent(event);
+			event && element.dispatchEvent(event);
 
-      event ||= dispatch<T>(this, type, { ...options, detail });
+			event ||= dispatch<T>(this, type, { ...options, detail });
 
-      return event;
-    };
-  };
+			return event;
+		};
+	};
 }

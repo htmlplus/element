@@ -1,4 +1,4 @@
-import { Bind } from './bind.js';
+import { Bind } from './bind';
 
 /**
  * A method decorator that applies debounce behavior to a class method.
@@ -8,30 +8,30 @@ import { Bind } from './bind.js';
  * @param {number} delay - The debounce delay in milliseconds.
  */
 export function Debounce(delay: number = 0) {
-  return function (target: Object, key: PropertyKey, descriptor: PropertyDescriptor) {
-    const KEY = Symbol();
+	return (target: object, key: PropertyKey, descriptor: PropertyDescriptor) => {
+		const KEY = Symbol();
 
-    const original = descriptor.value;
+		const original = descriptor.value;
 
-    function clear(this: any) {
-      if (!Object.hasOwn(this, KEY)) return;
+		function clear(this) {
+			if (!Object.hasOwn(this, KEY)) return;
 
-      clearTimeout(this[KEY] as number);
+			clearTimeout(this[KEY] as number);
 
-      delete this[KEY];
-    }
+			delete this[KEY];
+		}
 
-    function debounced(this: any, ...args: any[]) {
-      clear.call(this);
+		function debounced(this, ...args: unknown[]) {
+			clear.call(this);
 
-      this[KEY] = window.setTimeout(() => {
-        clear.call(this);
-        original.apply(this, args);
-      }, delay);
-    }
+			this[KEY] = window.setTimeout(() => {
+				clear.call(this);
+				original.apply(this, args);
+			}, delay);
+		}
 
-    descriptor.value = debounced;
+		descriptor.value = debounced;
 
-    return Bind()(target, key, descriptor);
-  };
+		return Bind()(target, key, descriptor);
+	};
 }

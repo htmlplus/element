@@ -1,45 +1,31 @@
-import { File, Node } from '@babel/types';
+import type t from '@babel/types';
 
-import { visitor } from './visitor.js';
+import { visitor } from './visitor';
 
-export const getTypeReference = (file: File, node: Node): string | undefined => {
-  if (!node) return;
+export const getTypeReference = (file: t.File, node: t.Node): string | undefined => {
+	if (!node) return;
 
-  if (node.type != 'TSTypeReference') return;
+	if (node.type !== 'TSTypeReference') return;
 
-  let result;
+	let result: string | undefined;
 
-  visitor(file, {
-    ImportDeclaration(path) {
-      for (const specifier of path.node.specifiers) {
-        const alias = specifier.local.name;
+	visitor(file, {
+		ImportDeclaration(path) {
+			for (const specifier of path.node.specifiers) {
+				const alias = specifier.local.name;
 
-        if (alias != node.typeName['name']) continue;
+				if (node.typeName.type !== 'Identifier') continue;
 
-        let key;
+				if (alias !== node.typeName.name) continue;
 
-        switch (specifier.type) {
-          case 'ImportNamespaceSpecifier':
-            key = '*';
-            break;
+				result = path.node.source.value;
 
-          case 'ImportDefaultSpecifier':
-            key = 'default';
-            break;
+				path.stop();
 
-          case 'ImportSpecifier':
-            key = specifier.imported.name;
-            break;
-        }
+				break;
+			}
+		}
+	});
 
-        result = path.node.source.value;
-
-        path.stop();
-
-        break;
-      }
-    }
-  });
-
-  return result;
+	return result;
 };

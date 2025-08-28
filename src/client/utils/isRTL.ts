@@ -1,7 +1,10 @@
-import { HTMLPlusElement } from '../../types/index.js';
-import { direction } from './direction.js';
+import type { HTMLPlusElement } from '@/types';
+
+import { direction } from './direction';
 
 /**
  * Indicates whether the direction of the element is `Right-To-Left` or not.
  */
-export const isRTL = (target: HTMLPlusElement): boolean => direction(target) == 'rtl';
+export const isRTL = (target: HTMLPlusElement): boolean => {
+	return direction(target) === 'rtl';
+};

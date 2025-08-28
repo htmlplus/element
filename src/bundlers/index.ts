@@ -1,2 +1,2 @@
-export * from './rollup.js';
-export * from './vite.js';
+export * from './rollup';
+export * from './vite';

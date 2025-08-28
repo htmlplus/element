@@ -1,109 +1,118 @@
+import { dirname, join, resolve } from 'node:path';
+
 import { parse } from '@babel/parser';
-import t from '@babel/types';
+import type t from '@babel/types';
 import fs from 'fs-extra';
 import { glob } from 'glob';
-import { dirname, resolve } from 'path';
-import { join } from 'path';
 
-import { visitor } from './visitor.js';
+import { visitor } from './visitor';
+
+const getTypeReferenceName = (ref: t.TSTypeReference): string | undefined => {
+	switch (ref.typeName.type) {
+		case 'Identifier':
+			return ref.typeName.name;
+		default:
+			return undefined;
+	}
+};
 
 export const getType = (directory: string, file: t.File, node: t.Node): t.Node => {
-  if (!node) return node;
+	if (!node) return node;
 
-  if (node.type != 'TSTypeReference') return node;
+	if (node.type !== 'TSTypeReference') return node;
 
-  let result;
+	let result: t.Node | undefined;
 
-  visitor(file, {
-    ClassDeclaration(path) {
-      if (path.node.id.name != node.typeName['name']) return;
+	const typeName = getTypeReferenceName(node);
 
-      result = path.node;
+	if (!typeName) return node;
 
-      path.stop();
-    },
-    ImportDeclaration(path) {
-      for (const specifier of path.node.specifiers) {
-        const alias = specifier.local.name;
+	visitor(file, {
+		ClassDeclaration(path) {
+			if (path.node.id?.name !== typeName) return;
 
-        if (alias != node.typeName['name']) continue;
+			result = path.node;
 
-        let key;
+			path.stop();
+		},
+		ImportDeclaration(path) {
+			for (const specifier of path.node.specifiers) {
+				const alias = specifier.local.name;
 
-        switch (specifier.type) {
-          case 'ImportNamespaceSpecifier':
-            key = '*';
-            break;
+				if (alias !== typeName) continue;
 
-          case 'ImportDefaultSpecifier':
-            key = 'default';
-            break;
+				try {
+					const reference = glob
+						.sync(
+							['.ts*', '/index.ts*'].map((key) => {
+								return join(directory, path.node.source.value).replace(/\\/g, '/') + key;
+							})
+						)
+						.find((reference) => reference && fs.existsSync(reference));
 
-          case 'ImportSpecifier':
-            key = specifier.imported.name;
-            break;
-        }
+					if (!reference) continue;
 
-        try {
-          const reference = glob
-            .sync(
-              ['.ts*', '/index.ts*'].map((key) => {
-                return join(directory, path.node.source.value).replace(/\\/g, '/') + key;
-              })
-            )
-            .find((reference) => fs.existsSync(reference));
+					const content = fs.readFileSync(reference, 'utf8');
 
-          const content = fs.readFileSync(reference!, 'utf8');
+					const filePath = resolve(directory, `${path.node.source.value}.ts`);
 
-          const filePath = resolve(directory, path.node.source.value + '.ts');
+					const pathWithAst = path as typeof path & { $ast?: t.File };
 
-          path.$ast ||= parse(content, {
-            allowImportExportEverywhere: true,
-            plugins: ['typescript'],
-            ranges: false
-          });
+					pathWithAst.$ast ||= parse(content, {
+						allowImportExportEverywhere: true,
+						plugins: ['typescript'],
+						ranges: false
+					});
 
-          result = getType(dirname(filePath), path.$ast, node);
-        } catch {}
+					result = getType(dirname(filePath), pathWithAst.$ast, node);
+				} catch {}
 
-        path.stop();
+				path.stop();
 
-        break;
-      }
-    },
-    TSInterfaceDeclaration(path) {
-      if (path.node.id.name != node.typeName['name']) return;
+				break;
+			}
+		},
+		TSInterfaceDeclaration(path) {
+			if (path.node.id.name !== typeName) return;
 
-      result = path.node;
+			result = path.node;
 
-      path.stop();
-    },
-    TSTypeAliasDeclaration(path) {
-      if (path.node.id.name != node.typeName['name']) return;
+			path.stop();
+		},
+		TSTypeAliasDeclaration(path) {
+			if (path.node.id.name !== typeName) return;
 
-      result = path.node.typeAnnotation;
+			const typeAnnotation = path.node.typeAnnotation;
 
-      switch (result.type) {
-        case 'TSUnionType':
-          const types: any[] = [];
-          for (const prev of result.types) {
-            const next = getType(directory, file, prev);
-            if (next.type == 'TSUnionType') {
-              next.types.forEach((type) => types.push(type));
-            } else {
-              types.push(next);
-            }
-          }
-          result.types = types;
-          break;
-        default:
-          result = getType(directory, file, result);
-          break;
-      }
+			switch (typeAnnotation.type) {
+				case 'TSUnionType': {
+					const types: t.TSType[] = [];
 
-      path.stop();
-    }
-  });
+					for (const prev of typeAnnotation.types) {
+						const next = getType(directory, file, prev) as t.TSType;
 
-  return result || node;
+						if (next.type === 'TSUnionType') {
+							types.push(...next.types);
+						} else {
+							types.push(next);
+						}
+					}
+
+					typeAnnotation.types = types;
+
+					result = typeAnnotation;
+
+					break;
+				}
+				default: {
+					result = getType(directory, file, typeAnnotation);
+					break;
+				}
+			}
+
+			path.stop();
+		}
+	});
+
+	return result || node;
 };

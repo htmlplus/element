@@ -1,73 +1,71 @@
-import * as CONSTANTS from '../../constants/index.js';
-import { typeOf } from './typeOf.js';
+import * as CONSTANTS from '@/constants';
 
-export const toProperty = (input: any, type?: any): any => {
-  if (type === undefined) return input;
+import { typeOf } from './typeOf';
 
-  const string = `${input}`;
+export const toProperty = (input: unknown, type?: unknown): unknown => {
+	if (type === undefined) return input;
 
-  if (CONSTANTS.TYPE_BOOLEAN & type || type === Boolean) {
-    if (string === '') return true;
-    if (string === 'true') return true;
-    if (string === 'false') return false;
-  }
+	const string = `${input}`;
 
-  if (CONSTANTS.TYPE_NUMBER & type || type === Number) {
-    if (string != '' && !isNaN(input)) {
-      return parseFloat(input);
-    }
-  }
+	const typeNumber = typeof type === 'number' ? type : 0;
 
-  if (CONSTANTS.TYPE_NULL & type || type === null) {
-    if (string === 'null') {
-      return null;
-    }
-  }
+	if (CONSTANTS.TYPE_BOOLEAN & typeNumber || type === Boolean) {
+		if (string === '') return true;
+		if (string === 'true') return true;
+		if (string === 'false') return false;
+	}
 
-  if (CONSTANTS.TYPE_DATE & type || type === Date) {
-    const value = new Date(input);
-    if (value.toString() != 'Invalid Date') {
-      return value;
-    }
-  }
+	if (CONSTANTS.TYPE_NUMBER & typeNumber || type === Number) {
+		if (string !== '' && !Number.isNaN(Number(input))) {
+			return parseFloat(string);
+		}
+	}
 
-  if (CONSTANTS.TYPE_ARRAY & type || type === Array) {
-    try {
-      const value = JSON.parse(input);
-      if (typeOf(value) == 'array') {
-        return value;
-      }
-    } catch {}
-  }
+	if (CONSTANTS.TYPE_NULL & typeNumber || type === null) {
+		if (string === 'null') {
+			return null;
+		}
+	}
 
-  if (CONSTANTS.TYPE_OBJECT & type || type === Object) {
-    try {
-      const value = JSON.parse(input);
-      if (typeOf(value) == 'object') {
-        return value;
-      }
-    } catch {}
-  }
+	if (CONSTANTS.TYPE_DATE & typeNumber || type === Date) {
+		const value = new Date(string);
+		if (!Number.isNaN(value.getTime())) {
+			return value;
+		}
+	}
 
-  if (CONSTANTS.TYPE_UNDEFINED & type || type === undefined) {
-    if (string === 'undefined') {
-      return undefined;
-    }
-  }
+	if (CONSTANTS.TYPE_ARRAY & typeNumber || type === Array) {
+		try {
+			const value = JSON.parse(string);
+			if (typeOf(value) === 'array') return value;
+		} catch {}
+	}
 
-  if (CONSTANTS.TYPE_STRING & type || type === String) {
-    return input;
-  }
+	if (CONSTANTS.TYPE_OBJECT & typeNumber || type === Object) {
+		try {
+			const value = JSON.parse(string);
+			if (typeOf(value) === 'object') {
+				return value;
+			}
+		} catch {}
+	}
 
-  // TODO
-  // if (CONSTANTS.TYPE_BIGINT   & type || type === BigInt)   { }
-  // if (CONSTANTS.TYPE_ENUM     & type || type === TODO)     { }
-  // if (CONSTANTS.TYPE_FUNCTION & type || type === Function) { }
+	if (CONSTANTS.TYPE_UNDEFINED & typeNumber) {
+		if (string === 'undefined') {
+			return undefined;
+		}
+	}
 
-  try {
-    // TODO
-    return JSON.parse(input);
-  } catch {
-    return input;
-  }
+	if (CONSTANTS.TYPE_STRING & typeNumber || type === String) {
+		return string;
+	}
+
+	// TODO: BigInt, Enum, Function
+
+	try {
+		// TODO
+		return JSON.parse(string);
+	} catch {
+		return input;
+	}
 };

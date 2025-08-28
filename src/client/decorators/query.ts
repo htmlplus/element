@@ -1,4 +1,4 @@
-import { query, toDecorator } from '../utils/index.js';
+import { query, toDecorator } from '@/client/utils';
 
 /**
  * Selects the first element in the shadow dom that matches a specified CSS selector.
@@ -9,5 +9,5 @@ import { query, toDecorator } from '../utils/index.js';
  * for more about selectors and how to manage them.
  */
 export function Query(selectors: string) {
-  return toDecorator(query, selectors);
+	return toDecorator(query, selectors);
 }

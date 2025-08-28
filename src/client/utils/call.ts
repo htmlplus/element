@@ -1,3 +1,3 @@
-export const call = (target: Object, key: PropertyKey, ...args: any[]): any => {
-  return target[key]?.apply(target, args);
+export const call = (target: object, key: PropertyKey, ...args: unknown[]): unknown => {
+	return target[key]?.apply(target, args);
 };

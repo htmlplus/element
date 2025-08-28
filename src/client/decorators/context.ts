@@ -1,175 +1,181 @@
-import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types/index.js';
-import { dispatch, off, on, wrapMethod } from '../utils/index.js';
+// biome-ignore-all lint: TODO
+
+import { dispatch, off, on, wrapMethod } from '@/client/utils';
+import * as CONSTANTS from '@/constants';
+import type { HTMLPlusElement } from '@/types';
 
 export function Provider(namespace: string) {
-  return function (target: HTMLPlusElement, key: PropertyKey) {
-    const symbol = Symbol();
+	return (target: HTMLPlusElement, key: PropertyKey) => {
+		const symbol = Symbol();
 
-    const [MAIN, SUB] = namespace.split('.');
+		const [MAIN, SUB] = namespace.split('.');
 
-    const prefix = `${CONSTANTS.KEY}:${MAIN}`;
+		const prefix = `${CONSTANTS.KEY}:${MAIN}`;
 
-    const cleanups = (instance: HTMLPlusElement): Map<string, any> => {
-      return (instance[symbol] ||= new Map());
-    };
+		const cleanups = (instance: HTMLPlusElement): Map<string, any> => {
+			return (instance[symbol] ||= new Map());
+		};
 
-    const update = (instance: HTMLPlusElement) => {
-      const options: CustomEventInit = {};
+		const update = (instance: HTMLPlusElement) => {
+			const options: CustomEventInit = {};
 
-      options.detail = instance[key];
+			options.detail = instance[key];
 
-      dispatch(instance, `${prefix}:update`, options);
+			dispatch(instance, `${prefix}:update`, options);
 
-      if (!SUB) return;
+			if (!SUB) return;
 
-      options.bubbles = true;
+			options.bubbles = true;
 
-      dispatch(instance, `${prefix}:${instance[SUB]}:update`, options);
-    };
+			dispatch(instance, `${prefix}:${instance[SUB]}:update`, options);
+		};
 
-    // TODO
-    wrapMethod('after', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
-      const cleanup = () => {
-        off(this, `${prefix}:presence`, onPresence);
+		// TODO
+		wrapMethod('after', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+			const cleanup = () => {
+				off(this, `${prefix}:presence`, onPresence);
 
-        cleanups(this).delete(prefix);
-      };
+				cleanups(this).delete(prefix);
+			};
 
-      const onPresence = (event: any) => {
-        event.stopPropagation();
+			const onPresence = (event: any) => {
+				event.stopPropagation();
 
-        event.detail(this, this[key]);
-      };
+				event.detail(this, this[key]);
+			};
 
-      on(this, `${prefix}:presence`, onPresence);
+			on(this, `${prefix}:presence`, onPresence);
 
-      cleanups(this).set(prefix, cleanup);
-    });
+			cleanups(this).set(prefix, cleanup);
+		});
 
-    wrapMethod('after', target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
-      update(this);
+		wrapMethod('after', target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
+			update(this);
 
-      if (cleanups(this).size && !states.has(SUB)) return;
+			if (cleanups(this).size && !states.has(SUB)) return;
 
-      cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
+			cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
 
-      const type = `${prefix}:${this[SUB]}`;
+			const type = `${prefix}:${this[SUB]}`;
 
-      const cleanup = () => {
-        off(window, `${type}:presence`, onPresence);
+			const cleanup = () => {
+				off(window, `${type}:presence`, onPresence);
 
-        cleanups(this).delete(type);
+				cleanups(this).delete(type);
 
-        dispatch(window, `${type}:disconnect`);
-      };
+				dispatch(window, `${type}:disconnect`);
+			};
 
-      const onPresence = () => {
-        update(this);
-      };
+			const onPresence = () => {
+				update(this);
+			};
 
-      on(window, `${type}:presence`, onPresence);
+			on(window, `${type}:presence`, onPresence);
 
-      cleanups(this).set(type, cleanup);
-    });
+			cleanups(this).set(type, cleanup);
+		});
 
-    wrapMethod('after', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
-      cleanups(this).forEach((cleanup) => cleanup());
-    });
-  };
+		wrapMethod('after', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
+			cleanups(this).forEach((cleanup) => {
+				cleanup();
+			});
+		});
+	};
 }
 
 export function Consumer(namespace: string) {
-  return function (target: HTMLPlusElement, key: PropertyKey) {
-    const symbol = Symbol();
+	return (target: HTMLPlusElement, key: PropertyKey) => {
+		const symbol = Symbol();
 
-    const [MAIN, SUB] = namespace.split('.');
+		const [MAIN, SUB] = namespace.split('.');
 
-    const prefix = `${CONSTANTS.KEY}:${MAIN}`;
+		const prefix = `${CONSTANTS.KEY}:${MAIN}`;
 
-    const cleanups = (instance: HTMLPlusElement): Map<string, any> => {
-      return (instance[symbol] ||= new Map());
-    };
+		const cleanups = (instance: HTMLPlusElement): Map<string, any> => {
+			return (instance[symbol] ||= new Map());
+		};
 
-    const update = (instance: HTMLPlusElement, state) => {
-      instance[key] = state;
-    };
+		const update = (instance: HTMLPlusElement, state) => {
+			instance[key] = state;
+		};
 
-    // TODO
-    wrapMethod('after', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
-      // TODO
-      if (SUB && this[SUB]) return;
+		// TODO
+		wrapMethod('after', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+			// TODO
+			if (SUB && this[SUB]) return;
 
-      // TODO
-      let connected;
+			// TODO
+			let connected: boolean = false;
 
-      const options: CustomEventInit = {
-        bubbles: true
-      };
+			const options: CustomEventInit = {
+				bubbles: true
+			};
 
-      options.detail = (parent: HTMLPlusElement, state: any) => {
-        // TODO
-        connected = true;
+			options.detail = (parent: HTMLPlusElement, state: unknown) => {
+				// TODO
+				connected = true;
 
-        update(this, state);
+				update(this, state);
 
-        const cleanup = () => {
-          off(parent, `${prefix}:update`, onUpdate);
+				const cleanup = () => {
+					off(parent, `${prefix}:update`, onUpdate);
 
-          cleanups(this).delete(prefix);
+					cleanups(this).delete(prefix);
 
-          update(this, undefined);
-        };
+					update(this, undefined);
+				};
 
-        const onUpdate = (event: any) => {
-          update(this, event.detail);
-        };
+				const onUpdate = (event: any) => {
+					update(this, event.detail);
+				};
 
-        on(parent, `${prefix}:update`, onUpdate);
+				on(parent, `${prefix}:update`, onUpdate);
 
-        cleanups(this).set(prefix, cleanup);
-      };
+				cleanups(this).set(prefix, cleanup);
+			};
 
-      dispatch(this, `${prefix}:presence`, options);
+			dispatch(this, `${prefix}:presence`, options);
 
-      // TODO: When the `Provider` element is activated after the `Consumer` element.
-      !connected && setTimeout(() => dispatch(this, `${prefix}:presence`, options));
-    });
+			// TODO: When the `Provider` element is activated after the `Consumer` element.
+			!connected && setTimeout(() => dispatch(this, `${prefix}:presence`, options));
+		});
 
-    wrapMethod('after', target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
-      if (cleanups(this).size && !states.has(SUB)) return;
+		wrapMethod('after', target, CONSTANTS.LIFECYCLE_UPDATE, function (states) {
+			if (cleanups(this).size && !states.has(SUB)) return;
 
-      cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
+			cleanups(this).get(`${prefix}:${states.get(SUB)}`)?.();
 
-      const type = `${prefix}:${this[SUB]}`;
+			const type = `${prefix}:${this[SUB]}`;
 
-      const cleanup = () => {
-        off(window, `${type}:disconnect`, onDisconnect);
-        off(window, `${type}:update`, onUpdate);
+			const cleanup = () => {
+				off(window, `${type}:disconnect`, onDisconnect);
+				off(window, `${type}:update`, onUpdate);
 
-        cleanups(this).delete(type);
+				cleanups(this).delete(type);
 
-        update(this, undefined);
-      };
+				update(this, undefined);
+			};
 
-      const onDisconnect = () => {
-        update(this, undefined);
-      };
+			const onDisconnect = () => {
+				update(this, undefined);
+			};
 
-      const onUpdate = (event: any) => {
-        update(this, event.detail);
-      };
+			const onUpdate = (event: any) => {
+				update(this, event.detail);
+			};
 
-      on(window, `${type}:disconnect`, onDisconnect);
-      on(window, `${type}:update`, onUpdate);
+			on(window, `${type}:disconnect`, onDisconnect);
+			on(window, `${type}:update`, onUpdate);
 
-      cleanups(this).set(type, cleanup);
+			cleanups(this).set(type, cleanup);
 
-      dispatch(window, `${type}:presence`);
-    });
+			dispatch(window, `${type}:presence`);
+		});
 
-    wrapMethod('after', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
-      cleanups(this).forEach((cleanup) => cleanup());
-    });
-  };
+		wrapMethod('after', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
+			cleanups(this).forEach((cleanup) => {
+				cleanup();
+			});
+		});
+	};
 }

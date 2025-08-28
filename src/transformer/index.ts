@@ -1,3 +1,3 @@
-export * from './transformer.js';
-export * from './transformer.types.js';
-export * from './plugins/index.js';
+export * from './plugins';
+export * from './transformer';
+export * from './transformer.types';

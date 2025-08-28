@@ -1,29 +1,29 @@
-import * as CONSTANTS from '../constants/index.js';
-import { TransformerPlugin, transformer } from '../transformer/index.js';
+import * as CONSTANTS from '@/constants';
+import { type TransformerPlugin, transformer } from '@/transformer';
 
-export const rollup = (...plugins: Array<TransformerPlugin>) => {
-  const { start, run, finish } = transformer(...plugins);
+export const rollup = (...plugins: TransformerPlugin[]) => {
+	const { start, run, finish } = transformer(...plugins);
 
-  return {
-    name: CONSTANTS.KEY,
+	return {
+		name: CONSTANTS.KEY,
 
-    async buildStart() {
-      await start();
-    },
+		async buildStart() {
+			await start();
+		},
 
-    async load(id) {
-      if (!id.endsWith('.tsx')) return;
+		async load(id: string) {
+			if (!id.endsWith('.tsx')) return;
 
-      const { script, skipped } = await run(id);
+			const { script, skipped } = await run(id);
 
-      if (skipped) return;
+			if (skipped) return;
 
-      return script;
-    },
+			return script;
+		},
 
-    async buildEnd(error?: Error) {
-      if (error) throw error;
-      await finish();
-    }
-  };
+		async buildEnd(error?: Error) {
+			if (error) throw error;
+			await finish();
+		}
+	};
 };

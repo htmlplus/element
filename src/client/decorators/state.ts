@@ -1,31 +1,31 @@
-import { HTMLPlusElement } from '../../types/index.js';
-import { defineProperty, requestUpdate } from '../utils/index.js';
+import { defineProperty, requestUpdate } from '@/client/utils';
+import type { HTMLPlusElement } from '@/types';
 
 /**
  * Applying this decorator to any `class property` will trigger the
  * element to re-render upon the desired property changes.
  */
 export function State() {
-  return function (target: HTMLPlusElement, key: PropertyKey) {
-    const KEY = Symbol();
+	return (target: HTMLPlusElement, key: PropertyKey) => {
+		const KEY = Symbol();
 
-    const name = String(key);
+		const name = String(key);
 
-    defineProperty(target, key, {
-      enumerable: true,
-      configurable: true,
-      get() {
-        return this[KEY];
-      },
-      set(next) {
-        const previous = this[KEY];
+		defineProperty(target, key, {
+			enumerable: true,
+			configurable: true,
+			get() {
+				return this[KEY];
+			},
+			set(next) {
+				const previous = this[KEY];
 
-        if (next === previous) return;
+				if (next === previous) return;
 
-        this[KEY] = next;
+				this[KEY] = next;
 
-        requestUpdate(this, name, previous);
-      }
-    });
-  };
+				requestUpdate(this, name, previous);
+			}
+		});
+	};
 }

@@ -1,4 +1,4 @@
-import { queryAll, toDecorator } from '../utils/index.js';
+import { queryAll, toDecorator } from '@/client/utils';
 
 /**
  * Selects all elements in the shadow dom that match a specified CSS selector.
@@ -12,5 +12,5 @@ import { queryAll, toDecorator } from '../utils/index.js';
  * Multiple selectors may be specified by separating them using commas.
  */
 export function QueryAll(selectors: string) {
-  return toDecorator(queryAll, selectors);
+	return toDecorator(queryAll, selectors);
 }

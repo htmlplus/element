@@ -1,24 +1,23 @@
-export * from './decorators/index.js';
-
+export * from './decorators';
 export {
-  type Config,
-  type ConfigOptions,
-  getConfig,
-  getConfigCreator,
-  setConfig,
-  setConfigCreator,
-  classes,
-  direction,
-  dispatch,
-  host,
-  isCSSColor,
-  toCSSColor,
-  toCSSUnit,
-  isRTL,
-  query,
-  queryAll,
-  on,
-  off,
-  slots,
-  toUnit
-} from './utils/index.js';
+	type Config,
+	type ConfigOptions,
+	classes,
+	direction,
+	dispatch,
+	getConfig,
+	getConfigCreator,
+	host,
+	isCSSColor,
+	isRTL,
+	off,
+	on,
+	query,
+	queryAll,
+	setConfig,
+	setConfigCreator,
+	slots,
+	toCSSColor,
+	toCSSUnit,
+	toUnit
+} from './utils';

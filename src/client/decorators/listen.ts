@@ -1,7 +1,8 @@
-import * as CONSTANTS from '../../constants/index.js';
-import { HTMLPlusElement } from '../../types/index.js';
-import { on, off, wrapMethod } from '../utils/index.js';
-import { Bind } from './bind.js';
+import { off, on, wrapMethod } from '@/client/utils';
+import * as CONSTANTS from '@/constants';
+import type { HTMLPlusElement } from '@/types';
+
+import { Bind } from './bind';
 
 /**
  * An object that configures
@@ -9,37 +10,37 @@ import { Bind } from './bind.js';
  * for the event listener.
  */
 export interface ListenOptions {
-  /**
-   * A boolean value indicating that events of this type will be dispatched to the registered
-   * `listener` before being dispatched to any `EventTarget` beneath it in the DOM tree.
-   * If not specified, defaults to `false`.
-   */
-  capture?: boolean;
-  /**
-   * A boolean value indicating that the `listener` should be invoked at most once after being added.
-   * If `true`, the `listener` would be automatically removed when invoked.
-   * If not specified, defaults to `false`.
-   */
-  once?: boolean;
-  /**
-   * A boolean value that, if `true`,
-   * indicates that the function specified by `listener` will never call
-   * [preventDefault()](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault).
-   * If a passive listener does call `preventDefault()`,
-   * the user agent will do nothing other than generate a console warning.
-   */
-  passive?: boolean;
-  /**
-   * An [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
-   * The listener will be removed when the given `AbortSignal` object's
-   * [abort()](https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort) method is called.
-   * If not specified, no `AbortSignal` is associated with the listener.
-   */
-  signal?: AbortSignal;
-  /**
-   * The target element, defaults to `host`.
-   */
-  target?: 'host' | 'body' | 'document' | 'window';
+	/**
+	 * A boolean value indicating that events of this type will be dispatched to the registered
+	 * `listener` before being dispatched to any `EventTarget` beneath it in the DOM tree.
+	 * If not specified, defaults to `false`.
+	 */
+	capture?: boolean;
+	/**
+	 * A boolean value indicating that the `listener` should be invoked at most once after being added.
+	 * If `true`, the `listener` would be automatically removed when invoked.
+	 * If not specified, defaults to `false`.
+	 */
+	once?: boolean;
+	/**
+	 * A boolean value that, if `true`,
+	 * indicates that the function specified by `listener` will never call
+	 * [preventDefault()](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault).
+	 * If a passive listener does call `preventDefault()`,
+	 * the user agent will do nothing other than generate a console warning.
+	 */
+	passive?: boolean;
+	/**
+	 * An [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
+	 * The listener will be removed when the given `AbortSignal` object's
+	 * [abort()](https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort) method is called.
+	 * If not specified, no `AbortSignal` is associated with the listener.
+	 */
+	signal?: AbortSignal;
+	/**
+	 * The target element, defaults to `host`.
+	 */
+	target?: 'host' | 'body' | 'document' | 'window';
 }
 
 /**
@@ -52,30 +53,30 @@ export interface ListenOptions {
  * for the event listener.
  */
 export function Listen(type: string, options?: ListenOptions) {
-  return function (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) {
-    const element = (instance) => {
-      switch (options?.target) {
-        case 'body':
-          return window.document.body;
-        case 'document':
-          return window.document;
-        case 'window':
-          return window;
-        case 'host':
-          return instance;
-        default:
-          return instance;
-      }
-    };
+	return (target: HTMLPlusElement, key: PropertyKey, descriptor: PropertyDescriptor) => {
+		const element = (instance) => {
+			switch (options?.target) {
+				case 'body':
+					return window.document.body;
+				case 'document':
+					return window.document;
+				case 'window':
+					return window;
+				case 'host':
+					return instance;
+				default:
+					return instance;
+			}
+		};
 
-    wrapMethod('before', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
-      on(element(this), type, this[key], options);
-    });
+		wrapMethod('before', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+			on(element(this), type, this[key], options);
+		});
 
-    wrapMethod('before', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
-      off(element(this), type, this[key], options);
-    });
+		wrapMethod('before', target, CONSTANTS.LIFECYCLE_DISCONNECTED, function () {
+			off(element(this), type, this[key], options);
+		});
 
-    return Bind()(target, key, descriptor);
-  };
+		return Bind()(target, key, descriptor);
+	};
 }

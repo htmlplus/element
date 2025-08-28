@@ -1,45 +1,50 @@
 export interface QueueOptions {
-  canStart?: () => boolean;
-  canRun?: () => boolean;
-  handler: () => void;
+	canStart?: () => boolean;
+	canRun?: () => boolean;
+	handler: () => void;
 }
 
 export const task = (options: QueueOptions) => {
-  let running, promise!: Promise<boolean>;
+	let running: boolean;
 
-  const run = () => {
-    if (options.canStart && !options.canStart()) return Promise.resolve(false);
+	let promise!: Promise<boolean>;
 
-    if (!running) promise = enqueue();
+	const run = () => {
+		if (options.canStart && !options.canStart()) return Promise.resolve(false);
 
-    return promise;
-  };
+		if (!running) promise = enqueue();
 
-  const enqueue = async (): Promise<boolean> => {
-    running = true;
+		return promise;
+	};
 
-    try {
-      await promise;
-    } catch (error) {
-      Promise.reject(error);
-    }
+	const enqueue = async (): Promise<boolean> => {
+		running = true;
 
-    // TODO: maybe is optional
-    if (!running) return promise;
+		try {
+			await promise;
+		} catch (error) {
+			Promise.reject(error);
+		}
 
-    try {
-      if (options.canRun && !options.canRun()) return (running = false);
+		// TODO: maybe is optional
+		if (!running) return promise;
 
-      options.handler();
+		try {
+			if (options.canRun && !options.canRun()) {
+				running = false;
+				return running;
+			}
 
-      running = false;
+			options.handler();
 
-      return true;
-    } catch (error) {
-      running = false;
-      throw error;
-    }
-  };
+			running = false;
 
-  return run;
+			return true;
+		} catch (error) {
+			running = false;
+			throw error;
+		}
+	};
+
+	return run;
 };
