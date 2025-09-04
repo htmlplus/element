@@ -74,7 +74,8 @@ const proxy = (constructor: HTMLPlusElement) => {
 				if (!properties) return;
 
 				const defaults = Object.fromEntries(
-					Object.entries(properties).map(([key, value]) => [key, value?.default])
+					// biome-ignore lint: TODO
+					Object.entries(properties).map(([key, value]) => [key, (value as any)?.default])
 				);
 
 				Object.assign(this, defaults);

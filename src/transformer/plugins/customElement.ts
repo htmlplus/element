@@ -40,6 +40,9 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 		context.elementInterfaceName = `HTML${pascalCase(context.elementTagName)}Element`;
 
+		// TODO
+		const namespace = context.elementTagName.split('-').at(0) || '';
+
 		// attach tag name
 		visitor(ast, {
 			ClassDeclaration(path) {
@@ -566,6 +569,15 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
                     "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
                   }
                 }
+
+								interface ${pascalCase(namespace)}ElementsMap {
+									"${context.elementTagName}": {
+										attributes: ${context.className}Attributes;
+										events: ${context.className}Events;
+										methods: ${context.className}Methods;
+										properties: ${context.className}Properties;
+									};
+								}
               }
 
               declare module "react" {
@@ -575,6 +587,12 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
                   }
                 }
               }
+
+							declare module "@htmlplus/element" {
+								interface NamespaceElementsRegistry {
+							    ${namespace}: ${pascalCase(namespace)}ElementsMap;
+								}
+							}
 
               export type ${context.className}Element = globalThis.${context.elementInterfaceName}
             `,

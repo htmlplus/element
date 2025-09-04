@@ -2,6 +2,8 @@ export * from './decorators';
 export {
 	type Config,
 	type ConfigOptions,
+	type ElementsForNamespace,
+	type NamespaceElementsRegistry,
 	classes,
 	direction,
 	dispatch,

@@ -1,9 +1,18 @@
 import { merge } from './merge';
 
+const makeKey = (namespace: string) => {
+	return `$htmlplus:${namespace}$`;
+};
+
 /**
- * TODO
+ * Main configuration object for the HTMLPlus system.
+ *
+ * @template T - Shape of user-defined elements.
  */
-export interface Config {
+export type Config<Prefix extends string = string> = {
+	assets?: {
+		[key: string]: unknown;
+	};
 	breakpoints?: {
 		[key: string]: {
 			type: 'container' | 'media';
@@ -11,79 +20,83 @@ export interface Config {
 			max?: number;
 		};
 	};
+	elements?: {
+		[K in keyof ElementsForNamespace<Prefix>]?: {
+			properties?: {
+				[P in keyof ElementsForNamespace<Prefix>[K]['properties']]?: {
+					default?: ElementsForNamespace<Prefix>[K]['properties'][P];
+				};
+			};
+			variants?: {
+				[key: string]: {
+					properties?: {
+						[P in keyof ElementsForNamespace<Prefix>[K]['properties']]?: ElementsForNamespace<Prefix>[K]['properties'][P];
+					};
+				};
+			};
+		};
+	};
 	event?: {
 		resolver?: (parameters: unknown) => CustomEvent | undefined;
 	};
-	assets?: {
-		[key: string]: unknown;
-	};
-	elements?: {
-		[key: string]: {
-			properties?: {
-				[key: string]: {
-					default?: unknown;
-				};
-			};
-			// slots?: {
-			//   [key: string]: unknown;
-			// };
-			// variants?: {
-			//   [key: string]: {
-			//     properties: {
-			//       [key: string]: unknown;
-			//     };
-			//     slots?: {
-			//       [key: string]: unknown;
-			//     };
-			//   }
-			// };
-		};
-	};
-}
+};
 
 /**
- * TODO
+ * Options for how configuration should be applied.
  */
-export interface ConfigOptions {
+export type ConfigOptions = {
 	/**
 	 * TODO
 	 */
 	force?: boolean;
+
 	/**
-	 * TODO
+	 * If true, previous config is ignored and replaced entirely.
 	 */
 	override?: boolean;
-}
-
-/**
- * TODO
- */
-export const getConfig = (namespace: string): Config => {
-	return globalThis[`$htmlplus:${namespace}$`] || {};
 };
 
 /**
- * TODO
+ * Retrieve configuration for a given namespace.
  */
-export const getConfigCreator = (namespace: string) => () => {
-	return getConfig(namespace);
+export const getConfig = <Prefix extends string>(namespace: Prefix): Config<Prefix> => {
+	return (globalThis[makeKey(namespace)] || {}) as Config<Prefix>;
 };
 
 /**
- * TODO
+ * Factory function that returns a `getConfig` bound to a namespace.
  */
-export const setConfig = (namespace: string, config: Config, options?: ConfigOptions): void => {
-	const previous = options?.override ? {} : globalThis[`$htmlplus:${namespace}$`];
+export const getConfigCreator = <Prefix extends string>(namespace: Prefix) => {
+	return () => {
+		return getConfig<Prefix>(namespace);
+	};
+};
+
+/**
+ * Update or set configuration for a given namespace.
+ */
+export const setConfig = <Prefix extends string>(
+	namespace: Prefix,
+	config: Config<Prefix>,
+	options?: ConfigOptions
+): void => {
+	const previous = options?.override ? {} : globalThis[makeKey(namespace)];
 
 	const next = merge({}, previous, config);
 
-	globalThis[`$htmlplus:${namespace}$`] = next;
+	globalThis[makeKey(namespace)] = next;
 };
 
 /**
- * TODO
+ * Factory function that returns a `setConfig` bound to a namespace.
  */
-export const setConfigCreator =
-	(namespace: string) => (config: Config, options?: ConfigOptions) => {
+export const setConfigCreator = <Prefix extends string>(namespace: Prefix) => {
+	return (config: Config<Prefix>, options?: ConfigOptions) => {
 		return setConfig(namespace, config, options);
 	};
+};
+
+export type ElementsForNamespace<Prefix extends string> = NamespaceElementsRegistry[Prefix &
+	keyof NamespaceElementsRegistry];
+// biome-ignore lint: TODO
+export interface NamespaceElementsRegistry {} // shared mapping interface
