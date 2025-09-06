@@ -11,6 +11,13 @@ import {
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
 
+export type PropertyOverridable<Base, Overrides = unknown> =
+	| Exclude<
+			Base,
+			{ [K in keyof Overrides]: Overrides[K] extends false ? K : never }[keyof Overrides]
+	  >
+	| { [K in keyof Overrides]: Overrides[K] extends true ? K : never }[keyof Overrides];
+
 /**
  * The configuration for property decorator.
  */
