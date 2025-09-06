@@ -774,14 +774,14 @@ const customElement = (userOptions) => {
                         return;
                     if (!path.node.typeParameters?.params)
                         return;
-                    path.node.typeParameters.params[1] = t.tsTypeReference(t.identifier('Omit'), t.tsTypeParameterInstantiation([
+                    path.node.typeParameters.params[2] = t.tsTypeReference(t.identifier('Omit'), t.tsTypeParameterInstantiation([
                         t.tsTypeReference(t.identifier(`${context.className}Properties`)),
                         t.tsLiteralType(t.stringLiteral(name))
                     ]));
                     path.skip();
                 }
             });
-            // TODO export interface aaa {}
+            // TODO
             visitor(ast, {
                 TSTypeReference(path) {
                     if (!t.isIdentifier(path.node.typeName))

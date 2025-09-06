@@ -608,7 +608,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 					if (!path.node.typeParameters?.params) return;
 
-					path.node.typeParameters.params[1] = t.tsTypeReference(
+					path.node.typeParameters.params[2] = t.tsTypeReference(
 						t.identifier('Omit'),
 						t.tsTypeParameterInstantiation([
 							t.tsTypeReference(t.identifier(`${context.className}Properties`)),
@@ -620,7 +620,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 				}
 			});
 
-			// TODO export interface aaa {}
+			// TODO
 			visitor(ast, {
 				TSTypeReference(path) {
 					if (!t.isIdentifier(path.node.typeName)) return;
