@@ -1,3 +1,13 @@
+## [3.4.0](https://github.com/htmlplus/element/compare/v3.3.1...v3.4.0) (2025-09-12)
+
+### Features
+
+* Implement the Variant decorator ([013dc92](https://github.com/htmlplus/element/commit/013dc9247b5393afc79c2084fc060dc2791621fb))
+
+### Bug Fixes
+
+* Refactor Overrides type generation ([d06c5a0](https://github.com/htmlplus/element/commit/d06c5a00a4e6d0658d8925870484b64eabd0ed51))
+
 ## [3.3.1](https://github.com/htmlplus/element/compare/v3.3.0...v3.3.1) (2025-08-28)
 
 ### Bug Fixes
