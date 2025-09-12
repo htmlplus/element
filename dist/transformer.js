@@ -754,8 +754,10 @@ const customElement = (userOptions) => {
                         preserveComments: true
                     });
                     path.node.body.push(...ast);
-                },
-                // TODO
+                }
+            });
+            // TODO
+            visitor(ast, {
                 TSTypeReference(path) {
                     if (!t.isIdentifier(path.node.typeName))
                         return;
@@ -777,6 +779,37 @@ const customElement = (userOptions) => {
                         t.tsLiteralType(t.stringLiteral(name))
                     ]));
                     path.skip();
+                }
+            });
+            // TODO
+            visitor(ast, {
+                TSTypeReference(path) {
+                    if (!t.isIdentifier(path.node.typeName))
+                        return;
+                    if (path.node.typeName.name !== 'OverridableValue')
+                        return;
+                    const property = path.findParent((p) => p.isTSPropertySignature());
+                    if (!property)
+                        return;
+                    if (!t.isTSPropertySignature(property.node))
+                        return;
+                    // biome-ignore lint: TODO
+                    const name = property.node.key.name || property.node.key.extra.rawValue;
+                    if (!name)
+                        return;
+                    if (!path.node.typeParameters?.params)
+                        return;
+                    if (path.node.typeParameters.params.length > 1)
+                        return;
+                    const interfaceName = pascalCase(`${context.className}-${name}-Overrides`);
+                    path.node.typeParameters.params[1] = t.identifier(interfaceName);
+                    path.skip();
+                    const has = ast.program.body.some((child) => t.isExportNamedDeclaration(child) &&
+                        t.isInterfaceDeclaration(child.declaration) &&
+                        child.declaration.id.name === interfaceName);
+                    if (has)
+                        return;
+                    ast.program.body.push(t.exportNamedDeclaration(t.interfaceDeclaration(t.identifier(interfaceName), undefined, undefined, t.objectTypeAnnotation([]))));
                 }
             });
         }

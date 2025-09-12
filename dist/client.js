@@ -1,5 +1,5 @@
 import { kebabCase, pascalCase } from 'change-case';
-import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, TYPE_STRING, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_READY } from './constants.js';
+import { API_HOST, STATIC_TAG, API_STACKS, API_REQUEST, API_CONNECTED, LIFECYCLE_UPDATE, STATIC_STYLE, API_STYLE, LIFECYCLE_UPDATED, API_RENDER_COMPLETED, METHOD_RENDER, TYPE_BOOLEAN, TYPE_NUMBER, TYPE_NULL, TYPE_DATE, TYPE_ARRAY, TYPE_OBJECT, TYPE_UNDEFINED, TYPE_STRING, KEY, LIFECYCLE_CONNECTED, LIFECYCLE_DISCONNECTED, LIFECYCLE_CONSTRUCTED, LIFECYCLE_ADOPTED, LIFECYCLE_READY, API_DEFAULTS } from './constants.js';
 
 /**
  * Indicates the host of the element.
@@ -1810,15 +1810,20 @@ function Overrides() {
             const overrideKeys = Object.keys(overrides);
             const containerKeys = overrideKeys.filter((breakpoint) => breakpoint in containers);
             const mediaKeys = overrideKeys.filter((breakpoint) => breakpoint in medias);
-            let timeout = -1;
             let next = {};
-            const apply = (key) => {
-                clearTimeout(timeout);
-                Object.assign(next, overrides[key]);
-                timeout = window.setTimeout(() => {
-                    Object.assign(host(this), overrides[key]);
+            let scheduled = false;
+            const apply = (overrideKey) => {
+                overrideKey && Object.assign(next, overrides[overrideKey]);
+                if (scheduled)
+                    return;
+                scheduled = true;
+                queueMicrotask(() => {
+                    scheduled = false;
+                    const defaults = Object.assign({}, this[API_DEFAULTS], next);
+                    delete defaults[key];
+                    Object.assign(host(this), defaults);
                     next = {};
-                }, 0);
+                });
             };
             for (const overrideKey of overrideKeys) {
                 if (activeKeys.delete(overrideKey))
@@ -1838,6 +1843,7 @@ function Overrides() {
                                     apply(containerKey);
                                 }
                             }
+                            apply();
                         };
                         containerQueryList.addEventListener('change', change);
                         const disposer = () => {
@@ -1860,6 +1866,7 @@ function Overrides() {
                                     apply(mediaKey);
                                 }
                             }
+                            apply();
                         };
                         mediaQueryList.addEventListener('change', change);
                         const disposer = () => {
@@ -1966,6 +1973,11 @@ function Property(options) {
                     this[key] = toProperty(value, options?.type);
                 }
             }
+        });
+        // TODO
+        wrapMethod('before', target, LIFECYCLE_CONNECTED, function () {
+            this[API_DEFAULTS] ||= {};
+            this[API_DEFAULTS][key] = this[key];
         });
         // Attach getter and setter to the host element on construction
         wrapMethod('before', target, LIFECYCLE_CONSTRUCTED, function () {
@@ -2131,6 +2143,23 @@ const toCssString = (input, parent) => {
     return parent ? result : `:host {${result}}`;
 };
 
+function Variant() {
+    return (target, key) => {
+        wrapMethod('after', target, LIFECYCLE_UPDATE, function (states) {
+            if (!states.has(key))
+                return;
+            const namespace = getNamespace(target) || '';
+            const tag = getTag(this) || '';
+            const properties = getConfig(namespace).elements?.[tag]?.variants?.[this[key]]?.properties;
+            if (!properties)
+                return;
+            const defaults = Object.assign({}, this[API_DEFAULTS], properties);
+            delete defaults[key];
+            Object.assign(this, defaults);
+        });
+    };
+}
+
 /**
  * Monitors `@Property` and `@State` to detect changes.
  * The decorated method will be called after any changes,
@@ -2165,4 +2194,4 @@ const attributes = attributes$2;
 const html = html$1;
 const styles = styles$1;
 
-export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots, State, Style, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toCSSColor, toCSSUnit, toUnit };
+export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots, State, Style, Variant, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toCSSColor, toCSSUnit, toUnit };
