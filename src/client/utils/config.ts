@@ -24,19 +24,13 @@ export interface Config {
 					default?: unknown;
 				};
 			};
-			// slots?: {
-			//   [key: string]: unknown;
-			// };
-			// variants?: {
-			//   [key: string]: {
-			//     properties: {
-			//       [key: string]: unknown;
-			//     };
-			//     slots?: {
-			//       [key: string]: unknown;
-			//     };
-			//   }
-			// };
+			variants?: {
+				[key: string]: {
+					properties: {
+						[key: string]: unknown;
+					};
+				};
+			};
 		};
 	};
 }

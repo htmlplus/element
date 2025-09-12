@@ -124,6 +124,12 @@ export function Property(options?: PropertyOptions) {
 			}
 		});
 
+		// TODO
+		wrapMethod('before', target, CONSTANTS.LIFECYCLE_CONNECTED, function () {
+			this[CONSTANTS.API_DEFAULTS] ||= {};
+			this[CONSTANTS.API_DEFAULTS][key] = this[key];
+		});
+
 		// Attach getter and setter to the host element on construction
 		wrapMethod('before', target, CONSTANTS.LIFECYCLE_CONSTRUCTED, function () {
 			const get = () => {

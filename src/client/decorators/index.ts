@@ -15,4 +15,5 @@ export * from './queryAll';
 export * from './slots';
 export * from './state';
 export * from './style';
+export * from './variant';
 export * from './watch';

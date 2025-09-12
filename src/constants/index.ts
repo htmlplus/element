@@ -3,6 +3,7 @@ export const PACKAGE_NAME = '@htmlplus/element';
 
 // APIs
 export const API_CONNECTED = Symbol();
+export const API_DEFAULTS = Symbol();
 export const API_HOST = Symbol();
 export const API_REQUEST = Symbol();
 export const API_RENDER_COMPLETED = Symbol();
