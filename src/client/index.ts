@@ -9,6 +9,7 @@ export {
 	getConfigCreator,
 	host,
 	isCSSColor,
+	isCSSUnit,
 	isRTL,
 	off,
 	on,
@@ -17,8 +18,6 @@ export {
 	setConfig,
 	setConfigCreator,
 	slots,
-	toCSSColor,
-	toCSSUnit,
 	toUnit
 } from './utils';
 

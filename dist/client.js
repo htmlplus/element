@@ -267,6 +267,10 @@ const isCSSColor = (input) => {
     return option.style.color !== '';
 };
 
+const isCSSUnit = (input) => {
+    return /^\d+(\.\d+)?(px|pt|cm|mm|in|em|rem|%|vw|vh)$/.test(input);
+};
+
 /**
  * Indicates whether the direction of the element is `Right-To-Left` or not.
  */
@@ -1213,22 +1217,6 @@ const styles$1 = (input) => {
         .filter((key) => input[key] !== undefined && input[key] !== null)
         .map((key) => `${key.startsWith('--') ? '--' : ''}${kebabCase(key)}: ${input[key]}`)
         .join('; ');
-};
-
-const toCSSColor = (input) => {
-    return isCSSColor(input) ? input : undefined;
-};
-
-const toCSSUnit = (input) => {
-    if (input === undefined || input === null || input === '') {
-        return;
-    }
-    if (typeof input === 'number' || (typeof input === 'string' && !Number.isNaN(Number(input)))) {
-        return `${input}px`;
-    }
-    if (/^\d+(\.\d+)?(px|pt|cm|mm|in|em|rem|%|vw|vh)$/.test(input)) {
-        return input;
-    }
 };
 
 function toDecorator(util, ...args) {
@@ -2194,4 +2182,4 @@ const attributes = attributes$2;
 const html = html$1;
 const styles = styles$1;
 
-export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots, State, Style, Variant, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toCSSColor, toCSSUnit, toUnit };
+export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots, State, Style, Variant, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toUnit };

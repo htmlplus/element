@@ -320,6 +320,8 @@ declare const host: (target: HTMLElement | HTMLPlusElement) => HTMLElement;
  */
 declare const isCSSColor: (input: string) => boolean;
 
+declare const isCSSUnit: (input: string) => boolean;
+
 /**
  * Indicates whether the direction of the element is `Right-To-Left` or not.
  */
@@ -342,10 +344,6 @@ type Slots = {
  * Returns the slots name.
  */
 declare const slots: (target: HTMLElement | HTMLPlusElement) => Slots;
-
-declare const toCSSColor: (input: string) => string | undefined;
-
-declare const toCSSUnit: (input?: number | string | null) => string | undefined;
 
 /**
  * Converts a value to a unit.
@@ -379,5 +377,5 @@ declare const html: ((template: any, ...values: any[]) => Hole) & {
 };
 declare const styles: (input: object) => string;
 
-export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toCSSColor, toCSSUnit, toUnit };
+export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toUnit };
 export type { Config, ConfigOptions, EventEmitter, EventOptions, ListenOptions, OverridableValue, OverridesConfig, PropertyOptions };
