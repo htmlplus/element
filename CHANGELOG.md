@@ -1,3 +1,9 @@
+## [3.4.1](https://github.com/htmlplus/element/compare/v3.4.0...v3.4.1) (2025-11-11)
+
+### Bug Fixes
+
+* Add isCSSUnit utility function ([24e55ca](https://github.com/htmlplus/element/commit/24e55ca974ff0b77a32fd75276ce848a8fddd863))
+
 ## [3.4.0](https://github.com/htmlplus/element/compare/v3.3.1...v3.4.0) (2025-09-12)
 
 ### Features
