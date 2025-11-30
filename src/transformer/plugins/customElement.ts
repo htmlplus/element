@@ -563,7 +563,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
                 
                 namespace JSX {
                   interface IntrinsicElements {
-                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>, keyof (${context.className}Events & ${context.className}Attributes)>;
                   }
                 }
               }
@@ -571,7 +571,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
               declare module "react" {
                 namespace JSX {
                   interface IntrinsicElements {
-                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>, keyof (${context.className}Events & ${context.className}Attributes)>;
                   }
                 }
               }
