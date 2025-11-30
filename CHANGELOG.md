@@ -1,3 +1,9 @@
+## [3.4.2](https://github.com/htmlplus/element/compare/v3.4.1...v3.4.2) (2025-11-30)
+
+### Bug Fixes
+
+* Improve element typing for React ([7d1b8e8](https://github.com/htmlplus/element/commit/7d1b8e8eef9320b60318cf4110f3a7ee47f69f76))
+
 ## [3.4.1](https://github.com/htmlplus/element/compare/v3.4.0...v3.4.1) (2025-11-11)
 
 ### Bug Fixes
