@@ -531,21 +531,45 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 						`
               // THE FOLLOWING TYPES HAVE BEEN ADDED AUTOMATICALLY
 
-              export interface ${context.className}Attributes {
+							type Filter<Base, Overrides> = {
+								[K in keyof Base as K extends keyof Overrides
+									? Overrides[K] extends never
+										? never
+										: K
+									: K]: Base[K];
+							};
+
+              export interface ${context.className}AttributesBase {
                 ${attributes.map(print).join('')}
               }
 
-              export interface ${context.className}Events {
+							export interface ${context.className}AttributesDisables { }
+
+							export type ${context.className}Attributes = Filter<${context.className}AttributesBase, ${context.className}AttributesDisables>;
+
+              export interface ${context.className}EventsBase {
                 ${events.map(print).join('')}
               }
 
-              export interface ${context.className}Methods {
+							export interface ${context.className}EventsDisables { }
+
+							export type ${context.className}Events = Filter<${context.className}EventsBase, ${context.className}EventsDisables>;
+
+              export interface ${context.className}MethodsBase {
                 ${methods.map(print).join('')}
               }
 
-              export interface ${context.className}Properties {
+							export interface ${context.className}MethodsDisables { }
+
+							export type ${context.className}Methods = Filter<${context.className}MethodsBase, ${context.className}MethodsDisables>;
+
+              export interface ${context.className}PropertiesBase {
                 ${properties.map(print).join('')}
               }
+
+							export interface ${context.className}PropertiesDisables { }
+
+							export type ${context.className}Properties = Filter<${context.className}PropertiesBase, ${context.className}PropertiesDisables>;
 
               export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
     
