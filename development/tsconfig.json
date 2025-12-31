@@ -1,5 +1,17 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true
-  }
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "jsxImportSource": "@htmlplus/element",
+    "baseUrl": "..",
+    "paths": {
+      "@htmlplus/element": ["src/client/index.ts"],
+      "@htmlplus/element/*": ["src/client/*"],
+      "@htmlplus/element/jsx-runtime": ["src/jsx-runtime"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
 }

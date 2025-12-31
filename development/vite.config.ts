@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
 
-import { vite as htmlplus } from '../src/bundlers/index.js';
-import { customElement, extract, parse, read, style, validate } from '../src/transformer/index.js';
+import { vite as htmlplus } from '../dist/bundlers';
+import { customElement, extract, parse, read, style, validate } from '../dist/transformer';
+import path from 'path';
 
 export default defineConfig({
   server: {
@@ -10,8 +11,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@htmlplus/element/internal.js': '../src/client/internal/index.js',
-      '@htmlplus/element': '../src/client/index.js'
+      "@": path.resolve(__dirname, '../src'),
+      '@htmlplus/element': path.resolve(__dirname, '../src/client'),
     }
   },
   plugins: [htmlplus(read(), parse(), validate(), extract(), style(), customElement())]

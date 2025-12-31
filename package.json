@@ -30,10 +30,6 @@
 			"types": "./dist/bundlers.d.ts",
 			"import": "./dist/bundlers.js"
 		},
-		"./internal.js": {
-			"types": "./dist/internal.d.ts",
-			"import": "./dist/internal.js"
-		},
 		"./transformer.js": {
 			"types": "./dist/transformer.d.ts",
 			"import": "./dist/transformer.js"
@@ -49,8 +45,9 @@
 	],
 	"scripts": {
 		"build": "npm run clean && rollup -c",
+		"build:watch": "npm run clean && rollup -c -w",
 		"clean": "rimraf dist",
-		"development:start": "vite --config development/vite.config.js",
+		"dev": "vite --force development",
 		"lint": "biome check --write",
 		"prepare": "husky",
 		"test": "vitest --config tests/vitest.config.ts",

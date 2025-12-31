@@ -6,6 +6,6 @@ export class MyCounter {
   value: number = 0;
 
   render() {
-    return <host onClick={() => this.value++}>Count is {this.value}</host>;
+    return <button type="button" onClick={() => this.value++}>Count is {this.value}</button>;
   }
 }
