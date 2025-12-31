@@ -72,29 +72,14 @@ export const requestUpdate = (
 
 			if (!raw) return;
 
-			const regex1 = /this-([\w-]+)(?:-([\w-]+))?/g;
-			const regex2 = /(\s*\w+\s*:\s*(undefined|null)\s*;?)/g;
-			const regex3 = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
+			const regex = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
 
 			const hasGlobal = raw.includes('global');
-			const hasVariable = raw.includes('this-');
 
 			let localSheet = target[CONSTANTS.API_STYLE];
 			let globalSheet = target.constructor[CONSTANTS.API_STYLE];
 
-			if (!hasVariable && localSheet) return;
-
-			const parsed = raw
-				.replace(regex1, (_match, key) => {
-					let value = target;
-
-					for (const section of key.split('-')) {
-						value = value?.[section];
-					}
-
-					return value;
-				})
-				.replace(regex2, '');
+			if (localSheet) return;
 
 			if (!localSheet) {
 				localSheet = new CSSStyleSheet();
@@ -104,7 +89,7 @@ export const requestUpdate = (
 				shadowRoot(target)?.adoptedStyleSheets.push(localSheet);
 			}
 
-			const localStyle = parsed.replace(regex3, '');
+			const localStyle = raw.replace(regex, '');
 
 			localSheet.replaceSync(localStyle);
 
@@ -118,8 +103,8 @@ export const requestUpdate = (
 				document.adoptedStyleSheets.push(globalSheet);
 			}
 
-			const globalStyle = parsed
-				?.match(regex3)
+			const globalStyle = raw
+				?.match(regex)
 				?.join('')
 				?.replaceAll('global', '')
 				?.replaceAll(':host', getTag(target) || '');

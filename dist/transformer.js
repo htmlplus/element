@@ -5,7 +5,7 @@ import { glob } from 'glob';
 import template from '@babel/template';
 import { pascalCase, kebabCase, camelCase, capitalCase } from 'change-case';
 import path, { join, resolve, dirname } from 'node:path';
-import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, DECORATOR_PROPERTY_TYPE, UTILS_STYLES_IMPORTED, UTILS_STYLES_LOCAL, UTILS_PATH, UTILS_HTML_IMPORTED, UTILS_HTML_LOCAL, ELEMENT_HOST_NAME, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, UTILS_ATTRIBUTES_IMPORTED, UTILS_ATTRIBUTES_LOCAL, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, PACKAGE_NAME, DECORATOR_ELEMENT, KEY } from './constants.js';
+import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, DECORATOR_PROPERTY_TYPE, INTERNAL_STYLES_IMPORTED, INTERNAL_STYLES_LOCAL, INTERNAL_PATH, INTERNAL_HTML_IMPORTED, INTERNAL_HTML_LOCAL, ELEMENT_HOST_NAME, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, INTERNAL_ATTRIBUTES_IMPORTED, INTERNAL_ATTRIBUTES_LOCAL, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, PACKAGE_NAME, DECORATOR_ELEMENT, KEY } from './constants.js';
 import core from '@babel/traverse';
 import core$1 from '@babel/generator';
 import ora from 'ora';
@@ -385,7 +385,7 @@ const customElement = (userOptions) => {
                     return;
                 if (value.expression.type === 'JSXEmptyExpression')
                     return;
-                const { local } = addDependency(path, UTILS_PATH, UTILS_STYLES_LOCAL, UTILS_STYLES_IMPORTED);
+                const { local } = addDependency(path, INTERNAL_PATH, INTERNAL_STYLES_LOCAL, INTERNAL_STYLES_IMPORTED);
                 path.replaceWith(t.jsxAttribute(t.jsxIdentifier('style'), t.jsxExpressionContainer(t.callExpression(t.identifier(local || ''), [value.expression]))));
                 path.skip();
             }
@@ -436,7 +436,7 @@ const customElement = (userOptions) => {
                 if (!['JSXElement', 'JSXFragment'].includes(type))
                     return;
                 const TODO = (node, attributes) => {
-                    const { local } = addDependency(path, UTILS_PATH, UTILS_ATTRIBUTES_LOCAL, UTILS_ATTRIBUTES_IMPORTED);
+                    const { local } = addDependency(path, INTERNAL_PATH, INTERNAL_ATTRIBUTES_LOCAL, INTERNAL_ATTRIBUTES_IMPORTED);
                     return t.callExpression(t.identifier(local || ''), [
                         node,
                         t.arrayExpression(attributes.map((attribute) => {
@@ -542,7 +542,7 @@ const customElement = (userOptions) => {
                     const templateLiteral = t.templateLiteral(quasis, expressions);
                     // TODO
                     // if (!expressions.length) return template;
-                    const { local } = addDependency(path, UTILS_PATH, UTILS_HTML_LOCAL, UTILS_HTML_IMPORTED, true);
+                    const { local } = addDependency(path, INTERNAL_PATH, INTERNAL_HTML_LOCAL, INTERNAL_HTML_IMPORTED, true);
                     return t.taggedTemplateExpression(t.identifier(local || ''), templateLiteral);
                 };
                 path.replaceWith(transform(render(path.node)));

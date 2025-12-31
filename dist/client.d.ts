@@ -364,6 +364,13 @@ declare class Hole {
     values: any;
 }
 
+declare const _internal_a_: (target: HTMLElement | HTMLPlusElement, attributes: unknown[]) => void;
+declare const _internal_h_: ((template: any, ...values: any[]) => Hole) & {
+    for(ref: any, id: any): any;
+    node: (template: any, ...values: any[]) => any;
+};
+declare const _internal_s_: (input: object) => string;
+
 type Listed<T> = T extends string | number ? (T extends `${infer _}` | number ? T : never) : never;
 type Unlisted<T> = Exclude<T, Listed<T>>;
 type OverridableValue<Base, Overrides = unknown> = {
@@ -374,12 +381,5 @@ type OverridableValue<Base, Overrides = unknown> = {
     UNLISTED: false;
 } ? never : Unlisted<Base>);
 
-declare const attributes: (target: HTMLElement | HTMLPlusElement, attributes: unknown[]) => void;
-declare const html: ((template: any, ...values: any[]) => Hole) & {
-    for(ref: any, id: any): any;
-    node: (template: any, ...values: any[]) => any;
-};
-declare const styles: (input: object) => string;
-
-export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toUnit };
+export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, _internal_a_, _internal_h_, _internal_s_, classes, direction, dispatch, getConfig, getConfigCreator, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, setConfig, setConfigCreator, slots, toUnit };
 export type { Config, ConfigOptions, EventEmitter, EventOptions, ListenOptions, OverridableValue, OverridesConfig, PropertyOptions };

@@ -36,6 +36,15 @@ export const LIFECYCLE_READY = 'readyCallback';
 export const LIFECYCLE_UPDATE = 'updateCallback';
 export const LIFECYCLE_UPDATED = 'updatedCallback';
 
+// internal
+export const INTERNAL_ATTRIBUTES_IMPORTED = '_internal_a_';
+export const INTERNAL_ATTRIBUTES_LOCAL = 'INTERNAL_ATTRIBUTES';
+export const INTERNAL_HTML_IMPORTED = '_internal_h_';
+export const INTERNAL_HTML_LOCAL = 'INTERNAL_HTML';
+export const INTERNAL_STYLES_IMPORTED = '_internal_s_';
+export const INTERNAL_STYLES_LOCAL = 'INTERNAL_STYLES';
+export const INTERNAL_PATH = PACKAGE_NAME;
+
 // methods
 export const METHOD_RENDER = 'render';
 
@@ -58,12 +67,3 @@ export const TYPE_NUMBER = 2 ** 7;
 export const TYPE_OBJECT = 2 ** 8;
 export const TYPE_STRING = 2 ** 9;
 export const TYPE_UNDEFINED = 2 ** 10;
-
-// utils
-export const UTILS_ATTRIBUTES_IMPORTED = 'attributes';
-export const UTILS_ATTRIBUTES_LOCAL = 'UTILS_ATTRIBUTES';
-export const UTILS_HTML_IMPORTED = 'html';
-export const UTILS_HTML_LOCAL = 'UTILS_HTML';
-export const UTILS_STYLES_IMPORTED = 'styles';
-export const UTILS_STYLES_LOCAL = 'UTILS_STYLES';
-export const UTILS_PATH = '@htmlplus/element/internal.js';

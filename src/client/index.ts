@@ -1,4 +1,5 @@
 export * from './decorators';
+export * from './internal';
 export {
 	type Config,
 	type ConfigOptions,

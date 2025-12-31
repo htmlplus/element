@@ -14,7 +14,6 @@ const input = {
 	bundlers: 'src/bundlers/index.ts',
 	constants: 'src/constants/index.ts',
 	client: 'src/client/index.ts',
-	internal: 'src/client/internal/index.ts',
 	transformer: 'src/transformer/index.ts'
 };
 

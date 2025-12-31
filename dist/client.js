@@ -86,7 +86,7 @@ const updateAttribute = (target, key, value) => {
 };
 
 const symbol = Symbol();
-const attributes$2 = (target, attributes) => {
+const attributes$1 = (target, attributes) => {
     const element = host(target);
     const prev = element[symbol] || {};
     const next = Object.assign({}, ...attributes);
@@ -361,7 +361,7 @@ class WeakMapSet extends WeakMap {
 const empty =
 	/^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
 const elements = /<([a-z]+[a-z0-9:._-]*)([^>]*?)(\/?)>/g;
-const attributes$1 = /([^\s\\>"'=]+)\s*=\s*(['"]?)\x01/g;
+const attributes = /([^\s\\>"'=]+)\s*=\s*(['"]?)\x01/g;
 const holes = /[\x01\x02]/g;
 
 // \x01 Node.ELEMENT_NODE
@@ -381,7 +381,7 @@ var instrument = (template, prefix, svg) => {
 		.join('\x01')
 		.trim()
 		.replace(elements, (_, name, attrs, selfClosing) => {
-			let ml = name + attrs.replace(attributes$1, '\x02=$2$1').trimEnd();
+			let ml = name + attrs.replace(attributes, '\x02=$2$1').trimEnd();
 			if (selfClosing.length) ml += svg || empty.test(name) ? ' /' : '></' + name;
 			return '<' + ml + '>';
 		})
@@ -1088,7 +1088,7 @@ const render = (where, what) => {
 	return where;
 };
 
-const html$1 = tag('html');
+const html = tag('html');
 tag('svg');
 
 /**
@@ -1133,30 +1133,18 @@ const requestUpdate = (target, name, previous, callback) => {
             const raw = target.constructor[STATIC_STYLE];
             if (!raw)
                 return;
-            const regex1 = /this-([\w-]+)(?:-([\w-]+))?/g;
-            const regex2 = /(\s*\w+\s*:\s*(undefined|null)\s*;?)/g;
-            const regex3 = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
+            const regex = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
             const hasGlobal = raw.includes('global');
-            const hasVariable = raw.includes('this-');
             let localSheet = target[API_STYLE];
             let globalSheet = target.constructor[API_STYLE];
-            if (!hasVariable && localSheet)
+            if (localSheet)
                 return;
-            const parsed = raw
-                .replace(regex1, (_match, key) => {
-                let value = target;
-                for (const section of key.split('-')) {
-                    value = value?.[section];
-                }
-                return value;
-            })
-                .replace(regex2, '');
             if (!localSheet) {
                 localSheet = new CSSStyleSheet();
                 target[API_STYLE] = localSheet;
                 shadowRoot(target)?.adoptedStyleSheets.push(localSheet);
             }
-            const localStyle = parsed.replace(regex3, '');
+            const localStyle = raw.replace(regex, '');
             localSheet.replaceSync(localStyle);
             if (!hasGlobal || globalSheet)
                 return;
@@ -1165,8 +1153,8 @@ const requestUpdate = (target, name, previous, callback) => {
                 target.constructor[API_STYLE] = globalSheet;
                 document.adoptedStyleSheets.push(globalSheet);
             }
-            const globalStyle = parsed
-                ?.match(regex3)
+            const globalStyle = raw
+                ?.match(regex)
                 ?.join('')
                 ?.replaceAll('global', '')
                 ?.replaceAll(':host', getTag(target) || '');
@@ -1212,7 +1200,7 @@ const slots = (target) => {
 /**
  * Converts a JavaScript object containing CSS styles to a CSS string.
  */
-const styles$1 = (input) => {
+const styles = (input) => {
     return Object.keys(input)
         .filter((key) => input[key] !== undefined && input[key] !== null)
         .map((key) => `${key.startsWith('--') ? '--' : ''}${kebabCase(key)}: ${input[key]}`)
@@ -2178,8 +2166,8 @@ function Watch(keys, immediate) {
     };
 }
 
-const attributes = attributes$2;
-const html = html$1;
-const styles = styles$1;
+const _internal_a_ = attributes$1;
+const _internal_h_ = html;
+const _internal_s_ = styles;
 
-export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots, State, Style, Variant, Watch, attributes as a, classes, direction, dispatch, getConfig, getConfigCreator, html as h, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, styles as s, setConfig, setConfigCreator, slots, toUnit };
+export { Bind, Consumer, Debounce, Direction, Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots, State, Style, Variant, Watch, _internal_a_, _internal_h_, _internal_s_, classes, direction, dispatch, getConfig, getConfigCreator, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, setConfig, setConfigCreator, slots, toUnit };

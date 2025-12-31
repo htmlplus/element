@@ -79,9 +79,9 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 				const { local } = addDependency(
 					path,
-					CONSTANTS.UTILS_PATH,
-					CONSTANTS.UTILS_STYLES_LOCAL,
-					CONSTANTS.UTILS_STYLES_IMPORTED
+					CONSTANTS.INTERNAL_PATH,
+					CONSTANTS.INTERNAL_STYLES_LOCAL,
+					CONSTANTS.INTERNAL_STYLES_IMPORTED
 				);
 
 				path.replaceWith(
@@ -154,9 +154,9 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 				const TODO = (node, attributes) => {
 					const { local } = addDependency(
 						path,
-						CONSTANTS.UTILS_PATH,
-						CONSTANTS.UTILS_ATTRIBUTES_LOCAL,
-						CONSTANTS.UTILS_ATTRIBUTES_IMPORTED
+						CONSTANTS.INTERNAL_PATH,
+						CONSTANTS.INTERNAL_ATTRIBUTES_LOCAL,
+						CONSTANTS.INTERNAL_ATTRIBUTES_IMPORTED
 					);
 					return t.callExpression(t.identifier(local || ''), [
 						node,
@@ -304,9 +304,9 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 					const { local } = addDependency(
 						path,
-						CONSTANTS.UTILS_PATH,
-						CONSTANTS.UTILS_HTML_LOCAL,
-						CONSTANTS.UTILS_HTML_IMPORTED,
+						CONSTANTS.INTERNAL_PATH,
+						CONSTANTS.INTERNAL_HTML_LOCAL,
+						CONSTANTS.INTERNAL_HTML_IMPORTED,
 						true
 					);
 

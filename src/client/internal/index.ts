@@ -1,9 +1,5 @@
-import {
-	attributes as attributesCore,
-	html as htmlCore,
-	styles as stylesCore
-} from '@/client/utils';
+import { attributes, html, styles } from '../utils';
 
-export const attributes = attributesCore;
-export const html = htmlCore;
-export const styles = stylesCore;
+export const _internal_a_ = attributes;
+export const _internal_h_ = html;
+export const _internal_s_ = styles;
