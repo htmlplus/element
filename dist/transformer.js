@@ -743,6 +743,8 @@ const customElement = (userOptions) => {
 
 							export type ${context.className}Properties = Filter<${context.className}PropertiesBase, ${context.className}PropertiesDisables>;
 
+							export type ${context.className}AttributesAndEvents = ${context.className}Attributes & ${context.className}Events;
+
               export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
     
               declare global {
@@ -756,21 +758,25 @@ const customElement = (userOptions) => {
                 interface HTMLElementTagNameMap {
                   "${context.elementTagName}": ${context.elementInterfaceName};
                 }
+              }
                 
-                namespace JSX {
-                  interface IntrinsicElements {
-                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>, keyof (${context.className}Events & ${context.className}Attributes)>;
-                  }
-                }
-              }
+							export namespace JSX {
+								interface IntrinsicElements {
+									"${context.elementTagName}": ${context.className}Attributes & ${context.className}Events;
+								}
+							}
 
-              declare module "react" {
-                namespace JSX {
-                  interface IntrinsicElements {
-                    "${context.elementTagName}": ${context.className}Events & ${context.className}Attributes & Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>, keyof (${context.className}Events & ${context.className}Attributes)>;
-                  }
-                }
-              }
+							${['@builder.io/qwik', 'inferno', 'preact', 'react', 'solid-js']
+                        .map((key) => `
+									declare module "${key}" {
+										namespace JSX {
+											interface IntrinsicElements {
+												"${context.elementTagName}": ${context.className}AttributesAndEvents & Omit<HTMLAttributes<${context.elementInterfaceName}>, keyof ${context.className}AttributesAndEvents>;
+											}
+										}
+									}
+								`)
+                        .join('\n')}
 
               export type ${context.className}Element = globalThis.${context.elementInterfaceName}
             `, {
