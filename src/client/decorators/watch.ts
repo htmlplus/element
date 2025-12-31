@@ -1,6 +1,7 @@
-import { wrapMethod } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
+
+import { wrapMethod } from '../utils';
 
 /**
  * Monitors `@Property` and `@State` to detect changes.

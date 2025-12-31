@@ -1,8 +1,9 @@
 // biome-ignore-all lint: TODO
 
-import { dispatch, off, on, wrapMethod } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
+
+import { dispatch, off, on, wrapMethod } from '../utils';
 
 export function Provider(namespace: string) {
 	return (target: HTMLPlusElement, key: PropertyKey) => {

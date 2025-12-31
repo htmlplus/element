@@ -1,6 +1,7 @@
-import { call, getConfig, getNamespace, getTag, isServer, requestUpdate } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
+
+import { call, getConfig, getNamespace, getTag, isServer, requestUpdate } from '../utils';
 
 /**
  * The class marked with this decorator is considered a

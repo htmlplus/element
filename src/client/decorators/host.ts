@@ -1,4 +1,4 @@
-import { host, toDecorator } from '@/client/utils';
+import { host, toDecorator } from '../utils';
 
 /**
  * Indicates the host of the element.

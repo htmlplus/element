@@ -1,4 +1,4 @@
-import { direction, toDecorator } from '@/client/utils';
+import { direction, toDecorator } from '../utils';
 
 /**
  * Indicates whether the [Direction](https://mdn.io/css-direction)

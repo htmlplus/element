@@ -1,6 +1,7 @@
-import { type Config, getConfig, getNamespace, host, wrapMethod } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
+
+import { type Config, getConfig, getNamespace, host, wrapMethod } from '../utils';
 
 type DisposerMap = Map<string, () => void>;
 

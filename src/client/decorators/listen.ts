@@ -1,7 +1,7 @@
-import { off, on, wrapMethod } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
 
+import { off, on, wrapMethod } from '../utils';
 import { Bind } from './bind';
 
 /**

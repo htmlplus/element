@@ -1,7 +1,8 @@
 import { kebabCase, pascalCase } from 'change-case';
 
-import { dispatch, getConfig, getFramework, getNamespace, host } from '@/client/utils';
 import type { HTMLPlusElement } from '@/types';
+
+import { dispatch, getConfig, getFramework, getNamespace, host } from '../utils';
 
 /**
  * A function type that generates a `CustomEvent`.

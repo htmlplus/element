@@ -1,4 +1,4 @@
-import { queryAll, toDecorator } from '@/client/utils';
+import { queryAll, toDecorator } from '../utils';
 
 /**
  * Selects all elements in the shadow dom that match a specified CSS selector.

@@ -1,6 +1,7 @@
-import { getConfig, getNamespace, getTag, wrapMethod } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
+
+import { getConfig, getNamespace, getTag, wrapMethod } from '../utils';
 
 export function Variant() {
 	return (target: HTMLPlusElement, key: string) => {

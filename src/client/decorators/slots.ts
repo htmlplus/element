@@ -1,4 +1,4 @@
-import { slots, toDecorator } from '@/client/utils';
+import { slots, toDecorator } from '../utils';
 
 /**
  * Returns the slots name.

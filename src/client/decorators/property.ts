@@ -1,5 +1,8 @@
 import { kebabCase } from 'change-case';
 
+import * as CONSTANTS from '@/constants';
+import type { HTMLPlusElement } from '@/types';
+
 import {
 	defineProperty,
 	host,
@@ -7,9 +10,7 @@ import {
 	toProperty,
 	updateAttribute,
 	wrapMethod
-} from '@/client/utils';
-import * as CONSTANTS from '@/constants';
-import type { HTMLPlusElement } from '@/types';
+} from '../utils';
 
 /**
  * The configuration for property decorator.

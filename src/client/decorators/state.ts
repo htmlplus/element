@@ -1,5 +1,6 @@
-import { defineProperty, requestUpdate } from '@/client/utils';
 import type { HTMLPlusElement } from '@/types';
+
+import { defineProperty, requestUpdate } from '../utils';
 
 /**
  * Applying this decorator to any `class property` will trigger the

@@ -1,6 +1,7 @@
-import { host, wrapMethod } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
+
+import { host, wrapMethod } from '../utils';
 
 /**
  * Provides a way to encapsulate functionality within an element

@@ -1,6 +1,7 @@
-import { shadowRoot, wrapMethod } from '@/client/utils';
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
+
+import { shadowRoot, wrapMethod } from '../utils';
 
 // TODO: check the logic
 

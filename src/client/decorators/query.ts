@@ -1,4 +1,4 @@
-import { query, toDecorator } from '@/client/utils';
+import { query, toDecorator } from '../utils';
 
 /**
  * Selects the first element in the shadow dom that matches a specified CSS selector.

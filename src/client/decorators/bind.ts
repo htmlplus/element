@@ -1,4 +1,4 @@
-import { defineProperty } from '@/client/utils';
+import { defineProperty } from '../utils';
 
 /**
  * Used to bind a method of a class to the current context,
