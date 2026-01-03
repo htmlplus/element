@@ -1,3 +1,13 @@
+## [3.4.3](https://github.com/htmlplus/element/compare/v3.4.2...v3.4.3) (2026-01-03)
+
+### Bug Fixes
+
+* Enhance custom element typings with `Disables` interfaces for stronger type safety and flexible attributes, events, methods, and properties. ([2b1585d](https://github.com/htmlplus/element/commit/2b1585d7c01bbcbd3b6958d4dab3adee8023d28e))
+* Improve internal utils exports ([10b61c4](https://github.com/htmlplus/element/commit/10b61c46ead60643b224466566aed6d9f99e279c))
+* Improve JSX typings for other frameworks ([bda2d67](https://github.com/htmlplus/element/commit/bda2d675b6fc7029b4bcb031df4a2d64764acd7f))
+* Refactor the `OverridableValue` type to introduce UNLISTED handling for controlling whether unlisted base values are allowed. ([41eb691](https://github.com/htmlplus/element/commit/41eb691c0907e036fa41b26bcd3a5d10fbd963c1))
+* Resolve high severity vulnerabilities ([a774883](https://github.com/htmlplus/element/commit/a774883a607bc26b092f9a0e6352c49ef1e0f2a1))
+
 ## [3.4.2](https://github.com/htmlplus/element/compare/v3.4.1...v3.4.2) (2025-11-30)
 
 ### Bug Fixes
