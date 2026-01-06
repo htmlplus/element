@@ -1,3 +1,9 @@
+## [3.4.4](https://github.com/htmlplus/element/compare/v3.4.3...v3.4.4) (2026-01-06)
+
+### Bug Fixes
+
+* Resolve JSX typing errors ([80c6e9b](https://github.com/htmlplus/element/commit/80c6e9b8cdcc57d9e02411dc215be2b9e17da088))
+
 ## [3.4.3](https://github.com/htmlplus/element/compare/v3.4.2...v3.4.3) (2026-01-03)
 
 ### Bug Fixes
