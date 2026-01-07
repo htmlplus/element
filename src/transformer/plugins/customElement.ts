@@ -571,8 +571,6 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 							export type ${context.className}Properties = Filter<${context.className}PropertiesBase, ${context.className}PropertiesDisables>;
 
-							export type ${context.className}AttributesAndEvents = ${context.className}Attributes & ${context.className}Events;
-
               export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
     
               declare global {
@@ -593,14 +591,22 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 									"${context.elementTagName}": ${context.className}Attributes & ${context.className}Events;
 								}
 							}
+							
+							declare module "react" {
+								namespace JSX {
+									interface IntrinsicElements {
+										"${context.elementTagName}": ${context.className}Attributes & ${context.className}Events & Omit<DetailedHTMLProps<HTMLAttributes<${context.elementInterfaceName}>, ${context.elementInterfaceName}>, keyof (${context.className}Attributes & ${context.className}Events)>;
+									}
+								}
+							}
 
-							${['@builder.io/qwik', 'inferno', 'preact', 'react', 'solid-js']
+							${['@builder.io/qwik', 'inferno', 'preact', 'solid-js']
 								.map(
 									(key) => `
 									declare module "${key}" {
 										namespace JSX {
 											interface IntrinsicElements {
-												"${context.elementTagName}": ${context.className}AttributesAndEvents & Omit<HTMLAttributes<${context.elementInterfaceName}>, keyof ${context.className}AttributesAndEvents>;
+												"${context.elementTagName}": ${context.className}Attributes & ${context.className}Events & Omit<HTMLAttributes<${context.elementInterfaceName}>, keyof (${context.className}Attributes & ${context.className}Events)>;
 											}
 										}
 									}
