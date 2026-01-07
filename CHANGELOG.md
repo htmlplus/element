@@ -1,3 +1,9 @@
+## [3.4.5](https://github.com/htmlplus/element/compare/v3.4.4...v3.4.5) (2026-01-07)
+
+### Bug Fixes
+
+* Improve JSX typing support for custom elements in React ([1203093](https://github.com/htmlplus/element/commit/12030934484585797b49d5636efcb854429edc73))
+
 ## [3.4.4](https://github.com/htmlplus/element/compare/v3.4.3...v3.4.4) (2026-01-06)
 
 ### Bug Fixes
