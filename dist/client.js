@@ -2042,13 +2042,13 @@ function Style() {
         });
     };
 }
-const toCssString = (input, parent) => {
+const toCssString = (input) => {
     if (typeof input === 'string') {
         return input.trim();
     }
     if (Array.isArray(input)) {
         return input
-            .map((item) => toCssString(item, parent))
+            .map((item) => toCssString(item))
             .filter(Boolean)
             .join('\n');
     }
@@ -2064,13 +2064,13 @@ const toCssString = (input, parent) => {
             continue;
         const cssKey = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
         if (typeof value === 'object') {
-            result += `${cssKey} {${toCssString(value, cssKey)}}`;
+            result += `${cssKey} {${toCssString(value)}}`;
         }
         else {
             result += `${cssKey}: ${value};`;
         }
     }
-    return parent ? result : `:host {${result}}`;
+    return result;
 };
 
 function Variant() {
