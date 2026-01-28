@@ -1,3 +1,9 @@
+## [3.4.6](https://github.com/htmlplus/element/compare/v3.4.5...v3.4.6) (2026-01-28)
+
+### Bug Fixes
+
+* Update the `Style` decorator to support the `:host` element ([a9563ee](https://github.com/htmlplus/element/commit/a9563ee2ed5635f75dfb69b3fd8f9e8808ef7dc2))
+
 ## [3.4.5](https://github.com/htmlplus/element/compare/v3.4.4...v3.4.5) (2026-01-07)
 
 ### Bug Fixes
