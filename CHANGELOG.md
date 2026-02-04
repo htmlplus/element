@@ -1,3 +1,31 @@
+## [3.4.6](https://github.com/htmlplus/element/compare/v3.4.5...v3.4.6) (2026-01-28)
+
+### Bug Fixes
+
+* Update the `Style` decorator to support the `:host` element ([a9563ee](https://github.com/htmlplus/element/commit/a9563ee2ed5635f75dfb69b3fd8f9e8808ef7dc2))
+
+## [3.4.5](https://github.com/htmlplus/element/compare/v3.4.4...v3.4.5) (2026-01-07)
+
+### Bug Fixes
+
+* Improve JSX typing support for custom elements in React ([1203093](https://github.com/htmlplus/element/commit/12030934484585797b49d5636efcb854429edc73))
+
+## [3.4.4](https://github.com/htmlplus/element/compare/v3.4.3...v3.4.4) (2026-01-06)
+
+### Bug Fixes
+
+* Resolve JSX typing errors ([80c6e9b](https://github.com/htmlplus/element/commit/80c6e9b8cdcc57d9e02411dc215be2b9e17da088))
+
+## [3.4.3](https://github.com/htmlplus/element/compare/v3.4.2...v3.4.3) (2026-01-03)
+
+### Bug Fixes
+
+* Enhance custom element typings with `Disables` interfaces for stronger type safety and flexible attributes, events, methods, and properties. ([2b1585d](https://github.com/htmlplus/element/commit/2b1585d7c01bbcbd3b6958d4dab3adee8023d28e))
+* Improve internal utils exports ([10b61c4](https://github.com/htmlplus/element/commit/10b61c46ead60643b224466566aed6d9f99e279c))
+* Improve JSX typings for other frameworks ([bda2d67](https://github.com/htmlplus/element/commit/bda2d675b6fc7029b4bcb031df4a2d64764acd7f))
+* Refactor the `OverridableValue` type to introduce UNLISTED handling for controlling whether unlisted base values are allowed. ([41eb691](https://github.com/htmlplus/element/commit/41eb691c0907e036fa41b26bcd3a5d10fbd963c1))
+* Resolve high severity vulnerabilities ([a774883](https://github.com/htmlplus/element/commit/a774883a607bc26b092f9a0e6352c49ef1e0f2a1))
+
 ## [3.4.2](https://github.com/htmlplus/element/compare/v3.4.1...v3.4.2) (2025-11-30)
 
 ### Bug Fixes
