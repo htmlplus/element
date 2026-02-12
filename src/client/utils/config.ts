@@ -34,7 +34,7 @@ export type Config<Namespace extends string, Breakpoints extends string> = {
 			};
 			variants?: {
 				[M in HTMLPlusElements[K]['properties']['variant']]?: {
-					properties?: Partial<HTMLPlusElements[K]['properties']>;
+					properties?: Partial<Omit<HTMLPlusElements[K]['properties'], 'variant'>>;
 				};
 			};
 		};
