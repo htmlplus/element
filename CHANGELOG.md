@@ -1,3 +1,9 @@
+## [3.4.8](https://github.com/htmlplus/element/compare/v3.4.7...v3.4.8) (2026-02-12)
+
+### Bug Fixes
+
+* Remove `variant` key from `variants` in global configuration ([4877a53](https://github.com/htmlplus/element/commit/4877a53c82df8b2ea119968b48503bc0332e34ac))
+
 ## [3.4.7](https://github.com/htmlplus/element/compare/v3.4.6...v3.4.7) (2026-02-12)
 
 ### Bug Fixes
