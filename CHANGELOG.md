@@ -1,3 +1,9 @@
+## [3.4.7](https://github.com/htmlplus/element/compare/v3.4.6...v3.4.7) (2026-02-12)
+
+### Bug Fixes
+
+* Improve auto-generated typing and configuration typings ([3b1210f](https://github.com/htmlplus/element/commit/3b1210ffe9d0a7b579bef416a804a24c37d2da5a))
+
 ## [3.4.6](https://github.com/htmlplus/element/compare/v3.4.5...v3.4.6) (2026-01-28)
 
 ### Bug Fixes
