@@ -225,16 +225,19 @@ declare function Watch(keys?: string | string[], immediate?: boolean): (target: 
  */
 declare const classes: (input: unknown, smart?: boolean) => string;
 
+interface HTMLPlusElements {
+}
+type BreakpointConfig = {
+    type: 'container' | 'media';
+    min?: number;
+    max?: number;
+};
 /**
  * TODO
  */
-interface Config {
+type Config<Namespace extends string, Breakpoints extends string> = {
     breakpoints?: {
-        [key: string]: {
-            type: 'container' | 'media';
-            min?: number;
-            max?: number;
-        };
+        [key in Breakpoints]: BreakpointConfig;
     };
     event?: {
         resolver?: (parameters: unknown) => CustomEvent | undefined;
@@ -243,26 +246,24 @@ interface Config {
         [key: string]: unknown;
     };
     elements?: {
-        [key: string]: {
+        [K in keyof HTMLPlusElements as K extends `${Namespace}-${string}` ? K : never]?: {
             properties?: {
-                [key: string]: {
-                    default?: unknown;
+                [Prop in keyof HTMLPlusElements[K]['properties']]?: {
+                    default?: HTMLPlusElements[K]['properties'][Prop];
                 };
             };
             variants?: {
-                [key: string]: {
-                    properties: {
-                        [key: string]: unknown;
-                    };
+                [M in HTMLPlusElements[K]['properties']['variant']]?: {
+                    properties?: Partial<HTMLPlusElements[K]['properties']>;
                 };
             };
         };
     };
-}
+};
 /**
  * TODO
  */
-interface ConfigOptions {
+type ConfigOptions = {
     /**
      * TODO
      */
@@ -271,23 +272,23 @@ interface ConfigOptions {
      * TODO
      */
     override?: boolean;
-}
+};
 /**
  * TODO
  */
-declare const getConfig: (namespace: string) => Config;
+declare const getConfig: <N extends string, B extends string>(namespace: N) => Config<N, B>;
 /**
  * TODO
  */
-declare const getConfigCreator: (namespace: string) => () => Config;
+declare const getConfigCreator: <N extends string, B extends string>(namespace: N) => () => Config<N, B>;
 /**
  * TODO
  */
-declare const setConfig: (namespace: string, config: Config, options?: ConfigOptions) => void;
+declare const setConfig: <N extends string, B extends string>(namespace: N, config: Config<N, B>, options?: ConfigOptions) => void;
 /**
  * TODO
  */
-declare const setConfigCreator: (namespace: string) => (config: Config, options?: ConfigOptions) => void;
+declare const setConfigCreator: <N extends string, B extends string>(namespace: N) => (config: Config<N, B>, options?: ConfigOptions) => void;
 
 type Direction = 'ltr' | 'rtl';
 /**
@@ -382,4 +383,4 @@ type OverridableValue<Base, Overrides = unknown> = {
 } ? never : Unlisted<Base>);
 
 export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, _internal_a_, _internal_h_, _internal_s_, classes, direction, dispatch, getConfig, getConfigCreator, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, setConfig, setConfigCreator, slots, toUnit };
-export type { Config, ConfigOptions, EventEmitter, EventOptions, ListenOptions, OverridableValue, OverridesConfig, PropertyOptions };
+export type { Config, ConfigOptions, EventEmitter, EventOptions, HTMLPlusElements, ListenOptions, OverridableValue, OverridesConfig, PropertyOptions };

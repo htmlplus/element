@@ -268,7 +268,9 @@ const isCSSColor = (input) => {
 };
 
 const isCSSUnit = (input) => {
-    return /^\d+(\.\d+)?(px|pt|cm|mm|in|em|rem|%|vw|vh)$/.test(input);
+    const option = new Option();
+    option.style.width = input;
+    return option.style.width !== '';
 };
 
 /**
@@ -1514,7 +1516,10 @@ const proxy = (constructor) => {
                 const properties = getConfig(namespace).elements?.[tag]?.properties;
                 if (!properties)
                     return;
-                const defaults = Object.fromEntries(Object.entries(properties).map(([key, value]) => [key, value?.default]));
+                const defaults = Object.fromEntries(Object.entries(properties).map(([key, value]) => [
+                    key,
+                    value?.default
+                ]));
                 Object.assign(this, defaults);
             })();
             // TODO

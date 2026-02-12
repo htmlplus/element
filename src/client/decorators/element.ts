@@ -75,7 +75,10 @@ const proxy = (constructor: HTMLPlusElement) => {
 				if (!properties) return;
 
 				const defaults = Object.fromEntries(
-					Object.entries(properties).map(([key, value]) => [key, value?.default])
+					Object.entries(properties).map(([key, value]) => [
+						key,
+						(value as { default: unknown })?.default
+					])
 				);
 
 				Object.assign(this, defaults);

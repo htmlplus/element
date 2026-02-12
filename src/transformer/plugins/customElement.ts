@@ -1,6 +1,6 @@
 import template from '@babel/template';
 import t from '@babel/types';
-import { camelCase, kebabCase, pascalCase } from 'change-case';
+import { kebabCase, pascalCase } from 'change-case';
 
 import * as CONSTANTS from '@/constants';
 import { addDependency, extractAttribute, getType, print, visitor } from '@/transformer/utils';
@@ -475,7 +475,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 							);
 
 							const signature = t.tSPropertySignature(
-								t.identifier(camelCase(`on-${key.name}`)),
+								t.identifier(key.name),
 								t.tsTypeAnnotation(functionType)
 							);
 
@@ -527,51 +527,174 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 						})
 						.filter((property) => !!property);
 
+					const attributeMapper = (context.classProperties ?? [])
+						.filter((property) => t.isIdentifier(property.key))
+						.map((property) => {
+							return `'${(property.key as t.Identifier).name}': '${extractAttribute(property) || kebabCase((property.key as t.Identifier).name)}'`;
+						})
+						.join(',\n');
+
+					const overridableKeys = (context.classProperties ?? [])
+						.filter((property) => {
+							if (!t.isIdentifier(property.key)) return false;
+
+							const isOverridableValue =
+								// biome-ignore lint: TODO
+								(property as any).typeAnnotation?.typeAnnotation?.typeName?.name ===
+								'OverridableValue';
+
+							return isOverridableValue;
+						})
+						.map((property) => `'${(property.key as t.Identifier).name}'`)
+						.join(' | ');
+
 					const ast = template.default.ast(
 						`
               // THE FOLLOWING TYPES HAVE BEEN ADDED AUTOMATICALLY
 
-							type Filter<Base, Overrides> = {
-								[K in keyof Base as K extends keyof Overrides
-									? Overrides[K] extends never
-										? never
-										: K
-									: K]: Base[K];
+							type Filter<
+								Base,
+								Disables,
+								Mapper extends Record<PropertyKey, PropertyKey> | undefined = undefined
+							> = {
+								[K in keyof Base as
+									Mapper extends Record<PropertyKey, PropertyKey>
+										? {
+												[P in keyof Mapper as Mapper[P]]: P
+											}[K] extends infer PropKey
+												? PropKey extends keyof Disables
+													? [Disables[PropKey]] extends [false]
+														? never
+														: K
+													: K
+												: K
+										: K extends keyof Disables
+											? [Disables[K]] extends [false]
+												? never
+												: K
+											: K
+								]: Base[K];
 							};
 
-              export interface ${context.className}AttributesBase {
+							type Override<
+								Base,
+								Overrides,
+								AllowedKeys,
+								Mapper extends Record<PropertyKey, PropertyKey> | undefined = undefined
+							> = {
+								[K in keyof Base]:
+									Mapper extends Record<PropertyKey, PropertyKey>
+										? {
+												[P in keyof Mapper as Mapper[P]]: P
+											}[K] extends infer PropKey
+												? PropKey extends AllowedKeys
+													? PropKey extends keyof Overrides
+														? Overrides[PropKey]
+														: Base[K]
+													: Base[K]
+												: Base[K]
+										: K extends AllowedKeys
+											? K extends keyof Overrides
+												? Overrides[K]
+												: Base[K]
+											: Base[K];
+							};
+
+							export type ${context.className}AttributesMapper = {
+								${attributeMapper}
+							};
+
+							export type ${context.className}OverridableKeys = ${overridableKeys || 'never'};
+
+							export interface ${context.className}Disables {}
+
+							export interface ${context.className}Overrides {}
+
+							export type ${context.className}Attributes = Filter<
+								${context.className}AttributesOverridden, 
+								${context.className}Disables, 
+								${context.className}AttributesMapper
+							>;
+
+							export type ${context.className}AttributesOverridden = Override<
+								${context.className}AttributesBase, 
+								${context.className}Overrides, 
+								${context.className}OverridableKeys, 
+								${context.className}AttributesMapper
+							>;
+
+              export type ${context.className}AttributesBase = {
                 ${attributes.map(print).join('')}
               }
 
-							export interface ${context.className}AttributesDisables { }
+							export type ${context.className}Events = Filter<
+								${context.className}EventsBase, 
+								${context.className}Disables
+							>;
 
-							export type ${context.className}Attributes = Filter<${context.className}AttributesBase, ${context.className}AttributesDisables>;
-
-              export interface ${context.className}EventsBase {
+              export type ${context.className}EventsBase = {
                 ${events.map(print).join('')}
               }
 
-							export interface ${context.className}EventsDisables { }
+							export type ${context.className}EventsJSX = Filter<
+								${context.className}EventsBaseJSX, 
+								${context.className}Disables, 
+								{
+									${events.map((event) => `${print(event.key)}: 'on${pascalCase(print(event.key))}';`).join('')}
+								}
+							>;
 
-							export type ${context.className}Events = Filter<${context.className}EventsBase, ${context.className}EventsDisables>;
+							export type ${context.className}EventsBaseJSX = {
+                ${events
+									.map((event) => ({
+										...event,
+										key: t.identifier(`on${pascalCase(print(event.key))}`)
+									}))
+									.map(print)
+									.join('')}
+							};
 
-              export interface ${context.className}MethodsBase {
+							export type ${context.className}Methods = Filter<
+								${context.className}MethodsBase, 
+								${context.className}Disables
+							>;
+
+              export type ${context.className}MethodsBase = {
                 ${methods.map(print).join('')}
               }
 
-							export interface ${context.className}MethodsDisables { }
+							export type ${context.className}Properties = Filter<
+								${context.className}PropertiesOverridden, 
+								${context.className}Disables
+							>;
 
-							export type ${context.className}Methods = Filter<${context.className}MethodsBase, ${context.className}MethodsDisables>;
+							export type ${context.className}PropertiesOverridden = Override<
+								${context.className}PropertiesBase, 
+								${context.className}Overrides, 
+								${context.className}OverridableKeys
+							>;
 
-              export interface ${context.className}PropertiesBase {
+              export type ${context.className}PropertiesBase = {
                 ${properties.map(print).join('')}
               }
 
-							export interface ${context.className}PropertiesDisables { }
+							declare module '${CONSTANTS.PACKAGE_NAME}' {
+							  interface HTMLPlusElements {
+									'${context.elementTagName}': {
+										properties: ${context.className}PropertiesOverridden;
+									}
+								}
+							}
 
-							export type ${context.className}Properties = Filter<${context.className}PropertiesBase, ${context.className}PropertiesDisables>;
+              export type ${context.className}Element = globalThis.${context.elementInterfaceName};
 
-              export interface ${context.className}JSX extends ${context.className}Events, ${context.className}Properties { }
+              export type ${context.className}JSX = ${context.className}Attributes & ${context.className}EventsJSX;
+                
+							export namespace JSX {
+								interface IntrinsicElements {
+									"${context.elementTagName}": ${context.className}JSX;
+								}
+							}
     
               declare global {
                 interface ${context.elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
@@ -585,36 +708,14 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
                   "${context.elementTagName}": ${context.elementInterfaceName};
                 }
               }
-                
-							export namespace JSX {
-								interface IntrinsicElements {
-									"${context.elementTagName}": ${context.className}Attributes & ${context.className}Events;
-								}
-							}
 							
 							declare module "react" {
 								namespace JSX {
 									interface IntrinsicElements {
-										"${context.elementTagName}": ${context.className}Attributes & ${context.className}Events & Omit<DetailedHTMLProps<HTMLAttributes<${context.elementInterfaceName}>, ${context.elementInterfaceName}>, keyof (${context.className}Attributes & ${context.className}Events)>;
+										"${context.elementTagName}": ${context.className}JSX & Omit<DetailedHTMLProps<HTMLAttributes<${context.elementInterfaceName}>, ${context.elementInterfaceName}>, keyof ${context.className}JSX>;
 									}
 								}
 							}
-
-							${['@builder.io/qwik', 'inferno', 'preact', 'solid-js']
-								.map(
-									(key) => `
-									declare module "${key}" {
-										namespace JSX {
-											interface IntrinsicElements {
-												"${context.elementTagName}": ${context.className}Attributes & ${context.className}Events & Omit<HTMLAttributes<${context.elementInterfaceName}>, keyof (${context.className}Attributes & ${context.className}Events)>;
-											}
-										}
-									}
-								`
-								)
-								.join('\n')}
-
-              export type ${context.className}Element = globalThis.${context.elementInterfaceName}
             `,
 						{
 							plugins: ['typescript'],
@@ -655,56 +756,6 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 					);
 
 					path.skip();
-				}
-			});
-
-			// TODO
-			visitor(ast, {
-				TSTypeReference(path) {
-					if (!t.isIdentifier(path.node.typeName)) return;
-
-					if (path.node.typeName.name !== 'OverridableValue') return;
-
-					const property = path.findParent((p) => p.isTSPropertySignature());
-
-					if (!property) return;
-
-					if (!t.isTSPropertySignature(property.node)) return;
-
-					// biome-ignore lint: TODO
-					const name = (property.node.key as any).name || (property.node.key as any).extra.rawValue;
-
-					if (!name) return;
-
-					if (!path.node.typeParameters?.params) return;
-
-					if (path.node.typeParameters.params.length > 1) return;
-
-					const interfaceName = pascalCase(`${context.className}-${name}-Overrides`);
-
-					path.node.typeParameters.params[1] = t.identifier(interfaceName);
-
-					path.skip();
-
-					const has = ast.program.body.some(
-						(child) =>
-							t.isExportNamedDeclaration(child) &&
-							t.isInterfaceDeclaration(child.declaration) &&
-							child.declaration.id.name === interfaceName
-					);
-
-					if (has) return;
-
-					ast.program.body.push(
-						t.exportNamedDeclaration(
-							t.interfaceDeclaration(
-								t.identifier(interfaceName),
-								undefined,
-								undefined,
-								t.objectTypeAnnotation([])
-							)
-						)
-					);
 				}
 			});
 		}

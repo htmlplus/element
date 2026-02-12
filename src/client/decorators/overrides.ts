@@ -1,7 +1,7 @@
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
 
-import { type Config, getConfig, getNamespace, host, wrapMethod } from '../utils';
+import { type BreakpointConfig, getConfig, getNamespace, host, wrapMethod } from '../utils';
 
 type DisposerMap = Map<string, () => void>;
 
@@ -11,7 +11,7 @@ export type OverridesConfig<Breakpoint extends string, Properties = unknown> = {
 
 const CONTAINER_DATA = Symbol();
 
-const getContainers = (breakpoints?: Config['breakpoints']) => {
+const getContainers = (breakpoints?: Record<string, BreakpointConfig>) => {
 	return Object.entries(breakpoints || {}).reduce(
 		(result, [key, breakpoint]) => {
 			if (breakpoint.type !== 'container') return result;
@@ -33,7 +33,7 @@ const getContainers = (breakpoints?: Config['breakpoints']) => {
 	);
 };
 
-const getMedias = (breakpoints?: Config['breakpoints']): Record<string, string> => {
+const getMedias = (breakpoints?: Record<string, BreakpointConfig>): Record<string, string> => {
 	return Object.entries(breakpoints || {}).reduce(
 		(result, [key, breakpoint]) => {
 			if (breakpoint.type !== 'media') return result;

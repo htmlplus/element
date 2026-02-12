@@ -3,6 +3,7 @@ export * from './internal';
 export {
 	type Config,
 	type ConfigOptions,
+	type HTMLPlusElements,
 	classes,
 	direction,
 	dispatch,
