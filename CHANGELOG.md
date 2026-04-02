@@ -1,3 +1,9 @@
+## [3.4.9](https://github.com/htmlplus/element/compare/v3.4.8...v3.4.9) (2026-04-02)
+
+### Bug Fixes
+
+* Simplify `OverridableValue` type to identity type ([512ad59](https://github.com/htmlplus/element/commit/512ad597fab5ea21f5c3c109c7d86e123192a43f))
+
 ## [3.4.8](https://github.com/htmlplus/element/compare/v3.4.7...v3.4.8) (2026-02-12)
 
 ### Bug Fixes
