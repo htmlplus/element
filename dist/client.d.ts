@@ -372,15 +372,7 @@ declare const _internal_h_: ((template: any, ...values: any[]) => Hole) & {
 };
 declare const _internal_s_: (input: object) => string;
 
-type Listed<T> = T extends string | number ? (T extends `${infer _}` | number ? T : never) : never;
-type Unlisted<T> = Exclude<T, Listed<T>>;
-type OverridableValue<Base, Overrides = unknown> = {
-    [K in keyof Overrides]: Overrides[K] extends true ? K : never;
-}[keyof Overrides] | Exclude<Listed<Base>, keyof {
-    [K in keyof Overrides as Overrides[K] extends false ? K : never]: any;
-}> | (Overrides extends {
-    UNLISTED: false;
-} ? never : Unlisted<Base>);
+type OverridableValue<T> = T;
 
 export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, _internal_a_, _internal_h_, _internal_s_, classes, direction, dispatch, getConfig, getConfigCreator, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, setConfig, setConfigCreator, slots, toUnit };
 export type { Config, ConfigOptions, EventEmitter, EventOptions, HTMLPlusElements, ListenOptions, OverridableValue, OverridesConfig, PropertyOptions };
