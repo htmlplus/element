@@ -2,11 +2,10 @@
 	"compilerOptions": {
 		"target": "esnext",
 		"module": "esnext",
-		"rootDir": "src",
 		"moduleResolution": "bundler",
-		"baseUrl": "src",
+		"rootDir": "src",
 		"paths": {
-			"@/*": ["./*"]
+			"@/*": ["./src/*"]
 		},
 		"outDir": "dist",
 		"allowSyntheticDefaultImports": true,

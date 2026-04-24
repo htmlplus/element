@@ -346,33 +346,7 @@ type Slots = {
  */
 declare const slots: (target: HTMLElement | HTMLPlusElement) => Slots;
 
-/**
- * Converts a value to a unit.
- */
-declare const toUnit: (input: string | number, unit?: string) => string;
-
-/**
- * Holds all details wrappers needed to render the content further on.
- * @constructor
- * @param {string} type The hole type, either `html` or `svg`.
- * @param {string[]} template The template literals used to the define the content.
- * @param {Array} values Zero, one, or more interpolated values to render.
- */
-declare class Hole {
-    constructor(type: any, template: any, values: any);
-    type: any;
-    template: any;
-    values: any;
-}
-
-declare const _internal_a_: (target: HTMLElement | HTMLPlusElement, attributes: unknown[]) => void;
-declare const _internal_h_: ((template: any, ...values: any[]) => Hole) & {
-    for(ref: any, id: any): any;
-    node: (template: any, ...values: any[]) => any;
-};
-declare const _internal_s_: (input: object) => string;
-
 type OverridableValue<T> = T;
 
-export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, _internal_a_, _internal_h_, _internal_s_, classes, direction, dispatch, getConfig, getConfigCreator, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, setConfig, setConfigCreator, slots, toUnit };
+export { Bind, Consumer, Debounce, Direction$1 as Direction, Element$1 as Element, Event, Host, IsRTL, Listen, Method, Overrides, Property, Provider, Query, QueryAll, Slots$1 as Slots, State, Style, Variant, Watch, classes, direction, dispatch, getConfig, getConfigCreator, host, isCSSColor, isCSSUnit, isRTL, off, on, query, queryAll, setConfig, setConfigCreator, slots };
 export type { Config, ConfigOptions, EventEmitter, EventOptions, HTMLPlusElements, ListenOptions, OverridableValue, OverridesConfig, PropertyOptions };

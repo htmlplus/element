@@ -5,7 +5,7 @@ import { glob } from 'glob';
 import template from '@babel/template';
 import { pascalCase, kebabCase, capitalCase } from 'change-case';
 import path, { join, resolve, dirname } from 'node:path';
-import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, DECORATOR_PROPERTY_TYPE, PACKAGE_NAME, INTERNAL_STYLES_IMPORTED, INTERNAL_STYLES_LOCAL, INTERNAL_PATH, INTERNAL_HTML_IMPORTED, INTERNAL_HTML_LOCAL, ELEMENT_HOST_NAME, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, INTERNAL_ATTRIBUTES_IMPORTED, INTERNAL_ATTRIBUTES_LOCAL, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, DECORATOR_ELEMENT, KEY } from './constants.js';
+import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, DECORATOR_PROPERTY_TYPE, PACKAGE_NAME, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, DECORATOR_ELEMENT, KEY } from './constants.js';
 import core from '@babel/traverse';
 import core$1 from '@babel/generator';
 import ora from 'ora';
@@ -77,9 +77,6 @@ const visitor = traverse;
 
 // biome-ignore-all lint: TODO
 function addDependency(path, source, local, imported, comment) {
-    const isDefault = local && !imported;
-    const isImport = local && imported;
-    const isNormal = !local && !imported;
     let declaration;
     let file = path;
     while (file.parentPath)
@@ -92,16 +89,9 @@ function addDependency(path, source, local, imported, comment) {
             declaration = path.node;
         }
     });
-    if (isNormal && declaration)
-        return {
-            node: declaration
-        };
     let specifier = declaration?.specifiers.find((specifier) => {
-        if (isDefault) {
+        {
             return specifier.type === 'ImportDefaultSpecifier';
-        }
-        else if (isImport) {
-            return specifier.imported?.name === imported;
         }
     });
     if (specifier)
@@ -109,18 +99,12 @@ function addDependency(path, source, local, imported, comment) {
             local: specifier.local.name,
             node: declaration
         };
-    if (isDefault) {
+    {
         specifier = t.importDefaultSpecifier(t.identifier(local));
     }
-    else if (isImport) {
-        specifier = t.importSpecifier(t.identifier(local), t.identifier(imported));
-    }
     if (declaration) {
-        if (isDefault) {
+        {
             declaration.specifiers.unshift(specifier);
-        }
-        else if (isImport) {
-            declaration.specifiers.push(specifier);
         }
     }
     else {
@@ -128,7 +112,7 @@ function addDependency(path, source, local, imported, comment) {
         // TODO
         (file.program || file).body.unshift(declaration);
         // TODO
-        if (comment) {
+        {
             t.addComment(declaration, 'leading', COMMENT_AUTO_ADDED, true);
         }
     }
@@ -369,183 +353,6 @@ const customElement = (userOptions) => {
                 const node = t.classProperty(t.identifier(STATIC_TAG), t.stringLiteral(context.elementTagName || ''), undefined, undefined, undefined, true);
                 t.addComment(node, 'leading', COMMENT_AUTO_ADDED, true);
                 body.body.unshift(node);
-            }
-        });
-        // attach style mapper for 'style' attribute
-        visitor(ast, {
-            JSXAttribute(path) {
-                const { name, value } = path.node;
-                if (name.name !== 'style')
-                    return;
-                if (!value)
-                    return;
-                if (value.type !== 'JSXExpressionContainer')
-                    return;
-                if (!value.expression)
-                    return;
-                if (value.expression.type === 'JSXEmptyExpression')
-                    return;
-                const { local } = addDependency(path, INTERNAL_PATH, INTERNAL_STYLES_LOCAL, INTERNAL_STYLES_IMPORTED);
-                path.replaceWith(t.jsxAttribute(t.jsxIdentifier('style'), t.jsxExpressionContainer(t.callExpression(t.identifier(local || ''), [value.expression]))));
-                path.skip();
-            }
-        });
-        // replace 'className' attribute with 'class'
-        visitor(ast, {
-            JSXAttribute(path) {
-                const { name, value } = path.node;
-                if (name.name !== 'className')
-                    return;
-                if (!value)
-                    return;
-                if (!t.isJSXOpeningElement(path.parent))
-                    return;
-                const hasClass = path.parent.attributes.some((attribute) => {
-                    return t.isJSXAttribute(attribute) && attribute.name.name === 'class';
-                });
-                if (hasClass)
-                    return path.remove();
-                path.replaceWith(t.jsxAttribute(t.jsxIdentifier('class'), value));
-            }
-        });
-        // TODO
-        visitor(ast, {
-            JSXAttribute(path) {
-                const { name, value } = path.node;
-                if (!t.isJSXIdentifier(name))
-                    return;
-                if (name.name === 'value') {
-                    name.name = `.${name.name}`;
-                    return;
-                }
-                if (name.name === 'disabled') {
-                    name.name = `.${name.name}`;
-                    return;
-                }
-                const key = ['tabIndex', 'viewBox'];
-                if (!key.includes(name.name))
-                    return;
-                path.replaceWith(t.jsxAttribute(t.jsxIdentifier(name.name.toLowerCase()), value));
-            }
-        });
-        // TODO
-        // convert 'jsx' to 'uhtml' syntax
-        visitor(ast, {
-            enter(path) {
-                const { type } = path.node;
-                if (!['JSXElement', 'JSXFragment'].includes(type))
-                    return;
-                const TODO = (node, attributes) => {
-                    const { local } = addDependency(path, INTERNAL_PATH, INTERNAL_ATTRIBUTES_LOCAL, INTERNAL_ATTRIBUTES_IMPORTED);
-                    return t.callExpression(t.identifier(local || ''), [
-                        node,
-                        t.arrayExpression(attributes.map((attribute) => {
-                            switch (attribute.type) {
-                                case 'JSXSpreadAttribute':
-                                    return attribute.argument;
-                                default:
-                                    return t.objectExpression([
-                                        t.objectProperty(t.stringLiteral(attribute.name.name), attribute.value?.type === 'JSXExpressionContainer'
-                                            ? attribute.value.expression
-                                            : attribute.value || t.booleanLiteral(true))
-                                    ]);
-                            }
-                        }))
-                    ]);
-                };
-                const render = (node) => {
-                    switch (node.type) {
-                        case 'JSXElement': {
-                            const attributes = node.openingElement.attributes;
-                            const isHost = node.openingElement.name.name === ELEMENT_HOST_NAME;
-                            // TODO
-                            if (isHost) {
-                                const children = node.children.flatMap(render);
-                                if (!attributes.length)
-                                    return children;
-                                return [TODO(t.thisExpression(), attributes), ...children];
-                            }
-                            const name = node.openingElement.name.name;
-                            const children = node.children.flatMap(render);
-                            const parts = [];
-                            parts.push('<', name);
-                            const hasSpreadAttribute = attributes.some((attribute) => {
-                                return attribute.type === 'JSXSpreadAttribute';
-                            });
-                            if (hasSpreadAttribute) {
-                                parts.push(' ', 'ref=', t.arrowFunctionExpression([t.identifier('$element')], TODO(t.identifier('$element'), attributes)));
-                            }
-                            else {
-                                for (const attribute of attributes) {
-                                    switch (attribute.type) {
-                                        case 'JSXAttribute':
-                                            if (attribute.name.name === 'dangerouslySetInnerHTML') {
-                                                try {
-                                                    parts.push(' ', '.innerHTML');
-                                                    parts.push('=');
-                                                    parts.push(attribute.value.expression.properties.at(0).value);
-                                                }
-                                                catch { }
-                                                continue;
-                                            }
-                                            parts.push(' ', attribute.name.name);
-                                            if (!attribute.value)
-                                                continue;
-                                            parts.push('=');
-                                            switch (attribute.value.type) {
-                                                case 'JSXExpressionContainer':
-                                                    parts.push(attribute.value.expression);
-                                                    break;
-                                                default:
-                                                    parts.push(attribute.value.extra.raw);
-                                                    break;
-                                            }
-                                            break;
-                                        default:
-                                            parts.push(' ', attribute);
-                                            break;
-                                    }
-                                }
-                            }
-                            parts.push(node.closingElement ? '>' : ' />');
-                            parts.push(...children);
-                            if (node.closingElement) {
-                                parts.push('<', '/', name, '>');
-                            }
-                            return parts;
-                        }
-                        case 'JSXFragment':
-                            return node.children.flatMap(render);
-                        case 'JSXText':
-                            return [node.extra.raw];
-                        case 'JSXExpressionContainer':
-                            if (node.expression.type === 'JSXEmptyExpression')
-                                return [];
-                            return [node.expression];
-                    }
-                };
-                const transform = (parts) => {
-                    const quasis = [];
-                    const expressions = [];
-                    let i = 0;
-                    while (i < parts.length + 1) {
-                        let quasi = '';
-                        while (typeof parts[i] === 'string') {
-                            quasi += parts[i].replace(/[\\`]/g, (s) => `\\${s}`);
-                            i += 1;
-                        }
-                        quasis.push(t.templateElement({ raw: quasi }));
-                        if (parts[i] != null)
-                            expressions.push(parts[i]);
-                        i += 1;
-                    }
-                    const templateLiteral = t.templateLiteral(quasis, expressions);
-                    // TODO
-                    // if (!expressions.length) return template;
-                    const { local } = addDependency(path, INTERNAL_PATH, INTERNAL_HTML_LOCAL, INTERNAL_HTML_IMPORTED, true);
-                    return t.taggedTemplateExpression(t.identifier(local || ''), templateLiteral);
-                };
-                path.replaceWith(transform(render(path.node)));
             }
         });
         // add type to properties
@@ -1234,7 +1041,7 @@ const style = (userOptions) => {
         context.styleName = path.basename(context.stylePath, context.styleExtension);
         if (!context.fileAST)
             return;
-        const { local } = addDependency(context.fileAST, context.stylePath, STYLE_IMPORTED, undefined, true);
+        const { local } = addDependency(context.fileAST, context.stylePath, STYLE_IMPORTED);
         const property = t.classProperty(t.identifier(STATIC_STYLE), t.identifier(local || ''), undefined, null, undefined, true);
         t.addComment(property, 'leading', COMMENT_AUTO_ADDED, true);
         context.class?.body.body.unshift(property);

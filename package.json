@@ -30,11 +30,18 @@
 			"types": "./dist/bundlers.d.ts",
 			"import": "./dist/bundlers.js"
 		},
+		"./jsx-runtime": {
+			"types": "./dist/jsx-runtime.d.ts",
+			"import": "./dist/jsx-runtime.js"
+		},
+		"./jsx-dev-runtime": {
+			"types": "./dist/jsx-runtime.d.ts",
+			"import": "./dist/jsx-runtime.js"
+		},
 		"./transformer.js": {
 			"types": "./dist/transformer.d.ts",
 			"import": "./dist/transformer.js"
-		},
-		"./jsx-runtime": "./dist/jsx-runtime.d.ts"
+		}
 	},
 	"main": "./dist/client.js",
 	"types": "./dist/client.d.ts",
@@ -65,6 +72,7 @@
 		"fs-extra": "^11.3.1",
 		"glob": "^11.0.3",
 		"ora": "^8.2.0",
+		"preact": "^10.29.1",
 		"typescript": "^5.9.2"
 	},
 	"devDependencies": {
@@ -87,7 +95,6 @@
 		"playwright": "^1.57.0",
 		"rimraf": "^6.0.1",
 		"rollup": "^4.48.1",
-		"rollup-plugin-copy": "^3.5.0",
 		"rollup-plugin-dts": "^6.2.3",
 		"rollup-plugin-node-externals": "^8.1.0",
 		"semantic-release": "^25.0.2",
