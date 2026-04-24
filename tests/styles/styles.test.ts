@@ -33,4 +33,9 @@ describe('styles', () => {
 		const el = element.shadowRoot.querySelector('#inline-override-text');
 		expect(el).toHaveStyle({ fontSize: '17px' });
 	});
+
+	it('applies global style to host element', () => {
+		const styles = getComputedStyle(element);
+		expect(styles.padding).toBe('10px');
+	});
 });
