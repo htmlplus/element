@@ -3,9 +3,9 @@ import { Element, IsRTL } from '@htmlplus/element';
 @Element()
 export class MyElement {
 	@IsRTL()
-	direction;
+	isRTL;
 
 	render() {
-		return <div>{this.direction}</div>;
+		return <div>{this.isRTL.toString()}</div>;
 	}
 }

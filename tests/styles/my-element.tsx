@@ -6,7 +6,7 @@ export class MyElement {
 
 	render() {
 		return (
-			<host style={{ fontSize: '15px' }}>
+			<host value={this} style={{ fontSize: '15px' }}>
 				<p id="inherited-text"></p>
 				<p id="scoped-style-text"></p>
 				<p id="inline-override-text" style={{ fontSize: '17px' }}></p>
