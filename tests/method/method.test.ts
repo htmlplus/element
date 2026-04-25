@@ -6,7 +6,7 @@ describe('Method', () => {
 	let element: HTMLElementTagNameMap['my-element'];
 
 	beforeEach(() => {
-		element = document.body.appendChild(document.createElement('my-element'));
+		element = createElement('my-element', document.body);
 	});
 
 	afterEach(() => {

@@ -6,7 +6,7 @@ describe('style', () => {
 	let element: HTMLElement;
 
 	beforeEach(() => {
-		element = document.body.appendChild(document.createElement('my-element'));
+		element = createElement('my-element', document.body);
 	});
 
 	afterEach(() => {

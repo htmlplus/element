@@ -6,7 +6,7 @@ describe('styles-external', () => {
 	let element: HTMLElement;
 
 	beforeEach(() => {
-		element = document.body.appendChild(document.createElement('my-element'));
+		element = createElement('my-element', document.body);
 	});
 
 	afterEach(() => {
@@ -14,9 +14,10 @@ describe('styles-external', () => {
 	});
 
 	it('should apply display, width, and height styles to the host element',() => {
-		const style = getComputedStyle(element);
-		expect(style.display).toBe('block');
-		expect(style.height).toBe('100px');
-		expect(style.width).toBe('100px');
+		expect(element).toHaveStyle({
+			display: 'block',
+			width: '100px',
+			height: '100px',
+		});
 	});
 });

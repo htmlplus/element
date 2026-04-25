@@ -8,9 +8,7 @@ describe('isRTL', () => {
 	});
 
 	it('should default to "false" when no direction is set', async () => {
-		const element = document.createElement('my-element');
-
-		document.body.appendChild(element);
+		const element = createElement('my-element', document.body);
 
 		await nextTick();
 
@@ -18,7 +16,7 @@ describe('isRTL', () => {
 	});
 
 	it('should reflect "true" when direction is set to "rtl" before append', async () => {
-		const element = document.createElement('my-element');
+		const element = createElement('my-element');
 
 		element.setAttribute('dir', 'rtl');
 
@@ -30,9 +28,7 @@ describe('isRTL', () => {
 	});
 
 	it('should remain "false" initially when direction is set after append', async () => {
-		const element = document.createElement('my-element');
-
-		document.body.appendChild(element);
+		const element = createElement('my-element', document.body);
 
 		await nextTick();
 

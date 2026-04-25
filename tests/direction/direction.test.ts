@@ -8,9 +8,7 @@ describe('Direction', () => {
 	});
 
 	it('should default to "ltr" when no direction is set', async () => {
-		const element = document.createElement('my-element');
-
-		document.body.appendChild(element);
+		const element = createElement('my-element', document.body);
 
 		await nextTick();
 
@@ -18,7 +16,7 @@ describe('Direction', () => {
 	});
 
 	it('should reflect "rtl" when direction is set to "rtl" before append', async () => {
-		const element = document.createElement('my-element');
+		const element = createElement('my-element');
 
 		element.setAttribute('dir', 'rtl');
 
@@ -30,9 +28,7 @@ describe('Direction', () => {
 	});
 
 	it('should remain "ltr" initially when direction is set after append', async () => {
-		const element = document.createElement('my-element');
-
-		document.body.appendChild(element);
+		const element = createElement('my-element', document.body);
 
 		await nextTick();
 
