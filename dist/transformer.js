@@ -728,20 +728,26 @@ const customElement = (userOptions) => {
 							> = {
 								[K in keyof Base as
 									Mapper extends Record<PropertyKey, PropertyKey>
-										? {
-												[P in keyof Mapper as Mapper[P]]: P
-											}[K] extends infer PropKey
-												? PropKey extends keyof Disables
-													? [Disables[PropKey]] extends [false]
+										? { [P in keyof Mapper as Mapper[P]]: P }[K] extends infer PropKey
+											? PropKey extends keyof Disables
+												? [Disables[PropKey]] extends [false]
+													? never
+													: K
+												: '*' extends keyof Disables
+													? [Disables['*']] extends [false]
 														? never
 														: K
 													: K
-												: K
+											: K
 										: K extends keyof Disables
 											? [Disables[K]] extends [false]
 												? never
 												: K
-											: K
+											: '*' extends keyof Disables
+												? [Disables['*']] extends [false]
+													? never
+													: K
+												: K
 								]: Base[K];
 							};
 

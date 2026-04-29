@@ -2,20 +2,20 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import './my-element';
 
-describe('Direction', () => {
+describe('isRTL', () => {
 	afterEach(() => {
 		document.body.innerHTML = '';
 	});
 
-	it('should default to "ltr" when no direction is set', async () => {
+	it('should default to "false" when no direction is set', async () => {
 		const element = createElement('my-element', document.body);
 
 		await nextTick();
 
-		expect(element.shadowRoot.textContent.trim()).toBe('ltr');
+		expect(element.shadowRoot.textContent.trim()).toBe('false');
 	});
 
-	it('should reflect "rtl" when direction is set to "rtl" before append', async () => {
+	it('should reflect "true" when direction is set to "rtl" before append', async () => {
 		const element = createElement('my-element');
 
 		element.setAttribute('dir', 'rtl');
@@ -24,16 +24,16 @@ describe('Direction', () => {
 
 		await nextTick();
 
-		expect(element.shadowRoot.textContent.trim()).toBe('rtl');
+		expect(element.shadowRoot.textContent.trim()).toBe('true');
 	});
 
-	it('should remain "ltr" initially when direction is set after append', async () => {
+	it('should remain "false" initially when direction is set after append', async () => {
 		const element = createElement('my-element', document.body);
 
 		await nextTick();
 
 		element.setAttribute('dir', 'rtl');
 
-		expect(element.shadowRoot.textContent.trim()).toBe('ltr');
+		expect(element.shadowRoot.textContent.trim()).toBe('false');
 	});
 });
