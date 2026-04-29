@@ -1,3 +1,13 @@
+## [4.0.0](https://github.com/htmlplus/element/compare/v3.4.9...v4.0.0) (2026-04-29)
+
+### ⚠ BREAKING CHANGES
+
+* refactor rendering engine to use `Preact` instead of `uhtml`
+
+### Features
+
+* refactor rendering engine to use `Preact` instead of `uhtml` ([1fcc32f](https://github.com/htmlplus/element/commit/1fcc32fee5149263314725f2311798daf50589a4))
+
 ## [3.4.9](https://github.com/htmlplus/element/compare/v3.4.8...v3.4.9) (2026-04-02)
 
 ### Bug Fixes
