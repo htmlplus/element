@@ -10,6 +10,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@': path.resolve(__dirname, '../src'),
+			'@htmlplus/element/jsx-dev-runtime': path.resolve(__dirname, '../src/jsx-runtime.ts'),
 			'@htmlplus/element': path.resolve(__dirname, '../src/client')
 		}
 	},

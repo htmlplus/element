@@ -1,5 +1,4 @@
 export * from './decorators';
-export * from './internal';
 export {
 	type Config,
 	type ConfigOptions,
@@ -19,8 +18,7 @@ export {
 	queryAll,
 	setConfig,
 	setConfigCreator,
-	slots,
-	toUnit
+	slots
 } from './utils';
 
 export type OverridableValue<T> = T;

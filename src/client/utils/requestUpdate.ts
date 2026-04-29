@@ -1,3 +1,5 @@
+import { render } from 'preact';
+
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
 
@@ -5,7 +7,6 @@ import { call } from './call';
 import { getTag } from './getTag';
 import { shadowRoot } from './shadowRoot';
 import { task } from './task';
-import { render } from './uhtml';
 
 /**
  * Updates the DOM with a scheduled task.
@@ -57,7 +58,8 @@ export const requestUpdate = (
 		call(target, CONSTANTS.LIFECYCLE_UPDATE, states);
 
 		// Renders template to the DOM.
-		render(shadowRoot(target), () => call(target, CONSTANTS.METHOD_RENDER) ?? null);
+		// biome-ignore lint: TODO
+		render(call(target, CONSTANTS.METHOD_RENDER) ?? null, shadowRoot(target)!);
 
 		// Invokes requests' callback.
 		stacks.forEach((state) => {

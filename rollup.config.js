@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 import alias from '@rollup/plugin-alias';
 import typescript from '@rollup/plugin-typescript';
 import { defineConfig } from 'rollup';
-import copy from 'rollup-plugin-copy';
 import { dts } from 'rollup-plugin-dts';
 import { nodeExternals } from 'rollup-plugin-node-externals';
 
@@ -14,6 +13,7 @@ const input = {
 	bundlers: 'src/bundlers/index.ts',
 	constants: 'src/constants/index.ts',
 	client: 'src/client/index.ts',
+	'jsx-runtime': 'src/jsx-runtime.ts',
 	transformer: 'src/transformer/index.ts'
 };
 
@@ -36,16 +36,7 @@ export default defineConfig([
 			alias({
 				entries: [{ find: '@', replacement: path.resolve(__dirname, 'src') }]
 			}),
-			typescript({ tsconfig: './tsconfig.json' }),
-			copy({
-				flatten: true,
-				targets: [
-					{
-						dest: output.dir,
-						src: 'src/jsx-runtime.d.ts'
-					}
-				]
-			})
+			typescript({ tsconfig: './tsconfig.json' })
 		]
 	},
 	{

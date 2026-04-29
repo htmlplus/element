@@ -4,13 +4,13 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "experimentalDecorators": true,
-    "jsx": "preserve",
+		"jsx": "react-jsx",
     "jsxImportSource": "@htmlplus/element",
-    "baseUrl": "..",
+    "rootDir": "..",
     "paths": {
-      "@htmlplus/element": ["src/client/index.ts"],
-      "@htmlplus/element/*": ["src/client/*"],
-      "@htmlplus/element/jsx-runtime": ["src/jsx-runtime"]
+      "@htmlplus/element": ["../src/client/index.ts"],
+      "@htmlplus/element/*": ["../src/client/*"],
+      "@htmlplus/element/jsx-runtime": ["../src/jsx-runtime"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"]

@@ -24,9 +24,6 @@ export const DECORATOR_PROPERTY_TYPE = 'type';
 export const DECORATOR_STATE = 'State';
 export const DECORATOR_METHOD = 'Method';
 
-// element
-export const ELEMENT_HOST_NAME = 'host';
-
 // lifecycle
 export const LIFECYCLE_ADOPTED = 'adoptedCallback';
 export const LIFECYCLE_CONNECTED = 'connectedCallback';
@@ -35,15 +32,6 @@ export const LIFECYCLE_DISCONNECTED = 'disconnectedCallback';
 export const LIFECYCLE_READY = 'readyCallback';
 export const LIFECYCLE_UPDATE = 'updateCallback';
 export const LIFECYCLE_UPDATED = 'updatedCallback';
-
-// internal
-export const INTERNAL_ATTRIBUTES_IMPORTED = '_internal_a_';
-export const INTERNAL_ATTRIBUTES_LOCAL = 'INTERNAL_ATTRIBUTES';
-export const INTERNAL_HTML_IMPORTED = '_internal_h_';
-export const INTERNAL_HTML_LOCAL = 'INTERNAL_HTML';
-export const INTERNAL_STYLES_IMPORTED = '_internal_s_';
-export const INTERNAL_STYLES_LOCAL = 'INTERNAL_STYLES';
-export const INTERNAL_PATH = PACKAGE_NAME;
 
 // methods
 export const METHOD_RENDER = 'render';

@@ -1,20 +1,22 @@
-import type { JSX as JSXReact } from 'react/jsx-runtime';
+import * as preact from 'preact';
+import { JSX } from 'preact/jsx-runtime';
 
-type WithPart<T> = T & {
-	part?: string;
+type IntrinsicElementsBase = {
+    [K in keyof JSX.IntrinsicElements]: Omit<JSX.IntrinsicElements[K], 'ref'>;
 };
-
-type IntrinsicElementsWithPart = {
-	[K in keyof JSXReact.IntrinsicElements]: WithPart<Omit<JSXReact.IntrinsicElements[K], 'ref'>>;
-};
-
-declare namespace JSX {
-	interface IntrinsicElements extends IntrinsicElementsWithPart {
-		host: WithPart<JSXReact.IntrinsicElements['div']> & {
-			[key: string]: unknown;
-		};
-		slot: WithPart<JSXReact.IntrinsicElements['slot']> & {
-			onSlotChange?: (event: Event) => void;
-		};
-	}
+declare global {
+    namespace JSX {
+        interface IntrinsicElements extends IntrinsicElementsBase {
+            host: JSX.IntrinsicElements['div'] & {
+                value: any;
+                [key: string]: unknown;
+            };
+        }
+    }
 }
+declare const Fragment: preact.FunctionComponent<{}>;
+declare function jsx(type: any, props: any, key: any): preact.VNode<preact.DOMAttributes<HTMLInputElement> & preact.ClassAttributes<HTMLInputElement>>;
+declare function jsxs(type: any, props: any, key: any): preact.VNode<preact.DOMAttributes<HTMLInputElement> & preact.ClassAttributes<HTMLInputElement>>;
+declare function jsxDEV(type: any, props: any, key: any, isStatic: any, source: any, self: any): preact.VNode<preact.DOMAttributes<HTMLInputElement> & preact.ClassAttributes<HTMLInputElement>>;
+
+export { Fragment, jsx, jsxDEV, jsxs };
