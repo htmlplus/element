@@ -1,3 +1,11 @@
+## [4.0.1](https://github.com/htmlplus/element/compare/v4.0.0...v4.0.1) (2026-05-10)
+
+### Bug Fixes
+
+* Enforce runtime type validation before setting property values ([e30cf90](https://github.com/htmlplus/element/commit/e30cf908fc48a8ce9eb490ef9deb71ddbc1dc027))
+* Ensure Style decorator updates correctly on property set ([16e2c07](https://github.com/htmlplus/element/commit/16e2c07114de0813569fa45d35a51d9092f2da06))
+* Treat properties with default values as optional members ([91f32ac](https://github.com/htmlplus/element/commit/91f32ac38e62eab627e99e8a34d9bcc995d89e6d))
+
 ## [4.0.0](https://github.com/htmlplus/element/compare/v3.4.9...v4.0.0) (2026-04-29)
 
 ### ⚠ BREAKING CHANGES
