@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { fireEvent } from '@testing-library/dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MyElement } from './my-element';
 
@@ -57,37 +58,35 @@ describe('JSX', () => {
 		expect(span?.textContent).toContain('No image');
 	});
 
-	// TODO
-	// it('should call host click handler', async () => {
-	// 	const spy = vi.spyOn(MyElement.prototype, 'handleHostClick');
+	it('should call host click handler', async () => {
+		const spy = vi.spyOn(MyElement.prototype, 'handleHostClick');
 
-	// 	await customElements.whenDefined('my-element');
+		await customElements.whenDefined('my-element');
 
-	// 	fireEvent.click(element);
+		fireEvent.click(element);
 
-	// 	await nextTick();
+		await nextTick();
 
-	// 	expect(spy).toHaveBeenCalledTimes(1);
+		expect(spy).toHaveBeenCalledTimes(1);
 
-	// 	spy.mockRestore();
-	// });
+		spy.mockRestore();
+	});
 
-	// TODO
-	// it('should call button click handler', async () => {
-	// 	const spy = vi.spyOn(MyElement.prototype, 'handleButtonClick');
+	it('should call button click handler', async () => {
+		const spy = vi.spyOn(MyElement.prototype, 'handleButtonClick');
 
-	// 	await customElements.whenDefined('my-element');
+		await customElements.whenDefined('my-element');
 
-	//  const button = element.shadowRoot?.querySelector('button');
+		const button = element.shadowRoot?.querySelector('button') as HTMLButtonElement;
 
-	// 	fireEvent.click(button);
+		fireEvent.click(button);
 
-	// 	await nextTick();
+		await nextTick();
 
-	// 	expect(spy).toHaveBeenCalledTimes(1);
+		expect(spy).toHaveBeenCalledTimes(1);
 
-	// 	spy.mockRestore();
-	// });
+		spy.mockRestore();
+	});
 
 	it.skip('should NOT render false as text content', async () => {
 		await customElements.whenDefined('my-element');
@@ -111,9 +110,25 @@ describe('JSX', () => {
 		const input = element.shadowRoot?.querySelector('input') as HTMLInputElement;
 
 		expect(input).toBeTruthy();
-		expect(input.tabIndex).toBe(5);
+		expect(input.tabIndex).toBe(-1);
 		expect(input.disabled).toBe(false);
 		expect(input.required).toBe(true);
 		expect(input.getAttribute('aria-disabled')).toBe('false');
+	});
+
+	it('should support native class attribute', async () => {
+		await customElements.whenDefined('my-element');
+
+		const div = element.shadowRoot?.querySelector('.class-attr');
+
+		expect(div?.getAttribute('class')).toBe('class-attr');
+	});
+
+	it('should support className attribute', async () => {
+		await customElements.whenDefined('my-element');
+
+		const div = element.shadowRoot?.querySelector('.class-name');
+
+		expect(div?.getAttribute('class')).toBe('class-name');
 	});
 });

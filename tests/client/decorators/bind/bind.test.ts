@@ -15,9 +15,11 @@ describe('Bind', () => {
 	});
 
 	it.skip('', async () => {
-		const button = element.shadowRoot.querySelector('#bind');
-
 		const spy = vi.spyOn(MyElement.prototype, 'bind');
+
+		await customElements.whenDefined('my-element');
+
+		const button = element.shadowRoot?.querySelector('#bind') as HTMLButtonElement;
 
 		fireEvent.click(button);
 

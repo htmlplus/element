@@ -1,31 +1,24 @@
-import { Element, Style } from '@htmlplus/element';
+import { Element, State, Style } from '@htmlplus/element';
 
-const styleAsString = (key: string) => `:host { #${key} { font-size: 20px; }}`;
-
-var styleAsObject = (key: string) => ({
-	':host': {
-		[`#${key}`]: {
-			fontSize: '20px'
-		}
-	}
-});
-
-var styleAsArray = (key: string) => [styleAsString(key), styleAsObject(key)];
+import { styleAsArray, styleAsObject, styleAsString } from './utils';
 
 @Element()
 export class MyElement {
+	@State()
+	offset: number = 0;
+
 	/**
 	 * PROPERTIES
 	 */
 
 	@Style()
-	propertyString = styleAsString('property-string');
+	propertyString = styleAsString('property-string', this.offset);
 
 	@Style()
-	propertyObject = styleAsObject('property-object');
+	propertyObject = styleAsObject('property-object', this.offset);
 
 	@Style()
-	propertyArray = styleAsArray('property-array');
+	propertyArray = styleAsArray('property-array', this.offset);
 
 	/**
 	 * GETTERS
@@ -33,17 +26,17 @@ export class MyElement {
 
 	@Style()
 	get getterString() {
-		return styleAsString('getter-string');
+		return styleAsString('getter-string', this.offset);
 	}
 
 	@Style()
 	get getterObject() {
-		return styleAsObject('getter-object');
+		return styleAsObject('getter-object', this.offset);
 	}
 
 	@Style()
 	get getterArray() {
-		return styleAsArray('getter-array');
+		return styleAsArray('getter-array', this.offset);
 	}
 
 	/**
@@ -52,17 +45,17 @@ export class MyElement {
 
 	@Style()
 	methodString() {
-		return styleAsString('method-string');
+		return styleAsString('method-string', this.offset);
 	}
 
 	@Style()
 	methodObject() {
-		return styleAsObject('method-object');
+		return styleAsObject('method-object', this.offset);
 	}
 
 	@Style()
 	methodArray() {
-		return styleAsArray('method-array');
+		return styleAsArray('method-array', this.offset);
 	}
 
 	/**
@@ -71,17 +64,17 @@ export class MyElement {
 
 	@Style()
 	async asyncString() {
-		return await styleAsString('async-string');
+		return await styleAsString('async-string', this.offset);
 	}
 
 	@Style()
 	async asyncObject() {
-		return await styleAsObject('async-object');
+		return await styleAsObject('async-object', this.offset);
 	}
 
 	@Style()
 	async asyncArray() {
-		return await styleAsArray('async-array');
+		return await styleAsArray('async-array', this.offset);
 	}
 
 	render() {
@@ -106,6 +99,10 @@ export class MyElement {
 				<div id="async-string"></div>
 				<div id="async-object"></div>
 				<div id="async-array"></div>
+
+				<button type="button" onClick={() => this.offset++}>
+					update
+				</button>
 			</div>
 		);
 	}

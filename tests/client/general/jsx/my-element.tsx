@@ -14,33 +14,37 @@ export class MyElement {
 
 	title?: string = 'Title';
 
-	handleHostClick = () => {};
+	handleHostClick() {}
 
-	handleButtonClick = () => {};
+	handleButtonClick() {}
 
 	render() {
 		return (
-			<host value={this} class="test-class">
+			// biome-ignore lint: TODO
+			<host value={this} onClick={() => this.handleHostClick()}>
 				<h1>{this.title}</h1>
 
 				<p>Content</p>
 
-				<button type="button" onClick={this.handleButtonClick}>
+				<button type="button" onClick={() => this.handleButtonClick()}>
 					Click
 				</button>
 
 				<div className="false">{false}</div>
 				<div className="true">{true}</div>
 
-				{this.header && <header />}
+				{this.header && <header></header>}
 
-				{this.footer && <footer />}
+				{this.footer && <footer></footer>}
 
-				{this.href ? <a href={this.href}>Link</a> : <span />}
+				{this.href ? <a href={this.href}>Link</a> : <span></span>}
 
 				{this.src ? <img alt="" src={this.src} /> : <span>No image</span>}
 
-				<input tabIndex="0" disabled={false} readonly={true} required aria-disabled="false" />
+				<input tabIndex={-1} disabled={false} readonly={true} required aria-disabled="false" />
+
+				<div class="class-attr"></div>
+				<div className="class-name"></div>
 			</host>
 		);
 	}

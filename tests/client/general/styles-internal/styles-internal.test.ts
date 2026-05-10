@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import './my-element';
 
-describe('styles-external', () => {
+describe('styles-internal', () => {
 	let element: HTMLElement;
 
 	beforeEach(() => {
