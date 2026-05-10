@@ -1,71 +1,154 @@
 import * as CONSTANTS from '@/constants';
 
-import { typeOf } from './typeOf';
-
-export const toProperty = (input: unknown, type?: unknown): unknown => {
-	if (type === undefined) return input;
-
-	const string = `${input}`;
-
-	const typeNumber = typeof type === 'number' ? type : 0;
-
-	if (CONSTANTS.TYPE_BOOLEAN & typeNumber || type === Boolean) {
-		if (string === '') return true;
-		if (string === 'true') return true;
-		if (string === 'false') return false;
-	}
-
-	if (CONSTANTS.TYPE_NUMBER & typeNumber || type === Number) {
-		if (string !== '' && !Number.isNaN(Number(input))) {
-			return parseFloat(string);
+const TYPES = [
+	{
+		flag: CONSTANTS.TYPE_NULL,
+		check: (value) => {
+			return value === null;
+		},
+		parse: (value) => {
+			if (value === 'null') {
+				return null;
+			}
 		}
-	}
-
-	if (CONSTANTS.TYPE_NULL & typeNumber || type === null) {
-		if (string === 'null') {
-			return null;
+	},
+	{
+		flag: CONSTANTS.TYPE_UNDEFINED,
+		check: (value) => {
+			return value === undefined;
+		},
+		parse: (value) => {
+			if (value === 'undefined') {
+				return undefined;
+			}
 		}
-	}
-
-	if (CONSTANTS.TYPE_DATE & typeNumber || type === Date) {
-		const value = new Date(string);
-		if (!Number.isNaN(value.getTime())) {
+	},
+	{
+		flag: CONSTANTS.TYPE_BOOLEAN,
+		check: (value) => {
+			return typeof value === 'boolean';
+		},
+		parse: (value) => {
+			if (value === '') return true;
+			if (value === 'true') return true;
+			if (value === 'false') return false;
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_BIGINT,
+		check: (value) => {
+			return typeof value === 'bigint';
+		},
+		parse: (value) => {
+			if (/^\d+n$/.test(value)) {
+				return BigInt(value.slice(0, -1));
+			}
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_NUMBER,
+		check: (value) => {
+			return typeof value === 'number' && !Number.isNaN(value);
+		},
+		parse: (value) => {
+			if (value !== '' && !Number.isNaN(Number(value))) {
+				return parseFloat(value);
+			}
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_DATE,
+		check: (value) => {
+			return value instanceof Date && !Number.isNaN(value.getTime());
+		},
+		parse: (value) => {
+			const date = new Date(value);
+			if (!Number.isNaN(date.getTime())) {
+				return date;
+			}
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_ARRAY,
+		check: (value) => {
+			return Array.isArray(value);
+		},
+		parse: (value) => {
+			if (value.startsWith('[') && value.endsWith(']')) {
+				try {
+					const parsed = JSON.parse(value);
+					if (Array.isArray(parsed)) return parsed;
+				} catch {}
+			}
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_OBJECT,
+		check: (value) => {
+			return typeof value === 'object' && value !== null && !Array.isArray(value);
+		},
+		parse: (value) => {
+			if (value.startsWith('{') && value.endsWith('}')) {
+				try {
+					const parsed = JSON.parse(value);
+					if (!Array.isArray(parsed)) return parsed;
+				} catch {}
+			}
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_FUNCTION,
+		check: (value) => {
+			return typeof value === 'function';
+		},
+		parse: () => {
+			throw new Error('TODO');
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_ENUM,
+		check: (value) => {
+			return typeof value === 'string';
+		},
+		parse: (value) => {
+			return value;
+		}
+	},
+	{
+		flag: CONSTANTS.TYPE_STRING,
+		check: (value) => {
+			return typeof value === 'string';
+		},
+		parse: (value) => {
 			return value;
 		}
 	}
+];
 
-	if (CONSTANTS.TYPE_ARRAY & typeNumber || type === Array) {
-		try {
-			const value = JSON.parse(string);
-			if (typeOf(value) === 'array') return value;
-		} catch {}
+export const ensureIsType = (value: unknown, type: number = 0) => {
+	for (const handler of TYPES) {
+		if (!(type & handler.flag)) continue;
+
+		if (!handler.check(value)) continue;
+
+		return;
 	}
 
-	if (CONSTANTS.TYPE_OBJECT & typeNumber || type === Object) {
-		try {
-			const value = JSON.parse(string);
-			if (typeOf(value) === 'object') {
-				return value;
-			}
-		} catch {}
+	throw new Error(`Invalid value "${value}" for allowed types.`);
+};
+
+export const toProperty = (value: string | null, type: number = 0): unknown => {
+	if (value === null) return null;
+
+	for (const handler of TYPES) {
+		if (!(type & handler.flag)) continue;
+
+		const result = handler.parse(value);
+
+		if (result === undefined) continue;
+
+		return result;
 	}
 
-	if (CONSTANTS.TYPE_UNDEFINED & typeNumber) {
-		if (string === 'undefined') {
-			return undefined;
-		}
-	}
-
-	if (CONSTANTS.TYPE_STRING & typeNumber || type === String) {
-		return string;
-	}
-
-	// TODO: BigInt, Enum, Function
-
-	try {
-		// TODO
-		return JSON.parse(string);
-	} catch {
-		return input;
-	}
+	throw new Error(`Cannot parse value "${value}" for allowed types.`);
 };

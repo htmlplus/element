@@ -5,6 +5,7 @@ import type { HTMLPlusElement } from '@/types';
 
 import {
 	defineProperty,
+	ensureIsType,
 	host,
 	requestUpdate,
 	toProperty,
@@ -25,11 +26,9 @@ export interface PropertyOptions {
 	 */
 	reflect?: boolean;
 	/**
-	 * Specifies the property `type` and supports
-	 * [data types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures).
-	 * If this value is not set, it will be set automatically during transforming.
+	 * Do not set the value to this property. This value is automatically set during transforming.
 	 */
-	type?: unknown;
+	type?: number;
 }
 
 /**
@@ -119,8 +118,10 @@ export function Property(options?: PropertyOptions) {
 		defineProperty(target, `RAW:${attribute}`, {
 			set(value) {
 				if (!this[LOCKED]) {
-					// Convert the raw value and set it to the corresponding property
-					this[key] = toProperty(value, options?.type);
+					try {
+						// Convert the raw value and set it to the corresponding property
+						this[key] = toProperty(value, options?.type);
+					} catch {}
 				}
 			}
 		});
@@ -144,7 +145,11 @@ export function Property(options?: PropertyOptions) {
 				if (descriptor && !descriptor.set) {
 					throw new Error(`Property '${key}' does not have a setter. Unable to assign value.`);
 				}
-				this[key] = value;
+
+				try {
+					ensureIsType(value, options?.type);
+					this[key] = value;
+				} catch {}
 			};
 
 			defineProperty(host(this), key, { configurable: true, get, set });
