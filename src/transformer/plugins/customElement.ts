@@ -190,7 +190,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 								typeAnnotation
 							);
 
-							signature.optional = property.optional ?? false;
+							signature.optional = property.optional ?? !!property.value;
 
 							signature.leadingComments = t.cloneNode(property, true).leadingComments;
 
@@ -264,7 +264,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 							signature.readonly = readonly;
 
-							signature.optional = property.optional ?? false;
+							signature.optional = property.optional ?? !!property.value;
 
 							signature.leadingComments = t.cloneNode(property, true).leadingComments;
 
