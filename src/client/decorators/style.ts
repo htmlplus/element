@@ -1,50 +1,69 @@
 import * as CONSTANTS from '@/constants';
 import type { HTMLPlusElement } from '@/types';
 
-import { shadowRoot, wrapMethod } from '../utils';
-
-// TODO: check the logic
+import { defineProperty, shadowRoot, wrapMethod } from '../utils';
 
 export function Style() {
 	return (target: HTMLPlusElement, key: PropertyKey) => {
+		const KEY = Symbol();
+		const SHEET = Symbol();
 		const LAST = Symbol();
 
-		const SHEET = Symbol();
-
 		wrapMethod('before', target, CONSTANTS.LIFECYCLE_UPDATED, function () {
-			let sheet = this[SHEET];
+			applyStyle(this, this[key]);
+		});
 
-			let value = this[key];
+		defineProperty(target, key, {
+			enumerable: true,
+			configurable: true,
+			get() {
+				return this[KEY];
+			},
+			set(next) {
+				const previous = this[KEY];
 
-			const update = (value?: Promise<unknown>) => (result: unknown) => {
-				if (value && value !== this[LAST]) return;
+				if (next === previous) return;
 
-				sheet.replaceSync(toCssString(result));
+				this[KEY] = next;
 
-				this[LAST] = undefined;
-			};
+				applyStyle(this, next);
+			}
+		});
+
+		const applyStyle = (instance: HTMLPlusElement, input: unknown) => {
+			const adoptedStyleSheets = shadowRoot(instance)?.adoptedStyleSheets;
+
+			if (!adoptedStyleSheets) return;
+
+			let sheet = instance[SHEET];
 
 			if (!sheet) {
 				sheet = new CSSStyleSheet();
 
-				this[SHEET] = sheet;
+				instance[SHEET] = sheet;
 
-				shadowRoot(this)?.adoptedStyleSheets.push(sheet);
+				adoptedStyleSheets.push(sheet);
 			}
 
-			if (typeof value === 'function') {
-				value = value.call(this);
-			}
+			const update = (value?: Promise<unknown>) => (result: unknown) => {
+				if (value && value !== instance[LAST]) return;
+
+				sheet.replaceSync(toCssString(result));
+
+				instance[LAST] = undefined;
+			};
+
+			const value = typeof input === 'function' ? input.call(instance) : input;
 
 			if (value instanceof Promise) {
-				// biome-ignore lint: TODO
-				value.then(update((this[LAST] = value))).catch((error) => {
-					throw new Error('TODO', { cause: error });
+				instance[LAST] = value;
+				value.then(update(value)).catch((error) => {
+					throw new Error('Style promise failed', { cause: error });
 				});
 			} else {
 				update()(value);
 			}
-		});
+		};
 	};
 }
 
