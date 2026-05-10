@@ -1,22 +1,28 @@
-import * as preact from 'preact';
-import { JSX } from 'preact/jsx-runtime';
+import { ClassAttributes } from 'preact';
+import { DOMAttributes } from 'preact';
+import { FunctionComponent } from 'preact';
+import { JSX as JSX_2 } from 'preact/jsx-runtime';
+import { VNode } from 'preact';
 
-type IntrinsicElementsBase = {
-    [K in keyof JSX.IntrinsicElements]: Omit<JSX.IntrinsicElements[K], 'ref'>;
+export declare const Fragment: FunctionComponent<{}>;
+
+declare type IntrinsicElementsBase = {
+    [K in keyof JSX_2.IntrinsicElements]: Omit<JSX_2.IntrinsicElements[K], 'ref'>;
 };
-declare global {
-    namespace JSX {
-        interface IntrinsicElements extends IntrinsicElementsBase {
-            host: JSX.IntrinsicElements['div'] & {
-                value: any;
-                [key: string]: unknown;
-            };
-        }
+
+export declare namespace JSX {
+    export interface IntrinsicElements extends IntrinsicElementsBase {
+        host: JSX_2.IntrinsicElements['div'] & {
+            value: any;
+            [key: string]: unknown;
+        };
     }
 }
-declare const Fragment: preact.FunctionComponent<{}>;
-declare function jsx(type: any, props: any, key: any): preact.VNode<preact.DOMAttributes<HTMLInputElement> & preact.ClassAttributes<HTMLInputElement>>;
-declare function jsxs(type: any, props: any, key: any): preact.VNode<preact.DOMAttributes<HTMLInputElement> & preact.ClassAttributes<HTMLInputElement>>;
-declare function jsxDEV(type: any, props: any, key: any, isStatic: any, source: any, self: any): preact.VNode<preact.DOMAttributes<HTMLInputElement> & preact.ClassAttributes<HTMLInputElement>>;
 
-export { Fragment, jsx, jsxDEV, jsxs };
+export declare function jsx(type: any, props: any, key: any): VNode< DOMAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>>;
+
+export declare function jsxDEV(type: any, props: any, key: any, isStatic: any, source: any, self: any): VNode< DOMAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>>;
+
+export declare function jsxs(type: any, props: any, key: any): VNode< DOMAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>>;
+
+export { }

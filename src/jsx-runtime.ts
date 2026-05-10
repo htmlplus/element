@@ -9,14 +9,12 @@ type IntrinsicElementsBase = {
 	[K in keyof JSXPreact.IntrinsicElements]: Omit<JSXPreact.IntrinsicElements[K], 'ref'>;
 };
 
-declare global {
-	namespace JSX {
-		interface IntrinsicElements extends IntrinsicElementsBase {
-			host: JSXPreact.IntrinsicElements['div'] & {
-				value: any;
-				[key: string]: unknown;
-			};
-		}
+export namespace JSX {
+	export interface IntrinsicElements extends IntrinsicElementsBase {
+		host: JSXPreact.IntrinsicElements['div'] & {
+			value: any;
+			[key: string]: unknown;
+		};
 	}
 }
 
