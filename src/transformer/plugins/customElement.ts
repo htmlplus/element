@@ -91,7 +91,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 				if (property) return;
 
-				let type = 0;
+				let type = CONSTANTS.TYPE_ANY;
 
 				const extract = (input) => {
 					switch (input?.type) {

@@ -26,17 +26,18 @@ const METHOD_RENDER = "render";
 const STATIC_STYLE = "style";
 const STATIC_TAG = "tag";
 const STYLE_IMPORTED = "STYLE_IMPORTED";
-const TYPE_ARRAY = 2 ** 0;
-const TYPE_BIGINT = 2 ** 1;
-const TYPE_BOOLEAN = 2 ** 2;
-const TYPE_DATE = 2 ** 3;
-const TYPE_ENUM = 2 ** 4;
-const TYPE_FUNCTION = 2 ** 5;
-const TYPE_NULL = 2 ** 6;
-const TYPE_NUMBER = 2 ** 7;
-const TYPE_OBJECT = 2 ** 8;
-const TYPE_STRING = 2 ** 9;
-const TYPE_UNDEFINED = 2 ** 10;
+const TYPE_ANY = 2 ** 0;
+const TYPE_ARRAY = 2 ** 1;
+const TYPE_BIGINT = 2 ** 2;
+const TYPE_BOOLEAN = 2 ** 3;
+const TYPE_DATE = 2 ** 4;
+const TYPE_ENUM = 2 ** 5;
+const TYPE_FUNCTION = 2 ** 6;
+const TYPE_NULL = 2 ** 7;
+const TYPE_NUMBER = 2 ** 8;
+const TYPE_OBJECT = 2 ** 9;
+const TYPE_STRING = 2 ** 10;
+const TYPE_UNDEFINED = 2 ** 11;
 export {
   API_CONNECTED,
   API_DEFAULTS,
@@ -66,6 +67,7 @@ export {
   STATIC_STYLE,
   STATIC_TAG,
   STYLE_IMPORTED,
+  TYPE_ANY,
   TYPE_ARRAY,
   TYPE_BIGINT,
   TYPE_BOOLEAN,

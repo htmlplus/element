@@ -122,6 +122,20 @@ const TYPES = [
 		parse: (value) => {
 			return value;
 		}
+	},
+	// TODO
+	{
+		flag: CONSTANTS.TYPE_ANY,
+		check: () => {
+			return true;
+		},
+		parse: (value) => {
+			try {
+				return JSON.parse(value);
+			} catch {
+				return value;
+			}
+		}
 	}
 ];
 

@@ -1,6 +1,6 @@
 import path, { join, resolve, dirname } from "node:path";
 import ora from "ora";
-import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, DECORATOR_PROPERTY_TYPE, PACKAGE_NAME, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, DECORATOR_ELEMENT, KEY } from "./constants.js";
+import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, DECORATOR_PROPERTY_TYPE, TYPE_ANY, PACKAGE_NAME, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, DECORATOR_ELEMENT, KEY } from "./constants.js";
 import fs from "fs-extra";
 import { glob } from "glob";
 import template from "@babel/template";
@@ -321,7 +321,7 @@ const customElement = (userOptions) => {
           return t.isObjectProperty(property2) && t.isIdentifier(property2.key) && property2.key.name === DECORATOR_PROPERTY_TYPE;
         });
         if (property) return;
-        let type = 0;
+        let type = TYPE_ANY;
         const extract2 = (input) => {
           switch (input?.type) {
             case "bool":

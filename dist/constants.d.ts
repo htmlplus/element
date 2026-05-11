@@ -54,6 +54,8 @@ export declare const STATIC_TAG = "tag";
 
 export declare const STYLE_IMPORTED = "STYLE_IMPORTED";
 
+export declare const TYPE_ANY: number;
+
 export declare const TYPE_ARRAY: number;
 
 export declare const TYPE_BIGINT: number;

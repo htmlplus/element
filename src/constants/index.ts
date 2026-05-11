@@ -44,14 +44,15 @@ export const STATIC_TAG = 'tag';
 export const STYLE_IMPORTED = 'STYLE_IMPORTED';
 
 // types
-export const TYPE_ARRAY = 2 ** 0;
-export const TYPE_BIGINT = 2 ** 1;
-export const TYPE_BOOLEAN = 2 ** 2;
-export const TYPE_DATE = 2 ** 3;
-export const TYPE_ENUM = 2 ** 4;
-export const TYPE_FUNCTION = 2 ** 5;
-export const TYPE_NULL = 2 ** 6;
-export const TYPE_NUMBER = 2 ** 7;
-export const TYPE_OBJECT = 2 ** 8;
-export const TYPE_STRING = 2 ** 9;
-export const TYPE_UNDEFINED = 2 ** 10;
+export const TYPE_ANY = 2 ** 0;
+export const TYPE_ARRAY = 2 ** 1;
+export const TYPE_BIGINT = 2 ** 2;
+export const TYPE_BOOLEAN = 2 ** 3;
+export const TYPE_DATE = 2 ** 4;
+export const TYPE_ENUM = 2 ** 5;
+export const TYPE_FUNCTION = 2 ** 6;
+export const TYPE_NULL = 2 ** 7;
+export const TYPE_NUMBER = 2 ** 8;
+export const TYPE_OBJECT = 2 ** 9;
+export const TYPE_STRING = 2 ** 10;
+export const TYPE_UNDEFINED = 2 ** 11;
