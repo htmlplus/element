@@ -1,3 +1,9 @@
+## [4.0.2](https://github.com/htmlplus/element/compare/v4.0.1...v4.0.2) (2026-05-11)
+
+### Bug Fixes
+
+* Add automatic property type detection and parsing ([6306676](https://github.com/htmlplus/element/commit/63066764654ddf728bc4cdb39a7514ee10f89cc6))
+
 ## [4.0.1](https://github.com/htmlplus/element/compare/v4.0.0...v4.0.1) (2026-05-10)
 
 ### Bug Fixes
