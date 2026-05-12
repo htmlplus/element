@@ -6,5 +6,6 @@ export default {
 	'*.{ts,tsx}': (files) => [
 		'npm run type-check',
 		`vitest --config tests/vitest.config.ts run --passWithNoTests --browser.headless ${files.join(' ')}`
-	]
+	],
+	'package.json': () => 'npx --yes sort-package-json'
 };
