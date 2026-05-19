@@ -1,3 +1,9 @@
+## [4.0.3](https://github.com/htmlplus/element/compare/v4.0.2...v4.0.3) (2026-05-19)
+
+### Bug Fixes
+
+* Add default value restoration on attribute removal and automatic reflected attribute recovery for invalid property conversions ([59881ee](https://github.com/htmlplus/element/commit/59881eef09ba05192ed41d405e84e1f539127b31))
+
 ## [4.0.2](https://github.com/htmlplus/element/compare/v4.0.1...v4.0.2) (2026-05-11)
 
 ### Bug Fixes
