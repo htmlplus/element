@@ -4,10 +4,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MyElement } from './my-element';
 
 describe('State', () => {
+	const renderSpy = vi.spyOn(MyElement.prototype, 'render');
+
 	let element: HTMLElement;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		element = createElement('my-element', document.body);
+
+		await element.connected();
+
+		renderSpy.mockClear();
 	});
 
 	afterEach(() => {
@@ -15,21 +21,25 @@ describe('State', () => {
 	});
 
 	it('should render the initial value', () => {
-		expect(element.shadowRoot.textContent.trim()).toBe('5');
+		expect(element.shadowRoot?.textContent.trim()).toBe('5');
 	});
 
 	it('should increment the value by 1 when button is clicked', async () => {
-		const button = element.shadowRoot.querySelector('button');
+		const button = element.shadowQuery('button');
+
+		expectExists(button);
 
 		fireEvent.click(button);
 
 		await nextTick();
 
-		expect(element.shadowRoot.textContent.trim()).toBe('6');
+		expect(element.shadowRoot?.textContent.trim()).toBe('6');
 	});
 
 	it('should increment the value correctly after multiple clicks', async () => {
-		const button = element.shadowRoot.querySelector('button');
+		const button = element.shadowQuery('button');
+
+		expectExists(button);
 
 		for (let i = 0; i < 10; i++) {
 			fireEvent.click(button);
@@ -37,13 +47,13 @@ describe('State', () => {
 
 		await nextTick();
 
-		expect(element.shadowRoot.textContent.trim()).toBe('15');
+		expect(element.shadowRoot?.textContent.trim()).toBe('15');
 	});
 
 	it('should only call render once even after multiple clicks', async () => {
-		const button = element.shadowRoot.querySelector('button');
+		const button = element.shadowQuery('button');
 
-		const spy = vi.spyOn(MyElement.prototype, 'render');
+		expectExists(button);
 
 		for (let i = 0; i < 10; i++) {
 			fireEvent.click(button);
@@ -51,9 +61,7 @@ describe('State', () => {
 
 		await nextTick();
 
-		expect(spy).toHaveBeenCalledTimes(1);
-
-		spy.mockRestore();
+		expect(renderSpy).toHaveBeenCalledTimes(1);
 	});
 
 	it('should not expose internal state as a public property', () => {

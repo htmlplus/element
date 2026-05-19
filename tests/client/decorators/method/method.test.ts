@@ -5,8 +5,9 @@ import './my-element';
 describe('Method', () => {
 	let element: HTMLElementTagNameMap['my-element'];
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		element = createElement('my-element', document.body);
+		await element.connected();
 	});
 
 	afterEach(() => {

@@ -5,8 +5,9 @@ import './my-element';
 describe('styles-inline-object', () => {
 	let element: HTMLElement;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		element = createElement('my-element', document.body);
+		await element.connected();
 	});
 
 	afterEach(() => {
@@ -18,7 +19,9 @@ describe('styles-inline-object', () => {
 	});
 
 	it('should apply inline styles as object to shadow content', () => {
-		const div = element.shadowRoot?.querySelector('div') as HTMLDivElement;
+		const div = element.shadowQuery('div');
+
+		expectExists(div);
 
 		const width = getComputedStyle(div).width;
 

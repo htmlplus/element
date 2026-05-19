@@ -1,0 +1,7 @@
+:host {
+	display: flex;
+}
+
+div {
+	width: 10px;
+}

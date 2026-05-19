@@ -1,4 +1,14 @@
-type Types = 'array' | 'bigint' | 'boolean' | 'function' | 'number' | 'object' | 'string';
+type Types =
+	| 'array'
+	| 'bigint'
+	| 'boolean'
+	| 'function'
+	| 'null'
+	| 'number'
+	| 'object'
+	| 'string'
+	| 'symbol'
+	| 'undefined';
 
 export const typeOf = (input: unknown): Types => {
 	return Object.prototype.toString

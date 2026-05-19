@@ -52,6 +52,17 @@ export const style = (userOptions?: StyleOptions): TransformerPlugin => {
 
 		if (!context.fileAST) return;
 
+		const exists = context.class?.body.body.some((node) => {
+			return (
+				t.isClassProperty(node) &&
+				node.static &&
+				t.isIdentifier(node.key) &&
+				node.key.name === CONSTANTS.STATIC_STYLE
+			);
+		});
+
+		if (exists) return;
+
 		const { local } = addDependency(
 			context.fileAST,
 			context.stylePath,

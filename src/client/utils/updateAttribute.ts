@@ -13,5 +13,7 @@ export const updateAttribute = (
 		return void element.removeAttribute(key);
 	}
 
-	element.setAttribute(key, value === true ? '' : String(value));
+	const next = value === true ? '' : String(value);
+
+	element.setAttribute(key, next);
 };

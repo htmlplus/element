@@ -117,11 +117,29 @@ export function Property(options?: PropertyOptions) {
 		 */
 		defineProperty(target, `RAW:${attribute}`, {
 			set(value) {
-				if (!this[LOCKED]) {
-					try {
-						// Convert the raw value and set it to the corresponding property
-						this[key] = toProperty(value, options?.type);
-					} catch {}
+				if (this[LOCKED]) return;
+
+				if (value === null) {
+					this[key] = this[CONSTANTS.API_DEFAULTS][key];
+					return;
+				}
+
+				try {
+					// Convert the raw value and set it to the corresponding property
+					this[key] = toProperty(value, options?.type);
+				} catch {
+					// TODO: update the attr to remove wrong value and set correct one
+					// If reflection is enabled, update the corresponding attribute
+					if (!options?.reflect) return;
+
+					// Lock to prevent infinite loops
+					this[LOCKED] = true;
+
+					// Update the attribute
+					updateAttribute(this, attribute, this[key]);
+
+					// Unlock
+					this[LOCKED] = false;
 				}
 			}
 		});

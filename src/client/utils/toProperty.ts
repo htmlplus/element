@@ -6,9 +6,11 @@ const TYPES = [
 		check: (value) => {
 			return value === null;
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			if (value === 'null') {
-				return null;
+				return {
+					value: null
+				};
 			}
 		}
 	},
@@ -17,9 +19,11 @@ const TYPES = [
 		check: (value) => {
 			return value === undefined;
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			if (value === 'undefined') {
-				return undefined;
+				return {
+					value: undefined
+				};
 			}
 		}
 	},
@@ -28,10 +32,12 @@ const TYPES = [
 		check: (value) => {
 			return typeof value === 'boolean';
 		},
-		parse: (value) => {
-			if (value === '') return true;
-			if (value === 'true') return true;
-			if (value === 'false') return false;
+		parse: (value: string) => {
+			if (value === '') {
+				return {
+					value: true
+				};
+			}
 		}
 	},
 	{
@@ -39,9 +45,11 @@ const TYPES = [
 		check: (value) => {
 			return typeof value === 'bigint';
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			if (/^\d+n$/.test(value)) {
-				return BigInt(value.slice(0, -1));
+				return {
+					value: BigInt(value.slice(0, -1))
+				};
 			}
 		}
 	},
@@ -50,9 +58,11 @@ const TYPES = [
 		check: (value) => {
 			return typeof value === 'number' && !Number.isNaN(value);
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			if (value !== '' && !Number.isNaN(Number(value))) {
-				return parseFloat(value);
+				return {
+					value: parseFloat(value)
+				};
 			}
 		}
 	},
@@ -61,10 +71,12 @@ const TYPES = [
 		check: (value) => {
 			return value instanceof Date && !Number.isNaN(value.getTime());
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			const date = new Date(value);
 			if (!Number.isNaN(date.getTime())) {
-				return date;
+				return {
+					value: date
+				};
 			}
 		}
 	},
@@ -73,11 +85,15 @@ const TYPES = [
 		check: (value) => {
 			return Array.isArray(value);
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			if (value.startsWith('[') && value.endsWith(']')) {
 				try {
 					const parsed = JSON.parse(value);
-					if (Array.isArray(parsed)) return parsed;
+					if (Array.isArray(parsed)) {
+						return {
+							value: parsed
+						};
+					}
 				} catch {}
 			}
 		}
@@ -87,11 +103,15 @@ const TYPES = [
 		check: (value) => {
 			return typeof value === 'object' && value !== null && !Array.isArray(value);
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			if (value.startsWith('{') && value.endsWith('}')) {
 				try {
 					const parsed = JSON.parse(value);
-					if (!Array.isArray(parsed)) return parsed;
+					if (!Array.isArray(parsed)) {
+						return {
+							value: parsed
+						};
+					}
 				} catch {}
 			}
 		}
@@ -110,8 +130,10 @@ const TYPES = [
 		check: (value) => {
 			return typeof value === 'string';
 		},
-		parse: (value) => {
-			return value;
+		parse: (value: string) => {
+			return {
+				value: value
+			};
 		}
 	},
 	{
@@ -119,8 +141,10 @@ const TYPES = [
 		check: (value) => {
 			return typeof value === 'string';
 		},
-		parse: (value) => {
-			return value;
+		parse: (value: string) => {
+			return {
+				value: value
+			};
 		}
 	},
 	// TODO
@@ -129,11 +153,13 @@ const TYPES = [
 		check: () => {
 			return true;
 		},
-		parse: (value) => {
+		parse: (value: string) => {
 			try {
 				return JSON.parse(value);
 			} catch {
-				return value;
+				return {
+					value: value
+				};
 			}
 		}
 	}
@@ -151,9 +177,7 @@ export const ensureIsType = (value: unknown, type: number = 0) => {
 	throw new Error(`Invalid value "${value}" for allowed types.`);
 };
 
-export const toProperty = (value: string | null, type: number = 0): unknown => {
-	if (value === null) return null;
-
+export const toProperty = (value: string, type: number = 0): unknown => {
 	for (const handler of TYPES) {
 		if (!(type & handler.flag)) continue;
 
@@ -161,7 +185,7 @@ export const toProperty = (value: string | null, type: number = 0): unknown => {
 
 		if (result === undefined) continue;
 
-		return result;
+		return result.value;
 	}
 
 	throw new Error(`Cannot parse value "${value}" for allowed types.`);

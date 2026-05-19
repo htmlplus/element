@@ -4,10 +4,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MyElement } from './my-element';
 
 describe('Bind', () => {
+	const bindSpy = vi.spyOn(MyElement.prototype, 'unbind');
+	const unbindSpy = vi.spyOn(MyElement.prototype, 'unbind');
+
 	let element: HTMLElement;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		element = createElement('my-element', document.body);
+
+		await element.connected();
+
+		bindSpy.mockClear();
+		unbindSpy.mockClear();
 	});
 
 	afterEach(() => {
@@ -15,60 +23,50 @@ describe('Bind', () => {
 	});
 
 	it.skip('', async () => {
-		const spy = vi.spyOn(MyElement.prototype, 'bind');
+		const button = element.shadowQuery('#bind');
 
-		await customElements.whenDefined('my-element');
-
-		const button = element.shadowRoot?.querySelector('#bind') as HTMLButtonElement;
+		expectExists(button);
 
 		fireEvent.click(button);
 
 		await nextTick();
 
-		expect(spy).toHaveBeenCalledTimes(1);
-
-		spy.mockRestore();
+		expect(bindSpy).toHaveBeenCalledTimes(1);
 	});
 
 	it.skip('', async () => {
-		const button = element.shadowRoot.querySelector('#bind');
+		const button = element.shadowQuery('#bind');
 
-		const spy = vi.spyOn(MyElement.prototype, 'bind');
+		expectExists(button);
 
 		fireEvent.click(button);
 
 		await nextTick();
 
-		expect(spy.mock.results[0].value).not.toBeUndefined();
-
-		spy.mockRestore();
+		expect(bindSpy.mock.results[0].value).not.toBeUndefined();
 	});
 
 	it.skip('', async () => {
-		const button = element.shadowRoot.querySelector('#unbind');
+		const button = element.shadowQuery('#unbind');
 
-		const spy = vi.spyOn(MyElement.prototype, 'unbind');
+		expectExists(button);
 
 		fireEvent.click(button);
 
 		await nextTick();
 
-		expect(spy).toHaveBeenCalledTimes(1);
-
-		spy.mockRestore();
+		expect(unbindSpy).toHaveBeenCalledTimes(1);
 	});
 
 	it.skip('', async () => {
-		const button = element.shadowRoot.querySelector('#unbind');
+		const button = element.shadowQuery('#unbind');
 
-		const spy = vi.spyOn(MyElement.prototype, 'unbind');
+		expectExists(button);
 
 		fireEvent.click(button);
 
 		await nextTick();
 
-		expect(spy.mock.results[0].value).toBeUndefined();
-
-		spy.mockRestore();
+		expect(unbindSpy.mock.results[0].value).toBeUndefined();
 	});
 });

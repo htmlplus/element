@@ -91,7 +91,7 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 
 				if (property) return;
 
-				let type = CONSTANTS.TYPE_ANY;
+				let type = 0;
 
 				const extract = (input) => {
 					switch (input?.type) {
@@ -163,6 +163,8 @@ export const customElement = (userOptions?: CustomElementOptions): TransformerPl
 						getType(context.directoryPath, ast, path.parent['typeAnnotation']?.typeAnnotation)
 					);
 				}
+
+				type = type || CONSTANTS.TYPE_ANY;
 
 				argument.properties.push(
 					t.objectProperty(t.identifier(CONSTANTS.DECORATOR_PROPERTY_TYPE), t.numericLiteral(type))

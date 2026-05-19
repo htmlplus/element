@@ -100,7 +100,19 @@ export class MyElement {
 				<div id="async-object"></div>
 				<div id="async-array"></div>
 
-				<button type="button" onClick={() => this.offset++}>
+				<button className="updateByState" type="button" onClick={() => this.offset++}>
+					update
+				</button>
+
+				<button
+					className="updateDynamic"
+					type="button"
+					onClick={() => {
+						this.propertyString = styleAsString('property-string', 10);
+						this.propertyObject = styleAsObject('property-object', 10);
+						this.propertyArray = styleAsArray('property-array', 10);
+					}}
+				>
 					update
 				</button>
 			</div>

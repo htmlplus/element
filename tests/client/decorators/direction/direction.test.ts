@@ -10,9 +10,9 @@ describe('Direction', () => {
 	it('should default to "ltr" when no direction is set', async () => {
 		const element = createElement('my-element', document.body);
 
-		await nextTick();
+		await element.connected();
 
-		expect(element.shadowRoot.textContent.trim()).toBe('ltr');
+		expect(element.shadowRoot?.textContent.trim()).toBe('ltr');
 	});
 
 	it('should reflect "rtl" when direction is set to "rtl" before append', async () => {
@@ -22,18 +22,18 @@ describe('Direction', () => {
 
 		document.body.appendChild(element);
 
-		await nextTick();
+		await element.connected();
 
-		expect(element.shadowRoot.textContent.trim()).toBe('rtl');
+		expect(element.shadowRoot?.textContent.trim()).toBe('rtl');
 	});
 
 	it('should remain "ltr" initially when direction is set after append', async () => {
 		const element = createElement('my-element', document.body);
 
-		await nextTick();
+		await element.connected();
 
 		element.setAttribute('dir', 'rtl');
 
-		expect(element.shadowRoot.textContent.trim()).toBe('ltr');
+		expect(element.shadowRoot?.textContent.trim()).toBe('ltr');
 	});
 });

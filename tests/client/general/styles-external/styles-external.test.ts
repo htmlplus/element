@@ -5,8 +5,9 @@ import './my-element';
 describe('styles-external', () => {
 	let element: HTMLElement;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		element = createElement('my-element', document.body);
+		await element.connected();
 	});
 
 	afterEach(() => {
@@ -18,7 +19,9 @@ describe('styles-external', () => {
 	});
 
 	it('should apply external styles to shadow content', () => {
-		const div = element.shadowRoot?.querySelector('div') as HTMLDivElement;
+		const div = element.shadowQuery('div');
+
+		expectExists(div);
 
 		const width = getComputedStyle(div).width;
 

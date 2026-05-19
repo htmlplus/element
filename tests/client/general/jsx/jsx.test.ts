@@ -3,47 +3,45 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MyElement } from './my-element';
 
-MyElement;
-
 describe('JSX', () => {
+	const hostClickSpy = vi.spyOn(MyElement.prototype, 'handleHostClick');
+	const buttonClickSpy = vi.spyOn(MyElement.prototype, 'handleButtonClick');
+
 	let element: HTMLElement;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		element = createElement('my-element', document.body);
+
+		await element.connected();
+
+		hostClickSpy.mockClear();
+		buttonClickSpy.mockClear();
 	});
 
 	afterEach(() => {
 		document.body.innerHTML = '';
 	});
 
-	it('should render title inside h1', async () => {
-		await customElements.whenDefined('my-element');
-
-		const h1 = element.shadowRoot?.querySelector('h1');
+	it('should render title inside h1', () => {
+		const h1 = element.shadowQuery('h1');
 
 		expect(h1?.textContent).toBe('Title');
 	});
 
 	it('should render header when header is true', async () => {
-		await customElements.whenDefined('my-element');
-
-		const header = element.shadowRoot?.querySelector('header');
+		const header = element.shadowQuery('header');
 
 		expect(header).not.toBeNull();
 	});
 
 	it('should NOT render footer when false', async () => {
-		await customElements.whenDefined('my-element');
-
-		const footer = element.shadowRoot?.querySelector('footer');
+		const footer = element.shadowQuery('footer');
 
 		expect(footer).toBeNull();
 	});
 
 	it('should render link when href exists', async () => {
-		await customElements.whenDefined('my-element');
-
-		const a = element.shadowRoot?.querySelector('a');
+		const a = element.shadowQuery('a');
 
 		expect(a).not.toBeNull();
 
@@ -51,84 +49,62 @@ describe('JSX', () => {
 	});
 
 	it('should render fallback when image missing', async () => {
-		await customElements.whenDefined('my-element');
-
-		const span = element.shadowRoot?.querySelector('span');
+		const span = element.shadowQuery('span');
 
 		expect(span?.textContent).toContain('No image');
 	});
 
 	it('should call host click handler', async () => {
-		const spy = vi.spyOn(MyElement.prototype, 'handleHostClick');
-
-		await customElements.whenDefined('my-element');
-
 		fireEvent.click(element);
 
 		await nextTick();
 
-		expect(spy).toHaveBeenCalledTimes(1);
-
-		spy.mockRestore();
+		expect(hostClickSpy).toHaveBeenCalledTimes(1);
 	});
 
 	it('should call button click handler', async () => {
-		const spy = vi.spyOn(MyElement.prototype, 'handleButtonClick');
+		const button = element.shadowQuery('button');
 
-		await customElements.whenDefined('my-element');
-
-		const button = element.shadowRoot?.querySelector('button') as HTMLButtonElement;
+		expectExists(button);
 
 		fireEvent.click(button);
 
 		await nextTick();
 
-		expect(spy).toHaveBeenCalledTimes(1);
-
-		spy.mockRestore();
+		expect(buttonClickSpy).toHaveBeenCalledTimes(1);
 	});
 
 	it.skip('should NOT render false as text content', async () => {
-		await customElements.whenDefined('my-element');
-
-		const div = element.shadowRoot?.querySelector('div.false');
+		const div = element.shadowQuery('div.false');
 
 		expect(div?.textContent).toBe('');
 	});
 
 	it.skip('should NOT render true as text content', async () => {
-		await customElements.whenDefined('my-element');
-
-		const div = element.shadowRoot?.querySelector('div.true');
+		const div = element.shadowQuery('div.true');
 
 		expect(div?.textContent).toBe('');
 	});
 
 	it('should preserve input attributes', async () => {
-		await customElements.whenDefined('my-element');
-
-		const input = element.shadowRoot?.querySelector('input') as HTMLInputElement;
+		const input = element.shadowQuery('input');
 
 		expect(input).toBeTruthy();
-		expect(input.tabIndex).toBe(-1);
-		expect(input.disabled).toBe(false);
-		expect(input.required).toBe(true);
-		expect(input.getAttribute('aria-disabled')).toBe('false');
+		expect(input?.tabIndex).toBe(-1);
+		expect(input?.disabled).toBe(false);
+		expect(input?.required).toBe(true);
+		expect(input?.getAttribute('aria-disabled')).toBe('false');
 	});
 
 	it('should support native class attribute', async () => {
-		await customElements.whenDefined('my-element');
+		const div = element.shadowQuery('.class-attr');
 
-		const div = element.shadowRoot?.querySelector('.class-attr');
-
-		expect(div?.getAttribute('class')).toBe('class-attr');
+		expect(div).toHaveClass('class-attr');
 	});
 
 	it('should support className attribute', async () => {
-		await customElements.whenDefined('my-element');
+		const div = element.shadowQuery('.class-name');
 
-		const div = element.shadowRoot?.querySelector('.class-name');
-
-		expect(div?.getAttribute('class')).toBe('class-name');
+		expect(div).toHaveClass('class-name');
 	});
 });
