@@ -1,3 +1,9 @@
+## [4.0.4](https://github.com/htmlplus/element/compare/v4.0.3...v4.0.4) (2026-06-17)
+
+### Bug Fixes
+
+* Use `unplugin` to create plugins for different bundlers ([48004aa](https://github.com/htmlplus/element/commit/48004aa9adc33ceb50c1a1cb97d95456e0f4a35c))
+
 ## [4.0.3](https://github.com/htmlplus/element/compare/v4.0.2...v4.0.3) (2026-05-19)
 
 ### Bug Fixes
