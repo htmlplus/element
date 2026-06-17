@@ -1,13 +1,11 @@
 import { default as default_2 } from '@babel/types';
+import { Plugin as Plugin_2 } from 'rollup';
+
+export declare type PluginOptions = TransformerPlugin[];
 
 declare type Return<T> = void | T | Promise<void> | Promise<T>;
 
-export declare const rollup: (...plugins: TransformerPlugin[]) => {
-    name: string;
-    buildStart(): Promise<void>;
-    load(id: string): Promise<string | undefined>;
-    buildEnd(error?: Error): Promise<void>;
-};
+export declare const rollup: (options: PluginOptions) => Plugin_2<any> | Plugin_2<any>[];
 
 declare interface TransformerPlugin {
     name: string;
@@ -60,11 +58,6 @@ declare interface TransformerPluginGlobal {
     };
 }
 
-export declare const vite: (...plugins: TransformerPlugin[]) => {
-    name: string;
-    buildStart(): Promise<void>;
-    load(id: string): Promise<string | undefined>;
-    writeBundle(_options: any, bundles: any): Promise<void>;
-};
+export declare const vite: (options: PluginOptions) => Plugin_2<any> | Plugin_2<any>[];
 
 export { }

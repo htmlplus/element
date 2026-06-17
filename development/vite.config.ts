@@ -17,5 +17,5 @@ export default defineConfig({
 			'@htmlplus/element': path.resolve(__dirname, '../src/client')
 		}
 	},
-	plugins: [htmlplus(read(), parse(), validate(), extract(), style(), customElement())]
+	plugins: [htmlplus([read(), parse(), validate(), extract(), style(), customElement()])]
 });

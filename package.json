@@ -73,11 +73,12 @@
 		"glob": "^11.0.3",
 		"ora": "^8.2.0",
 		"preact": "^10.29.1",
-		"typescript": "^5.9.2"
+		"typescript": "^5.9.2",
+		"unplugin": "^3.0.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.2",
-		"@microsoft/api-extractor": "^7.58.7",
+		"@microsoft/api-extractor": "^7.58.9",
 		"@semantic-release/changelog": "^6.0.3",
 		"@semantic-release/commit-analyzer": "^13.0.1",
 		"@semantic-release/git": "^10.0.1",
