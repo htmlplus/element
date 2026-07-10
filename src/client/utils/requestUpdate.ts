@@ -76,42 +76,37 @@ export const requestUpdate = (
 
 			const regex = /global\s+[^{]+\{[^{}]*\{[^{}]*\}[^{}]*\}|global\s+[^{]+\{[^{}]*\}/g;
 
-			const hasGlobal = raw.includes('global');
+			if (!target[CONSTANTS.API_STYLE]) {
+				const style = raw.replace(regex, '');
 
-			let localSheet = target[CONSTANTS.API_STYLE];
-			let globalSheet = target.constructor[CONSTANTS.API_STYLE];
+				if (!style) return;
 
-			if (localSheet) return;
+				const element = document.createElement('style');
 
-			if (!localSheet) {
-				localSheet = new CSSStyleSheet();
+				element.textContent = style;
 
-				target[CONSTANTS.API_STYLE] = localSheet;
+				target[CONSTANTS.API_STYLE] = element;
 
-				shadowRoot(target)?.adoptedStyleSheets.push(localSheet);
+				shadowRoot(target)?.appendChild(element);
 			}
 
-			const localStyle = raw.replace(regex, '');
+			if (!target.constructor[CONSTANTS.API_STYLE]) {
+				const style = raw
+					?.match(regex)
+					?.join('')
+					?.replaceAll('global', '')
+					?.replaceAll(':host', getTag(target) || '');
 
-			localSheet.replaceSync(localStyle);
+				if (!style) return;
 
-			if (!hasGlobal || globalSheet) return;
+				const element = document.createElement('style');
 
-			if (!globalSheet) {
-				globalSheet = new CSSStyleSheet();
+				element.textContent = style;
 
-				target.constructor[CONSTANTS.API_STYLE] = globalSheet;
+				target.constructor[CONSTANTS.API_STYLE] = element;
 
-				document.adoptedStyleSheets.push(globalSheet);
+				document.head.appendChild(element);
 			}
-
-			const globalStyle = raw
-				?.match(regex)
-				?.join('')
-				?.replaceAll('global', '')
-				?.replaceAll(':host', getTag(target) || '');
-
-			globalSheet.replaceSync(globalStyle);
 		})();
 
 		// Calls the lifecycle's callback after the rendering phase.
