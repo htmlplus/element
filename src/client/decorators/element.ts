@@ -39,6 +39,7 @@ const proxy = (constructor: HTMLPlusElement) => {
 
 			this.attachShadow({
 				mode: 'open',
+				serializable: true,
 				// biome-ignore lint: TODO
 				delegatesFocus: constructor['delegatesFocus'],
 				// biome-ignore lint: TODO

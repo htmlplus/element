@@ -660,6 +660,7 @@ const proxy = (constructor) => {
       super();
       this.attachShadow({
         mode: "open",
+        serializable: true,
         // biome-ignore lint: TODO
         delegatesFocus: constructor["delegatesFocus"],
         // biome-ignore lint: TODO
