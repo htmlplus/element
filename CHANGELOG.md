@@ -1,3 +1,10 @@
+## [4.0.5](https://github.com/htmlplus/element/compare/v4.0.4...v4.0.5) (2026-07-10)
+
+### Bug Fixes
+
+* Enable shadow root serialization for SSR ([d191d79](https://github.com/htmlplus/element/commit/d191d79c89f13afb05b3af7efc47aafb65526371))
+* Use <style> elements instead of CSSStyleSheet/adoptedStyleSheets for both local and global style injection to support SSR ([eb1a76c](https://github.com/htmlplus/element/commit/eb1a76c6d1ed0b17f921071c19475fa816ecf3f7))
+
 ## [4.0.4](https://github.com/htmlplus/element/compare/v4.0.3...v4.0.4) (2026-06-17)
 
 ### Bug Fixes
