@@ -37,7 +37,13 @@ export class MyElement {
 
 				{this.footer && <footer></footer>}
 
-				{this.href ? <a href={this.href}>Link</a> : <span></span>}
+				{this.href ? (
+					<a aria-label=" " href={this.href}>
+						Link
+					</a>
+				) : (
+					<span></span>
+				)}
 
 				{this.src ? <img alt="" src={this.src} /> : <span>No image</span>}
 
