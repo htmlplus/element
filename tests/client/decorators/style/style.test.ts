@@ -28,70 +28,70 @@ describe('style', () => {
 		document.body.innerHTML = '';
 	});
 
-	it.each([
-		...PROPERTY_CASES,
-		...GETTER_CASES,
-		...METHOD_CASES,
-		...ASYNC_CASES
-	])('applies an initial font-size of 20px to "%s"', (id) => {
-		const div = element.shadowQuery(`#${id}`);
-		expect(div).toHaveStyle({ fontSize: '20px' });
-	});
-
-	it.each([
-		...GETTER_CASES,
-		...METHOD_CASES
-	])('updates "%s" font-size to 25px after a synchronous re-render', async (id) => {
-		const button = element.shadowQuery('button');
-
-		expectExists(button);
-
-		for (let i = 0; i < 5; i++) {
-			fireEvent.click(button);
+	it.each([...PROPERTY_CASES, ...GETTER_CASES, ...METHOD_CASES, ...ASYNC_CASES])(
+		'applies an initial font-size of 20px to "%s"',
+		(id) => {
+			const div = element.shadowQuery(`#${id}`);
+			expect(div).toHaveStyle({ fontSize: '20px' });
 		}
+	);
 
-		await nextTick();
+	it.each([...GETTER_CASES, ...METHOD_CASES])(
+		'updates "%s" font-size to 25px after a synchronous re-render',
+		async (id) => {
+			const button = element.shadowQuery('button');
 
-		const div = element.shadowQuery(`#${id}`);
+			expectExists(button);
 
-		expect(div).toHaveStyle({ fontSize: '25px' });
-	});
+			for (let i = 0; i < 5; i++) {
+				fireEvent.click(button);
+			}
 
-	it.each([
-		...ASYNC_CASES
-	])('updates "%s" font-size to 25px after an asynchronous re-render', async (id) => {
-		const button = element.shadowQuery('button.updateByState');
+			await nextTick();
 
-		expectExists(button);
+			const div = element.shadowQuery(`#${id}`);
 
-		for (let i = 0; i < 5; i++) {
-			fireEvent.click(button);
+			expect(div).toHaveStyle({ fontSize: '25px' });
 		}
+	);
 
-		await wait();
+	it.each([...ASYNC_CASES])(
+		'updates "%s" font-size to 25px after an asynchronous re-render',
+		async (id) => {
+			const button = element.shadowQuery('button.updateByState');
 
-		const div = element.shadowQuery(`#${id}`);
+			expectExists(button);
 
-		expect(div).toHaveStyle({ fontSize: '25px' });
-	});
+			for (let i = 0; i < 5; i++) {
+				fireEvent.click(button);
+			}
 
-	it.each([
-		...PROPERTY_CASES
-	])('updates "%s" font-size to 30px by mutating a @Style() property directly without re-rendering', async (id) => {
-		const button = element.shadowQuery('button.updateDynamic');
+			await wait();
 
-		expectExists(button);
+			const div = element.shadowQuery(`#${id}`);
 
-		for (let i = 0; i < 5; i++) {
-			fireEvent.click(button);
+			expect(div).toHaveStyle({ fontSize: '25px' });
 		}
+	);
 
-		await wait();
+	it.each([...PROPERTY_CASES])(
+		'updates "%s" font-size to 30px by mutating a @Style() property directly without re-rendering',
+		async (id) => {
+			const button = element.shadowQuery('button.updateDynamic');
 
-		const div = element.shadowQuery(`#${id}`);
+			expectExists(button);
 
-		expect(div).toHaveStyle({ fontSize: '30px' });
+			for (let i = 0; i < 5; i++) {
+				fireEvent.click(button);
+			}
 
-		expect(renderSpy).toHaveBeenCalledTimes(0);
-	});
+			await wait();
+
+			const div = element.shadowQuery(`#${id}`);
+
+			expect(div).toHaveStyle({ fontSize: '30px' });
+
+			expect(renderSpy).toHaveBeenCalledTimes(0);
+		}
+	);
 });
