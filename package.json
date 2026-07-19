@@ -41,7 +41,8 @@
 		"./transformer.js": {
 			"types": "./dist/transformer.d.ts",
 			"import": "./dist/transformer.js"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"main": "./dist/client.js",
 	"types": "./dist/client.d.ts",
