@@ -45,7 +45,7 @@ export class MyElement {
 					<span></span>
 				)}
 
-				{this.src ? <img alt="" src={this.src} /> : <span>No image</span>}
+				{this.src ? <img alt=" " src={this.src} /> : <span>No image</span>}
 
 				<input tabIndex={-1} disabled={false} readonly={true} required aria-disabled="false" />
 

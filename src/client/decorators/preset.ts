@@ -3,7 +3,7 @@ import type { HTMLPlusElement } from '@/types';
 
 import { getConfig, getNamespace, getTag, wrapMethod } from '../utils';
 
-export function Variant() {
+export function Preset() {
 	return (target: HTMLPlusElement, key: string) => {
 		wrapMethod(
 			'after',
@@ -16,7 +16,7 @@ export function Variant() {
 
 				const tag = getTag(this) || '';
 
-				const properties = getConfig(namespace).elements?.[tag]?.variants?.[this[key]]?.properties;
+				const properties = getConfig(namespace).elements?.[tag]?.presets?.[this[key]]?.properties;
 
 				if (!properties) return;
 

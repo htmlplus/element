@@ -959,6 +959,25 @@ function Overrides() {
     });
   };
 }
+function Preset() {
+  return (target, key) => {
+    wrapMethod(
+      "after",
+      target,
+      LIFECYCLE_UPDATE,
+      function(states) {
+        if (!states.has(key)) return;
+        const namespace = getNamespace(target) || "";
+        const tag = getTag(this) || "";
+        const properties = getConfig(namespace).elements?.[tag]?.presets?.[this[key]]?.properties;
+        if (!properties) return;
+        const defaults = Object.assign({}, this[API_DEFAULTS], properties);
+        delete defaults[key];
+        Object.assign(this, defaults);
+      }
+    );
+  };
+}
 function Property(options) {
   return (target, key, descriptor) => {
     const KEY2 = /* @__PURE__ */ Symbol();
@@ -1140,25 +1159,6 @@ const toCssString = (input) => {
   }
   return result;
 };
-function Variant() {
-  return (target, key) => {
-    wrapMethod(
-      "after",
-      target,
-      LIFECYCLE_UPDATE,
-      function(states) {
-        if (!states.has(key)) return;
-        const namespace = getNamespace(target) || "";
-        const tag = getTag(this) || "";
-        const properties = getConfig(namespace).elements?.[tag]?.variants?.[this[key]]?.properties;
-        if (!properties) return;
-        const defaults = Object.assign({}, this[API_DEFAULTS], properties);
-        delete defaults[key];
-        Object.assign(this, defaults);
-      }
-    );
-  };
-}
 function Watch(keys, immediate) {
   return (target, key) => {
     const all = [keys].flat().filter((item) => item);
@@ -1188,6 +1188,7 @@ export {
   Listen,
   Method,
   Overrides,
+  Preset,
   Property,
   Provider,
   Query,
@@ -1195,7 +1196,6 @@ export {
   Slots,
   State,
   Style,
-  Variant,
   Watch,
   classes,
   direction,

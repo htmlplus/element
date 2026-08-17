@@ -38,9 +38,9 @@ export declare type Config<Namespace extends string, Breakpoints extends string>
                     default?: HTMLPlusElements[K]['properties'][Prop];
                 };
             };
-            variants?: {
-                [M in HTMLPlusElements[K]['properties']['variant']]?: {
-                    properties?: Partial<Omit<HTMLPlusElements[K]['properties'], 'variant'>>;
+            presets?: {
+                [M in HTMLPlusElements[K]['properties']['preset']]?: {
+                    properties?: Partial<Omit<HTMLPlusElements[K]['properties'], 'preset'>>;
                 };
             };
         };
@@ -261,6 +261,8 @@ export declare type OverridesConfig<Breakpoint extends string, Properties = unkn
     [Key in Breakpoint]?: Partial<Properties>;
 };
 
+export declare function Preset(): (target: HTMLPlusElement, key: string) => void;
+
 /**
  * Creates a reactive property, reflecting a corresponding attribute value,
  * and updates the element when the property is set.
@@ -351,8 +353,6 @@ declare type Slots_2 = {
 export declare function State(): (target: HTMLPlusElement, key: PropertyKey) => void;
 
 export declare function Style(): (target: HTMLPlusElement, key: PropertyKey) => void;
-
-export declare function Variant(): (target: HTMLPlusElement, key: string) => void;
 
 /**
  * Monitors `@Property` and `@State` to detect changes.

@@ -32,9 +32,9 @@ export type Config<Namespace extends string, Breakpoints extends string> = {
 					default?: HTMLPlusElements[K]['properties'][Prop];
 				};
 			};
-			variants?: {
-				[M in HTMLPlusElements[K]['properties']['variant']]?: {
-					properties?: Partial<Omit<HTMLPlusElements[K]['properties'], 'variant'>>;
+			presets?: {
+				[M in HTMLPlusElements[K]['properties']['preset']]?: {
+					properties?: Partial<Omit<HTMLPlusElements[K]['properties'], 'preset'>>;
 				};
 			};
 		};
