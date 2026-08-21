@@ -6,84 +6,74 @@ import fs from 'fs-extra';
 import * as CONSTANTS from '@/constants';
 import { addDependency } from '@/transformer/utils';
 
-import type {
-	InvertOptional,
-	TransformerPlugin,
-	TransformerPluginContext
-} from '../transformer.types';
+import type { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
 
-export const STYLE_OPTIONS: InvertOptional<StyleOptions> = {
+export const STYLE_OPTIONS = {
 	source(context) {
 		return ['css', 'less', 'sass', 'scss', 'styl'].map((key) => {
 			return path.join(context.directoryPath || '', `${context.fileName}.${key}`);
 		});
 	}
-};
+} satisfies StyleOptions;
 
 export interface StyleOptions {
 	source?: (context: TransformerPluginContext) => string | string[];
 }
 
-export const style = (userOptions?: StyleOptions): TransformerPlugin => {
-	const name = 'style';
+export const style: TransformerPlugin<StyleOptions | undefined> = (context, userOptions) => {
+	const options = { ...STYLE_OPTIONS, ...userOptions };
 
-	const options = Object.assign({}, STYLE_OPTIONS, userOptions) as Required<StyleOptions>;
+	const sources = [options.source(context)].flat();
 
-	const run = (context: TransformerPluginContext) => {
-		const sources = [options.source(context)].flat();
+	for (const source of sources) {
+		if (!source) continue;
 
-		for (const source of sources) {
-			if (!source) continue;
+		if (!fs.existsSync(source)) continue;
 
-			if (!fs.existsSync(source)) continue;
+		context.stylePath = source;
 
-			context.stylePath = source;
+		break;
+	}
 
-			break;
-		}
+	if (!context.stylePath) return;
 
-		if (!context.stylePath) return;
+	context.styleContent = fs.readFileSync(context.stylePath, 'utf8');
 
-		context.styleContent = fs.readFileSync(context.stylePath, 'utf8');
+	context.styleExtension = path.extname(context.stylePath);
 
-		context.styleExtension = path.extname(context.stylePath);
+	context.styleName = path.basename(context.stylePath, context.styleExtension);
 
-		context.styleName = path.basename(context.stylePath, context.styleExtension);
+	if (!context.fileAST) return;
 
-		if (!context.fileAST) return;
-
-		const exists = context.class?.body.body.some((node) => {
-			return (
-				t.isClassProperty(node) &&
-				node.static &&
-				t.isIdentifier(node.key) &&
-				node.key.name === CONSTANTS.STATIC_STYLE
-			);
-		});
-
-		if (exists) return;
-
-		const { local } = addDependency(
-			context.fileAST,
-			context.stylePath,
-			CONSTANTS.STYLE_IMPORTED,
-			undefined,
-			true
+	const exists = context.class?.body.body.some((node) => {
+		return (
+			t.isClassProperty(node) &&
+			node.static &&
+			t.isIdentifier(node.key) &&
+			node.key.name === CONSTANTS.STATIC_STYLE
 		);
+	});
 
-		const property = t.classProperty(
-			t.identifier(CONSTANTS.STATIC_STYLE),
-			t.identifier(local || ''),
-			undefined,
-			null,
-			undefined,
-			true
-		);
+	if (exists) return;
 
-		t.addComment(property, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
+	const { local } = addDependency(
+		context.fileAST,
+		`${context.stylePath}?inline`,
+		CONSTANTS.STYLE_IMPORTED,
+		undefined,
+		true
+	);
 
-		context.class?.body.body.unshift(property);
-	};
+	const property = t.classProperty(
+		t.identifier(CONSTANTS.STATIC_STYLE),
+		t.identifier(local || ''),
+		undefined,
+		null,
+		undefined,
+		true
+	);
 
-	return { name, run };
+	t.addComment(property, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
+
+	context.class?.body.body.unshift(property);
 };

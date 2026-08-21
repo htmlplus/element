@@ -3,14 +3,9 @@ import path from 'node:path';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 
-import type {
-	InvertOptional,
-	TransformerPlugin,
-	TransformerPluginContext,
-	TransformerPluginGlobal
-} from '../transformer.types';
+import type { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
 
-export const ASSETS_OPTIONS: InvertOptional<AssetsOptions> = {
+export const ASSETS_OPTIONS = {
 	destination(context) {
 		return path.join('dist', 'assets', context.fileName || '');
 	},
@@ -20,7 +15,7 @@ export const ASSETS_OPTIONS: InvertOptional<AssetsOptions> = {
 	json(context) {
 		return path.join('dist', 'assets', `${context.fileName || ''}.json`);
 	}
-};
+} satisfies AssetsOptions;
 
 export interface AssetsOptions {
 	destination?: (context: TransformerPluginContext) => string;
@@ -28,34 +23,26 @@ export interface AssetsOptions {
 	json?: (context: TransformerPluginContext) => string;
 }
 
-export const assets = (userOptions?: AssetsOptions): TransformerPlugin => {
-	const name = 'assets';
+export const assets: TransformerPlugin<AssetsOptions | undefined> = (context, userOptions) => {
+	const options = { ...ASSETS_OPTIONS, ...userOptions };
 
-	const options = Object.assign({}, ASSETS_OPTIONS, userOptions) as Required<AssetsOptions>;
+	context.assetsDestination = options.destination(context);
 
-	const finish = (global: TransformerPluginGlobal) => {
-		for (const context of global.contexts) {
-			context.assetsDestination = options.destination(context);
+	context.assetsSource = options.source(context);
 
-			context.assetsSource = options.source(context);
+	if (!context.assetsSource) return;
 
-			if (!context.assetsSource) continue;
+	if (!fs.existsSync(context.assetsSource)) return;
 
-			if (!fs.existsSync(context.assetsSource)) continue;
+	fs.copySync(context.assetsSource, context.assetsDestination);
 
-			fs.copySync(context.assetsSource, context.assetsDestination);
+	const json = options.json?.(context);
 
-			const json = options.json?.(context);
+	if (!json) return;
 
-			if (!json) continue;
+	fs.ensureDirSync(path.dirname(json));
 
-			fs.ensureDirSync(path.dirname(json));
+	const files = glob.sync('**/*.*', { cwd: context.assetsDestination });
 
-			const files = glob.sync('**/*.*', { cwd: context.assetsDestination });
-
-			fs.writeJSONSync(json, files, { encoding: 'utf8', spaces: 2 });
-		}
-	};
-
-	return { name, finish };
+	fs.writeJSONSync(json, files, { encoding: 'utf8', spaces: 2 });
 };

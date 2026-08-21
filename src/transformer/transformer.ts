@@ -1,106 +1,71 @@
-import path from 'node:path';
+import {
+	type AssetsOptions,
+	type DocumentOptions,
+	type StyleOptions,
+	type VisualStudioCodeOptions,
+	type WebTypesOptions,
+	assets,
+	customElement,
+	document,
+	extract,
+	parse,
+	read,
+	style,
+	validate,
+	visualStudioCode,
+	webTypes
+} from './plugins';
+import type { TransformerPluginContext } from './transformer.types';
 
-import ora from 'ora';
-
-import * as CONSTANTS from '@/constants';
-
-import type {
-	TransformerPlugin,
-	TransformerPluginContext,
-	TransformerPluginGlobal
-} from './transformer.types';
-
-const logger = ora({
-	color: 'yellow'
-});
-
-const log = (message, persist?) => {
-	const content = `${new Date().toLocaleTimeString()} [${CONSTANTS.KEY}] ${message}`;
-
-	const log = logger.start(content);
-
-	if (!persist) return;
-
-	log.succeed();
+export type TransformerOptions = {
+	style?: StyleOptions;
+	assets?: AssetsOptions;
+	document?: DocumentOptions;
+	visualStudioCode?: VisualStudioCodeOptions;
+	webTypes?: WebTypesOptions;
 };
 
-export const transformer = (...plugins: TransformerPlugin[]) => {
-	let global: TransformerPluginGlobal = {
-		contexts: []
-	};
+export const transformer = (options?: TransformerOptions) => {
+	const contexts = new Map<string, TransformerPluginContext>();
 
-	const start = async () => {
-		log(`Started.`, true);
-
-		log(`${plugins.length} plugins detected.`, true);
-
-		log(`Plugins are starting.`, true);
-
-		for (const plugin of plugins) {
-			if (!plugin.start) continue;
-
-			log(`Plugin '${plugin.name}' is starting.`);
-
-			global = (await plugin.start(global)) || global;
-
-			log(`Plugin '${plugin.name}' started successfully.`);
-		}
-
-		log(`Plugins have been successfully started.`, true);
-	};
-
-	const run = async (filePath: string) => {
+	const transform = (id: string) => {
 		let context: TransformerPluginContext = {
-			filePath
+			filePath: id
 		};
 
-		const parsed = path.parse(filePath);
+		context = read(context) || context;
+		context = parse(context) || context;
+		context = validate(context) || context;
+		context = extract(context) || context;
+		context = style(context, options?.style) || context;
+		context = customElement(context) || context;
 
-		for (const plugin of plugins) {
-			if (!plugin.run) continue;
-
-			const source = path.join(parsed.dir).split(path.sep).slice(-2).concat(parsed.base).join('/');
-
-			log(`Plugin '${plugin.name}' is executing on '${source}' file.`);
-
-			try {
-				context = (await plugin.run(context, global)) || context;
-			} catch (error) {
-				log(`Error in '${plugin.name}' plugin on '${source}' file.\n`, true);
-				throw error;
-			}
-
-			global.contexts = global.contexts
-				.filter((current) => {
-					return current.filePath !== context.filePath;
-				})
-				.concat(context);
-
-			log(`Plugin '${plugin.name}' executed successfully on '${source}' file.`);
-		}
-
-		logger.stop();
+		contexts.set(id, context);
 
 		return context;
 	};
 
-	const finish = async () => {
-		log(`Plugins are finishing.`, true);
+	const finish = () => {
+		const all = contexts.values().toArray();
 
-		for (const plugin of plugins) {
-			if (!plugin.finish) continue;
-
-			log(`Plugin '${plugin.name}' is finishing.`);
-
-			global = (await plugin.finish(global)) || global;
-
-			log(`Plugin '${plugin.name}' finished successfully.`);
+		if (options?.assets) {
+			for (const context of all) {
+				assets(context, options.assets);
+			}
 		}
 
-		log(`Plugins have been successfully finished.`, true);
+		if (options?.document) {
+			document(all, options.document);
+		}
 
-		log(`Finished.`, true);
+		if (options?.visualStudioCode) {
+			visualStudioCode(all, options.visualStudioCode);
+		}
+
+		if (options?.webTypes) {
+			webTypes(all, options.webTypes);
+		}
 	};
 
-	return { global, start, run, finish };
+	return { transform, finish };
 };

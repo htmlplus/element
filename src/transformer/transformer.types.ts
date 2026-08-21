@@ -1,7 +1,5 @@
 import type t from '@babel/types';
 
-type Return<T> = void | T | Promise<void> | Promise<T>;
-
 export interface TransformerPluginContext {
 	// general
 	skipped?: boolean;
@@ -36,17 +34,6 @@ export interface TransformerPluginContext {
 	fileName?: string;
 	filePath?: string;
 
-	// metadata
-	metadata?: {
-		[key: string]: unknown;
-	};
-
-	// readme
-	readmeContent?: string;
-	readmeExtension?: string;
-	readmeName?: string;
-	readmePath?: string;
-
 	// style
 	styleContent?: string;
 	styleContentTransformed?: string;
@@ -55,26 +42,12 @@ export interface TransformerPluginContext {
 	stylePath?: string;
 }
 
-export interface TransformerPluginGlobal {
-	contexts: Array<TransformerPluginContext>;
-	metadata?: {
-		[key: string]: unknown;
-	};
-}
+export type TransformerPlugin<Options = undefined> = (
+	context: TransformerPluginContext,
+	options?: Options
+) => TransformerPluginContext | undefined;
 
-export interface TransformerPlugin {
-	name: string;
-	options?: unknown;
-	start?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
-	run?: (
-		context: TransformerPluginContext,
-		global: TransformerPluginGlobal
-	) => Return<TransformerPluginContext>;
-	finish?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
-}
-
-export type InvertOptional<T> = {
-	[K in keyof T as undefined extends T[K] ? K : never]-?: T[K];
-} & {
-	[K in keyof T as undefined extends T[K] ? never : K]?: T[K];
-};
+export type TransformerPluginBatch<Options = undefined> = (
+	contexts: TransformerPluginContext[],
+	options?: Options
+) => void;

@@ -1,9 +1,13 @@
 import { default as default_2 } from '@babel/types';
 import { ParserOptions } from '@babel/parser';
 
-export declare const assets: (userOptions?: AssetsOptions) => TransformerPlugin;
+export declare const assets: TransformerPlugin<AssetsOptions | undefined>;
 
-export declare const ASSETS_OPTIONS: InvertOptional<AssetsOptions>;
+export declare const ASSETS_OPTIONS: {
+    destination(context: TransformerPluginContext): string;
+    source(context: TransformerPluginContext): string;
+    json(context: TransformerPluginContext): string;
+};
 
 export declare interface AssetsOptions {
     destination?: (context: TransformerPluginContext) => string;
@@ -11,85 +15,128 @@ export declare interface AssetsOptions {
     json?: (context: TransformerPluginContext) => string;
 }
 
-export declare const copy: (userOptions: CopyOptions) => TransformerPlugin;
+export declare const customElement: TransformerPlugin;
 
-export declare const COPY_OPTIONS: InvertOptional<CopyOptions>;
-
-export declare interface CopyOptions {
-    at?: 'start' | 'run' | 'finish';
-    destination: string;
-    source: string;
-    transformer?: (content: string) => string;
-}
-
-export declare const CUSTOM_ELEMENT_OPTIONS: InvertOptional<CustomElementOptions>;
-
-export declare const customElement: (userOptions?: CustomElementOptions) => TransformerPlugin;
-
-export declare interface CustomElementOptions {
-    prefix?: string;
-    typings?: boolean;
-}
-
-declare const document_2: (userOptions?: DocumentOptions) => TransformerPlugin;
+declare const document_2: TransformerPluginBatch<DocumentOptions | undefined>;
 export { document_2 as document }
 
-export declare const DOCUMENT_OPTIONS: InvertOptional<DocumentOptions>;
+export declare const DOCUMENT_OPTIONS: {
+    destination: string;
+    transformer: (json: Json) => Json;
+};
 
 export declare interface DocumentOptions {
     destination?: string;
-    transformer?: (context: TransformerPluginContext, element: unknown) => unknown;
+    transformer?: (json: Json) => Json;
 }
 
-export declare const extract: () => TransformerPlugin;
+export declare const extract: TransformerPlugin;
 
-export declare type InvertOptional<T> = {
-    [K in keyof T as undefined extends T[K] ? K : never]-?: T[K];
-} & {
-    [K in keyof T as undefined extends T[K] ? never : K]?: T[K];
+declare type Json = {
+    elements: {
+        title: string;
+    }[];
 };
 
-export declare const parse: (userOptions?: ParseOptions) => TransformerPlugin;
+declare type Json_2 = {
+    $schema: string;
+    version: number;
+    tags: {
+        name: string;
+        attributes: {
+            name: string;
+            values: {
+                name: string;
+            }[];
+            description?: string;
+        }[];
+        references: {
+            name: string;
+            url: string;
+        }[];
+        description?: string;
+    }[];
+};
+
+declare type Json_3 = {
+    $schema: string;
+    name: string;
+    version: string;
+    'description-markup': string;
+    'framework-config': {
+        'enable-when': {
+            'node-packages': string[];
+        };
+    };
+    contributions: {
+        html: {
+            elements: {
+                name: string;
+                description?: string;
+                'doc-url'?: string;
+                attributes: {
+                    name: string;
+                    value: {
+                        type: string;
+                    };
+                    default?: boolean | string | number;
+                    description?: string;
+                }[];
+                js: {
+                    events: {
+                        name: string;
+                        description?: string;
+                    }[];
+                    properties: {
+                        name: string;
+                        default?: boolean | string | number;
+                        description?: string;
+                    }[];
+                };
+                slots: {
+                    name: string;
+                    description?: string;
+                }[];
+            }[];
+        };
+    };
+};
+
+export declare const parse: TransformerPlugin<ParseOptions | undefined>;
 
 export declare const PARSE_OPTIONS: ParseOptions;
 
 export declare interface ParseOptions extends ParserOptions {
 }
 
-export declare const read: () => TransformerPlugin;
+export declare const read: TransformerPlugin;
 
-export declare const readme: (userOptions?: ReadmeOptions) => TransformerPlugin;
+export declare const style: TransformerPlugin<StyleOptions | undefined>;
 
-export declare const README_OPTIONS: InvertOptional<ReadmeOptions>;
-
-export declare interface ReadmeOptions {
-    source?: (context: TransformerPluginContext) => string;
-}
-
-declare type Return<T> = void | T | Promise<void> | Promise<T>;
-
-export declare const style: (userOptions?: StyleOptions) => TransformerPlugin;
-
-export declare const STYLE_OPTIONS: InvertOptional<StyleOptions>;
+export declare const STYLE_OPTIONS: {
+    source(context: TransformerPluginContext): string[];
+};
 
 export declare interface StyleOptions {
     source?: (context: TransformerPluginContext) => string | string[];
 }
 
-export declare const transformer: (...plugins: TransformerPlugin[]) => {
-    global: TransformerPluginGlobal;
-    start: () => Promise<void>;
-    run: (filePath: string) => Promise<TransformerPluginContext>;
-    finish: () => Promise<void>;
+export declare const transformer: (options?: TransformerOptions) => {
+    transform: (id: string) => TransformerPluginContext;
+    finish: () => void;
 };
 
-export declare interface TransformerPlugin {
-    name: string;
-    options?: unknown;
-    start?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
-    run?: (context: TransformerPluginContext, global: TransformerPluginGlobal) => Return<TransformerPluginContext>;
-    finish?: (global: TransformerPluginGlobal) => Return<TransformerPluginGlobal>;
-}
+export declare type TransformerOptions = {
+    style?: StyleOptions;
+    assets?: AssetsOptions;
+    document?: DocumentOptions;
+    visualStudioCode?: VisualStudioCodeOptions;
+    webTypes?: WebTypesOptions;
+};
+
+export declare type TransformerPlugin<Options = undefined> = (context: TransformerPluginContext, options?: Options) => TransformerPluginContext | undefined;
+
+export declare type TransformerPluginBatch<Options = undefined> = (contexts: TransformerPluginContext[], options?: Options) => void;
 
 export declare interface TransformerPluginContext {
     skipped?: boolean;
@@ -113,13 +160,6 @@ export declare interface TransformerPluginContext {
     fileExtension?: string;
     fileName?: string;
     filePath?: string;
-    metadata?: {
-        [key: string]: unknown;
-    };
-    readmeContent?: string;
-    readmeExtension?: string;
-    readmeName?: string;
-    readmePath?: string;
     styleContent?: string;
     styleContentTransformed?: string;
     styleExtension?: string;
@@ -127,35 +167,38 @@ export declare interface TransformerPluginContext {
     stylePath?: string;
 }
 
-export declare interface TransformerPluginGlobal {
-    contexts: Array<TransformerPluginContext>;
-    metadata?: {
-        [key: string]: unknown;
-    };
-}
+export declare const validate: TransformerPlugin;
 
-export declare const validate: () => TransformerPlugin;
+export declare const VISUAL_STUDIO_CODE_OPTIONS: {
+    destination: string;
+    reference: () => string;
+    transformer: (json: Json_2) => Json_2;
+};
 
-export declare const VISUAL_STUDIO_CODE_OPTIONS: InvertOptional<VisualStudioCodeOptions>;
-
-export declare const visualStudioCode: (userOptions?: VisualStudioCodeOptions) => TransformerPlugin;
+export declare const visualStudioCode: TransformerPluginBatch<VisualStudioCodeOptions | undefined>;
 
 export declare interface VisualStudioCodeOptions {
     destination?: string;
     reference?: (context: TransformerPluginContext) => string;
-    transformer?: (context: TransformerPluginContext, element: any) => any;
+    transformer?: (json: Json_2) => Json_2;
 }
 
-export declare const WEB_TYPES_OPTIONS: InvertOptional<WebTypesOptions>;
+export declare const WEB_TYPES_OPTIONS: {
+    destination: string;
+    packageName: string;
+    packageVersion: string;
+    reference: () => string;
+    transformer: (json: Json_3) => Json_3;
+};
 
-export declare const webTypes: (userOptions?: WebTypesOptions) => TransformerPlugin;
+export declare const webTypes: TransformerPluginBatch<WebTypesOptions | undefined>;
 
 export declare interface WebTypesOptions {
     destination?: string;
     packageName?: string;
     packageVersion?: string;
     reference?: (context: TransformerPluginContext) => string;
-    transformer?: (context: TransformerPluginContext, element: unknown) => unknown;
+    transformer?: (json: Json_3) => Json_3;
 }
 
 export { }

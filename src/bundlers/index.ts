@@ -1,38 +1,26 @@
-import path from 'node:path';
-
 import { createUnplugin } from 'unplugin';
 
 import * as CONSTANTS from '@/constants';
-import { type TransformerPlugin, transformer } from '@/transformer';
+import { type TransformerOptions, transformer } from '@/transformer';
 
-export type PluginOptions = TransformerPlugin[];
-
-const plugin = createUnplugin<PluginOptions>((options) => {
-	const { start, run, finish } = transformer(...options);
+const plugin = createUnplugin<TransformerOptions | undefined>((options) => {
+	const { transform, finish } = transformer(options);
 
 	return {
 		name: CONSTANTS.KEY,
 
-		async buildStart() {
-			await start();
-		},
-
-		async load(id: string) {
+		load(id: string) {
 			if (!id.endsWith('.tsx')) return;
 
-			const context = await run(id);
+			const context = transform(id);
 
 			if (context.skipped) return;
-
-			if (context.script && context.stylePath) {
-				context.script = context.script.replace(path.basename(context.stylePath), `$&?inline`);
-			}
 
 			return context.script;
 		},
 
-		async writeBundle() {
-			await finish();
+		writeBundle() {
+			finish();
 		}
 	};
 });

@@ -1,6 +1,6 @@
 import { type ParserOptions, parse as parser } from '@babel/parser';
 
-import type { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import type { TransformerPlugin } from '../transformer.types';
 
 export const PARSE_OPTIONS: ParseOptions = {
 	sourceType: 'module',
@@ -9,14 +9,8 @@ export const PARSE_OPTIONS: ParseOptions = {
 
 export interface ParseOptions extends ParserOptions {}
 
-export const parse = (userOptions?: ParseOptions): TransformerPlugin => {
-	const name = 'parse';
+export const parse: TransformerPlugin<ParseOptions | undefined> = (context, userOptions) => {
+	const options = { ...PARSE_OPTIONS, ...userOptions };
 
-	const options = Object.assign({}, PARSE_OPTIONS, userOptions) as Required<ParseOptions>;
-
-	const run = (context: TransformerPluginContext) => {
-		context.fileAST = parser(context.fileContent || '', options);
-	};
-
-	return { name, run };
+	context.fileAST = parser(context.fileContent || '', options);
 };

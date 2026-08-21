@@ -4,7 +4,6 @@ import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 import { vite as htmlplus } from '../dist/bundlers';
-import { customElement, extract, parse, read, style, validate } from '../dist/transformer';
 
 export default defineConfig({
 	resolve: {
@@ -14,7 +13,7 @@ export default defineConfig({
 			'@htmlplus/element': path.resolve(__dirname, '../src/client')
 		}
 	},
-	plugins: [htmlplus([read(), parse(), validate(), extract(), style(), customElement()])],
+	plugins: [htmlplus()],
 	test: {
 		globals: true,
 		setupFiles: path.resolve(__dirname, './vitest.setup.ts'),

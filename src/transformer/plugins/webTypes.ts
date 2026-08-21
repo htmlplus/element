@@ -13,137 +13,163 @@ import {
 	print
 } from '@/transformer/utils';
 
-import type {
-	InvertOptional,
-	TransformerPlugin,
-	TransformerPluginContext,
-	TransformerPluginGlobal
-} from '../transformer.types';
+import type { TransformerPluginBatch, TransformerPluginContext } from '../transformer.types';
 
-export const WEB_TYPES_OPTIONS: InvertOptional<WebTypesOptions> = {
+type Json = {
+	$schema: string;
+	name: string;
+	version: string;
+	'description-markup': string;
+	'framework-config': {
+		'enable-when': {
+			'node-packages': string[];
+		};
+	};
+	contributions: {
+		html: {
+			elements: {
+				name: string;
+				description?: string;
+				'doc-url'?: string;
+				attributes: {
+					name: string;
+					value: {
+						type: string;
+					};
+					default?: boolean | string | number;
+					description?: string;
+				}[];
+				js: {
+					events: {
+						name: string;
+						description?: string;
+					}[];
+					properties: {
+						name: string;
+						default?: boolean | string | number;
+						description?: string;
+					}[];
+				};
+				slots: {
+					name: string;
+					description?: string;
+				}[];
+			}[];
+		};
+	};
+};
+
+export const WEB_TYPES_OPTIONS = {
 	destination: path.join('dist', 'web-types.json'),
 	packageName: '',
 	packageVersion: '',
 	reference: () => '',
-	transformer: (_context, element) => element
-};
+	transformer: (json) => json
+} satisfies WebTypesOptions;
 
 export interface WebTypesOptions {
 	destination?: string;
 	packageName?: string;
 	packageVersion?: string;
 	reference?: (context: TransformerPluginContext) => string;
-	transformer?: (context: TransformerPluginContext, element: unknown) => unknown;
+	transformer?: (json: Json) => Json;
 }
+export const webTypes: TransformerPluginBatch<WebTypesOptions | undefined> = (
+	contexts1,
+	userOptions
+) => {
+	const options = { ...WEB_TYPES_OPTIONS, ...userOptions };
 
-export const webTypes = (userOptions?: WebTypesOptions): TransformerPlugin => {
-	const name = 'webTypes';
+	const contexts = contexts1.sort((a, b) => {
+		return (a.elementKey ?? '').toUpperCase().localeCompare((b.elementKey ?? '').toUpperCase());
+	});
 
-	const options = Object.assign({}, WEB_TYPES_OPTIONS, userOptions) as Required<WebTypesOptions>;
-
-	const finish = (global: TransformerPluginGlobal) => {
-		const contexts = global.contexts.sort((a, b) => {
-			return (a.elementKey ?? '').toUpperCase().localeCompare((b.elementKey ?? '').toUpperCase());
-		});
-
-		const json = {
-			$schema: 'http://json.schemastore.org/web-types',
-			name: options.packageName,
-			version: options.packageVersion,
-			'description-markup': 'markdown',
-			'framework-config': {
-				'enable-when': {
-					'node-packages': [options.packageName]
-				}
-			},
-			contributions: {
-				html: {
-					elements: [] as unknown[]
-				}
+	const json: Json = {
+		$schema: 'http://json.schemastore.org/web-types',
+		name: options.packageName,
+		version: options.packageVersion,
+		'description-markup': 'markdown',
+		'framework-config': {
+			'enable-when': {
+				'node-packages': [options.packageName]
 			}
-		};
-
-		for (const context of contexts) {
-			const attributes = context.classProperties?.map((property) =>
-				Object.assign(
-					{
-						name: extractAttribute(property) || kebabCase(property.key['name']),
-						value: {
-							// kind: TODO
-							type: print(
-								getType(
-									context.directoryPath!,
-									context.fileAST!,
-									property.typeAnnotation?.['typeAnnotation']
-								)
-							)
-							// required: TODO
-							// default: TODO
-						},
-						default: getInitializer(property.value)
-					},
-					extractFromComment(property, ['description', 'deprecated', 'experimental'])
-				)
-			);
-
-			const events = context.classEvents?.map((event) =>
-				Object.assign(
-					{
-						name: kebabCase(event.key['name']) // TODO
-						// 'value': TODO
-					},
-					extractFromComment(event, ['description', 'deprecated', 'experimental'])
-				)
-			);
-
-			const methods = context.classMethods?.map((method) =>
-				Object.assign(
-					{
-						name: method.key['name']
-						// 'value': TODO
-					},
-					extractFromComment(method, ['description', 'deprecated', 'experimental'])
-				)
-			);
-
-			const properties = context.classProperties?.map((property) =>
-				Object.assign(
-					{
-						name: property.key['name'],
-						// 'value': TODO
-						default: getInitializer(property.value)
-					},
-					extractFromComment(property, ['description', 'deprecated', 'experimental'])
-				)
-			);
-
-			const element = Object.assign(
-				{
-					name: context.elementKey,
-					'doc-url': options.reference?.(context),
-					js: {
-						events,
-						properties: ([] as any).concat(properties, methods)
-					},
-					attributes
-				},
-				extractFromComment(context.class!, ['description', 'deprecated', 'experimental', 'slots'])
-			);
-
-			const transformed = options.transformer?.(context, element) || element;
-
-			json.contributions.html.elements.push(transformed);
+		},
+		contributions: {
+			html: {
+				elements: []
+			}
 		}
-
-		const dirname = path.dirname(options.destination);
-
-		fs.ensureDirSync(dirname);
-
-		fs.writeJSONSync(options.destination, json, {
-			encoding: 'utf8',
-			spaces: 2
-		});
 	};
 
-	return { name, finish };
+	for (const context of contexts) {
+		const element: Json['contributions']['html']['elements'][number] = {
+			name: context.elementKey || '',
+			'doc-url': options.reference?.(context),
+			attributes: [],
+			js: {
+				events: [],
+				properties: []
+			},
+			slots: [],
+			...extractFromComment(context.class!, ['description', 'deprecated', 'experimental', 'slots'])
+		};
+
+		context.classProperties?.forEach((property) => {
+			element.attributes.push({
+				name: extractAttribute(property) || kebabCase(property.key['name']),
+				value: {
+					// kind: TODO
+					type: print(
+						getType(
+							context.directoryPath!,
+							context.fileAST!,
+							property.typeAnnotation?.['typeAnnotation']
+						)
+					)
+					// required: TODO
+					// default: TODO
+				},
+				default: getInitializer(property.value),
+				...extractFromComment(property, ['description', 'deprecated', 'experimental'])
+			});
+		});
+
+		context.classEvents?.forEach((event) => {
+			element.js.events.push({
+				name: kebabCase(event.key['name']), // TODO
+				// 'value': TODO
+				...extractFromComment(event, ['description', 'deprecated', 'experimental'])
+			});
+		});
+
+		context.classProperties?.forEach((property) => {
+			element.js.properties.push({
+				name: property.key['name'],
+				// 'value': TODO
+				default: getInitializer(property.value),
+				...extractFromComment(property, ['description', 'deprecated', 'experimental'])
+			});
+		});
+
+		context.classMethods?.forEach((method) => {
+			element.js.properties.push({
+				name: method.key['name'],
+				// 'value': TODO
+				...extractFromComment(method, ['description', 'deprecated', 'experimental'])
+			});
+		});
+
+		json.contributions.html.elements.push(element);
+	}
+
+	const transformed = options.transformer?.(json) || json;
+
+	const dirname = path.dirname(options.destination);
+
+	fs.ensureDirSync(dirname);
+
+	fs.writeJSONSync(options.destination, transformed, {
+		encoding: 'utf8',
+		spaces: 2
+	});
 };

@@ -3,7 +3,6 @@ import path from 'node:path';
 import { defineConfig } from 'vite';
 
 import { vite as htmlplus } from '../dist/bundlers';
-import { customElement, extract, parse, read, style, validate } from '../dist/transformer';
 
 export default defineConfig({
 	server: {
@@ -17,5 +16,5 @@ export default defineConfig({
 			'@htmlplus/element': path.resolve(__dirname, '../src/client')
 		}
 	},
-	plugins: [htmlplus([read(), parse(), validate(), extract(), style(), customElement()])]
+	plugins: [htmlplus()]
 });
