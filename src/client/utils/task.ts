@@ -1,8 +1,8 @@
-export interface QueueOptions {
+export type QueueOptions = {
 	canStart?: () => boolean;
 	canRun?: () => boolean;
 	handler: () => void;
-}
+};
 
 export const task = (options: QueueOptions) => {
 	let running: boolean;

@@ -126,17 +126,6 @@ const TYPES = [
 		}
 	},
 	{
-		flag: CONSTANTS.TYPE_ENUM,
-		check: (value) => {
-			return typeof value === 'string';
-		},
-		parse: (value: string) => {
-			return {
-				value: value
-			};
-		}
-	},
-	{
 		flag: CONSTANTS.TYPE_STRING,
 		check: (value) => {
 			return typeof value === 'string';

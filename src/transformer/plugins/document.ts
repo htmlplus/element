@@ -1,275 +1,131 @@
-// biome-ignore-all lint: TODO
-
 import path from 'node:path';
 
-import { capitalCase, kebabCase } from 'change-case';
+import { capitalCase } from 'change-case';
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import type ts from 'typescript';
 
 import * as CONSTANTS from '@/constants';
-import {
-	extractAttribute,
-	extractFromComment,
-	getInitializer,
-	getTypeReference,
-	print
-} from '@/transformer/utils';
 
-import type { TransformerPluginBatch } from '../transformer.types';
+import type { TransformerContext } from '../transformer.types';
+import { getDescription, getTags, getTypeReference, hasTag, parseNamedTag } from '../utils';
 
-type Json = {
-	elements: {
-		title: string;
-	}[];
+export type DocumentJson = Record<string, unknown>;
+
+export type DocumentOptions<T = DocumentJson> = {
+	destination?: string;
+	transform?: (json: DocumentJson) => T;
 };
 
 export const DOCUMENT_OPTIONS = {
 	destination: path.join('dist', 'document.json'),
-	transformer: (json) => json
+	transform: (json) => json
 } satisfies DocumentOptions;
 
-export interface DocumentOptions {
-	destination?: string;
-	transformer?: (json: Json) => Json;
-}
-
-export const document: TransformerPluginBatch<DocumentOptions | undefined> = (
-	contexts,
-	userOptions
-) => {
+export const document = (contexts: TransformerContext[], userOptions?: DocumentOptions): void => {
 	const options = { ...DOCUMENT_OPTIONS, ...userOptions };
 
-	const json: Json = {
-		elements: []
-	};
+	const entries = contexts
+		.flatMap((context) => context.elements.map((element) => ({ context, element })))
+		.sort((a, b) => (a.element.key > b.element.key ? +1 : -1));
 
-	for (const context of contexts) {
-		const events = context.classEvents!.map((event) => {
-			const cancelable = (() => {
-				if (!event.decorators) return false;
-
-				try {
-					for (const decorator of event.decorators) {
-						for (const argument of decorator.expression['arguments']) {
-							for (const property of argument.properties) {
-								if (property.key.name !== 'cancelable') continue;
-								if (property.value.type !== 'BooleanLiteral') continue;
-								if (!property.value.value) continue;
-								return true;
-							}
-						}
-					}
-				} catch {}
-
-				return false;
-			})();
-
-			const detail = print(event.typeAnnotation?.['typeAnnotation']);
-
-			const detailReference = getTypeReference(
-				context.fileAST!,
-				event.typeAnnotation?.['typeAnnotation'].typeParameters.params[0]
-			);
-
-			const name = event.key['name'];
-
-			return {
-				cancelable,
-				detail,
-				detailReference,
-				name,
-				...extractFromComment(event)
-			};
-		});
-
+	const elements = entries.map(({ context, element }) => {
 		const lastModified = glob
 			.sync('**/*.*', { cwd: context.directoryPath })
-			.map((file) => fs.statSync(path.join(context.directoryPath!, file)).mtime)
+			.map((file) => fs.statSync(path.join(context.directoryPath, file)).mtime)
 			.sort((a, b) => (a > b ? 1 : -1))
 			.pop();
 
-		const methods = context.classMethods!.map((method) => {
-			const async = method.async;
+		const events = element.events.map((event) => ({
+			name: event.name,
+			description: event.description,
+			cancelable: event.cancelable,
+			detail: event.detail,
+			detailReference: getTypeReference(
+				(event.node.type as ts.TypeReferenceNode)?.typeArguments?.at(0)
+			),
+			tags: event.tags
+		}));
 
-			const name = method.key['name'];
+		const methods = element.methods.map((method) => ({
+			name: method.name,
+			description: method.description,
+			async: method.async,
+			parameters: method.parameters.map((parameter) => ({
+				name: parameter.name,
+				description: parameter.description,
+				required: parameter.required,
+				type: parameter.type,
+				typeReference: getTypeReference(parameter.node.type)
+			})),
+			signature: method.signature,
+			returns: method.returns,
+			tags: method.tags.filter((tag) => tag.name !== 'param')
+		}));
 
-			const comments = extractFromComment(method);
+		const properties = element.properties.map((property) => ({
+			attribute: property.attribute,
+			initializer: property.initializer,
+			name: property.name,
+			readonly: property.readonly,
+			reflects: property.reflects,
+			required: property.required,
+			type: property.type,
+			typeReference: getTypeReference(property.node.type),
+			description: property.description,
+			values: getTags(property.node, 'value', parseNamedTag),
+			tags: property.tags.filter((tag) => tag.name !== 'value')
+		}));
 
-			// TODO
-			const parameters = method.params.map((param) => ({
-				description: (comments.params as any)?.find((item) => item.name === param['name'])
-					?.description,
-				required: !param['optional'],
-				name: param['name'],
-				type: print(param?.['typeAnnotation']?.typeAnnotation) || undefined,
-				typeReference: getTypeReference(context.fileAST!, param?.['typeAnnotation']?.typeAnnotation)
-			}));
-
-			// TODO
-			delete comments.params;
-
-			const returns = print(method.returnType?.['typeAnnotation']) || 'void';
-
-			const returnsReference = getTypeReference(
-				context.fileAST!,
-				method.returnType?.['typeAnnotation']
-			);
-
-			const signature = [
-				method.key['name'],
-				'(',
-				parameters
-					.map((parameter) => {
-						let string = '';
-						string += parameter.name;
-						string += parameter.required ? '' : '?';
-						string += parameter.type ? ': ' : '';
-						string += parameter.type ?? '';
-						return string;
-					})
-					.join(', '),
-				')',
-				' => ',
-				returns
-			].join('');
-
-			return {
-				async,
-				name,
-				parameters,
-				returnsReference,
-				signature,
-				...comments,
-				returns,
-				tags:
-					returns !== 'void' && comments.returns
-						? [
-								{
-									key: 'returns',
-									value: `${comments.returns}`
-								}
-							]
-						: []
-			};
-		});
-
-		const properties = context.classProperties!.map((property) => {
-			const attribute = extractAttribute(property) || kebabCase(property.key['name']);
-
-			// TODO
-			const initializer = getInitializer(property.value);
-
-			const name = property.key['name'];
-
-			const readonly = property['kind'] === 'get';
-
-			// TODO
-			const reflects = (() => {
-				if (!property.decorators) return false;
-
-				try {
-					for (const decorator of property.decorators) {
-						for (const argument of decorator.expression['arguments']) {
-							for (const property of argument.properties) {
-								if (property.key.name !== 'reflect') continue;
-								if (property.value.type !== 'BooleanLiteral') continue;
-								if (!property.value.value) continue;
-								return true;
-							}
-						}
-					}
-				} catch {}
-
-				return false;
-			})();
-
-			const required = 'optional' in property && !property.optional;
-
-			// TODO
-			const type = property['returnType']
-				? print(property['returnType']?.['typeAnnotation'])
-				: print(property.typeAnnotation?.['typeAnnotation']);
-
-			const typeReference = getTypeReference(
-				context.fileAST!,
-				property.typeAnnotation?.['typeAnnotation']
-			);
-
-			return {
-				attribute,
-				initializer,
-				name,
-				readonly,
-				reflects,
-				required,
-				type,
-				typeReference,
-				...extractFromComment(property)
-			};
-		});
-
-		// TODO
 		const styles = (() => {
-			if (!context.styleContent) return [];
-			return context.styleContent
+			if (!element.styleContent) return [];
+
+			return element.styleContent
 				.split(CONSTANTS.DECORATOR_CSS_VARIABLE)
 				.slice(1)
 				.map((section) => {
 					const [first, second] = section.split(/\n/);
-
-					const description = first.replace('*/', '').trim();
-
-					const name = second.split(':')[0].trim();
-
-					const initializerDefault = second.split(':').slice(1).join(':').replace(';', '').trim();
-
-					// TODO
-					const initializerTransformed = context.styleContentTransformed
-						?.split(name)
-						?.at(1)
-						?.split(':')
-						?.filter((section) => !!section)
-						?.at(0)
-						?.split(/;|}/)
-						?.at(0)
-						?.trim();
-
-					const initializer = initializerTransformed || initializerDefault;
-
 					return {
-						description,
-						initializer,
-						name
+						description: first.replace('*/', '').trim(),
+						initializer: second.split(':').slice(1).join(':').replace(';', '').trim(),
+						name: second.split(':')[0].trim()
 					};
 				});
 		})();
 
-		const title = capitalCase(context.elementKey!);
-
-		const element = {
-			events,
-			key: context.elementKey!,
+		return {
+			key: element.key,
+			title: capitalCase(element.key),
+			description: getDescription(element.node),
 			lastModified,
+			development: hasTag(element.node, 'development'),
+			thirdParty: hasTag(element.node, 'thirdParty'),
+			stable: hasTag(element.node, 'stable'),
+			subset: hasTag(element.node, 'subset'),
+			dependencies: getTags(element.node, 'dependency').at(0)?.description,
+			events,
 			methods,
 			properties,
 			styles,
-			title,
-			...extractFromComment(context.class!)
+			parts: getTags(element.node, 'part', parseNamedTag),
+			slots: getTags(element.node, 'slot', parseNamedTag),
+			tags: getTags(element.node, [
+				'!thirdParty',
+				'!dependency',
+				'!development',
+				'!stable',
+				'!subset',
+				'!part',
+				'!slot'
+			])
 		};
-
-		json.elements.push(element);
-	}
-
-	json.elements = json.elements.sort((a, b) => (a.title > b.title ? 1 : -1));
-
-	const transformed = options.transformer?.(json) || json;
-
-	const dirname = path.dirname(options.destination);
-
-	fs.ensureDirSync(dirname);
-
-	fs.writeJSONSync(options.destination, transformed, {
-		encoding: 'utf8',
-		spaces: 2
 	});
+
+	const json: DocumentJson = { elements };
+
+	const transformed = options.transform(json);
+
+	fs.ensureDirSync(path.dirname(options.destination));
+
+	fs.writeJSONSync(options.destination, transformed, { encoding: 'utf8', spaces: 2 });
 };

@@ -9,7 +9,7 @@ import { Bind } from './bind';
  * [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options)
  * for the event listener.
  */
-export interface ListenOptions {
+export type ListenOptions = {
 	/**
 	 * A boolean value indicating that events of this type will be dispatched to the registered
 	 * `listener` before being dispatched to any `EventTarget` beneath it in the DOM tree.
@@ -41,7 +41,7 @@ export interface ListenOptions {
 	 * The target element, defaults to `host`.
 	 */
 	target?: 'host' | 'body' | 'document' | 'window';
-}
+};
 
 /**
  * Will be called whenever the specified event is delivered to the target

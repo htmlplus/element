@@ -1,31 +1,32 @@
-import type t from '@babel/types';
+import ts from 'typescript';
 
-import { visitor } from './visitor';
+export const getTypeReference = (type?: ts.TypeNode): string | undefined => {
+	if (!type || !ts.isTypeReferenceNode(type)) return;
 
-export const getTypeReference = (file: t.File, node: t.Node): string | undefined => {
-	if (!node) return;
+	const typeName = type.typeName;
 
-	if (node.type !== 'TSTypeReference') return;
+	if (!ts.isIdentifier(typeName)) return;
 
-	let result: string | undefined;
+	const sourceFile = type.getSourceFile();
 
-	visitor(file, {
-		ImportDeclaration(path) {
-			for (const specifier of path.node.specifiers) {
-				const alias = specifier.local.name;
+	for (const statement of sourceFile.statements) {
+		if (!ts.isImportDeclaration(statement)) continue;
 
-				if (node.typeName.type !== 'Identifier') continue;
+		for (const specifier of statement.importClause?.namedBindings
+			? ts.isNamedImports(statement.importClause.namedBindings)
+				? statement.importClause.namedBindings.elements
+				: []
+			: []) {
+			const localName = specifier.name.text;
+			const importedName = specifier.propertyName?.text ?? localName;
 
-				if (alias !== node.typeName.name) continue;
-
-				result = path.node.source.value;
-
-				path.stop();
-
-				break;
+			if (localName === typeName.text || importedName === typeName.text) {
+				return ts.isStringLiteral(statement.moduleSpecifier)
+					? statement.moduleSpecifier.text
+					: undefined;
 			}
 		}
-	});
+	}
 
-	return result;
+	return;
 };

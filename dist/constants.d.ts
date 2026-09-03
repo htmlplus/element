@@ -64,8 +64,6 @@ export declare const TYPE_BOOLEAN: number;
 
 export declare const TYPE_DATE: number;
 
-export declare const TYPE_ENUM: number;
-
 export declare const TYPE_FUNCTION: number;
 
 export declare const TYPE_NULL: number;

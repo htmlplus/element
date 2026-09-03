@@ -1,79 +1,63 @@
 import path from 'node:path';
 
-import t from '@babel/types';
 import fs from 'fs-extra';
 
 import * as CONSTANTS from '@/constants';
-import { addDependency } from '@/transformer/utils';
 
-import type { TransformerPlugin, TransformerPluginContext } from '../transformer.types';
+import type { TransformerContext, TransformerElement } from '../transformer.types';
+import { hasStaticClassProperty } from '../utils';
 
 export const STYLE_OPTIONS = {
+	resolver(_context, element) {
+		return `${element.stylePath}?inline`;
+	},
 	source(context) {
 		return ['css', 'less', 'sass', 'scss', 'styl'].map((key) => {
-			return path.join(context.directoryPath || '', `${context.fileName}.${key}`);
+			return path.join(context.directoryPath, `${context.fileName}.${key}`);
 		});
 	}
 } satisfies StyleOptions;
 
-export interface StyleOptions {
-	source?: (context: TransformerPluginContext) => string | string[];
-}
+export type StyleOptions = {
+	resolver?: (context: TransformerContext, element: TransformerElement) => string;
+	source?: (context: TransformerContext, element: TransformerElement) => string | string[];
+};
 
-export const style: TransformerPlugin<StyleOptions | undefined> = (context, userOptions) => {
+export const style = (context: TransformerContext, userOptions?: StyleOptions): void => {
 	const options = { ...STYLE_OPTIONS, ...userOptions };
 
-	const sources = [options.source(context)].flat();
+	for (const element of context.elements) {
+		element.stylePath = [options.source(context, element)]
+			.flat()
+			.find((source) => fs.existsSync(source));
 
-	for (const source of sources) {
-		if (!source) continue;
+		if (!element.stylePath) continue;
 
-		if (!fs.existsSync(source)) continue;
+		if (!Object.getOwnPropertyDescriptor(element, 'styleContent')?.get) {
+			Object.defineProperty(element, 'styleContent', {
+				configurable: true,
+				enumerable: true,
+				get() {
+					return fs.readFileSync(element.stylePath, 'utf8');
+				}
+			});
+		}
 
-		context.stylePath = source;
+		element.styleExtension = path.extname(element.stylePath);
 
-		break;
-	}
+		element.styleName = path.basename(element.stylePath, element.styleExtension);
 
-	if (!context.stylePath) return;
+		const exists = hasStaticClassProperty(element.node, CONSTANTS.STATIC_STYLE);
 
-	context.styleContent = fs.readFileSync(context.stylePath, 'utf8');
+		if (exists) continue;
 
-	context.styleExtension = path.extname(context.stylePath);
+		const local = `${CONSTANTS.STYLE_IMPORTED}_${element.name}`;
 
-	context.styleName = path.basename(context.stylePath, context.styleExtension);
+		context.script.prepend(`\nimport ${local} from '${options.resolver(context, element)}';\n`);
 
-	if (!context.fileAST) return;
-
-	const exists = context.class?.body.body.some((node) => {
-		return (
-			t.isClassProperty(node) &&
-			node.static &&
-			t.isIdentifier(node.key) &&
-			node.key.name === CONSTANTS.STATIC_STYLE
+		context.script.prependLeft(
+			element.node.members.pos,
+			`\nstatic readonly ${CONSTANTS.STATIC_STYLE} = ${local};\n`
 		);
-	});
-
-	if (exists) return;
-
-	const { local } = addDependency(
-		context.fileAST,
-		`${context.stylePath}?inline`,
-		CONSTANTS.STYLE_IMPORTED,
-		undefined,
-		true
-	);
-
-	const property = t.classProperty(
-		t.identifier(CONSTANTS.STATIC_STYLE),
-		t.identifier(local || ''),
-		undefined,
-		null,
-		undefined,
-		true
-	);
-
-	t.addComment(property, 'leading', CONSTANTS.COMMENT_AUTO_ADDED, true);
-
-	context.class?.body.body.unshift(property);
+	}
 };

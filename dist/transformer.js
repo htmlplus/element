@@ -1,885 +1,681 @@
-import path, { join, resolve, dirname } from "node:path";
+import path from "node:path";
 import fs from "fs-extra";
+import MagicString from "magic-string";
+import ts from "typescript";
+import { DECORATOR_CSS_VARIABLE, DECORATOR_ELEMENT, DECORATOR_PROPERTY, DECORATOR_METHOD, DECORATOR_EVENT, PACKAGE_NAME, TYPE_ANY, TYPE_BOOLEAN, TYPE_BIGINT, TYPE_NUMBER, TYPE_STRING, TYPE_NULL, TYPE_UNDEFINED, TYPE_ARRAY, TYPE_DATE, TYPE_FUNCTION, TYPE_OBJECT, STYLE_IMPORTED, STATIC_STYLE, STATIC_TAG } from "./constants.js";
+import { capitalCase, kebabCase, pascalCase } from "change-case";
 import { glob } from "glob";
-import { pascalCase, kebabCase, capitalCase } from "change-case";
-import { COMMENT_AUTO_ADDED, DECORATOR_PROPERTY, STATIC_TAG, DECORATOR_PROPERTY_TYPE, PACKAGE_NAME, TYPE_OBJECT, TYPE_NULL, TYPE_ARRAY, TYPE_STRING, TYPE_ENUM, TYPE_NUMBER, TYPE_DATE, TYPE_BOOLEAN, TYPE_ANY, DECORATOR_CSS_VARIABLE, DECORATOR_EVENT, DECORATOR_METHOD, DECORATOR_STATE, STATIC_STYLE, STYLE_IMPORTED, DECORATOR_ELEMENT } from "./constants.js";
-import core from "@babel/traverse";
-import core$1 from "@babel/generator";
-import { parse as parse$1 } from "@babel/parser";
-import t from "@babel/types";
-import template from "@babel/template";
 const ASSETS_OPTIONS = {
   destination(context) {
-    return path.join("dist", "assets", context.fileName || "");
-  },
-  source(context) {
-    return path.join(context.directoryPath || "", "assets");
+    return path.join("dist", "assets", context.fileName);
   },
   json(context) {
-    return path.join("dist", "assets", `${context.fileName || ""}.json`);
+    return path.join("dist", "assets", `${context.fileName}.json`);
+  },
+  source(context) {
+    return path.join(context.directoryPath, "assets");
   }
 };
-const assets = (context, userOptions) => {
+const assets = (contexts, userOptions) => {
   const options = { ...ASSETS_OPTIONS, ...userOptions };
-  context.assetsDestination = options.destination(context);
-  context.assetsSource = options.source(context);
-  if (!context.assetsSource) return;
-  if (!fs.existsSync(context.assetsSource)) return;
-  fs.copySync(context.assetsSource, context.assetsDestination);
-  const json = options.json?.(context);
-  if (!json) return;
-  fs.ensureDirSync(path.dirname(json));
-  const files = glob.sync("**/*.*", { cwd: context.assetsDestination });
-  fs.writeJSONSync(json, files, { encoding: "utf8", spaces: 2 });
+  for (const context of contexts) {
+    for (const element of context.elements) {
+      element.assetsDestination = options.destination(context, element);
+      element.assetsSource = options.source(context, element);
+      if (!element.assetsSource) continue;
+      if (!fs.existsSync(element.assetsSource)) continue;
+      fs.copySync(element.assetsSource, element.assetsDestination);
+      const json = options.json(context, element);
+      if (!json) continue;
+      fs.ensureDirSync(path.dirname(json));
+      const files = glob.sync("**/*.*", { cwd: element.assetsDestination });
+      fs.writeJSONSync(json, files, { encoding: "utf8", spaces: 2 });
+    }
+  }
 };
-const traverse = core.default || core;
-const visitor = traverse;
-function addDependency(path2, source, local, imported, comment) {
-  let declaration;
-  let file = path2;
-  while (file.parentPath) file = file.parentPath;
-  file = file.node || file;
-  visitor(file, {
-    ImportDeclaration(path22) {
-      if (path22.node.source.value !== source) return;
-      declaration = path22.node;
-    }
-  });
-  let specifier = declaration?.specifiers.find((specifier2) => {
-    {
-      return specifier2.type === "ImportDefaultSpecifier";
-    }
-  });
-  if (specifier)
-    return {
-      local: specifier.local.name,
-      node: declaration
+const findDecorator = (node, name) => {
+  if (!ts.canHaveDecorators(node)) return;
+  const decorators = ts.getDecorators(node);
+  if (!decorators) return;
+  for (const decorator of decorators) {
+    const expression = decorator.expression;
+    if (!ts.isCallExpression(expression)) continue;
+    if (!ts.isIdentifier(expression.expression)) continue;
+    if (expression.expression.text === name) return decorator;
+  }
+};
+const getDescription = (node) => {
+  return ts.getJSDocCommentsAndTags(node).find(ts.isJSDoc)?.comment?.toString()?.replaceAll("\n\n", " ")?.replaceAll("\n", " ") || "";
+};
+const getTags = (node, filter, transform) => {
+  const filters = [filter].flat().filter(Boolean);
+  const excludes = filters.filter((name) => name.startsWith("!")).map((name) => name.slice(1));
+  const includes = filters.filter((name) => !name.startsWith("!"));
+  return ts.getJSDocTags(node).filter((tag2) => {
+    const name = tag2.tagName.text;
+    if (excludes.includes(name)) return false;
+    if (includes.length) return includes.includes(name);
+    return true;
+  }).map((tag2) => {
+    const result = {
+      name: tag2.tagName.text,
+      description: (tag2.comment?.toString() ?? "").replace(/\s+/g, " ")
     };
-  {
-    specifier = t.importDefaultSpecifier(t.identifier(local));
-  }
-  if (declaration) {
-    {
-      declaration.specifiers.unshift(specifier);
-    }
-  } else {
-    declaration = t.importDeclaration(specifier ? [specifier] : [], t.stringLiteral(source));
-    (file.program || file).body.unshift(declaration);
-    {
-      t.addComment(declaration, "leading", COMMENT_AUTO_ADDED, true);
-    }
-  }
-  return {
-    local,
-    node: declaration
-  };
-}
-const extractAttribute = (property) => {
-  try {
-    return property.decorators.find((decorator) => decorator.expression.callee.name === DECORATOR_PROPERTY).expression.arguments.at(0).properties.find((property2) => property2.key.name === "attribute").value.value;
-  } catch {
-  }
-};
-const extractFromComment = (node, whitelist) => {
-  const normalized = [];
-  const result = {
-    description: ""
-  };
-  const lines = node.leadingComments?.flatMap((comment) => {
-    if (comment.type === "CommentLine") {
-      return comment.value;
-    }
-    return comment.value.split("\n");
-  })?.map((line) => line.trim().replace(/^\*/, "").trim())?.filter((line) => line.trim());
-  for (const line of lines || []) {
-    if (line.startsWith("@")) {
-      normalized.push(line);
-      continue;
-    }
-    if (!normalized.length) normalized.push("");
-    normalized[normalized.length - 1] += ` ${line}`;
-  }
-  for (const line of normalized) {
-    if (!line.startsWith("@")) {
-      result.description = line.trim();
-      continue;
-    }
-    const regex = /@(\w+)(?:\s*({\w+})\s*)?(?:\s*([-a-zA-Z\s]+)\s*-\s*)?(.*)/;
-    const groups = regex.exec(line);
-    if (!groups) continue;
-    const tag = groups[1]?.trim();
-    const type = groups[2]?.trim().slice(1, -1);
-    const name = groups[3]?.trim();
-    const description = groups[4]?.trim();
-    if (name && description) {
-      const key = `${tag}s`;
-      if (whitelist && !whitelist.includes(key)) continue;
-      result[key] ||= [];
-      result[key].push({ name, type, description });
-    } else {
-      const key = tag;
-      if (whitelist && !whitelist.includes(key)) continue;
-      result[key] = description || true;
-    }
-  }
-  return result;
-};
-const getInitializer = (node) => {
-  return node?.extra?.raw || node?.["value"];
-};
-const getTypeReferenceName = (ref) => {
-  switch (ref.typeName.type) {
-    case "Identifier":
-      return ref.typeName.name;
-    default:
-      return void 0;
-  }
-};
-const getType = (directory, file, node) => {
-  if (!node) return node;
-  if (node.type !== "TSTypeReference") return node;
-  let result;
-  const typeName = getTypeReferenceName(node);
-  if (!typeName) return node;
-  visitor(file, {
-    ClassDeclaration(path2) {
-      if (path2.node.id?.name !== typeName) return;
-      result = path2.node;
-      path2.stop();
-    },
-    ImportDeclaration(path2) {
-      for (const specifier of path2.node.specifiers) {
-        const alias = specifier.local.name;
-        if (alias !== typeName) continue;
-        try {
-          const reference = glob.sync(
-            [".ts*", "/index.ts*"].map((key) => {
-              return join(directory, path2.node.source.value).replace(/\\/g, "/") + key;
-            })
-          ).find((reference2) => reference2 && fs.existsSync(reference2));
-          if (!reference) continue;
-          const content = fs.readFileSync(reference, "utf8");
-          const filePath = resolve(directory, `${path2.node.source.value}.ts`);
-          const pathWithAst = path2;
-          pathWithAst.$ast ||= parse$1(content, {
-            allowImportExportEverywhere: true,
-            plugins: ["typescript"],
-            ranges: false
-          });
-          result = getType(dirname(filePath), pathWithAst.$ast, node);
-        } catch {
-        }
-        path2.stop();
-        break;
-      }
-    },
-    TSInterfaceDeclaration(path2) {
-      if (path2.node.id.name !== typeName) return;
-      result = path2.node;
-      path2.stop();
-    },
-    TSTypeAliasDeclaration(path2) {
-      if (path2.node.id.name !== typeName) return;
-      const typeAnnotation = path2.node.typeAnnotation;
-      switch (typeAnnotation.type) {
-        case "TSUnionType": {
-          const types = [];
-          for (const prev of typeAnnotation.types) {
-            const next = getType(directory, file, prev);
-            if (next.type === "TSUnionType") {
-              types.push(...next.types);
-            } else {
-              types.push(next);
-            }
-          }
-          typeAnnotation.types = types;
-          result = typeAnnotation;
-          break;
-        }
-        default: {
-          result = getType(directory, file, typeAnnotation);
-          break;
-        }
-      }
-      path2.stop();
-    }
+    return transform ? transform(result) : result;
   });
-  return result || node;
 };
-const getTypeReference = (file, node) => {
-  if (!node) return;
-  if (node.type !== "TSTypeReference") return;
-  let result;
-  visitor(file, {
-    ImportDeclaration(path2) {
-      for (const specifier of path2.node.specifiers) {
-        const alias = specifier.local.name;
-        if (node.typeName.type !== "Identifier") continue;
-        if (alias !== node.typeName.name) continue;
-        result = path2.node.source.value;
-        path2.stop();
-        break;
+const getTypeReference = (type) => {
+  if (!type || !ts.isTypeReferenceNode(type)) return;
+  const typeName = type.typeName;
+  if (!ts.isIdentifier(typeName)) return;
+  const sourceFile = type.getSourceFile();
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement)) continue;
+    for (const specifier of statement.importClause?.namedBindings ? ts.isNamedImports(statement.importClause.namedBindings) ? statement.importClause.namedBindings.elements : [] : []) {
+      const localName = specifier.name.text;
+      const importedName = specifier.propertyName?.text ?? localName;
+      if (localName === typeName.text || importedName === typeName.text) {
+        return ts.isStringLiteral(statement.moduleSpecifier) ? statement.moduleSpecifier.text : void 0;
       }
     }
-  });
-  return result;
+  }
+  return;
 };
 const hasDecorator = (node, name) => {
-  if ("decorators" in node === false) return false;
-  if (!node.decorators) return false;
-  for (const decorator of node.decorators) {
-    const expression = decorator.expression;
-    if (!t.isCallExpression(expression)) continue;
-    if (!t.isIdentifier(expression.callee)) continue;
-    if (expression.callee.name === name) {
-      return true;
-    }
-  }
-  return false;
+  return !!findDecorator(node, name);
 };
-const generator = core$1.default || core$1;
-const print = (ast) => {
-  if (!ast) return "";
-  return generator(ast, { decoratorsBeforeExport: true }).code;
+const hasStaticClassProperty = (node, name) => {
+  return node.members.some(
+    (member) => ts.isPropertyDeclaration(member) && member.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.StaticKeyword) && ts.isIdentifier(member.name) && member.name.text === name
+  );
 };
-const customElement = (context) => {
-  if (!context.fileAST) return;
-  const ast = t.cloneNode(context.fileAST, true);
-  context.elementTagName = `${context.elementKey}`;
-  context.elementInterfaceName = `HTML${pascalCase(context.elementTagName)}Element`;
-  visitor(ast, {
-    ClassDeclaration(path2) {
-      const { body, id } = path2.node;
-      if (id?.name !== context.className) return;
-      const node = t.classProperty(
-        t.identifier(STATIC_TAG),
-        t.stringLiteral(context.elementTagName || ""),
-        void 0,
-        void 0,
-        void 0,
-        true
-      );
-      t.addComment(node, "leading", COMMENT_AUTO_ADDED, true);
-      body.body.unshift(node);
-    }
-  });
-  visitor(ast, {
-    Decorator(path2) {
-      const { expression } = path2.node;
-      if (!t.isCallExpression(expression)) return;
-      if (!t.isIdentifier(expression.callee)) return;
-      if (expression.callee.name !== DECORATOR_PROPERTY) return;
-      if (!expression.arguments.length) {
-        expression.arguments.push(t.objectExpression([]));
-      }
-      const [argument] = expression.arguments;
-      if (!t.isObjectExpression(argument)) return;
-      const property = argument.properties.find((property2) => {
-        return t.isObjectProperty(property2) && t.isIdentifier(property2.key) && property2.key.name === DECORATOR_PROPERTY_TYPE;
-      });
-      if (property) return;
-      let type = 0;
-      const extract2 = (input) => {
-        switch (input?.type) {
-          case "bool":
-          case "Boolean":
-          case "BooleanLiteral":
-          case "TSBooleanKeyword":
-            type |= TYPE_BOOLEAN;
-            break;
-          case "Date":
-            type |= TYPE_DATE;
-            break;
-          case "Number":
-          case "NumericLiteral":
-          case "TSNumberKeyword":
-            type |= TYPE_NUMBER;
-            break;
-          case "StringLiteral":
-            type |= TYPE_ENUM;
-            break;
-          case "TSStringKeyword":
-            type |= TYPE_STRING;
-            break;
-          case "Array":
-          case "TSArrayType":
-          case "TSTupleType":
-            type |= TYPE_ARRAY;
-            break;
-          case "TSLiteralType":
-            extract2(input.literal);
-            break;
-          case "TSNullKeyword":
-            type |= TYPE_NULL;
-            break;
-          case "Object":
-          case "TSObjectKeyword":
-          case "TSMappedType":
-          case "TSTypeLiteral":
-            type |= TYPE_OBJECT;
-            break;
-          case "TSTypeReference":
-            extract2({ type: input?.typeName?.name });
-            break;
-          case "TSUnionType":
-            input.types.forEach(extract2);
-            break;
-          // TODO
-          case "TSParenthesizedType": {
-            if (input?.typeAnnotation?.type !== "TSIntersectionType") break;
-            let types = input.types || input.typeAnnotation.types;
-            if (types.length !== 2) return;
-            types = types.filter((type2) => type2.type !== "TSTypeLiteral");
-            if (types.length !== 1) return;
-            extract2(types[0]);
-            break;
-          }
-        }
-      };
-      if (context.directoryPath) {
-        extract2(
-          // biome-ignore lint: TODO
-          getType(context.directoryPath, ast, path2.parent["typeAnnotation"]?.typeAnnotation)
-        );
-      }
-      type = type || TYPE_ANY;
-      argument.properties.push(
-        t.objectProperty(t.identifier(DECORATOR_PROPERTY_TYPE), t.numericLiteral(type))
-      );
-    }
-  });
-  visitor(ast, {
-    Program(path2) {
-      const extractKeys = (members, filter) => {
-        if (!members?.length) return "never";
-        return members.filter((method) => t.isIdentifier(method.key)).filter((method) => filter ? filter?.(method) : true).map((method) => method.key.name).map((key) => `'${key}'`).join(" | ");
-      };
-      const attributeMapper = (context.classProperties ?? []).filter((property) => t.isIdentifier(property.key)).map((property) => {
-        const name = property.key.name;
-        const attr = extractAttribute(property) || kebabCase(property.key.name);
-        if (name === attr) return "";
-        return `'${name}': '${attr}'`;
-      }).filter(Boolean).join(",\n");
-      const ast2 = template.default.ast(
-        `
-					// THE FOLLOWING TYPES HAVE BEEN ADDED AUTOMATICALLY
-
-					type Filter<Base, Disables> = {
-						[K in keyof Base as K extends keyof Disables
-							? [Disables[K]] extends [false]
-								? never
-								: K
-							: '*' extends keyof Disables
-								? [Disables['*']] extends [false]
-									? never
-									: K
-								: K]: Base[K];
-					};
-
-					type Override<
-						Base,
-						Overrides,
-						AllowedKeys
-					> = {
-						[K in keyof Base]:
-							K extends AllowedKeys
-								? K extends keyof Overrides
-									? Overrides[K]
-									: Base[K]
-								: Base[K];
-					};
-
-					type ToEventHandlers<T> = {
-						[K in keyof T]?: T[K] extends EventEmitter<infer U> ? (event: CustomEvent<U>) => void : T[K];
-					};
-
-					type ToJSXEvent<T> = { [K in keyof T as \`on\${Capitalize<string & K>}\`]: T[K]; };
-
-					type Rename<
-						T,
-						M extends Partial<Record<keyof T, PropertyKey>>
-					> =
-						Partial<Pick<T, Exclude<keyof T, keyof M>>>
-						&
-						{
-							[K in keyof M as M[K] extends PropertyKey ? M[K] : K]?: K extends keyof T ? T[K] : never;
-						};
-
-					export type ${context.className}AttributesMapper = {
-						${attributeMapper}
-					};
-
-					export type ${context.className}OverridableKeys = ${extractKeys(context.classProperties, (property) => property.typeAnnotation?.typeAnnotation?.typeName?.name === "OverridableValue")};
-
-					export interface ${context.className}Disables {}
-
-					export interface ${context.className}Overrides {}
-
-					export type ${context.className}Attributes = Rename<
-						${context.className}Properties, 
-						${context.className}AttributesMapper
-					>;
-
-					export type ${context.className}AttributesOverridden = Rename<
-						${context.className}PropertiesOverridden,
-						${context.className}AttributesMapper
-					>;
-
-					export type ${context.className}AttributesBase = Rename<
-						${context.className}PropertiesBase,
-						${context.className}AttributesMapper
-					>;
-
-					export type ${context.className}Events = Filter<
-						${context.className}EventsBase, 
-						${context.className}Disables
-					>;
-
-					export type ${context.className}EventsBase = ToEventHandlers<Pick<${context.className}, ${context.className}EventsKeys>>;
-
-					export type ${context.className}EventsKeys = ${extractKeys(context.classEvents)};
-
-					export type ${context.className}EventsJSX = ToJSXEvent<${context.className}Events>;
-
-					export type ${context.className}EventsBaseJSX = ToJSXEvent<${context.className}EventsBase>;
-
-					export type ${context.className}Methods = Filter<
-						${context.className}MethodsBase, 
-						${context.className}Disables
-					>;
-
-					export type ${context.className}MethodsBase = Pick<
-						${context.className},
-						${context.className}MethodsKeys
-					>;
-
-					export type ${context.className}MethodsKeys = ${extractKeys(context.classMethods)};
-
-					export type ${context.className}Properties = Filter<
-						${context.className}PropertiesOverridden, 
-						${context.className}Disables
-					>;
-
-					export type ${context.className}PropertiesOverridden = Override<
-						${context.className}PropertiesBase, 
-						${context.className}Overrides, 
-						${context.className}OverridableKeys
-					>;
-
-					export type ${context.className}PropertiesBase = Pick<
-						${context.className},
-						${context.className}PropertiesKeys
-					>;
-
-					export type ${context.className}PropertiesKeys = ${extractKeys(context.classProperties)};
-
-					export type ${context.className}Element = globalThis.${context.elementInterfaceName};
-
-					export type ${context.className}JSX = ${context.className}Attributes & ${context.className}EventsJSX;
-						
-					export namespace JSX {
-						interface IntrinsicElements {
-							"${context.elementTagName}": ${context.className}JSX;
-						}
-					}
-
-					declare global {
-						interface ${context.elementInterfaceName} extends HTMLElement, ${context.className}Methods, ${context.className}Properties { }
-
-						var ${context.elementInterfaceName}: {
-							prototype: ${context.elementInterfaceName};
-							new (): ${context.elementInterfaceName};
-						};
-
-						interface HTMLElementTagNameMap {
-							"${context.elementTagName}": ${context.elementInterfaceName};
-						}
-					}
-
-					declare module '${PACKAGE_NAME}' {
-						interface HTMLPlusElements {
-							'${context.elementTagName}': {
-								properties: ${context.className}PropertiesOverridden;
-							}
-						}
-					}
-					
-					declare module "react" {
-						namespace JSX {
-							interface IntrinsicElements {
-								"${context.elementTagName}": ${context.className}JSX & Omit<DetailedHTMLProps<HTMLAttributes<${context.elementInterfaceName}>, ${context.elementInterfaceName}>, keyof ${context.className}JSX>;
-							}
-						}
-					}
-				`,
-        {
-          plugins: ["typescript"],
-          preserveComments: true
-        }
-      );
-      path2.node.body.push(...ast2);
-    }
-  });
-  context.script = print(ast);
+const hasTag = (node, name) => getTags(node, name).length > 0;
+const parseNamedTag = (tag2) => {
+  const [name, description] = tag2.description.split(" - ").map((section) => section.trim());
+  return { name, description };
+};
+const toDeprecated = (tags) => {
+  const tag2 = tags.find((item) => item.name === "deprecated");
+  if (!tag2) return void 0;
+  return tag2.description || true;
 };
 const DOCUMENT_OPTIONS = {
   destination: path.join("dist", "document.json"),
-  transformer: (json) => json
+  transform: (json) => json
 };
 const document = (contexts, userOptions) => {
   const options = { ...DOCUMENT_OPTIONS, ...userOptions };
-  const json = {
-    elements: []
-  };
-  for (const context of contexts) {
-    const events = context.classEvents.map((event) => {
-      const cancelable = (() => {
-        if (!event.decorators) return false;
-        try {
-          for (const decorator of event.decorators) {
-            for (const argument of decorator.expression["arguments"]) {
-              for (const property of argument.properties) {
-                if (property.key.name !== "cancelable") continue;
-                if (property.value.type !== "BooleanLiteral") continue;
-                if (!property.value.value) continue;
-                return true;
-              }
-            }
-          }
-        } catch {
-        }
-        return false;
-      })();
-      const detail = print(event.typeAnnotation?.["typeAnnotation"]);
-      const detailReference = getTypeReference(
-        context.fileAST,
-        event.typeAnnotation?.["typeAnnotation"].typeParameters.params[0]
-      );
-      const name = event.key["name"];
-      return {
-        cancelable,
-        detail,
-        detailReference,
-        name,
-        ...extractFromComment(event)
-      };
-    });
+  const entries = contexts.flatMap((context) => context.elements.map((element) => ({ context, element }))).sort((a, b) => a.element.key > b.element.key ? 1 : -1);
+  const elements = entries.map(({ context, element }) => {
     const lastModified = glob.sync("**/*.*", { cwd: context.directoryPath }).map((file) => fs.statSync(path.join(context.directoryPath, file)).mtime).sort((a, b) => a > b ? 1 : -1).pop();
-    const methods = context.classMethods.map((method) => {
-      const async = method.async;
-      const name = method.key["name"];
-      const comments = extractFromComment(method);
-      const parameters = method.params.map((param) => ({
-        description: comments.params?.find((item) => item.name === param["name"])?.description,
-        required: !param["optional"],
-        name: param["name"],
-        type: print(param?.["typeAnnotation"]?.typeAnnotation) || void 0,
-        typeReference: getTypeReference(context.fileAST, param?.["typeAnnotation"]?.typeAnnotation)
-      }));
-      delete comments.params;
-      const returns = print(method.returnType?.["typeAnnotation"]) || "void";
-      const returnsReference = getTypeReference(
-        context.fileAST,
-        method.returnType?.["typeAnnotation"]
-      );
-      const signature = [
-        method.key["name"],
-        "(",
-        parameters.map((parameter) => {
-          let string = "";
-          string += parameter.name;
-          string += parameter.required ? "" : "?";
-          string += parameter.type ? ": " : "";
-          string += parameter.type ?? "";
-          return string;
-        }).join(", "),
-        ")",
-        " => ",
-        returns
-      ].join("");
-      return {
-        async,
-        name,
-        parameters,
-        returnsReference,
-        signature,
-        ...comments,
-        returns,
-        tags: returns !== "void" && comments.returns ? [
-          {
-            key: "returns",
-            value: `${comments.returns}`
-          }
-        ] : []
-      };
-    });
-    const properties = context.classProperties.map((property) => {
-      const attribute = extractAttribute(property) || kebabCase(property.key["name"]);
-      const initializer = getInitializer(property.value);
-      const name = property.key["name"];
-      const readonly = property["kind"] === "get";
-      const reflects = (() => {
-        if (!property.decorators) return false;
-        try {
-          for (const decorator of property.decorators) {
-            for (const argument of decorator.expression["arguments"]) {
-              for (const property2 of argument.properties) {
-                if (property2.key.name !== "reflect") continue;
-                if (property2.value.type !== "BooleanLiteral") continue;
-                if (!property2.value.value) continue;
-                return true;
-              }
-            }
-          }
-        } catch {
-        }
-        return false;
-      })();
-      const required = "optional" in property && !property.optional;
-      const type = property["returnType"] ? print(property["returnType"]?.["typeAnnotation"]) : print(property.typeAnnotation?.["typeAnnotation"]);
-      const typeReference = getTypeReference(
-        context.fileAST,
-        property.typeAnnotation?.["typeAnnotation"]
-      );
-      return {
-        attribute,
-        initializer,
-        name,
-        readonly,
-        reflects,
-        required,
-        type,
-        typeReference,
-        ...extractFromComment(property)
-      };
-    });
+    const events = element.events.map((event) => ({
+      name: event.name,
+      description: event.description,
+      cancelable: event.cancelable,
+      detail: event.detail,
+      detailReference: getTypeReference(
+        event.node.type?.typeArguments?.at(0)
+      ),
+      tags: event.tags
+    }));
+    const methods = element.methods.map((method) => ({
+      name: method.name,
+      description: method.description,
+      async: method.async,
+      parameters: method.parameters.map((parameter) => ({
+        name: parameter.name,
+        description: parameter.description,
+        required: parameter.required,
+        type: parameter.type,
+        typeReference: getTypeReference(parameter.node.type)
+      })),
+      signature: method.signature,
+      returns: method.returns,
+      tags: method.tags.filter((tag2) => tag2.name !== "param")
+    }));
+    const properties = element.properties.map((property2) => ({
+      attribute: property2.attribute,
+      initializer: property2.initializer,
+      name: property2.name,
+      readonly: property2.readonly,
+      reflects: property2.reflects,
+      required: property2.required,
+      type: property2.type,
+      typeReference: getTypeReference(property2.node.type),
+      description: property2.description,
+      values: getTags(property2.node, "value", parseNamedTag),
+      tags: property2.tags.filter((tag2) => tag2.name !== "value")
+    }));
     const styles = (() => {
-      if (!context.styleContent) return [];
-      return context.styleContent.split(DECORATOR_CSS_VARIABLE).slice(1).map((section) => {
+      if (!element.styleContent) return [];
+      return element.styleContent.split(DECORATOR_CSS_VARIABLE).slice(1).map((section) => {
         const [first, second] = section.split(/\n/);
-        const description = first.replace("*/", "").trim();
-        const name = second.split(":")[0].trim();
-        const initializerDefault = second.split(":").slice(1).join(":").replace(";", "").trim();
-        const initializerTransformed = context.styleContentTransformed?.split(name)?.at(1)?.split(":")?.filter((section2) => !!section2)?.at(0)?.split(/;|}/)?.at(0)?.trim();
-        const initializer = initializerTransformed || initializerDefault;
         return {
-          description,
-          initializer,
-          name
+          description: first.replace("*/", "").trim(),
+          initializer: second.split(":").slice(1).join(":").replace(";", "").trim(),
+          name: second.split(":")[0].trim()
         };
       });
     })();
-    const title = capitalCase(context.elementKey);
-    const element = {
-      events,
-      key: context.elementKey,
+    return {
+      key: element.key,
+      title: capitalCase(element.key),
+      description: getDescription(element.node),
       lastModified,
+      development: hasTag(element.node, "development"),
+      thirdParty: hasTag(element.node, "thirdParty"),
+      stable: hasTag(element.node, "stable"),
+      subset: hasTag(element.node, "subset"),
+      dependencies: getTags(element.node, "dependency").at(0)?.description,
+      events,
       methods,
       properties,
       styles,
-      title,
-      ...extractFromComment(context.class)
+      parts: getTags(element.node, "part", parseNamedTag),
+      slots: getTags(element.node, "slot", parseNamedTag),
+      tags: getTags(element.node, [
+        "!thirdParty",
+        "!dependency",
+        "!development",
+        "!stable",
+        "!subset",
+        "!part",
+        "!slot"
+      ])
     };
-    json.elements.push(element);
-  }
-  json.elements = json.elements.sort((a, b) => a.title > b.title ? 1 : -1);
-  const transformed = options.transformer?.(json) || json;
-  const dirname2 = path.dirname(options.destination);
-  fs.ensureDirSync(dirname2);
-  fs.writeJSONSync(options.destination, transformed, {
-    encoding: "utf8",
-    spaces: 2
   });
+  const json = { elements };
+  const transformed = options.transform(json);
+  fs.ensureDirSync(path.dirname(options.destination));
+  fs.writeJSONSync(options.destination, transformed, { encoding: "utf8", spaces: 2 });
+};
+const FALLBACK_OPTIONS = {
+  allowJs: true,
+  jsx: ts.JsxEmit.Preserve,
+  module: ts.ModuleKind.ESNext,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+  skipLibCheck: true,
+  strict: false,
+  target: ts.ScriptTarget.ESNext
+};
+let cache;
+const build = (fromPath) => {
+  const configPath = ts.findConfigFile(path.dirname(fromPath), ts.sys.fileExists, "tsconfig.json");
+  let rootNames = [];
+  let options = { ...FALLBACK_OPTIONS };
+  if (configPath) {
+    const { config } = ts.readConfigFile(configPath, ts.sys.readFile);
+    const parsed = ts.parseJsonConfigFileContent(config ?? {}, ts.sys, path.dirname(configPath));
+    rootNames = parsed.fileNames;
+    options = { ...options, ...parsed.options, noEmit: true };
+  }
+  const program = ts.createProgram({ options, rootNames });
+  return { program, checker: program.getTypeChecker() };
+};
+const getSourceFile = (filePath, content) => {
+  if (!cache) cache = build(filePath);
+  const fromProgram = cache.program.getSourceFile(filePath);
+  if (fromProgram) return fromProgram;
+  return ts.createSourceFile(
+    filePath,
+    content,
+    ts.ScriptTarget.Latest,
+    true,
+    filePath.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS
+  );
+};
+const getTypeChecker = (node) => {
+  const sourceFile = node.getSourceFile();
+  if (!cache || cache.program.getSourceFile(sourceFile.fileName) !== sourceFile) {
+    throw new Error("TODO");
+  }
+  return cache.checker;
+};
+const readOptions = (decorator) => {
+  const argument = ts.isCallExpression(decorator.expression) ? decorator.expression.arguments[0] : void 0;
+  if (!argument || !ts.isObjectLiteralExpression(argument)) return {};
+  return Object.fromEntries(
+    argument.properties.filter(ts.isPropertyAssignment).map((property2) => [
+      property2.name.getText(),
+      (() => {
+        try {
+          return JSON.parse(property2.initializer.getText());
+        } catch {
+          return property2.initializer.getText();
+        }
+      })()
+    ])
+  );
+};
+const extractEvent = (node) => {
+  if (!ts.isPropertyDeclaration(node)) return;
+  const decorator = findDecorator(node, DECORATOR_EVENT);
+  if (!decorator) return;
+  const options = readOptions(decorator);
+  return {
+    get node() {
+      return node;
+    },
+    get decorator() {
+      return decorator;
+    },
+    get name() {
+      return node.name?.getText() || "";
+    },
+    get description() {
+      return getDescription(node);
+    },
+    get cancelable() {
+      return options.cancelable ?? false;
+    },
+    get detail() {
+      return node.type?.getText() || "";
+    },
+    get tags() {
+      return getTags(node);
+    }
+  };
+};
+const extractMethod = (node) => {
+  if (!ts.isMethodDeclaration(node)) return;
+  const decorator = findDecorator(node, DECORATOR_METHOD);
+  if (!decorator) return;
+  const parameters = node.parameters.map((parameter) => {
+    const name = parameter.name.getText();
+    return {
+      node: parameter,
+      name,
+      description: ts.getJSDocParameterTags(parameter).find((tag2) => tag2.name.getText() === name)?.comment?.toString().replace(/\s+/g, " "),
+      required: !parameter.questionToken,
+      type: parameter.type?.getText()
+    };
+  });
+  const returns = node.type?.getText() || "void";
+  return {
+    get node() {
+      return node;
+    },
+    get decorator() {
+      return decorator;
+    },
+    get name() {
+      return node.name?.getText() || "";
+    },
+    get description() {
+      return getDescription(node);
+    },
+    get async() {
+      const checker = getTypeChecker(node);
+      const signature = checker.getSignatureFromDeclaration(node);
+      return !!(signature && checker.getReturnTypeOfSignature(signature).getSymbol()?.getName() === "Promise");
+    },
+    get parameters() {
+      return parameters;
+    },
+    get returns() {
+      return returns;
+    },
+    get signature() {
+      const list = parameters.map((parameter) => `${parameter.name}${parameter.required ? "" : "?"}: ${parameter.type}`).join(", ");
+      return `${node.name?.getText()}(${list}) => ${returns}`;
+    },
+    get tags() {
+      return getTags(node);
+    }
+  };
+};
+const extractProperty = (node) => {
+  if (!ts.isPropertyDeclaration(node) && !ts.isGetAccessorDeclaration(node)) return;
+  const decorator = findDecorator(node, DECORATOR_PROPERTY);
+  if (!decorator) return;
+  const options = readOptions(decorator);
+  const initializer = ts.isPropertyDeclaration(node) && node.initializer ? node.initializer.getText() : void 0;
+  return {
+    get node() {
+      return node;
+    },
+    get decorator() {
+      return decorator;
+    },
+    get name() {
+      return node.name?.getText();
+    },
+    get description() {
+      return getDescription(node);
+    },
+    get attribute() {
+      return options.attribute || kebabCase(node.name?.getText() ?? "");
+    },
+    get initializer() {
+      return initializer;
+    },
+    get readonly() {
+      return ts.isGetAccessorDeclaration(node);
+    },
+    get reflects() {
+      return options.reflect ?? false;
+    },
+    get required() {
+      return ts.isPropertyDeclaration(node) && !node.questionToken && initializer === void 0;
+    },
+    get type() {
+      return node.type?.getText() || "";
+    },
+    get tags() {
+      return getTags(node);
+    }
+  };
+};
+const collect = (classes, extractor) => {
+  const result = [];
+  for (const classNode of classes) {
+    for (const member of classNode.members) {
+      const extracted = extractor(member);
+      if (extracted === void 0) continue;
+      result.push(extracted);
+    }
+  }
+  return result;
 };
 const extract = (context) => {
-  const body = context.fileAST?.program.body.find((child) => {
-    return t.isExportNamedDeclaration(child);
+  const classes = [];
+  const visit = (node) => {
+    if (ts.isClassDeclaration(node)) {
+      classes.push(node);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(context.parsed);
+  context.classes = classes.map((node) => ({ node }));
+  context.elements = classes.filter((node) => hasDecorator(node, DECORATOR_ELEMENT)).map((node) => ({
+    node,
+    key: kebabCase(node.name?.text ?? ""),
+    name: node.name?.text ?? "",
+    events: collect([node], extractEvent),
+    methods: collect([node], extractMethod),
+    properties: collect([node], extractProperty)
+  }));
+  context.events = collect(classes, extractEvent);
+  context.methods = collect(classes, extractMethod);
+  context.properties = collect(classes, extractProperty);
+};
+const validate = (parsed) => {
+  return parsed.statements.filter((statement) => ts.isImportDeclaration(statement)).filter(
+    (statement) => ts.isStringLiteral(statement.moduleSpecifier) && statement.moduleSpecifier.text === PACKAGE_NAME
+  ).flatMap((statement) => {
+    const bindings = statement.importClause?.namedBindings;
+    if (!bindings || !ts.isNamedImports(bindings)) return [];
+    return bindings.elements;
+  }).some((element) => {
+    const name = (element.propertyName ?? element.name).text;
+    if (name === DECORATOR_ELEMENT) return true;
+    if (name === DECORATOR_PROPERTY) return true;
+    return false;
   });
-  context.class = body?.declaration;
-  if (context.class) {
-    context.class.leadingComments = body?.leadingComments;
+};
+const property = (context) => {
+  for (const property2 of context.properties) {
+    const expression = property2.decorator.expression;
+    if (!ts.isCallExpression(expression)) continue;
+    const options = expression.arguments.at(0);
+    const object = options && ts.isObjectLiteralExpression(options) ? options : void 0;
+    const value = object?.properties.find(
+      (property3) => property3.name && ts.isIdentifier(property3.name) && property3.name.text === "type"
+    );
+    if (value) continue;
+    const checker = getTypeChecker(property2.node);
+    const type = extractTypeFlags(checker.getTypeAtLocation(property2.node), checker);
+    if (object) {
+      context.script.appendRight(expression.expression.end + 2, ` type: ${type},`);
+    } else {
+      context.script.appendRight(expression.expression.end + 1, `{ type: ${type} }`);
+    }
   }
-  context.classMembers = context.class?.body?.body || [];
-  context.className = context.class?.id?.name;
-  context.elementKey = kebabCase(context.className || "");
-  context.classEvents = context.classMembers.filter(
-    (member) => hasDecorator(member, DECORATOR_EVENT)
-  );
-  context.classMethods = context.classMembers.filter(
-    (member) => hasDecorator(member, DECORATOR_METHOD)
-  );
-  context.classProperties = context.classMembers.filter(
-    (member) => hasDecorator(member, DECORATOR_PROPERTY)
-  );
-  context.classStates = context.classMembers.filter(
-    (member) => hasDecorator(member, DECORATOR_STATE)
-  );
 };
-const PARSE_OPTIONS = {
-  sourceType: "module",
-  plugins: [["decorators", { decoratorsBeforeExport: true }], "jsx", "typescript"]
+const extractTypeFlags = (type, checker) => {
+  if (type.isUnionOrIntersection()) {
+    let result = 0;
+    for (const member of type.types) {
+      if (type.isIntersection() && member.flags & ts.TypeFlags.Object && !member.getProperties().length)
+        continue;
+      result |= extractTypeFlags(member, checker);
+    }
+    return result || TYPE_ANY;
+  }
+  if (type.flags & ts.TypeFlags.BooleanLike) return TYPE_BOOLEAN;
+  if (type.flags & ts.TypeFlags.BigIntLike) return TYPE_BIGINT;
+  if (type.flags & ts.TypeFlags.NumberLike) return TYPE_NUMBER;
+  if (type.flags & ts.TypeFlags.StringLike) return TYPE_STRING;
+  if (type.flags & ts.TypeFlags.Null) return TYPE_NULL;
+  if (type.flags & ts.TypeFlags.VoidLike) return TYPE_UNDEFINED;
+  if (!(type.flags & ts.TypeFlags.Object)) return TYPE_ANY;
+  if (checker.isArrayType(type)) return TYPE_ARRAY;
+  if (checker.isTupleType(type)) return TYPE_ARRAY;
+  if (type.getSymbol()?.name === "Date") return TYPE_DATE;
+  if (type.getCallSignatures().length) return TYPE_FUNCTION;
+  return TYPE_OBJECT;
 };
-const parse = (context, userOptions) => {
-  const options = { ...PARSE_OPTIONS, ...userOptions };
-  context.fileAST = parse$1(context.fileContent || "", options);
-};
-const read = (context) => {
-  if (!context.filePath) return;
-  context.fileContent = fs.readFileSync(context.filePath, "utf8");
-  context.fileExtension = path.extname(context.filePath);
-  context.fileName = path.basename(context.filePath, context.fileExtension);
-  context.directoryPath = path.dirname(context.filePath);
-  context.directoryName = path.basename(context.directoryPath);
+const README_OPTIONS = {};
+const readme = (_context, userOptions) => {
+  ({ ...README_OPTIONS, ...userOptions });
 };
 const STYLE_OPTIONS = {
+  resolver(_context, element) {
+    return `${element.stylePath}?inline`;
+  },
   source(context) {
     return ["css", "less", "sass", "scss", "styl"].map((key) => {
-      return path.join(context.directoryPath || "", `${context.fileName}.${key}`);
+      return path.join(context.directoryPath, `${context.fileName}.${key}`);
     });
   }
 };
 const style = (context, userOptions) => {
   const options = { ...STYLE_OPTIONS, ...userOptions };
-  const sources = [options.source(context)].flat();
-  for (const source of sources) {
-    if (!source) continue;
-    if (!fs.existsSync(source)) continue;
-    context.stylePath = source;
-    break;
-  }
-  if (!context.stylePath) return;
-  context.styleContent = fs.readFileSync(context.stylePath, "utf8");
-  context.styleExtension = path.extname(context.stylePath);
-  context.styleName = path.basename(context.stylePath, context.styleExtension);
-  if (!context.fileAST) return;
-  const exists = context.class?.body.body.some((node) => {
-    return t.isClassProperty(node) && node.static && t.isIdentifier(node.key) && node.key.name === STATIC_STYLE;
-  });
-  if (exists) return;
-  const { local } = addDependency(
-    context.fileAST,
-    `${context.stylePath}?inline`,
-    STYLE_IMPORTED
-  );
-  const property = t.classProperty(
-    t.identifier(STATIC_STYLE),
-    t.identifier(local || ""),
-    void 0,
-    null,
-    void 0,
-    true
-  );
-  t.addComment(property, "leading", COMMENT_AUTO_ADDED, true);
-  context.class?.body.body.unshift(property);
-};
-const validate = (context) => {
-  context.skipped = true;
-  if (!context.fileAST) return;
-  visitor(context.fileAST, {
-    ImportDeclaration(path2) {
-      if (path2.node.source?.value !== PACKAGE_NAME) return;
-      for (const specifier of path2.node.specifiers) {
-        if (!t.isImportSpecifier(specifier) || !t.isIdentifier(specifier.imported) || specifier.imported.name !== DECORATOR_ELEMENT) {
-          continue;
+  for (const element of context.elements) {
+    element.stylePath = [options.source(context, element)].flat().find((source) => fs.existsSync(source));
+    if (!element.stylePath) continue;
+    if (!Object.getOwnPropertyDescriptor(element, "styleContent")?.get) {
+      Object.defineProperty(element, "styleContent", {
+        configurable: true,
+        enumerable: true,
+        get() {
+          return fs.readFileSync(element.stylePath, "utf8");
         }
-        const binding = path2.scope.getBinding(specifier.imported.name);
-        if (!binding || binding.references === 0) {
-          continue;
-        }
-        const referencePaths = binding.referencePaths.filter((referencePath) => {
-          return t.isCallExpression(referencePath.parent) && t.isDecorator(referencePath.parentPath?.parent) && t.isClassDeclaration(referencePath.parentPath.parentPath?.parent) && t.isExportNamedDeclaration(referencePath.parentPath.parentPath.parentPath?.parent);
-        });
-        if (referencePaths.length > 1) {
-          throw new Error(
-            "In each file, only one custom element can be defined. \nIf more than one @Element() decorator is used in the file, it will result in an error.\n"
-          );
-        }
-        context.skipped = false;
-        if (referencePaths.length === 1) {
-          break;
-        }
-        throw new Error(
-          "It appears that the class annotated with the @Element() decorator is not being exported correctly."
-        );
-      }
-      path2.stop();
+      });
     }
-  });
-  context.skipped;
+    element.styleExtension = path.extname(element.stylePath);
+    element.styleName = path.basename(element.stylePath, element.styleExtension);
+    const exists = hasStaticClassProperty(element.node, STATIC_STYLE);
+    if (exists) continue;
+    const local = `${STYLE_IMPORTED}_${element.name}`;
+    context.script.prepend(`
+import ${local} from '${options.resolver(context, element)}';
+`);
+    context.script.prependLeft(
+      element.node.members.pos,
+      `
+static readonly ${STATIC_STYLE} = ${local};
+`
+    );
+  }
 };
+const tag = (context) => {
+  for (const element of context.elements) {
+    const exists = hasStaticClassProperty(element.node, STATIC_TAG);
+    if (exists) continue;
+    const elementTagName = kebabCase(element.name);
+    context.script.prependLeft(
+      element.node.members.pos,
+      `
+static readonly ${STATIC_TAG} = '${elementTagName}';
+`
+    );
+  }
+};
+const TYPES_OPTIONS = {
+  mode: "new",
+  destination(context) {
+    return path.join(context.filePath, `${context.fileName}.d.ts`);
+  },
+  transform(_context, output) {
+    return output.final;
+  }
+};
+const extractKeys = (members, filter) => {
+  return members?.filter((member) => member && (filter ? filter?.(member) : true))?.map((member) => member.name && ts.isIdentifier(member.name) ? member.name.text : "")?.map((key) => `'${key}'`)?.join(" | ") || "never";
+};
+const types = (contexts, userOptions) => {
+  const options = { ...TYPES_OPTIONS, ...userOptions };
+  for (const context of contexts) {
+    if (!context.elements.length) continue;
+    let content = "";
+    let current = "";
+    for (const element of context.elements) {
+      content += template({
+        events: element.events,
+        interface: `HTML${pascalCase(element.key)}Element`,
+        methods: element.methods,
+        name: element.name,
+        properties: element.properties,
+        tag: element.key
+      });
+    }
+    const destination = options.destination(context);
+    if (options.mode !== "new" && fs.existsSync(destination)) {
+      current = fs.readFileSync(destination, "utf8");
+    }
+    const final = options.mode === "prepend" ? `${content}${current}` : `${current}${content}`;
+    const transformed = options.transform(context, { content, current, final });
+    fs.outputFileSync(destination, transformed);
+  }
+};
+const template = (model) => `
+// THE FOLLOWING TYPES HAVE BEEN ADDED AUTOMATICALLY
+
+type Filter<Base, Disables> = { [K in keyof Base as K extends keyof Disables ? [Disables[K]] extends [false] ? never : K : '*' extends keyof Disables ? [Disables['*']] extends [false] ? never : K : K]: Base[K] };
+type Override<Base, Overrides, AllowedKeys> = { [K in keyof Base]: K extends AllowedKeys ? K extends keyof Overrides ? Overrides[K] : Base[K] : Base[K] };
+type ToEventHandlers<T> = { [K in keyof T]?: T[K] extends EventEmitter<infer U> ? (event: CustomEvent<U>) => void : T[K] };
+type ToJSXEvent<T> = { [K in keyof T as \`on\${Capitalize<string & K>}\`]: T[K] };
+type Rename<T, M extends Partial<Record<keyof T, PropertyKey>>> = Partial<Pick<T, Exclude<keyof T, keyof M>>> & { [K in keyof M as M[K] extends PropertyKey ? M[K] : K]?: K extends keyof T ? T[K] : never };
+export type ${model.name}AttributesMapper = {
+  ${model.properties.map((property2) => {
+  if (!property2.node.name || !ts.isIdentifier(property2.node.name)) return "";
+  const name = property2.node.name.text;
+  const override = property2.decorator.expression.arguments?.at(0)?.properties.find((property22) => property22.name.text === "attribute")?.found?.initializer.text;
+  const attribute = override || kebabCase(name);
+  if (name === attribute) return "";
+  return `'${name}': '${attribute}'`;
+}).filter(Boolean).join(";\n  ")}
+};
+export type ${model.name}OverridableKeys = ${extractKeys(
+  model.properties.map((item) => item.node),
+  (property2) => !!property2.type && ts.isTypeReferenceNode(property2.type) && ts.isIdentifier(property2.type.typeName) && property2.type.typeName.text === "OverridableValue"
+)};
+export interface ${model.name}Disables {}
+export interface ${model.name}Overrides {}
+export type ${model.name}Attributes = Rename<${model.name}Properties, ${model.name}AttributesMapper>;
+export type ${model.name}AttributesOverridden = Rename<${model.name}PropertiesOverridden, ${model.name}AttributesMapper>;
+export type ${model.name}AttributesBase = Rename<${model.name}PropertiesBase, ${model.name}AttributesMapper>;
+export type ${model.name}Events = Filter<${model.name}EventsBase, ${model.name}Disables>;
+export type ${model.name}EventsBase = ToEventHandlers<Pick<${model.name}, ${model.name}EventsKeys>>;
+export type ${model.name}EventsKeys = ${extractKeys(model.events.map((item) => item.node))};
+export type ${model.name}EventsJSX = ToJSXEvent<${model.name}Events>;
+export type ${model.name}EventsBaseJSX = ToJSXEvent<${model.name}EventsBase>;
+export type ${model.name}Methods = Filter<${model.name}MethodsBase, ${model.name}Disables>;
+export type ${model.name}MethodsBase = Pick<${model.name}, ${model.name}MethodsKeys>;
+export type ${model.name}MethodsKeys = ${extractKeys(model.methods.map((item) => item.node))};
+export type ${model.name}Properties = Filter<${model.name}PropertiesOverridden, ${model.name}Disables>;
+export type ${model.name}PropertiesOverridden = Override<${model.name}PropertiesBase, ${model.name}Overrides, ${model.name}OverridableKeys>;
+export type ${model.name}PropertiesBase = Pick<${model.name}, ${model.name}PropertiesKeys>;
+export type ${model.name}PropertiesKeys = ${extractKeys(model.properties.map((item) => item.node))};
+export type ${model.name}Element = globalThis.${model.interface};
+export type ${model.name}JSX = ${model.name}Attributes & ${model.name}EventsJSX;
+export namespace JSX {
+  interface IntrinsicElements {
+    "${model.tag}": ${model.name}JSX;
+  }
+}
+declare global {
+  interface ${model.interface} extends HTMLElement, ${model.name}Methods, ${model.name}Properties {}
+  var ${model.interface}: {
+    prototype: ${model.interface};
+    new (): ${model.interface};
+  };
+  interface HTMLElementTagNameMap {
+    "${model.tag}": ${model.interface};
+  }
+}
+declare module '${PACKAGE_NAME}' {
+  interface HTMLPlusElements {
+    '${model.tag}': {
+      properties: ${model.name}PropertiesOverridden;
+    };
+  }
+}
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+      "${model.tag}": ${model.name}JSX & Omit<DetailedHTMLProps<HTMLAttributes<${model.interface}>, ${model.interface}>, keyof ${model.name}JSX>;
+    }
+  }
+}
+`;
 const VISUAL_STUDIO_CODE_OPTIONS = {
   destination: path.join("dist", "visual-studio-code.json"),
   reference: () => "",
-  transformer: (json) => json
+  transform: (json) => json
 };
-const visualStudioCode = (contexts1, userOptions) => {
+const getValues = (type) => {
+  if (type.flags & ts.TypeFlags.BooleanLike) {
+    return ["false", "true"];
+  }
+  if (type.isUnion()) {
+    return [...new Set(type.types.flatMap((member) => getValues(member)))];
+  }
+  if (type.flags & ts.TypeFlags.EnumLiteral && type.symbol) {
+    return [type.symbol.name];
+  }
+  if (type.isStringLiteral()) {
+    return [type.value];
+  }
+  if (type.isNumberLiteral()) {
+    return [String(type.value)];
+  }
+  return [];
+};
+const visualStudioCode = (contexts, userOptions) => {
   const options = { ...VISUAL_STUDIO_CODE_OPTIONS, ...userOptions };
-  const contexts = contexts1.sort((a, b) => {
-    return a.elementKey.toUpperCase() > b.elementKey.toUpperCase() ? 1 : -1;
+  const entries = contexts.flatMap((context) => context.elements.map((element) => ({ context, element }))).sort((a, b) => a.element.key > b.element.key ? 1 : -1);
+  const tags = entries.map(({ context, element }) => {
+    const attributes = element.properties.map((property2) => {
+      const checker = getTypeChecker(property2.node);
+      const type = checker.getTypeAtLocation(property2.node);
+      return {
+        name: property2.attribute,
+        values: getValues(type).sort().map((name) => ({ name })),
+        description: property2.description
+      };
+    });
+    return {
+      name: element.key,
+      attributes,
+      references: [
+        {
+          name: "Source code",
+          url: options.reference(context, element)
+        }
+      ],
+      description: getDescription(element.node)
+    };
   });
   const json = {
     $schema: "TODO",
     version: 1.1,
-    tags: []
+    tags
   };
-  for (const context of contexts) {
-    const tag = {
-      name: context.elementKey,
-      attributes: [],
-      references: [
-        {
-          name: "Source code",
-          url: options.reference?.(context) || ""
-        }
-      ],
-      ...extractFromComment(context.class, ["description"])
-    };
-    for (const property of context.classProperties || []) {
-      const attribute = {
-        name: extractAttribute(property) || kebabCase(property.key["name"]),
-        values: [],
-        ...extractFromComment(property, ["description"])
-      };
-      const type = print(
-        getType(
-          context.directoryPath,
-          context.fileAST,
-          property.typeAnnotation?.["typeAnnotation"]
-        )
-      );
-      const sections = type.split("|");
-      for (const section of sections) {
-        const trimmed = section.trim();
-        if (!trimmed) continue;
-        const isBoolean = /bool|boolean|Boolean/.test(trimmed);
-        const isNumber = !isNaN(trimmed);
-        const isString = /^("|'|`)/.test(trimmed);
-        if (isBoolean) {
-          attribute.values.push(
-            {
-              name: "false"
-            },
-            {
-              name: "true"
-            }
-          );
-        } else if (isNumber) {
-          attribute.values.push({
-            name: trimmed
-          });
-        } else if (isString) {
-          attribute.values.push({
-            name: trimmed.slice(1, -1)
-          });
-        }
-      }
-      tag.attributes.push(attribute);
-    }
-    json.tags.push(tag);
-  }
-  const transformed = options.transformer?.(json) || json;
-  const dirname2 = path.dirname(options.destination);
-  fs.ensureDirSync(dirname2);
+  const transformed = options.transform(json);
+  const dirname = path.dirname(options.destination);
+  fs.ensureDirSync(dirname);
   fs.writeJSONSync(options.destination, transformed, {
     encoding: "utf8",
     spaces: 2
@@ -890,17 +686,64 @@ const WEB_TYPES_OPTIONS = {
   packageName: "",
   packageVersion: "",
   reference: () => "",
-  transformer: (json) => json
+  transform: (json) => json
 };
-const webTypes = (contexts1, userOptions) => {
+const webTypes = (contexts, userOptions) => {
   const options = { ...WEB_TYPES_OPTIONS, ...userOptions };
-  const contexts = contexts1.sort((a, b) => {
-    return (a.elementKey ?? "").toUpperCase().localeCompare((b.elementKey ?? "").toUpperCase());
+  const entries = contexts.flatMap((context) => context.elements.map((element) => ({ context, element }))).sort((a, b) => a.element.key > b.element.key ? 1 : -1);
+  const elements = entries.map(({ context, element }) => {
+    const attributes = element.properties.map((property2) => ({
+      name: property2.attribute,
+      description: property2.description,
+      deprecated: toDeprecated(property2.tags),
+      required: property2.required,
+      default: property2.initializer,
+      value: {
+        kind: "plain",
+        type: property2.type
+      }
+    }));
+    const events = element.events.map((event) => ({
+      name: kebabCase(event.name),
+      description: event.description,
+      deprecated: toDeprecated(event.tags),
+      type: event.detail
+    }));
+    const properties = [
+      ...element.properties.map((property2) => ({
+        name: property2.name,
+        description: property2.description,
+        deprecated: toDeprecated(property2.tags),
+        type: property2.type,
+        default: property2.initializer,
+        "read-only": property2.readonly
+      })),
+      ...element.methods.map((method) => ({
+        name: method.name,
+        description: method.description,
+        deprecated: toDeprecated(method.tags),
+        type: method.signature
+      }))
+    ];
+    const slots = getTags(element.node, "slot", parseNamedTag).map((slot) => ({
+      name: slot.name,
+      description: slot.description
+    }));
+    return {
+      name: element.key,
+      description: getDescription(element.node),
+      "doc-url": options.reference(context, element),
+      deprecated: toDeprecated(getTags(element.node)),
+      attributes,
+      slots,
+      js: { events, properties }
+    };
   });
   const json = {
-    $schema: "http://json.schemastore.org/web-types",
+    $schema: "https://json.schemastore.org/web-types",
     name: options.packageName,
     version: options.packageVersion,
+    "js-types-syntax": "typescript",
     "description-markup": "markdown",
     "framework-config": {
       "enable-when": {
@@ -909,124 +752,78 @@ const webTypes = (contexts1, userOptions) => {
     },
     contributions: {
       html: {
-        elements: []
+        elements
       }
     }
   };
-  for (const context of contexts) {
-    const element = {
-      name: context.elementKey || "",
-      "doc-url": options.reference?.(context),
-      attributes: [],
-      js: {
-        events: [],
-        properties: []
-      },
-      slots: [],
-      ...extractFromComment(context.class, ["description", "deprecated", "experimental", "slots"])
-    };
-    context.classProperties?.forEach((property) => {
-      element.attributes.push({
-        name: extractAttribute(property) || kebabCase(property.key["name"]),
-        value: {
-          // kind: TODO
-          type: print(
-            getType(
-              context.directoryPath,
-              context.fileAST,
-              property.typeAnnotation?.["typeAnnotation"]
-            )
-          )
-          // required: TODO
-          // default: TODO
-        },
-        default: getInitializer(property.value),
-        ...extractFromComment(property, ["description", "deprecated", "experimental"])
-      });
-    });
-    context.classEvents?.forEach((event) => {
-      element.js.events.push({
-        name: kebabCase(event.key["name"]),
-        // TODO
-        // 'value': TODO
-        ...extractFromComment(event, ["description", "deprecated", "experimental"])
-      });
-    });
-    context.classProperties?.forEach((property) => {
-      element.js.properties.push({
-        name: property.key["name"],
-        // 'value': TODO
-        default: getInitializer(property.value),
-        ...extractFromComment(property, ["description", "deprecated", "experimental"])
-      });
-    });
-    context.classMethods?.forEach((method) => {
-      element.js.properties.push({
-        name: method.key["name"],
-        // 'value': TODO
-        ...extractFromComment(method, ["description", "deprecated", "experimental"])
-      });
-    });
-    json.contributions.html.elements.push(element);
-  }
-  const transformed = options.transformer?.(json) || json;
-  const dirname2 = path.dirname(options.destination);
-  fs.ensureDirSync(dirname2);
-  fs.writeJSONSync(options.destination, transformed, {
-    encoding: "utf8",
-    spaces: 2
-  });
+  const transformed = options.transform(json);
+  fs.ensureDirSync(path.dirname(options.destination));
+  fs.writeJSONSync(options.destination, transformed, { encoding: "utf8", spaces: 2 });
 };
-const transformer = (options) => {
+const run = (plugin, arg, options) => {
+  if (options?.enable === false) return;
+  const { enable, ...rest } = options ?? {};
+  plugin(arg, rest);
+};
+const createTransformer = (options) => {
   const contexts = /* @__PURE__ */ new Map();
-  const transform = (id) => {
-    let context = {
-      filePath: id
+  const transform = (filePath) => {
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    const fileExtension = path.extname(filePath);
+    const fileName = path.basename(filePath, fileExtension);
+    const directoryPath = path.dirname(filePath);
+    const directoryName = path.basename(directoryPath);
+    const parsed = getSourceFile(filePath, fileContent);
+    if (!validate(parsed)) return;
+    const script = new MagicString(fileContent);
+    const context = {
+      directoryName,
+      directoryPath,
+      fileContent,
+      fileExtension,
+      fileName,
+      filePath,
+      classes: [],
+      elements: [],
+      events: [],
+      methods: [],
+      properties: [],
+      parsed,
+      script
     };
-    context = read(context) || context;
-    context = parse(context) || context;
-    context = validate(context) || context;
-    context = extract(context) || context;
-    context = style(context, options?.style) || context;
-    context = customElement(context) || context;
-    contexts.set(id, context);
-    return context;
+    extract(context);
+    tag(context);
+    property(context);
+    run(style, context, options?.style);
+    contexts.set(filePath, context);
+    return context.script.toString();
   };
   const finish = () => {
     const all = contexts.values().toArray();
-    if (options?.assets) {
-      for (const context of all) {
-        assets(context, options.assets);
-      }
-    }
-    if (options?.document) {
-      document(all, options.document);
-    }
-    if (options?.visualStudioCode) {
-      visualStudioCode(all, options.visualStudioCode);
-    }
-    if (options?.webTypes) {
-      webTypes(all, options.webTypes);
-    }
+    run(assets, all, options?.assets);
+    run(types, all, options?.types);
+    run(document, all, options?.document);
+    run(visualStudioCode, all, options?.visualStudioCode);
+    run(webTypes, all, options?.webTypes);
   };
-  return { transform, finish };
+  return { finish, transform };
 };
 export {
   ASSETS_OPTIONS,
   DOCUMENT_OPTIONS,
-  PARSE_OPTIONS,
+  README_OPTIONS,
   STYLE_OPTIONS,
+  TYPES_OPTIONS,
   VISUAL_STUDIO_CODE_OPTIONS,
   WEB_TYPES_OPTIONS,
   assets,
-  customElement,
+  createTransformer,
   document,
-  extract,
-  parse,
-  read,
+  property,
+  readme,
   style,
-  transformer,
-  validate,
+  tag,
+  types,
   visualStudioCode,
   webTypes
 };

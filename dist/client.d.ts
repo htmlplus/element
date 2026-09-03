@@ -121,7 +121,7 @@ export declare type EventEmitter<T = unknown> = (data?: T) => CustomEvent<T>;
  * [options](https://developer.mozilla.org/docs/Web/API/Event/EventEvent#options)
  * for the event dispatcher.
  */
-export declare interface EventOptions {
+export declare type EventOptions = {
     /**
      * A boolean value indicating whether the event bubbles.
      * The default is `false`.
@@ -138,7 +138,7 @@ export declare interface EventOptions {
      * The default is `false`.
      */
     composed?: boolean;
-}
+};
 
 /**
  * TODO
@@ -203,7 +203,7 @@ export declare function Listen(type: string, options?: ListenOptions): (target: 
  * [options](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener#options)
  * for the event listener.
  */
-export declare interface ListenOptions {
+export declare type ListenOptions = {
     /**
      * A boolean value indicating that events of this type will be dispatched to the registered
      * `listener` before being dispatched to any `EventTarget` beneath it in the DOM tree.
@@ -235,7 +235,7 @@ export declare interface ListenOptions {
      * The target element, defaults to `host`.
      */
     target?: 'host' | 'body' | 'document' | 'window';
-}
+};
 
 /**
  * Provides a way to encapsulate functionality within an element
@@ -272,7 +272,7 @@ export declare function Property(options?: PropertyOptions): (target: HTMLPlusEl
 /**
  * The configuration for property decorator.
  */
-export declare interface PropertyOptions {
+export declare type PropertyOptions = {
     /**
      * Specifies the name of the attribute related to the property.
      */
@@ -285,7 +285,7 @@ export declare interface PropertyOptions {
      * Do not set the value to this property. This value is automatically set during transforming.
      */
     type?: number;
-}
+};
 
 export declare function Provider(namespace: string): (target: HTMLPlusElement, key: PropertyKey) => void;
 

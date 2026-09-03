@@ -1,27 +1,28 @@
 import { createUnplugin } from 'unplugin';
 
 import * as CONSTANTS from '@/constants';
-import { type TransformerOptions, transformer } from '@/transformer';
+import { type TransformerOptions, createTransformer } from '@/transformer';
 
 const plugin = createUnplugin<TransformerOptions | undefined>((options) => {
-	const { transform, finish } = transformer(options);
+	const { finish, transform } = createTransformer(options);
+
+	const closeBundle = () => {
+		finish();
+	};
 
 	return {
 		name: CONSTANTS.KEY,
 
 		load(id: string) {
-			if (!id.endsWith('.tsx')) return;
+			if (!id.endsWith('.tsx') && !id.endsWith('.ts')) return;
 
-			const context = transform(id);
+			const script = transform(id);
 
-			if (context.skipped) return;
-
-			return context.script;
+			return script;
 		},
 
-		writeBundle() {
-			finish();
-		}
+		rollup: { closeBundle },
+		vite: { closeBundle }
 	};
 });
 

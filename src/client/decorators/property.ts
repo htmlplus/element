@@ -16,7 +16,7 @@ import {
 /**
  * The configuration for property decorator.
  */
-export interface PropertyOptions {
+export type PropertyOptions = {
 	/**
 	 * Specifies the name of the attribute related to the property.
 	 */
@@ -29,7 +29,7 @@ export interface PropertyOptions {
 	 * Do not set the value to this property. This value is automatically set during transforming.
 	 */
 	type?: number;
-}
+};
 
 /**
  * Creates a reactive property, reflecting a corresponding attribute value,

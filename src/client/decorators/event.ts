@@ -14,7 +14,7 @@ export type EventEmitter<T = unknown> = (data?: T) => CustomEvent<T>;
  * [options](https://developer.mozilla.org/docs/Web/API/Event/EventEvent#options)
  * for the event dispatcher.
  */
-export interface EventOptions {
+export type EventOptions = {
 	/**
 	 * A boolean value indicating whether the event bubbles.
 	 * The default is `false`.
@@ -31,7 +31,7 @@ export interface EventOptions {
 	 * The default is `false`.
 	 */
 	composed?: boolean;
-}
+};
 
 /**
  * Provides the capability to dispatch a [CustomEvent](https://mdn.io/custom-event)

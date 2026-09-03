@@ -1,21 +1,7 @@
-import t from '@babel/types';
+import type ts from 'typescript';
 
-export const hasDecorator = (node: t.Node, name: string): boolean => {
-	if ('decorators' in node === false) return false;
+import { findDecorator } from './findDecorator';
 
-	if (!node.decorators) return false;
-
-	for (const decorator of node.decorators) {
-		const expression = decorator.expression;
-
-		if (!t.isCallExpression(expression)) continue;
-
-		if (!t.isIdentifier(expression.callee)) continue;
-
-		if (expression.callee.name === name) {
-			return true;
-		}
-	}
-
-	return false;
+export const hasDecorator = (node: ts.Node, name: string): boolean => {
+	return !!findDecorator(node, name);
 };

@@ -1,71 +1,116 @@
+import path from 'node:path';
+
+import fs from 'fs-extra';
+import MagicString from 'magic-string';
+
+import { extract, getSourceFile, validate } from './core';
 import {
 	type AssetsOptions,
 	type DocumentOptions,
 	type StyleOptions,
+	type TypesOptions,
 	type VisualStudioCodeOptions,
 	type WebTypesOptions,
 	assets,
-	customElement,
 	document,
-	extract,
-	parse,
-	read,
+	property,
 	style,
-	validate,
+	tag,
+	types,
 	visualStudioCode,
 	webTypes
 } from './plugins';
-import type { TransformerPluginContext } from './transformer.types';
+import type { TransformerContext } from './transformer.types';
 
-export type TransformerOptions = {
-	style?: StyleOptions;
-	assets?: AssetsOptions;
-	document?: DocumentOptions;
-	visualStudioCode?: VisualStudioCodeOptions;
-	webTypes?: WebTypesOptions;
+type PluginOptions<T> = T & {
+	enable?: boolean;
 };
 
-export const transformer = (options?: TransformerOptions) => {
-	const contexts = new Map<string, TransformerPluginContext>();
+export type TransformerOptions = {
+	style?: PluginOptions<StyleOptions>;
+	assets?: PluginOptions<AssetsOptions>;
+	types?: PluginOptions<TypesOptions>;
+	document?: PluginOptions<DocumentOptions>;
+	visualStudioCode?: PluginOptions<VisualStudioCodeOptions>;
+	webTypes?: PluginOptions<WebTypesOptions>;
+};
 
-	const transform = (id: string) => {
-		let context: TransformerPluginContext = {
-			filePath: id
+const run = <A, O extends { enable?: boolean }>(
+	plugin: (arg: A, options: Omit<O, 'enable'>) => void,
+	arg: A,
+	options?: O
+) => {
+	if (options?.enable === false) return;
+	const { enable, ...rest } = options ?? ({} as O);
+	plugin(arg, rest);
+};
+
+export const createTransformer = (options?: TransformerOptions) => {
+	const contexts = new Map<string, TransformerContext>();
+
+	const transform = (filePath: string) => {
+		const fileContent = fs.readFileSync(filePath, 'utf8');
+
+		const fileExtension = path.extname(filePath);
+
+		const fileName = path.basename(filePath, fileExtension);
+
+		const directoryPath = path.dirname(filePath);
+
+		const directoryName = path.basename(directoryPath);
+
+		const parsed = getSourceFile(filePath, fileContent);
+
+		if (!validate(parsed)) return;
+
+		const script = new MagicString(fileContent);
+
+		const context: TransformerContext = {
+			directoryName,
+			directoryPath,
+
+			fileContent,
+			fileExtension,
+			fileName,
+			filePath,
+
+			classes: [],
+			elements: [],
+			events: [],
+			methods: [],
+			properties: [],
+
+			parsed,
+
+			script
 		};
 
-		context = read(context) || context;
-		context = parse(context) || context;
-		context = validate(context) || context;
-		context = extract(context) || context;
-		context = style(context, options?.style) || context;
-		context = customElement(context) || context;
+		extract(context);
 
-		contexts.set(id, context);
+		tag(context);
 
-		return context;
+		property(context);
+
+		run(style, context, options?.style);
+
+		contexts.set(filePath, context);
+
+		return context.script.toString();
 	};
 
 	const finish = () => {
 		const all = contexts.values().toArray();
 
-		if (options?.assets) {
-			for (const context of all) {
-				assets(context, options.assets);
-			}
-		}
+		run(assets, all, options?.assets);
 
-		if (options?.document) {
-			document(all, options.document);
-		}
+		run(types, all, options?.types);
 
-		if (options?.visualStudioCode) {
-			visualStudioCode(all, options.visualStudioCode);
-		}
+		run(document, all, options?.document);
 
-		if (options?.webTypes) {
-			webTypes(all, options.webTypes);
-		}
+		run(visualStudioCode, all, options?.visualStudioCode);
+
+		run(webTypes, all, options?.webTypes);
 	};
 
-	return { transform, finish };
+	return { finish, transform };
 };

@@ -1,130 +1,95 @@
-// biome-ignore-all lint: TODO
-
 import path from 'node:path';
 
-import { kebabCase } from 'change-case';
 import fs from 'fs-extra';
+import ts from 'typescript';
 
-import { extractAttribute, extractFromComment, getType, print } from '@/transformer/utils';
+import { getTypeChecker } from '../core';
+import type { TransformerContext, TransformerElement } from '../transformer.types';
+import { getDescription } from '../utils';
 
-import type { TransformerPluginBatch, TransformerPluginContext } from '../transformer.types';
-
-type Json = {
-	$schema: string;
-	version: number;
-	tags: {
-		name: string;
-		attributes: {
-			name: string;
-			values: {
-				name: string;
-			}[];
-			description?: string;
-		}[];
-		references: {
-			name: string;
-			url: string;
-		}[];
-		description?: string;
-	}[];
-};
+export type VisualStudioCodeJson = Record<string, unknown>;
 
 export const VISUAL_STUDIO_CODE_OPTIONS = {
 	destination: path.join('dist', 'visual-studio-code.json'),
 	reference: () => '',
-	transformer: (json) => json
+	transform: (json) => json
 } satisfies VisualStudioCodeOptions;
 
-export interface VisualStudioCodeOptions {
+export type VisualStudioCodeOptions<T = VisualStudioCodeJson> = {
 	destination?: string;
-	reference?: (context: TransformerPluginContext) => string;
-	transformer?: (json: Json) => Json;
-}
+	reference?: (context: TransformerContext, element: TransformerElement) => string;
+	transform?: (json: VisualStudioCodeJson) => T;
+};
 
-export const visualStudioCode: TransformerPluginBatch<VisualStudioCodeOptions | undefined> = (
-	contexts1,
-	userOptions
-) => {
+const getValues = (type: ts.Type): string[] => {
+	if (type.flags & ts.TypeFlags.BooleanLike) {
+		return ['false', 'true'];
+	}
+
+	if (type.isUnion()) {
+		return [...new Set(type.types.flatMap((member) => getValues(member)))];
+	}
+
+	if (type.flags & ts.TypeFlags.EnumLiteral && type.symbol) {
+		return [type.symbol.name];
+	}
+
+	if (type.isStringLiteral()) {
+		return [type.value];
+	}
+
+	if (type.isNumberLiteral()) {
+		return [String(type.value)];
+	}
+
+	return [];
+};
+
+export const visualStudioCode = (
+	contexts: TransformerContext[],
+	userOptions?: VisualStudioCodeOptions
+): void => {
 	const options = { ...VISUAL_STUDIO_CODE_OPTIONS, ...userOptions };
 
-	const contexts = contexts1.sort((a, b) => {
-		return a.elementKey!.toUpperCase() > b.elementKey!.toUpperCase() ? +1 : -1;
-	});
+	const entries = contexts
+		.flatMap((context) => context.elements.map((element) => ({ context, element })))
+		.sort((a, b) => (a.element.key > b.element.key ? +1 : -1));
 
-	const json: Json = {
-		$schema: 'TODO',
-		version: 1.1,
-		tags: []
-	};
+	const tags = entries.map(({ context, element }) => {
+		const attributes = element.properties.map((property) => {
+			const checker = getTypeChecker(property.node);
 
-	for (const context of contexts) {
-		const tag: Json['tags'][number] = {
-			name: context.elementKey!,
-			attributes: [],
+			const type = checker.getTypeAtLocation(property.node);
+
+			return {
+				name: property.attribute,
+				values: getValues(type)
+					.sort()
+					.map((name) => ({ name })),
+				description: property.description
+			};
+		});
+
+		return {
+			name: element.key,
+			attributes,
 			references: [
 				{
 					name: 'Source code',
-					url: options.reference?.(context) || ''
+					url: options.reference(context, element)
 				}
 			],
-			...extractFromComment(context.class!, ['description'])
+			description: getDescription(element.node)
 		};
+	});
 
-		for (const property of context.classProperties || []) {
-			const attribute: Json['tags'][number]['attributes'][number] = {
-				name: extractAttribute(property) || kebabCase(property.key['name']),
-				values: [],
-				...extractFromComment(property, ['description'])
-			};
+	const json: VisualStudioCodeJson = {
+		$schema: 'TODO',
+		version: 1.1,
+		tags
+	};
 
-			const type = print(
-				getType(
-					context.directoryPath!,
-					context.fileAST!,
-					property.typeAnnotation?.['typeAnnotation']
-				)
-			);
-
-			const sections = type.split('|');
-
-			for (const section of sections) {
-				const trimmed = section.trim();
-
-				if (!trimmed) continue;
-
-				const isBoolean = /bool|boolean|Boolean/.test(trimmed);
-
-				const isNumber = !isNaN(trimmed as any);
-
-				const isString = /^("|'|`)/.test(trimmed);
-
-				if (isBoolean) {
-					attribute.values.push(
-						{
-							name: 'false'
-						},
-						{
-							name: 'true'
-						}
-					);
-				} else if (isNumber) {
-					attribute.values.push({
-						name: trimmed
-					});
-				} else if (isString) {
-					attribute.values.push({
-						name: trimmed.slice(1, -1)
-					});
-				}
-			}
-
-			tag.attributes.push(attribute);
-		}
-
-		json.tags.push(tag);
-	}
-
-	const transformed = options.transformer?.(json) || json;
+	const transformed = options.transform(json);
 
 	const dirname = path.dirname(options.destination);
 

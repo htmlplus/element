@@ -1,204 +1,215 @@
-import { default as default_2 } from '@babel/types';
-import { ParserOptions } from '@babel/parser';
+import { default as default_2 } from 'typescript';
+import { default as default_3 } from 'magic-string';
 
-export declare const assets: TransformerPlugin<AssetsOptions | undefined>;
+export declare const assets: (contexts: TransformerContext[], userOptions?: AssetsOptions) => void;
 
 export declare const ASSETS_OPTIONS: {
-    destination(context: TransformerPluginContext): string;
-    source(context: TransformerPluginContext): string;
-    json(context: TransformerPluginContext): string;
+    destination(context: TransformerContext): string;
+    json(context: TransformerContext): string;
+    source(context: TransformerContext): string;
 };
 
-export declare interface AssetsOptions {
-    destination?: (context: TransformerPluginContext) => string;
-    source?: (context: TransformerPluginContext) => string;
-    json?: (context: TransformerPluginContext) => string;
-}
+export declare type AssetsOptions = {
+    destination?: (context: TransformerContext, element: TransformerElement) => string;
+    json?: (context: TransformerContext, element: TransformerElement) => string;
+    source?: (context: TransformerContext, element: TransformerElement) => string;
+};
 
-export declare const customElement: TransformerPlugin;
+export declare const createTransformer: (options?: TransformerOptions) => {
+    finish: () => void;
+    transform: (filePath: string) => string | undefined;
+};
 
-declare const document_2: TransformerPluginBatch<DocumentOptions | undefined>;
+declare const document_2: (contexts: TransformerContext[], userOptions?: DocumentOptions) => void;
 export { document_2 as document }
 
 export declare const DOCUMENT_OPTIONS: {
     destination: string;
-    transformer: (json: Json) => Json;
+    transform: (json: DocumentJson) => DocumentJson;
 };
 
-export declare interface DocumentOptions {
+export declare type DocumentJson = Record<string, unknown>;
+
+export declare type DocumentOptions<T = DocumentJson> = {
     destination?: string;
-    transformer?: (json: Json) => Json;
-}
-
-export declare const extract: TransformerPlugin;
-
-declare type Json = {
-    elements: {
-        title: string;
-    }[];
+    transform?: (json: DocumentJson) => T;
 };
 
-declare type Json_2 = {
-    $schema: string;
-    version: number;
-    tags: {
-        name: string;
-        attributes: {
-            name: string;
-            values: {
-                name: string;
-            }[];
-            description?: string;
-        }[];
-        references: {
-            name: string;
-            url: string;
-        }[];
-        description?: string;
-    }[];
+declare type PluginOptions<T> = T & {
+    enable?: boolean;
 };
 
-declare type Json_3 = {
-    $schema: string;
-    name: string;
-    version: string;
-    'description-markup': string;
-    'framework-config': {
-        'enable-when': {
-            'node-packages': string[];
-        };
-    };
-    contributions: {
-        html: {
-            elements: {
-                name: string;
-                description?: string;
-                'doc-url'?: string;
-                attributes: {
-                    name: string;
-                    value: {
-                        type: string;
-                    };
-                    default?: boolean | string | number;
-                    description?: string;
-                }[];
-                js: {
-                    events: {
-                        name: string;
-                        description?: string;
-                    }[];
-                    properties: {
-                        name: string;
-                        default?: boolean | string | number;
-                        description?: string;
-                    }[];
-                };
-                slots: {
-                    name: string;
-                    description?: string;
-                }[];
-            }[];
-        };
-    };
+export declare const property: (context: TransformerContext) => void;
+
+export declare const readme: (_context: TransformerContext[], userOptions?: ReadmeOptions) => void;
+
+export declare const README_OPTIONS: {};
+
+export declare type ReadmeOptions = {
+    unknown?: unknown;
 };
 
-export declare const parse: TransformerPlugin<ParseOptions | undefined>;
-
-export declare const PARSE_OPTIONS: ParseOptions;
-
-export declare interface ParseOptions extends ParserOptions {
-}
-
-export declare const read: TransformerPlugin;
-
-export declare const style: TransformerPlugin<StyleOptions | undefined>;
+export declare const style: (context: TransformerContext, userOptions?: StyleOptions) => void;
 
 export declare const STYLE_OPTIONS: {
-    source(context: TransformerPluginContext): string[];
+    resolver(_context: TransformerContext, element: TransformerElement): string;
+    source(context: TransformerContext): string[];
 };
 
-export declare interface StyleOptions {
-    source?: (context: TransformerPluginContext) => string | string[];
-}
-
-export declare const transformer: (options?: TransformerOptions) => {
-    transform: (id: string) => TransformerPluginContext;
-    finish: () => void;
+export declare type StyleOptions = {
+    resolver?: (context: TransformerContext, element: TransformerElement) => string;
+    source?: (context: TransformerContext, element: TransformerElement) => string | string[];
 };
 
-export declare type TransformerOptions = {
-    style?: StyleOptions;
-    assets?: AssetsOptions;
-    document?: DocumentOptions;
-    visualStudioCode?: VisualStudioCodeOptions;
-    webTypes?: WebTypesOptions;
+export declare const tag: (context: TransformerContext) => void;
+
+export declare type TransformerClass = {
+    node: default_2.ClassDeclaration;
 };
 
-export declare type TransformerPlugin<Options = undefined> = (context: TransformerPluginContext, options?: Options) => TransformerPluginContext | undefined;
+export declare type TransformerContext = {
+    directoryName: string;
+    directoryPath: string;
+    fileContent: string;
+    fileExtension: string;
+    fileName: string;
+    filePath: string;
+    classes: TransformerClass[];
+    elements: TransformerElement[];
+    events: TransformerEvent[];
+    methods: TransformerMethod[];
+    properties: TransformerProperty[];
+    parsed: default_2.SourceFile;
+    script: default_3;
+};
 
-export declare type TransformerPluginBatch<Options = undefined> = (contexts: TransformerPluginContext[], options?: Options) => void;
-
-export declare interface TransformerPluginContext {
-    skipped?: boolean;
-    script?: string;
+export declare type TransformerElement = {
+    key: string;
+    name: string;
+    node: default_2.ClassDeclaration;
     assetsDestination?: string;
     assetsSource?: string;
-    class?: default_2.ClassDeclaration;
-    classEvents?: default_2.ClassProperty[];
-    classMembers?: default_2.ClassBody['body'];
-    classMethods?: default_2.ClassMethod[];
-    className?: string;
-    classProperties?: default_2.ClassProperty[];
-    classStates?: default_2.ClassProperty[];
-    directoryName?: string;
-    directoryPath?: string;
-    elementKey?: string;
-    elementInterfaceName?: string;
-    elementTagName?: string;
-    fileAST?: default_2.File;
-    fileContent?: string;
-    fileExtension?: string;
-    fileName?: string;
-    filePath?: string;
+    events: TransformerEvent[];
+    methods: TransformerMethod[];
+    properties: TransformerProperty[];
     styleContent?: string;
-    styleContentTransformed?: string;
     styleExtension?: string;
     styleName?: string;
     stylePath?: string;
-}
+};
 
-export declare const validate: TransformerPlugin;
+export declare type TransformerEvent = {
+    node: default_2.PropertyDeclaration;
+    decorator: default_2.Decorator;
+    name: string;
+    description: string;
+    cancelable: boolean;
+    detail: string;
+    tags: TransformerTag[];
+};
+
+export declare type TransformerMethod = {
+    node: default_2.MethodDeclaration;
+    decorator: default_2.Decorator;
+    name: string;
+    description: string;
+    async: boolean;
+    parameters: TransformerMethodParameter[];
+    returns: string;
+    signature: string;
+    tags: TransformerTag[];
+};
+
+export declare type TransformerMethodParameter = {
+    node: default_2.ParameterDeclaration;
+    name: string;
+    description?: string;
+    required: boolean;
+    type?: string;
+};
+
+export declare type TransformerOptions = {
+    style?: PluginOptions<StyleOptions>;
+    assets?: PluginOptions<AssetsOptions>;
+    types?: PluginOptions<TypesOptions>;
+    document?: PluginOptions<DocumentOptions>;
+    visualStudioCode?: PluginOptions<VisualStudioCodeOptions>;
+    webTypes?: PluginOptions<WebTypesOptions>;
+};
+
+export declare type TransformerProperty = {
+    node: default_2.PropertyDeclaration | default_2.GetAccessorDeclaration;
+    decorator: default_2.Decorator;
+    name: string;
+    description: string;
+    attribute: string;
+    initializer?: string;
+    readonly: boolean;
+    reflects: boolean;
+    required: boolean;
+    type: string;
+    tags: TransformerTag[];
+};
+
+export declare type TransformerTag = {
+    name: string;
+    description: string;
+};
+
+export declare const types: (contexts: TransformerContext[], userOptions: TypesOptions) => void;
+
+export declare const TYPES_OPTIONS: {
+    mode: "new";
+    destination(context: TransformerContext): string;
+    transform(_context: TransformerContext, output: TypesTransformOutput): string;
+};
+
+export declare type TypesOptions = {
+    mode?: 'append' | 'prepend' | 'new';
+    destination?: (context: TransformerContext) => string;
+    transform?: (context: TransformerContext, output: TypesTransformOutput) => string;
+};
+
+export declare type TypesTransformOutput = {
+    content: string;
+    current: string;
+    final: string;
+};
 
 export declare const VISUAL_STUDIO_CODE_OPTIONS: {
     destination: string;
     reference: () => string;
-    transformer: (json: Json_2) => Json_2;
+    transform: (json: VisualStudioCodeJson) => VisualStudioCodeJson;
 };
 
-export declare const visualStudioCode: TransformerPluginBatch<VisualStudioCodeOptions | undefined>;
+export declare const visualStudioCode: (contexts: TransformerContext[], userOptions?: VisualStudioCodeOptions) => void;
 
-export declare interface VisualStudioCodeOptions {
+export declare type VisualStudioCodeJson = Record<string, unknown>;
+
+export declare type VisualStudioCodeOptions<T = VisualStudioCodeJson> = {
     destination?: string;
-    reference?: (context: TransformerPluginContext) => string;
-    transformer?: (json: Json_2) => Json_2;
-}
+    reference?: (context: TransformerContext, element: TransformerElement) => string;
+    transform?: (json: VisualStudioCodeJson) => T;
+};
 
 export declare const WEB_TYPES_OPTIONS: {
     destination: string;
     packageName: string;
     packageVersion: string;
     reference: () => string;
-    transformer: (json: Json_3) => Json_3;
+    transform: (json: WebTypesJson) => WebTypesJson;
 };
 
-export declare const webTypes: TransformerPluginBatch<WebTypesOptions | undefined>;
+export declare const webTypes: (contexts: TransformerContext[], userOptions?: WebTypesOptions) => void;
 
-export declare interface WebTypesOptions {
+export declare type WebTypesJson = Record<string, unknown>;
+
+export declare type WebTypesOptions<T = WebTypesJson> = {
     destination?: string;
     packageName?: string;
     packageVersion?: string;
-    reference?: (context: TransformerPluginContext) => string;
-    transformer?: (json: Json_3) => Json_3;
-}
+    reference?: (context: TransformerContext, element: TransformerElement) => string;
+    transform?: (json: WebTypesJson) => T;
+};
 
 export { }
