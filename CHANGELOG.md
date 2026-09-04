@@ -1,3 +1,5 @@
+# Changelog
+
 ## [4.0.10](https://github.com/htmlplus/element/compare/v4.0.9...v4.0.10) (2026-09-03)
 
 ## [4.0.9](https://github.com/htmlplus/element/compare/v4.0.8...v4.0.9) (2026-08-21)
