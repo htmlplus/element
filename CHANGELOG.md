@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.11](https://github.com/htmlplus/element/compare/v4.0.10...v4.0.11) (2026-09-04)
+
+
+### Bug Fixes
+
+* Resolve the build command in the types plugin ([ce7a2f7](https://github.com/htmlplus/element/commit/ce7a2f739de41182998d82ad72b847eb6a481d0c))
+
 ## [4.0.10](https://github.com/htmlplus/element/compare/v4.0.9...v4.0.10) (2026-09-03)
 
 ## [4.0.9](https://github.com/htmlplus/element/compare/v4.0.8...v4.0.9) (2026-08-21)
