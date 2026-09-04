@@ -515,7 +515,7 @@ static readonly ${STATIC_TAG} = '${elementTagName}';
 const TYPES_OPTIONS = {
   mode: "new",
   destination(context) {
-    return path.join(context.filePath, `${context.fileName}.d.ts`);
+    return path.join(context.directoryPath, `${context.fileName}.d.ts`);
   },
   transform(_context, output) {
     return output.final;
