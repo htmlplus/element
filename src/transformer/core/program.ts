@@ -14,7 +14,35 @@ const FALLBACK_OPTIONS: ts.CompilerOptions = {
 
 let cache: { program: ts.Program; checker: ts.TypeChecker } | undefined;
 
-const build = (fromPath: string) => {
+const sourceFiles = new Map<string, ts.SourceFile>();
+
+const createHost = (options: ts.CompilerOptions): ts.CompilerHost => {
+	const host = ts.createCompilerHost(options, true);
+	const defaultGetSourceFile = host.getSourceFile.bind(host);
+
+	host.getSourceFile = (fileName, languageVersionOrOptions, onError, shouldCreateNewSourceFile) => {
+		const text = host.readFile(fileName);
+
+		const cached = text !== undefined ? sourceFiles.get(fileName) : undefined;
+
+		if (cached && cached.text === text) return cached;
+
+		const sourceFile = defaultGetSourceFile(
+			fileName,
+			languageVersionOrOptions,
+			onError,
+			shouldCreateNewSourceFile
+		);
+
+		if (sourceFile) sourceFiles.set(fileName, sourceFile);
+
+		return sourceFile;
+	};
+
+	return host;
+};
+
+const build = (fromPath: string, oldProgram?: ts.Program) => {
 	const configPath = ts.findConfigFile(path.dirname(fromPath), ts.sys.fileExists, 'tsconfig.json');
 
 	let rootNames: string[] = [];
@@ -31,7 +59,7 @@ const build = (fromPath: string) => {
 		options = { ...options, ...parsed.options, noEmit: true };
 	}
 
-	const program = ts.createProgram({ options, rootNames });
+	const program = ts.createProgram({ options, rootNames, oldProgram, host: createHost(options) });
 
 	return { program, checker: program.getTypeChecker() };
 };
@@ -44,7 +72,12 @@ const build = (fromPath: string) => {
 export const getSourceFile = (filePath: string, content: string): ts.SourceFile => {
 	if (!cache) cache = build(filePath);
 
-	const fromProgram = cache.program.getSourceFile(filePath);
+	let fromProgram = cache.program.getSourceFile(filePath);
+
+	if (fromProgram && fromProgram.text !== content) {
+		cache = build(filePath, cache.program);
+		fromProgram = cache.program.getSourceFile(filePath);
+	}
 
 	if (fromProgram) return fromProgram;
 

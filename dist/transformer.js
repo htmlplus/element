@@ -199,7 +199,21 @@ const FALLBACK_OPTIONS = {
   target: ts.ScriptTarget.ESNext
 };
 let cache;
-const build = (fromPath) => {
+const sourceFiles = /* @__PURE__ */ new Map();
+const createHost = (options) => {
+  const host = ts.createCompilerHost(options, true);
+  const defaultGetSourceFile = host.getSourceFile.bind(host);
+  host.getSourceFile = (fileName, languageVersionOrOptions, onError, shouldCreateNewSourceFile) => {
+    const text = host.readFile(fileName);
+    const cached = text !== void 0 ? sourceFiles.get(fileName) : void 0;
+    if (cached && cached.text === text) return cached;
+    const sourceFile = defaultGetSourceFile(fileName, languageVersionOrOptions, onError, shouldCreateNewSourceFile);
+    if (sourceFile) sourceFiles.set(fileName, sourceFile);
+    return sourceFile;
+  };
+  return host;
+};
+const build = (fromPath, oldProgram) => {
   const configPath = ts.findConfigFile(path.dirname(fromPath), ts.sys.fileExists, "tsconfig.json");
   let rootNames = [];
   let options = { ...FALLBACK_OPTIONS };
@@ -209,12 +223,16 @@ const build = (fromPath) => {
     rootNames = parsed.fileNames;
     options = { ...options, ...parsed.options, noEmit: true };
   }
-  const program = ts.createProgram({ options, rootNames });
+  const program = ts.createProgram({ options, rootNames, oldProgram, host: createHost(options) });
   return { program, checker: program.getTypeChecker() };
 };
 const getSourceFile = (filePath, content) => {
   if (!cache) cache = build(filePath);
-  const fromProgram = cache.program.getSourceFile(filePath);
+  let fromProgram = cache.program.getSourceFile(filePath);
+  if (fromProgram && fromProgram.text !== content) {
+    cache = build(filePath, cache.program);
+    fromProgram = cache.program.getSourceFile(filePath);
+  }
   if (fromProgram) return fromProgram;
   return ts.createSourceFile(
     filePath,
