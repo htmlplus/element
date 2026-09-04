@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.12](https://github.com/htmlplus/element/compare/v4.0.11...v4.0.12) (2026-09-04)
+
+
+### Bug Fixes
+
+* Rebuild the shared program when a file's content changes ([4a6751e](https://github.com/htmlplus/element/commit/4a6751ed154d27eae4c0b5ff7c9dc2e1f4be4bf0))
+
 ## [4.0.11](https://github.com/htmlplus/element/compare/v4.0.10...v4.0.11) (2026-09-04)
 
 
