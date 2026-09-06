@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.13](https://github.com/htmlplus/element/compare/v4.0.12...v4.0.13) (2026-09-06)
+
+
+### Bug Fixes
+
+* Update README.md file ([660d889](https://github.com/htmlplus/element/commit/660d889041ac1c3cd87b2060917017e54e40f9c3))
+
 ## [4.0.12](https://github.com/htmlplus/element/compare/v4.0.11...v4.0.12) (2026-09-04)
 
 
