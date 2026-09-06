@@ -1,6 +1,6 @@
 # Create Custom HTML Element
 
-A powerful tool for building a scalable, reusable, fast, and lightweight `UI Component Library` for any web technologies, powered by [Custom Elements](https://mdn.io/using-custom-elements).
+A powerful tool for building scalable, reusable, fast, and lightweight elements for any web technology — a single widget, a full `UI Component Library`, or an entire application — powered by [Custom Elements](https://mdn.io/using-custom-elements).
 
 ## Table Of Content
 
@@ -16,16 +16,22 @@ A powerful tool for building a scalable, reusable, fast, and lightweight `UI Com
 
 ## Features
 
-- **Plugin-Based**: Facilitates the seamless development of diverse plugins and the customization of outputs to meet specific requirements
-- **Built-In Plugins**: Provides a variety of plugins that cater to different requirements.
-- **Global Config**: Provides the ability to define global configs for all elements.
-- **Typings**: Creates TypeScript types for seamless element usage across different environments.
-- **TypeScript + JSX**: Using two powerful tools, TypeScript and JSX, to create elements.
-- **Built-In Utilities**: Provides a set of JavaScript utility functions used across multiple elements.
-- **Secure**: Restricts unwanted access to internal properties and methods.
-- **Style File Recognition**: Identifies and links the relevant style file to the element.
-- **Tag Name Recognition**: Generates tag name from the class name.
-- **Clean Syntax**: Uses a minimal amount of code to achieve the same functionality, making the code easier to read, understand, and maintain.
+- 🌐 **No Wrappers**: Works in every framework as it is, with events named the way each one expects.
+- ⚡ **Compiler-Based**: Removes the repetitive work every component would otherwise carry, handling it automatically at build time.
+- ✨ **Decorator-Based**: Properties, state, events, methods, context and more powerful features, all through decorators and with no extra packages.
+- ✍️ **TypeScript + JSX**: Write elements in TypeScript and JSX, with type safety everywhere.
+- 🪶 **Lightweight**: About 8 KB of runtime for a typical element, and under 11 KB for the whole library, minified and gzipped.
+- 📘 **Typings**: TypeScript types are generated for you, with nothing to define by hand.
+- 📦 **Bundler Plugin**: Not a toolchain of its own — it plugs into the bundler you already use. Vite and Rollup are supported today, with more on the way.
+- ⚙️ **Global Config**: Configure every element from one place.
+- 🔌 **Plugin-Based**: The build pipeline is made of plugins, with many included out of the box.
+- 🖌️ **Custom Render Engine**: A dedicated rendering layer, built on Preact today and configurable in a future release.
+- 🎨 **Style File Recognition**: Each element's style file is found and linked automatically.
+- 🏷️ **Tag Name Recognition**: The tag name comes from the class name.
+- 🧰 **Built-In Utilities**: A set of utility functions shared across elements.
+- 🔒 **Secure**: Internal properties and methods stay out of reach.
+- ✂️ **Clean Syntax**: Less code for the same result, and easier to read later.
+- 🚧 **Server-Side Rendering**: Declarative Shadow DOM on the server, hydration in the browser. Not released yet.
 
 ## Quick Start
 
@@ -52,7 +58,7 @@ npm i
 4- Start the project
 
 ```bash
-npm start
+npm run dev
 ```
 
 ## First Element
@@ -71,7 +77,7 @@ export class MyCounter {
 
   render() {
     return (
-      <host onClick={() => this.value++}>
+      <host value={this} onClick={() => this.value++}>
         Count is {this.value}
       </host>
     )
@@ -125,7 +131,7 @@ export class MyCounter {
 
   render() {
     return (
-      <host onClick={this.onClick}>
+      <host value={this} onClick={this.onClick}>
         Count is {this.value}
       </host>
     )
@@ -143,7 +149,33 @@ In the `index.html` file.
 
 <details>
   <summary>Consumer</summary>
-TODO
+
+Receives a value from an ancestor `@Provider()` that shares the same namespace. The property is kept in sync as the provided value changes.
+
+In the `my-consumer.tsx` file.
+
+```tsx
+import { Consumer, Element } from '@htmlplus/element';
+
+@Element()
+export class MyConsumer {
+  @Consumer('theme')
+  theme?: string;
+
+  render() {
+    return <div>Theme is {this.theme}</div>
+  }
+}
+```
+
+In the `index.html` file.
+
+```html
+<my-provider>
+  <my-consumer></my-consumer>
+</my-provider>
+```
+
 </details>
 
 <details>
@@ -168,7 +200,7 @@ export class MyCounter {
 
   render() {
     return (
-      <host onClick={this.onClick}>
+      <host value={this} onClick={this.onClick}>
         Count is {this.value}
       </host>
     )
@@ -478,7 +510,7 @@ export class MyCounter {
 
   render() {
     return (
-      <host>
+      <host value={this}>
         Count is {this.value}
       </host>
     )
@@ -554,7 +586,33 @@ In the `index.html` file.
 
 <details>
   <summary>Provider</summary>
-TODO
+
+Shares a value with descendant elements through a namespace. Every `@Consumer()` with the same namespace reads it and stays in sync when it changes.
+
+In the `my-provider.tsx` file.
+
+```tsx
+import { Element, Provider } from '@htmlplus/element';
+
+@Element()
+export class MyProvider {
+  @Provider('theme')
+  theme: string = 'dark';
+
+  render() {
+    return <slot />
+  }
+}
+```
+
+In the `index.html` file.
+
+```html
+<my-provider>
+  <my-consumer></my-consumer>
+</my-provider>
+```
+
 </details>
 
 <details>
@@ -676,7 +734,7 @@ export class MyElement {
 
   render() {
     return (
-      <host>
+      <host value={this}>
         <slot name="header"></slot>
         <slot></slot>
         <slot name="footer"></slot>
@@ -786,45 +844,77 @@ In the `index.html` file.
 
 ## Utilities
 
-Utilities are a versatile tool in element building projects, eliminating the need for rewriting.
+Helper functions shared across elements. Most mirror a decorator, for when you need the same behavior imperatively instead of as a class field, and take the element (`this`) as their first argument.
 
 <details>
   <summary>classes</summary>
-TODO
+
+Builds a class string from a string, an array, or an object. Object keys become kebab-case classes when their value is truthy. With `smart` enabled, string and number values are appended as `key-value`.
+
+```js
+classes('a b')                                // 'a b'
+classes(['a', { fooBar: true, baz: false }])  // 'a foo-bar'
+classes({ size: 'sm', loading: true }, true)  // 'size-sm loading'
+```
+
 </details>
 
 <details>
   <summary>getConfig</summary>
-TODO
+
+Reads the shared config for a namespace, as defined by `setConfig`.
+
+```js
+getConfig('plus'); // { assets: { path: '/assets' } }
+```
+
 </details>
 
 <details>
   <summary>setConfig</summary>
-TODO
+
+Stores shared options for every element in a namespace. Calls are deep-merged, so later ones extend earlier ones. Pass `{ override: true }` to replace instead.
+
+```js
+import { setConfig } from '@htmlplus/element';
+
+setConfig('plus', {
+  assets: { path: '/assets' }
+});
+```
+
 </details>
 
 <details>
   <summary>direction</summary>
 
-Indicates whether the [Direction](https://mdn.io/css-direction) of the element is `Right-To-Left` or `Left-To-Right`.
+Returns the resolved [direction](https://mdn.io/css-direction) of the element, `ltr` or `rtl`.
 
-TODO
+```js
+direction(this); // 'ltr'
+```
 
 </details>
 
 <details>
   <summary>dispatch</summary>
 
-TODO
+Creates a [CustomEvent](https://mdn.io/custom-event) and dispatches it from the element. Returns the event.
+
+```js
+dispatch(this, 'change', { detail: this.value });
+```
 
 </details>
 
 <details>
   <summary>host</summary>
-  
-Indicates the host of the element.
 
-TODO
+Returns the host element of the element instance.
+
+```js
+host(this); // <my-element>
+```
 
 </details>
 
@@ -834,8 +924,6 @@ TODO
 Determines whether the given input string is a valid
 [CSS Color](https://developer.mozilla.org/docs/Web/CSS/color_value)
 or not.
-
-TODO
 
 ```js
 isCSSColor('red')                       // true
@@ -851,22 +939,53 @@ isCSSColor('invalid color')             // false
 </details>
 
 <details>
+  <summary>isCSSUnit</summary>
+
+Determines whether the given input string is a valid
+[CSS length](https://mdn.io/length) or not.
+
+```js
+isCSSUnit('10px')   // true
+isCSSUnit('1.5rem') // true
+isCSSUnit('50%')    // true
+isCSSUnit('10')     // false
+isCSSUnit('foo')    // false
+```
+
+</details>
+
+<details>
   <summary>isRTL</summary>
 
-Indicates whether the direction of the element is `Right-To-Left` or not.
+Returns `true` when the element's direction is `Right-To-Left`.
 
-TODO
+```js
+isRTL(this); // false
+```
 
 </details>
 
 <details>
   <summary>on</summary>
-TODO 
+
+Adds an event listener to the host. The special `outside` type fires when the event happens anywhere outside the element.
+
+```js
+on(this, 'click', () => console.log('clicked'));
+on(this, 'outside', () => console.log('clicked outside'));
+```
+
 </details>
 
 <details>
   <summary>off</summary>
-TODO 
+
+Removes a listener added with `on`.
+
+```js
+off(this, 'click', handler);
+```
+
 </details>
 
 <details>
@@ -874,52 +993,60 @@ TODO
 
 Selects the first element in the shadow dom that matches a specified CSS selector.
 
-TODO
+```js
+query(this, '.btn'); // <button class="btn">
+```
 
 </details>
 
 <details>
   <summary>queryAll</summary>
-  
+
 Selects all elements in the shadow dom that match a specified CSS selector.
 
-TODO
+```js
+queryAll(this, 'span'); // NodeList(2)
+```
 
 </details>
 
 <details>
   <summary>slots</summary>
 
-Returns the slots name.
+Returns an object with the names of the slots that currently have content.
 
-TODO
-
-</details>
-
-<details>
-  <summary>toUnit</summary>
-
-Converts a value to a unit.
-
-TODO
+```js
+slots(this); // { default: true, footer: true }
+```
 
 </details>
 
 ## JSX
 
-TODO
+Elements are written in JSX. It runs on a small Preact-based renderer, so most of what you know carries over: `className`, `style` objects, conditional rendering, and fragments.
 
 <details>
   <summary>host</summary>
 
-TODO
+`<host>` refers to the custom element itself. Use it to set attributes, classes, styles, or listeners on the host and to wrap the element's content. It needs `value={this}` so the renderer can find the host.
 
-</details>
+```tsx
+render() {
+  return (
+    <host value={this} class="card" onClick={this.onClick}>
+      <slot />
+    </host>
+  )
+}
+```
 
-<details>
-  <summary>part</summary>
+`<host>` is optional. Return any element directly when you don't need to touch the host.
 
-TODO
+```tsx
+render() {
+  return <button><slot /></button>
+}
+```
 
 </details>
 
@@ -930,7 +1057,18 @@ Elements encompass several lifecycle methods, each triggered at different stages
 <details>
   <summary>adoptedCallback</summary>
 
-TODO
+Invoked when the element is moved to a new document, for example via [`document.adoptNode`](https://mdn.io/adopt-node).
+
+```js
+import { Element } from '@htmlplus/element';
+
+@Element()
+export class MyElement {
+  adoptedCallback() {
+    console.log('Element was adopted!');
+  }
+}
+```
 
 </details>
 
@@ -1032,84 +1170,48 @@ export class MyElement {
 
 ## Bundlers
 
-TODO
+`@htmlplus/element` plugs into the bundler you already use. The plugin transforms each element file and, after the build, emits the extra artifacts (types, docs, editor metadata).
+
+Every built-in plugin can be configured, or turned off, through the options object:
+
+```ts
+htmlplus({
+  style: {},
+  assets: {},
+  types: {},
+  document: {},
+  visualStudioCode: {},
+  webTypes: { enable: false }
+})
+```
 
 <details>
   <summary>Rollup</summary>
 
-TODO
+In the `rollup.config.js` file.
+
+```js
+import { rollup as htmlplus } from '@htmlplus/element/bundlers.js';
+
+export default {
+  plugins: [htmlplus()]
+};
+```
 
 </details>
 
 <details>
   <summary>Vite</summary>
 
-TODO
-
-</details>
-
-## Transformer
-
-TODO
-
-<details>
-  <summary>Getting Started</summary>
-
-TODO
+In the `vite.config.ts` file.
 
 ```ts
-import { TransformerPlugin, transformer } from '@htmlplus/element';
-import {
-  customElement,
-  extract,
-  parse,
-  read,
-  style,
-  validate,
-} from '@htmlplus/element/transformer.js';
+import { vite as htmlplus } from '@htmlplus/element/bundlers.js';
+import { defineConfig } from 'vite';
 
-const plugins = [
-  read(),
-  parse(),
-  validate(),
-  extract(),
-  style(),
-  customElement()
-];
-
-const { start, run, finish } = transformer(...plugins);
-
-await start();
-
-const context1 = await run('/my-avatar.tsx');
-const context2 = await run('/my-button.tsx');
-const context3 = await run('/my-switch.tsx');
-
-await finish();
-```
-
-</details>
-
-<details>
-  <summary>Plugins</summary>
-
-TODO
-
-```ts
-import {
-  assets,
-  copy,
-  customElement,
-  document,
-  extract,
-  parse,
-  read,
-  readme,
-  style,
-  validate,
-  visualStudioCode,
-  webTypes
-} from '@htmlplus/element/transformer.js';
+export default defineConfig({
+  plugins: [htmlplus()]
+});
 ```
 
 </details>
